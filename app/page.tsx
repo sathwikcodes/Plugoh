@@ -1,10 +1,12 @@
 import { CTASection } from "@/components/ui/hero-dithering-card";
 import { EtheralShadow } from "@/components/ui/etheral-shadow";
 import { ClientsSection } from "@/components/landing/clients-section";
-import { Features } from "@/components/ui/features-9";
-import { TimelineSection } from "@/components/landing/timeline-section";
+import { Features5 } from "@/components/ui/features-5";
+import { Features } from "@/components/ui/features-8";
+import { FeatureCarouselSection } from "@/components/landing/feature-carousel-section";
 import { MinimalFooter } from "@/components/ui/minimal-footer";
 import { MapSection } from "@/components/landing/map-section";
+import { FaqSectionWrapper } from "@/components/landing/faq-section-wrapper";
 
 export default function Home() {
   return (
@@ -23,9 +25,11 @@ export default function Home() {
       <div className="relative z-10 w-full">
         <CTASection />
         <ClientsSection />
+        <Features5 />
         <Features />
-        <TimelineSection />
-        <MapSection />
+        <FeatureCarouselSection />
+        {/* <MapSection /> */}
+        <FaqSectionWrapper />
         <MinimalFooter />
       </div>
     </div>

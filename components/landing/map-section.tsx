@@ -8,12 +8,22 @@ export function MapSection() {
 
       <div className="relative z-10 flex flex-col items-center gap-8">
         <p className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase">
-          Current Location
+          Our Locations
         </p>
-        <LocationMap
-          location="San Francisco, CA"
-          coordinates="37.7749° N, 122.4194° W"
-        />
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+          <LocationMap
+            location="Rajahmundry"
+            coordinates="16.9891° N, 81.7840° E"
+          />
+          <LocationMap
+            location="Vijayawada"
+            coordinates="16.5062° N, 80.6480° E"
+          />
+          <LocationMap
+            location="Hyderabad"
+            coordinates="17.3850° N, 78.4867° E"
+          />
+        </div>
       </div>
     </section>
   );
