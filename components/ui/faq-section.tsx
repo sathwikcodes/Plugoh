@@ -33,7 +33,7 @@ const FaqSection = React.forwardRef<HTMLElement, FaqSectionProps>(
         )}
         {...props}
       >
-        <div className="container">
+        <div className="container px-4 sm:px-6 md:px-8">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

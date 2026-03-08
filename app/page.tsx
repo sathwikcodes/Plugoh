@@ -12,11 +12,14 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col items-center bg-background">
       {/* Etheral Shadow background */}
-      <div className="pointer-events-none fixed inset-0 z-0">
+      <div
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{ contain: "strict" }}
+      >
         <EtheralShadow
           color="rgba(128, 128, 128, 1)"
-          animation={{ scale: 100, speed: 90 }}
-          noise={{ opacity: 1, scale: 1.2 }}
+          animation={{ scale: 30, speed: 20 }}
+          noise={{ opacity: 0.8, scale: 1.2 }}
           sizing="fill"
         />
       </div>

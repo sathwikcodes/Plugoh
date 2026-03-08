@@ -38,7 +38,7 @@ const logos = [
 
 export function ClientsSection() {
   return (
-    <div className="relative w-full place-content-center py-16">
+    <div className="relative w-full place-content-center py-16 overflow-hidden">
       <div
         aria-hidden="true"
         className={cn(

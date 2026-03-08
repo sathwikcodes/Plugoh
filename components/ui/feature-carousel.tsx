@@ -10,23 +10,10 @@ import {
 } from "react";
 import Image, { type StaticImageData } from "next/image";
 import clsx from "clsx";
-import {
-  AnimatePresence,
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  type MotionStyle,
-  type MotionValue,
-  type Variants,
-} from "motion/react";
+import { AnimatePresence, motion, type Variants } from "motion/react";
 import Balancer from "react-wrap-balancer";
 
 import { cn } from "@/lib/utils";
-
-type WrapperStyle = MotionStyle & {
-  "--x": MotionValue<string>;
-  "--y": MotionValue<string>;
-};
 
 interface CardProps {
   title: string;
@@ -291,18 +278,14 @@ function FeatureCard({
   step: number;
 }) {
   const [mounted, setMounted] = useState(false);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
   const isMobile = useIsMobile();
-
-  const x = useMotionTemplate`${mouseX}px`;
-  const y = useMotionTemplate`${mouseY}px`;
+  const cardRef = useRef<HTMLDivElement>(null);
 
   function handleMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
-    if (isMobile) return;
+    if (isMobile || !cardRef.current) return;
     const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
+    cardRef.current.style.setProperty("--x", `${clientX - left}px`);
+    cardRef.current.style.setProperty("--y", `${clientY - top}px`);
   }
 
   useEffect(() => {
@@ -310,15 +293,10 @@ function FeatureCard({
   }, []);
 
   return (
-    <motion.div
+    <div
+      ref={cardRef}
       className="animated-cards relative w-full rounded-[16px]"
       onMouseMove={handleMouseMove}
-      style={
-        {
-          "--x": x,
-          "--y": y,
-        } as WrapperStyle
-      }
     >
       <div
         className={clsx(
@@ -327,11 +305,11 @@ function FeatureCard({
           bgClass,
         )}
       >
-        <div className="m-10 min-h-[450px] w-full">
+        <div className="m-4 sm:m-6 md:m-10 min-h-[350px] sm:min-h-[400px] md:min-h-[450px] w-full pt-14 md:pt-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
-              className="flex w-4/6 flex-col gap-3"
+              className="flex w-full md:w-4/6 flex-col gap-2 sm:gap-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -370,7 +348,7 @@ function FeatureCard({
           {mounted ? children : null}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -384,9 +362,9 @@ function Steps({
   onChange: (index: number) => void;
 }) {
   return (
-    <nav aria-label="Progress" className="flex justify-center px-4">
+    <nav aria-label="Progress" className="flex justify-center px-2 sm:px-4">
       <ol
-        className="flex w-full flex-wrap items-start justify-start gap-2 sm:justify-center md:w-10/12 md:divide-y-0"
+        className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:gap-2 md:w-10/12 md:divide-y-0"
         role="list"
       >
         {stepData.map((step, stepIdx) => {
@@ -402,7 +380,7 @@ function Steps({
               variants={stepVariants}
               transition={{ duration: 0.3 }}
               className={cn(
-                "relative z-50 rounded-full px-3 py-1 transition-all duration-300 ease-in-out md:flex",
+                "relative z-50 rounded-full px-2 py-0.5 sm:px-3 sm:py-1 transition-all duration-300 ease-in-out md:flex",
                 isCompleted ? "bg-neutral-500/20" : "bg-neutral-500/10",
               )}
             >
@@ -413,7 +391,7 @@ function Steps({
                 )}
                 onClick={() => onChange(stepIdx)}
               >
-                <span className="flex items-center gap-2 text-sm font-medium">
+                <span className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
                   <motion.span
                     initial={false}
                     animate={{
@@ -600,15 +578,13 @@ export const FeatureCarousel = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="absolute left-[12rem] top-5 z-50 h-full w-full cursor-pointer md:left-0"
+        className="absolute left-0 top-3 md:top-5 z-50 w-full cursor-pointer"
       >
         <Steps current={step} onChange={() => {}} steps={steps} />
       </motion.div>
-      <motion.div
-        className="absolute right-0 top-0 z-50 h-full w-full cursor-pointer md:left-0"
+      <div
+        className="absolute right-0 top-0 z-50 h-full w-full cursor-pointer"
         onClick={handleIncrement}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
       />
     </FeatureCard>
   );

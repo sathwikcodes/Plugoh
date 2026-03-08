@@ -43,6 +43,8 @@ export function Features5() {
                 alt="analytics dashboard dark"
                 width={1207}
                 height={929}
+                sizes="(max-width: 768px) 100vw, 60vw"
+                loading="lazy"
               />
               <Image
                 src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop"
@@ -50,6 +52,8 @@ export function Features5() {
                 alt="analytics dashboard light"
                 width={1207}
                 height={929}
+                sizes="(max-width: 768px) 100vw, 60vw"
+                loading="lazy"
               />
             </div>
           </div>

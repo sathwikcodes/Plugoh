@@ -6,7 +6,7 @@ import { FeatureCarousel } from "@/components/ui/feature-carousel";
 export function FeatureCarouselSection() {
   return (
     <section className="w-full py-16 md:py-24">
-      <div className="w-full max-w-5xl mx-auto px-4">
+      <div className="w-full max-w-5xl mx-auto px-3 sm:px-4">
         <div className="rounded-[34px] bg-neutral-700/40 p-2">
           <div className="relative z-10 grid w-full gap-8 rounded-[28px] bg-neutral-950/80 p-2">
             <FeatureCarousel
@@ -14,31 +14,31 @@ export function FeatureCarouselSection() {
               description="Everything you need to discover, connect, and grow with creators"
               step1img1Class={cn(
                 "pointer-events-none w-[50%] border border-stone-100/10 transition-all duration-500 dark:border-stone-700/50",
-                "max-md:scale-[160%] max-md:rounded-[24px] rounded-[24px] left-[25%] top-[57%] md:left-[35px] md:top-[29%]",
+                "rounded-[16px] sm:rounded-[24px] left-[3%] top-[35%] md:left-[35px] md:top-[29%]",
                 "md:group-hover:translate-y-2",
               )}
               step1img2Class={cn(
-                "pointer-events-none w-[60%] border border-stone-100/10 dark:border-stone-700/50 transition-all duration-500 overflow-hidden",
-                "max-md:scale-[160%] rounded-2xl max-md:rounded-[24px] left-[69%] top-[53%] md:top-[21%] md:left-[calc(50%+35px+1rem)]",
+                "pointer-events-none w-[48%] border border-stone-100/10 dark:border-stone-700/50 transition-all duration-500 overflow-hidden",
+                "rounded-[16px] sm:rounded-[24px] left-[50%] top-[38%] md:top-[21%] md:left-[calc(50%+35px+1rem)] md:w-[60%]",
                 "md:group-hover:-translate-y-6",
               )}
               step2img1Class={cn(
-                "pointer-events-none w-[50%] rounded-t-[24px] overflow-hidden border border-stone-100/10 transition-all duration-500 dark:border-stone-700",
-                "max-md:scale-[160%] left-[25%] top-[69%] md:left-[35px] md:top-[30%]",
+                "pointer-events-none w-[50%] rounded-t-[16px] sm:rounded-t-[24px] overflow-hidden border border-stone-100/10 transition-all duration-500 dark:border-stone-700",
+                "left-[3%] top-[35%] md:left-[35px] md:top-[30%]",
                 "md:group-hover:translate-y-2",
               )}
               step2img2Class={cn(
-                "pointer-events-none w-[40%] rounded-t-[24px] border border-stone-100/10 dark:border-stone-700 transition-all duration-500 rounded-2xl overflow-hidden",
-                "max-md:scale-[140%] left-[70%] top-[53%] md:top-[25%] md:left-[calc(50%+27px+1rem)]",
+                "pointer-events-none w-[45%] rounded-t-[16px] sm:rounded-t-[24px] border border-stone-100/10 dark:border-stone-700 transition-all duration-500 rounded-2xl overflow-hidden",
+                "left-[52%] top-[38%] md:top-[25%] md:left-[calc(50%+27px+1rem)] md:w-[40%]",
                 "md:group-hover:-translate-y-6",
               )}
               step3imgClass={cn(
-                "pointer-events-none w-[90%] border border-stone-100/10 dark:border-stone-700 rounded-t-[24px] transition-all duration-500 overflow-hidden",
-                "left-[5%] top-[50%] md:top-[30%] md:left-[68px]",
+                "pointer-events-none w-[92%] border border-stone-100/10 dark:border-stone-700 rounded-t-[16px] sm:rounded-t-[24px] transition-all duration-500 overflow-hidden",
+                "left-[4%] top-[32%] md:top-[30%] md:left-[68px]",
               )}
               step4imgClass={cn(
-                "pointer-events-none w-[90%] border border-stone-100/10 dark:border-stone-700 rounded-t-[24px] transition-all duration-500 overflow-hidden",
-                "left-[5%] top-[50%] md:top-[30%] md:left-[68px]",
+                "pointer-events-none w-[92%] border border-stone-100/10 dark:border-stone-700 rounded-t-[16px] sm:rounded-t-[24px] transition-all duration-500 overflow-hidden",
+                "left-[4%] top-[32%] md:top-[30%] md:left-[68px]",
               )}
               image={{
                 step1light1:

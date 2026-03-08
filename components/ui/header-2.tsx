@@ -38,8 +38,8 @@ export function Header() {
         className={[
           "grid grid-cols-3 items-center rounded-full transition-all duration-150 ease-out",
           scrolled
-            ? "h-16 px-8 border border-white/[0.08] bg-white/[0.04] shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md"
-            : "h-14 px-6 border border-transparent bg-transparent",
+            ? "h-16 px-4 sm:px-8 border border-white/[0.08] bg-white/[0.04] shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md"
+            : "h-14 px-3 sm:px-6 border border-transparent bg-transparent",
         ].join(" ")}
       >
         {/* Left — Logo */}
