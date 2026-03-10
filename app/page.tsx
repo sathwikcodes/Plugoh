@@ -7,6 +7,7 @@ import { FeatureCarouselSection } from "@/components/landing/feature-carousel-se
 import { MinimalFooter } from "@/components/ui/minimal-footer";
 import { MapSection } from "@/components/landing/map-section";
 import { FaqSectionWrapper } from "@/components/landing/faq-section-wrapper";
+import { Header } from "@/components/ui/header-2";
 
 export default function Home() {
   return (
@@ -26,6 +27,7 @@ export default function Home() {
 
       {/* Content */}
       <div className="relative z-10 w-full">
+        <Header />
         <CTASection />
         <ClientsSection />
         <Features5 />
