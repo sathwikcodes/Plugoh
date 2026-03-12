@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/lib/supabase/types";
 
@@ -54,14 +54,9 @@ export function EditProfileForm({ profile, onSaved }: EditProfileFormProps) {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     display_name: profile.display_name || "",
-    instagram_handle: profile.instagram_handle || "",
-    instagram_url: profile.instagram_url || "",
     category: profile.category || "",
     city: profile.city || "",
     languages: profile.languages || [],
-    follower_count: profile.follower_count?.toString() || "",
-    avg_views_per_reel: profile.avg_views_per_reel?.toString() || "",
-    avg_likes_per_reel: profile.avg_likes_per_reel?.toString() || "",
     price_per_reel: profile.price_per_reel?.toString() || "",
     price_per_post: profile.price_per_post?.toString() || "",
     price_per_story: profile.price_per_story?.toString() || "",
@@ -84,16 +79,9 @@ export function EditProfileForm({ profile, onSaved }: EditProfileFormProps) {
     try {
       const payload = {
         display_name: form.display_name,
-        instagram_handle: form.instagram_handle,
-        instagram_url:
-          form.instagram_url ||
-          `https://instagram.com/${form.instagram_handle}`,
         category: form.category,
         city: form.city,
         languages: form.languages,
-        follower_count: Number(form.follower_count) || null,
-        avg_views_per_reel: Number(form.avg_views_per_reel) || null,
-        avg_likes_per_reel: Number(form.avg_likes_per_reel) || null,
         price_per_reel: Number(form.price_per_reel) || null,
         price_per_post: Number(form.price_per_post) || null,
         price_per_story: Number(form.price_per_story) || null,
@@ -118,6 +106,36 @@ export function EditProfileForm({ profile, onSaved }: EditProfileFormProps) {
 
   return (
     <form onSubmit={handleSave} className="space-y-4">
+      <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+        <p className="inline-flex items-center gap-1.5 text-sm font-medium">
+          <Lock className="h-4 w-4" />
+          Instagram Data (auto-synced)
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <p className="text-xs text-muted-foreground">Username</p>
+            <p className="text-sm font-medium">@{profile.ig_username || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Followers</p>
+            <p className="text-sm font-medium">
+              {profile.ig_followers_count?.toLocaleString() || "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Following</p>
+            <p className="text-sm font-medium">
+              {profile.ig_follows_count?.toLocaleString() || "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Posts</p>
+            <p className="text-sm font-medium">
+              {profile.ig_media_count?.toLocaleString() || "—"}
+            </p>
+          </div>
+        </div>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label>Display Name</Label>
@@ -127,22 +145,6 @@ export function EditProfileForm({ profile, onSaved }: EditProfileFormProps) {
             className="h-11"
           />
         </div>
-        <div className="space-y-2">
-          <Label>Instagram Handle</Label>
-          <Input
-            value={form.instagram_handle}
-            onChange={(e) => update("instagram_handle", e.target.value)}
-            className="h-11"
-          />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Label>Instagram URL</Label>
-        <Input
-          value={form.instagram_url}
-          onChange={(e) => update("instagram_url", e.target.value)}
-          className="h-11"
-        />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
@@ -187,35 +189,6 @@ export function EditProfileForm({ profile, onSaved }: EditProfileFormProps) {
               {lang}
             </Button>
           ))}
-        </div>
-      </div>
-      <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
-        <div className="space-y-2">
-          <Label>Followers</Label>
-          <Input
-            type="number"
-            value={form.follower_count}
-            onChange={(e) => update("follower_count", e.target.value)}
-            className="h-11"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Avg Views</Label>
-          <Input
-            type="number"
-            value={form.avg_views_per_reel}
-            onChange={(e) => update("avg_views_per_reel", e.target.value)}
-            className="h-11"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Avg Likes</Label>
-          <Input
-            type="number"
-            value={form.avg_likes_per_reel}
-            onChange={(e) => update("avg_likes_per_reel", e.target.value)}
-            className="h-11"
-          />
         </div>
       </div>
       <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">

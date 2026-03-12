@@ -52,6 +52,7 @@ No test suite is configured.
 ### Environment Variables
 
 Required in `.env.local`:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 

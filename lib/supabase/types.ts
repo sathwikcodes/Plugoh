@@ -75,6 +75,7 @@ export type Database = {
       };
       influencer_profiles: {
         Row: {
+          access_token: string | null;
           avg_likes_per_reel: number | null;
           avg_views_per_reel: number | null;
           bio: string | null;
@@ -84,6 +85,13 @@ export type Database = {
           display_name: string | null;
           follower_count: number | null;
           id: string;
+          ig_biography: string | null;
+          ig_followers_count: number | null;
+          ig_follows_count: number | null;
+          ig_media_count: number | null;
+          ig_profile_picture_url: string | null;
+          ig_user_id: string | null;
+          ig_username: string | null;
           instagram_handle: string | null;
           instagram_url: string | null;
           is_active: boolean | null;
@@ -91,9 +99,11 @@ export type Database = {
           price_per_post: number | null;
           price_per_reel: number | null;
           price_per_story: number | null;
+          token_expires_at: string | null;
           user_id: string;
         };
         Insert: {
+          access_token?: string | null;
           avg_likes_per_reel?: number | null;
           avg_views_per_reel?: number | null;
           bio?: string | null;
@@ -103,6 +113,13 @@ export type Database = {
           display_name?: string | null;
           follower_count?: number | null;
           id?: string;
+          ig_biography?: string | null;
+          ig_followers_count?: number | null;
+          ig_follows_count?: number | null;
+          ig_media_count?: number | null;
+          ig_profile_picture_url?: string | null;
+          ig_user_id?: string | null;
+          ig_username?: string | null;
           instagram_handle?: string | null;
           instagram_url?: string | null;
           is_active?: boolean | null;
@@ -110,9 +127,11 @@ export type Database = {
           price_per_post?: number | null;
           price_per_reel?: number | null;
           price_per_story?: number | null;
+          token_expires_at?: string | null;
           user_id: string;
         };
         Update: {
+          access_token?: string | null;
           avg_likes_per_reel?: number | null;
           avg_views_per_reel?: number | null;
           bio?: string | null;
@@ -122,6 +141,13 @@ export type Database = {
           display_name?: string | null;
           follower_count?: number | null;
           id?: string;
+          ig_biography?: string | null;
+          ig_followers_count?: number | null;
+          ig_follows_count?: number | null;
+          ig_media_count?: number | null;
+          ig_profile_picture_url?: string | null;
+          ig_user_id?: string | null;
+          ig_username?: string | null;
           instagram_handle?: string | null;
           instagram_url?: string | null;
           is_active?: boolean | null;
@@ -129,7 +155,68 @@ export type Database = {
           price_per_post?: number | null;
           price_per_reel?: number | null;
           price_per_story?: number | null;
+          token_expires_at?: string | null;
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      instagram_media: {
+        Row: {
+          caption: string | null;
+          engagement: number | null;
+          id: string;
+          ig_media_id: string;
+          impressions: number | null;
+          like_count: number | null;
+          media_type: string | null;
+          media_url: string | null;
+          comments_count: number | null;
+          permalink: string | null;
+          reach: number | null;
+          saves: number | null;
+          synced_at: string;
+          thumbnail_url: string | null;
+          timestamp: string | null;
+          user_id: string;
+          video_views: number | null;
+        };
+        Insert: {
+          caption?: string | null;
+          engagement?: number | null;
+          id?: string;
+          ig_media_id: string;
+          impressions?: number | null;
+          like_count?: number | null;
+          media_type?: string | null;
+          media_url?: string | null;
+          comments_count?: number | null;
+          permalink?: string | null;
+          reach?: number | null;
+          saves?: number | null;
+          synced_at?: string;
+          thumbnail_url?: string | null;
+          timestamp?: string | null;
+          user_id: string;
+          video_views?: number | null;
+        };
+        Update: {
+          caption?: string | null;
+          engagement?: number | null;
+          id?: string;
+          ig_media_id?: string;
+          impressions?: number | null;
+          like_count?: number | null;
+          media_type?: string | null;
+          media_url?: string | null;
+          comments_count?: number | null;
+          permalink?: string | null;
+          reach?: number | null;
+          saves?: number | null;
+          synced_at?: string;
+          thumbnail_url?: string | null;
+          timestamp?: string | null;
+          user_id?: string;
+          video_views?: number | null;
         };
         Relationships: [];
       };

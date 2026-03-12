@@ -25,29 +25,27 @@ import {
   Inbox,
   Loader2,
   Pencil,
-  Users,
-  Eye,
-  Heart,
-  Instagram,
-  MapPin,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CampaignCards } from "@/components/shared/campaign-cards";
 import { EditProfileForm } from "./_components/edit-profile-form";
+import { InstagramProfileCard } from "./_components/instagram-profile-card";
 import type { Database } from "@/lib/supabase/types";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
+type InstagramMedia = Database["public"]["Tables"]["instagram_media"]["Row"];
 
 export default function InfluencerDashboard() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const [ip, setIp] = useState<InfluencerProfile | null>(null);
+  const [media, setMedia] = useState<InstagramMedia[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [loading, setLoading] = useState(true);
   const [checkingProfile, setCheckingProfile] = useState(true);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -62,11 +60,16 @@ export default function InfluencerDashboard() {
         .select("*")
         .eq("influencer_id", user.id)
         .order("created_at", { ascending: false }),
-    ]).then(([ipRes, campRes]) => {
+      supabase
+        .from("instagram_media")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("timestamp", { ascending: false }),
+    ]).then(([ipRes, campRes, mediaRes]) => {
       setIp(ipRes.data);
       setCampaigns(campRes.data || []);
+      setMedia(mediaRes.data || []);
       setCheckingProfile(false);
-      setLoading(false);
     });
   }, [user]);
 
@@ -143,11 +146,47 @@ export default function InfluencerDashboard() {
     }
   };
 
-  const formatNum = (n: number | null) => {
-    if (!n) return "—";
-    if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-    if (n >= 1000) return (n / 1000).toFixed(1) + "K";
-    return n.toString();
+  const handleSync = async () => {
+    if (!user || syncing) return;
+    setSyncing(true);
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error("Please sign in again to sync Instagram");
+      }
+      const res = await fetch("/api/instagram/sync", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error ?? "Failed to sync Instagram");
+      }
+      const [profileRes, mediaRes] = await Promise.all([
+        supabase
+          .from("influencer_profiles")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("instagram_media")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("timestamp", { ascending: false }),
+      ]);
+      if (profileRes.data) {
+        setIp(profileRes.data);
+      }
+      setMedia(mediaRes.data || []);
+      toast({ title: "Profile synced!" });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      toast({ title: "Error", description: message, variant: "destructive" });
+    } finally {
+      setSyncing(false);
+    }
   };
 
   const EmptyBookings = () => (
@@ -432,97 +471,12 @@ export default function InfluencerDashboard() {
         </TabsContent>
 
         <TabsContent value="profile">
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile Preview</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-xl border p-5 space-y-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-lg">
-                      {ip.display_name || "Creator"}
-                    </h3>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <MapPin className="h-3 w-3" /> {ip.city || "India"}
-                    </div>
-                  </div>
-                  {ip.category && (
-                    <Badge variant="secondary">{ip.category}</Badge>
-                  )}
-                </div>
-                {ip.instagram_handle && (
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Instagram className="h-4 w-4" /> @{ip.instagram_handle}
-                  </div>
-                )}
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="rounded-lg bg-secondary p-3">
-                    <Users className="mx-auto h-4 w-4 text-muted-foreground mb-1" />
-                    <p className="text-sm font-semibold">
-                      {formatNum(ip.follower_count)}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      Followers
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-secondary p-3">
-                    <Eye className="mx-auto h-4 w-4 text-muted-foreground mb-1" />
-                    <p className="text-sm font-semibold">
-                      {formatNum(ip.avg_views_per_reel)}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      Avg Views
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-secondary p-3">
-                    <Heart className="mx-auto h-4 w-4 text-muted-foreground mb-1" />
-                    <p className="text-sm font-semibold">
-                      {formatNum(ip.avg_likes_per_reel)}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      Avg Likes
-                    </p>
-                  </div>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Price/Reel</p>
-                    <p className="font-medium">
-                      ₹{ip.price_per_reel?.toLocaleString() || "—"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Price/Post</p>
-                    <p className="font-medium">
-                      ₹{ip.price_per_post?.toLocaleString() || "—"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Price/Story</p>
-                    <p className="font-medium">
-                      ₹{ip.price_per_story?.toLocaleString() || "—"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Languages</p>
-                    <p className="font-medium">
-                      {ip.languages?.join(", ") || "—"}
-                    </p>
-                  </div>
-                </div>
-                {ip.bio && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Bio</p>
-                    <p className="text-sm">{ip.bio}</p>
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground text-center">
-                This is how businesses see your profile in discovery
-              </p>
-            </CardContent>
-          </Card>
+          <InstagramProfileCard
+            profile={ip}
+            media={media}
+            onSync={handleSync}
+            isSyncing={syncing}
+          />
         </TabsContent>
 
         <TabsContent value="edit">
