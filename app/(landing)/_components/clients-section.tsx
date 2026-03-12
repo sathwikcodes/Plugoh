@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { LogoCloud } from "@/components/ui/logo-cloud-3";
+import { LogoCloud } from "./logo-cloud";
 
 const logos = [
   {

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { FeatureCarousel } from "@/components/ui/feature-carousel";
+import { FeatureCarousel } from "./feature-carousel";
 
 export function FeatureCarouselSection() {
   return (

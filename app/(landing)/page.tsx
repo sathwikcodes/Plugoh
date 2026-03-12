@@ -1,13 +1,12 @@
-import { CTASection } from "@/components/ui/hero-dithering-card";
+import { CTASection } from "./_components/cta-section";
 import { EtheralShadow } from "@/components/ui/etheral-shadow";
-import { ClientsSection } from "@/components/landing/clients-section";
-import { Features5 } from "@/components/ui/features-5";
-import { Features } from "@/components/ui/features-8";
-import { FeatureCarouselSection } from "@/components/landing/feature-carousel-section";
-import { MinimalFooter } from "@/components/ui/minimal-footer";
-import { MapSection } from "@/components/landing/map-section";
-import { FaqSectionWrapper } from "@/components/landing/faq-section-wrapper";
-import { Header } from "@/components/ui/header-2";
+import { ClientsSection } from "./_components/clients-section";
+import { Features5 } from "./_components/features-primary-section";
+import { Features } from "./_components/features-alt-section";
+import { FeatureCarouselSection } from "./_components/feature-carousel-section";
+import { MinimalFooter } from "./_components/footer";
+import { FaqSectionWrapper } from "./_components/faq-section";
+import { Header } from "./_components/hero-section";
 
 export default function Home() {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { FaqSection } from "@/components/ui/faq-section";
+import { FaqSection } from "./faq-accordion";
 
 const REELREACH_FAQS = [
   {

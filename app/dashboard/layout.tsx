@@ -1,7 +1,7 @@
 "use client";
 
-import { Navbar } from "@/components/Navbar";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { Navbar } from "@/components/shared/navbar";
+import { ProtectedRoute } from "@/components/shared/protected-route";
 
 export default function DashboardLayout({
   children,

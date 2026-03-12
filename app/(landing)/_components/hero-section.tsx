@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
-import { ShimmerButton } from "./shimmer-button";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);

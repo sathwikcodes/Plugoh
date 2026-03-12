@@ -1,4 +1,4 @@
-import { LocationMap } from "@/components/ui/expand-map";
+import { LocationMap } from "./expand-map";
 
 export function MapSection() {
   return (

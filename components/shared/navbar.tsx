@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,7 +14,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Menu, LogOut, User, LayoutDashboard, X } from "lucide-react";
-import { NotificationDrawer } from "@/components/NotificationDrawer";
+import { NotificationDrawer } from "@/components/shared/notification-drawer";
 
 export function Navbar() {
   const { user, profile, role, signOut } = useAuth();
