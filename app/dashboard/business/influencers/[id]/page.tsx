@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Script from "next/script";
 import { supabase } from "@/lib/supabase/client";
+
+declare global {
+  interface Window {
+    Razorpay: new (options: Record<string, unknown>) => { open(): void };
+  }
+}
 import { useAuth } from "@/contexts/auth-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -90,41 +97,102 @@ export default function InfluencerProfileView() {
     }
   }, [myProfile]);
 
-  const handleBook = async (e: React.FormEvent) => {
+  const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !ip) return;
     setSubmitting(true);
+
     try {
-      const { error } = await supabase.from("campaigns").insert({
-        business_id: user.id,
-        influencer_id: ip.user_id,
-        influencer_profile_id: ip.id,
-        title,
-        brief,
-        package_type: packageType,
-        price_offered: Number(priceOffered),
-        advance_amount: Number(priceOffered),
-        business_contact_email: contactEmail,
-        business_contact_phone: contactPhone,
-        status: "pending",
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Please sign in again");
+
+      const priceNum = Number(priceOffered);
+      if (!priceNum || priceNum <= 0) throw new Error("Invalid price");
+
+      // Step 1: Create Razorpay order (server-side)
+      const orderRes = await fetch("/api/payment/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          amount: priceNum,
+          receipt: `r_${user.id.slice(0, 8)}_${Date.now()}`,
+        }),
       });
-      if (error) throw error;
-      await supabase.from("notifications").insert({
-        user_id: ip.user_id,
-        type: "new_booking",
-        data: { title: title || "Untitled", business_name: contactEmail },
-      });
-      toast({
-        title: "Booking sent!",
-        description: "The creator will accept or reject your request.",
-      });
-      setBookingOpen(false);
-      setTitle("");
-      setBrief("");
+      const orderData = await orderRes.json();
+      if (!orderRes.ok)
+        throw new Error(orderData.error ?? "Failed to create order");
+
+      // Step 2: Open Razorpay checkout
+      const rzpOptions = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "ReelReach",
+        description: `Campaign: ${title}`,
+        order_id: orderData.orderId,
+        prefill: { email: contactEmail, contact: contactPhone },
+        theme: { color: "#6366f1" },
+        handler: async (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) => {
+          // Step 3: Verify payment + create campaign (server-side)
+          const verifyRes = await fetch("/api/payment/verify", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              campaignData: {
+                influencer_id: ip.user_id,
+                influencer_profile_id: ip.id,
+                title,
+                brief,
+                package_type: packageType,
+                price_offered: priceNum,
+                business_contact_email: contactEmail,
+                business_contact_phone: contactPhone,
+              },
+            }),
+          });
+          const verifyData = await verifyRes.json();
+          if (!verifyRes.ok) {
+            toast({
+              title: "Payment verification failed",
+              description: verifyData.error,
+              variant: "destructive",
+            });
+            return;
+          }
+          toast({
+            title: "Booking confirmed!",
+            description:
+              "Payment received. The creator will review your request.",
+          });
+          setBookingOpen(false);
+          setTitle("");
+          setBrief("");
+        },
+        modal: {
+          ondismiss: () => setSubmitting(false),
+        },
+      };
+
+      const rzp = new window.Razorpay(rzpOptions);
+      rzp.open();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error";
       toast({ title: "Error", description: message, variant: "destructive" });
-    } finally {
       setSubmitting(false);
     }
   };
@@ -280,7 +348,7 @@ export default function InfluencerProfileView() {
               <DialogHeader>
                 <DialogTitle>Book {ip.display_name}</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleBook} className="space-y-4">
+              <form onSubmit={handlePayment} className="space-y-4">
                 <div className="space-y-2">
                   <Label>Campaign Title</Label>
                   <Input
@@ -348,13 +416,17 @@ export default function InfluencerProfileView() {
                   {submitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Send Booking Request
+                  Pay & Book (₹{Number(priceOffered || 0).toLocaleString()})
                 </Button>
               </form>
             </DialogContent>
           </Dialog>
         </CardContent>
       </Card>
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="lazyOnload"
+      />
     </div>
   );
 }

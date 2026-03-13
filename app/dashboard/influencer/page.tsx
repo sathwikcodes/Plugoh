@@ -29,7 +29,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CampaignCards } from "@/components/shared/campaign-cards";
 import { EditProfileForm } from "./_components/edit-profile-form";
-import { InstagramProfileCard } from "./_components/instagram-profile-card";
+import { InfluencerProfileOverview } from "./_components/influencer-profile-overview";
 import type { Database } from "@/lib/supabase/types";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
@@ -41,11 +41,11 @@ export default function InfluencerDashboard() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState("pending");
   const [ip, setIp] = useState<InfluencerProfile | null>(null);
   const [media, setMedia] = useState<InstagramMedia[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [checkingProfile, setCheckingProfile] = useState(true);
-  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -143,49 +143,6 @@ export default function InfluencerDashboard() {
         return "bg-primary/10 text-primary border-primary/20";
       default:
         return "bg-muted text-muted-foreground";
-    }
-  };
-
-  const handleSync = async () => {
-    if (!user || syncing) return;
-    setSyncing(true);
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        throw new Error("Please sign in again to sync Instagram");
-      }
-      const res = await fetch("/api/instagram/sync", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error ?? "Failed to sync Instagram");
-      }
-      const [profileRes, mediaRes] = await Promise.all([
-        supabase
-          .from("influencer_profiles")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle(),
-        supabase
-          .from("instagram_media")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("timestamp", { ascending: false }),
-      ]);
-      if (profileRes.data) {
-        setIp(profileRes.data);
-      }
-      setMedia(mediaRes.data || []);
-      toast({ title: "Profile synced!" });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast({ title: "Error", description: message, variant: "destructive" });
-    } finally {
-      setSyncing(false);
     }
   };
 
@@ -352,7 +309,7 @@ export default function InfluencerDashboard() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="pending" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full overflow-x-auto flex">
           <TabsTrigger value="pending" className="flex-1 min-w-0">
             Pending ({pending.length})
@@ -471,11 +428,12 @@ export default function InfluencerDashboard() {
         </TabsContent>
 
         <TabsContent value="profile">
-          <InstagramProfileCard
-            profile={ip}
+          <InfluencerProfileOverview
+            ip={ip}
+            campaigns={campaigns}
             media={media}
-            onSync={handleSync}
-            isSyncing={syncing}
+            onStatusUpdate={updateStatus}
+            onTabChange={setActiveTab}
           />
         </TabsContent>
 
