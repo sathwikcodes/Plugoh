@@ -80,6 +80,18 @@ export default function Onboarding() {
         .eq("id", user.id);
       if (profileError) throw profileError;
 
+      if (selectedRole === "influencer") {
+        const { error: ipError } = await supabase
+          .from("influencer_profiles")
+          .insert({
+            user_id: user.id,
+            display_name: fullName,
+            city: location || null,
+            is_active: false,
+          });
+        if (ipError && ipError.code !== "23505") throw ipError;
+      }
+
       await refreshUserData();
 
       toast({ title: "Profile set up!", description: "Welcome to ReelReach." });

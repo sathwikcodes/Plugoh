@@ -118,8 +118,23 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const { data: updatedProfile } = await db
+      .from("influencer_profiles")
+      .select("category, city, price_per_reel")
+      .eq("user_id", userId)
+      .single();
+
+    const needsProfileEdit =
+      !updatedProfile?.category ||
+      !updatedProfile?.city ||
+      !updatedProfile?.price_per_reel;
+
+    const redirectPath = needsProfileEdit
+      ? "/dashboard/influencer?tab=edit"
+      : "/dashboard/influencer";
+
     const response = NextResponse.redirect(
-      new URL("/dashboard/influencer", request.url),
+      new URL(redirectPath, request.url),
     );
     response.cookies.delete("ig_oauth_state");
     return response;
