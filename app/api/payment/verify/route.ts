@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       razorpay_order_id,
       razorpay_payment_id,
       payment_status: "paid",
-    } as any) // razorpay_* cols added via migration, not in auto-generated types
+    } as Record<string, unknown>) // razorpay_* cols added via migration, not in auto-generated types
     .select("id")
     .single();
 

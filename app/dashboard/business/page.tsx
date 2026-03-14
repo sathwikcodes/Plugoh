@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
-import { AlertTriangle } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  AlertTriangle,
   Briefcase,
   Clock,
   CheckCircle,
@@ -24,7 +24,6 @@ import {
   ArrowRight,
   Megaphone,
 } from "lucide-react";
-
 import { CampaignCards } from "@/components/shared/campaign-cards";
 import type { Database } from "@/lib/supabase/types";
 
@@ -33,7 +32,6 @@ type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 export default function BusinessDashboard() {
   const { user, profile, isProfileComplete } = useAuth();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -44,7 +42,6 @@ export default function BusinessDashboard() {
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         setCampaigns(data || []);
-        setLoading(false);
       });
   }, [user]);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,7 +45,6 @@ const CATEGORIES = [
 
 export default function InfluencerDiscovery() {
   const [profiles, setProfiles] = useState<InfluencerProfile[]>([]);
-  const [filtered, setFiltered] = useState<InfluencerProfile[]>([]);
   const [category, setCategory] = useState("All");
   const [city, setCity] = useState("");
   const [minPrice, setMinPrice] = useState("");
@@ -61,12 +60,11 @@ export default function InfluencerDiscovery() {
       .order("follower_count", { ascending: false })
       .then(({ data }) => {
         setProfiles(data || []);
-        setFiltered(data || []);
         setLoading(false);
       });
   }, []);
 
-  useEffect(() => {
+  const filtered = useMemo(() => {
     let result = [...profiles];
     if (category !== "All")
       result = result.filter((p) => p.category === category);
@@ -86,7 +84,7 @@ export default function InfluencerDiscovery() {
       result = result.filter(
         (p) => (p.follower_count || 0) >= Number(minFollowers),
       );
-    setFiltered(result);
+    return result;
   }, [category, city, minPrice, maxPrice, minFollowers, profiles]);
 
   const formatNum = (n: number | null) => {
