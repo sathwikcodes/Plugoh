@@ -37,6 +37,136 @@ type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 type InstagramMedia = Database["public"]["Tables"]["instagram_media"]["Row"];
 
+function statusColor(s: string) {
+  switch (s) {
+    case "accepted":
+      return "bg-success/10 text-success border-success/20";
+    case "pending":
+      return "bg-warning/10 text-warning border-warning/20";
+    case "rejected":
+      return "bg-destructive/10 text-destructive border-destructive/20";
+    case "completed":
+      return "bg-primary/10 text-primary border-primary/20";
+    default:
+      return "bg-muted text-muted-foreground";
+  }
+}
+
+function EmptyBookings() {
+  return (
+    <div className="flex flex-col items-center gap-4 py-12 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+        <Inbox className="h-7 w-7 text-primary" />
+      </div>
+      <div>
+        <p className="font-semibold text-foreground">No booking requests yet</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Complete your profile to get discovered by businesses
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function CampaignTable({
+  items,
+  showActions,
+  onAccept,
+  onReject,
+}: {
+  items: Campaign[];
+  showActions?: boolean;
+  onAccept: (id: string) => void;
+  onReject: (id: string) => void;
+}) {
+  if (items.length === 0) return <EmptyBookings />;
+  return (
+    <>
+      <CampaignCards
+        items={items}
+        showActions={showActions}
+        onAccept={onAccept}
+        onReject={onReject}
+        role="influencer"
+      />
+      <div className="hidden md:block overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Package</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead>Status</TableHead>
+              {showActions && <TableHead>Actions</TableHead>}
+              {!showActions && items[0]?.status === "accepted" && (
+                <TableHead>Contact</TableHead>
+              )}
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {items.map((c) => (
+              <TableRow key={c.id}>
+                <TableCell className="font-medium">
+                  {c.title || "Untitled"}
+                </TableCell>
+                <TableCell className="capitalize">
+                  {c.package_type || "—"}
+                </TableCell>
+                <TableCell>
+                  ₹{c.price_offered?.toLocaleString() || "—"}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className={statusColor(c.status)}>
+                    {c.status}
+                  </Badge>
+                </TableCell>
+                {showActions && (
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="default"
+                        onClick={() => onAccept(c.id)}
+                      >
+                        <CheckCircle className="mr-1 h-3 w-3" /> Accept
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onReject(c.id)}
+                      >
+                        <X className="mr-1 h-3 w-3" /> Reject
+                      </Button>
+                    </div>
+                  </TableCell>
+                )}
+                {!showActions && c.status === "accepted" && (
+                  <TableCell>
+                    <div className="text-xs space-y-0.5">
+                      <p>{c.business_contact_email}</p>
+                      {c.business_contact_phone && (
+                        <p>{c.business_contact_phone}</p>
+                      )}
+                    </div>
+                  </TableCell>
+                )}
+                <TableCell>
+                  <Button size="sm" variant="ghost" asChild>
+                    <Link href={`/dashboard/influencer/campaigns/${c.id}`}>
+                      Details
+                    </Link>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
+  );
+}
+
 export default function InfluencerDashboard() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
@@ -131,130 +261,6 @@ export default function InfluencerDashboard() {
     0,
   );
 
-  const statusColor = (s: string) => {
-    switch (s) {
-      case "accepted":
-        return "bg-success/10 text-success border-success/20";
-      case "pending":
-        return "bg-warning/10 text-warning border-warning/20";
-      case "rejected":
-        return "bg-destructive/10 text-destructive border-destructive/20";
-      case "completed":
-        return "bg-primary/10 text-primary border-primary/20";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
-
-  const EmptyBookings = () => (
-    <div className="flex flex-col items-center gap-4 py-12 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-        <Inbox className="h-7 w-7 text-primary" />
-      </div>
-      <div>
-        <p className="font-semibold text-foreground">No booking requests yet</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          Complete your profile to get discovered by businesses
-        </p>
-      </div>
-    </div>
-  );
-
-  const CampaignTable = ({
-    items,
-    showActions,
-  }: {
-    items: Campaign[];
-    showActions?: boolean;
-  }) =>
-    items.length === 0 ? (
-      <EmptyBookings />
-    ) : (
-      <>
-        <CampaignCards
-          items={items}
-          showActions={showActions}
-          onAccept={(id) => updateStatus(id, "accepted")}
-          onReject={(id) => updateStatus(id, "rejected")}
-          role="influencer"
-        />
-        <div className="hidden md:block overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Package</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Status</TableHead>
-                {showActions && <TableHead>Actions</TableHead>}
-                {!showActions && items[0]?.status === "accepted" && (
-                  <TableHead>Contact</TableHead>
-                )}
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((c) => (
-                <TableRow key={c.id}>
-                  <TableCell className="font-medium">
-                    {c.title || "Untitled"}
-                  </TableCell>
-                  <TableCell className="capitalize">
-                    {c.package_type || "—"}
-                  </TableCell>
-                  <TableCell>
-                    ₹{c.price_offered?.toLocaleString() || "—"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={statusColor(c.status)}>
-                      {c.status}
-                    </Badge>
-                  </TableCell>
-                  {showActions && (
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => updateStatus(c.id, "accepted")}
-                        >
-                          <CheckCircle className="mr-1 h-3 w-3" /> Accept
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateStatus(c.id, "rejected")}
-                        >
-                          <X className="mr-1 h-3 w-3" /> Reject
-                        </Button>
-                      </div>
-                    </TableCell>
-                  )}
-                  {!showActions && c.status === "accepted" && (
-                    <TableCell>
-                      <div className="text-xs space-y-0.5">
-                        <p>{c.business_contact_email}</p>
-                        {c.business_contact_phone && (
-                          <p>{c.business_contact_phone}</p>
-                        )}
-                      </div>
-                    </TableCell>
-                  )}
-                  <TableCell>
-                    <Button size="sm" variant="ghost" asChild>
-                      <Link href={`/dashboard/influencer/campaigns/${c.id}`}>
-                        Details
-                      </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </>
-    );
-
   return (
     <div className="container py-6 space-y-6 animate-fade-in">
       <div>
@@ -333,21 +339,34 @@ export default function InfluencerDashboard() {
         <TabsContent value="pending">
           <Card>
             <CardContent className="p-4">
-              <CampaignTable items={pending} showActions />
+              <CampaignTable
+                items={pending}
+                showActions
+                onAccept={(id) => updateStatus(id, "accepted")}
+                onReject={(id) => updateStatus(id, "rejected")}
+              />
             </CardContent>
           </Card>
         </TabsContent>
         <TabsContent value="active">
           <Card>
             <CardContent className="p-4">
-              <CampaignTable items={active} />
+              <CampaignTable
+                items={active}
+                onAccept={(id) => updateStatus(id, "accepted")}
+                onReject={(id) => updateStatus(id, "rejected")}
+              />
             </CardContent>
           </Card>
         </TabsContent>
         <TabsContent value="completed">
           <Card>
             <CardContent className="p-4">
-              <CampaignTable items={completed} />
+              <CampaignTable
+                items={completed}
+                onAccept={(id) => updateStatus(id, "accepted")}
+                onReject={(id) => updateStatus(id, "rejected")}
+              />
             </CardContent>
           </Card>
         </TabsContent>

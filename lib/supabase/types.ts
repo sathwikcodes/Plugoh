@@ -249,6 +249,8 @@ export type Database = {
       };
       profiles: {
         Row: {
+          business_name: string | null;
+          business_type: string | null;
           created_at: string;
           email: string | null;
           full_name: string | null;
@@ -257,6 +259,8 @@ export type Database = {
           phone: string | null;
         };
         Insert: {
+          business_name?: string | null;
+          business_type?: string | null;
           created_at?: string;
           email?: string | null;
           full_name?: string | null;
@@ -265,6 +269,8 @@ export type Database = {
           phone?: string | null;
         };
         Update: {
+          business_name?: string | null;
+          business_type?: string | null;
           created_at?: string;
           email?: string | null;
           full_name?: string | null;

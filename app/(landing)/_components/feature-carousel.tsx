@@ -146,15 +146,21 @@ function useNumberCycler(
   const [currentNumber, setCurrentNumber] = useState(0);
   const timerRef = useRef<NodeJS.Timeout>(undefined);
 
+  const paramsRef = useRef({ interval, totalSteps });
+  useEffect(() => {
+    paramsRef.current = { interval, totalSteps };
+  }, [interval, totalSteps]);
+
   const setupTimer = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
-    timerRef.current = setTimeout(() => {
-      setCurrentNumber((prev) => (prev + 1) % totalSteps);
-      setupTimer();
-    }, interval);
-  }, [interval, totalSteps]);
+    const tick = () => {
+      setCurrentNumber((prev) => (prev + 1) % paramsRef.current.totalSteps);
+      timerRef.current = setTimeout(tick, paramsRef.current.interval);
+    };
+    timerRef.current = setTimeout(tick, paramsRef.current.interval);
+  }, []);
 
   const increment = useCallback(() => {
     setCurrentNumber((prev) => (prev + 1) % totalSteps);
@@ -179,19 +185,21 @@ function useNumberCycler(
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    const userAgent = navigator.userAgent;
-    const isSmall = window.matchMedia("(max-width: 768px)").matches;
-    const isMobileUserAgent = Boolean(
-      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.exec(
-        userAgent,
-      ),
-    );
-    const isDev = process.env.NODE_ENV !== "production";
-    if (isDev) {
-      setIsMobile(isSmall || isMobileUserAgent);
-    } else {
-      setIsMobile(isSmall && isMobileUserAgent);
-    }
+    const compute = () => {
+      const userAgent = navigator.userAgent;
+      const isSmall = window.matchMedia("(max-width: 768px)").matches;
+      const isMobileUserAgent = Boolean(
+        /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.exec(
+          userAgent,
+        ),
+      );
+      const isDev = process.env.NODE_ENV !== "production";
+      return isDev
+        ? isSmall || isMobileUserAgent
+        : isSmall && isMobileUserAgent;
+    };
+    const value = compute();
+    setTimeout(() => setIsMobile(value), 0);
   }, []);
   return isMobile;
 }
@@ -289,7 +297,8 @@ function FeatureCard({
   }
 
   useEffect(() => {
-    setMounted(true);
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
   }, []);
 
   return (
