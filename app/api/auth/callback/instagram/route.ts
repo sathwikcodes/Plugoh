@@ -133,9 +133,7 @@ export async function GET(request: NextRequest) {
       ? "/dashboard/influencer?tab=edit"
       : "/dashboard/influencer";
 
-    const response = NextResponse.redirect(
-      new URL(redirectPath, request.url),
-    );
+    const response = NextResponse.redirect(new URL(redirectPath, request.url));
     response.cookies.delete("ig_oauth_state");
     return response;
   } catch (err) {

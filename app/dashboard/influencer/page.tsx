@@ -305,23 +305,22 @@ export default function InfluencerDashboard() {
         </Card>
       )}
 
-      {ip.ig_user_id &&
-        (!ip.category || !ip.city || !ip.price_per_reel) && (
-          <Card className="border-primary/50 bg-primary/5">
-            <CardContent className="flex items-center justify-between p-4">
-              <p className="text-sm font-medium">
-                Complete your profile to appear in discovery
-              </p>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setActiveTab("edit")}
-              >
-                Complete Profile
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+      {ip.ig_user_id && (!ip.category || !ip.city || !ip.price_per_reel) && (
+        <Card className="border-primary/50 bg-primary/5">
+          <CardContent className="flex items-center justify-between p-4">
+            <p className="text-sm font-medium">
+              Complete your profile to appear in discovery
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setActiveTab("edit")}
+            >
+              Complete Profile
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Stats */}
       <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
