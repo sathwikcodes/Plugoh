@@ -38,7 +38,7 @@ type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 type InstagramMedia = Database["public"]["Tables"]["instagram_media"]["Row"];
 
-const statusColor = (s: string) => {
+function statusColor(s: string) {
   switch (s) {
     case "accepted":
       return "bg-success/10 text-success border-success/20";
@@ -51,7 +51,7 @@ const statusColor = (s: string) => {
     default:
       return "bg-muted text-muted-foreground";
   }
-};
+}
 
 function EmptyBookings() {
   return (
@@ -80,9 +80,8 @@ function CampaignTable({
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
 }) {
-  return items.length === 0 ? (
-    <EmptyBookings />
-  ) : (
+  if (items.length === 0) return <EmptyBookings />;
+  return (
     <>
       <CampaignCards
         items={items}
@@ -399,11 +398,11 @@ export default function InfluencerDashboard() {
           <Card>
             <CardContent className="p-4">
               <CampaignTable
-              items={pending}
-              showActions
-              onAccept={handleAccept}
-              onReject={handleReject}
-            />
+                items={pending}
+                showActions
+                onAccept={handleAccept}
+                onReject={handleReject}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -411,10 +410,10 @@ export default function InfluencerDashboard() {
           <Card>
             <CardContent className="p-4">
               <CampaignTable
-              items={active}
-              onAccept={handleAccept}
-              onReject={handleReject}
-            />
+                items={active}
+                onAccept={handleAccept}
+                onReject={handleReject}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -422,10 +421,10 @@ export default function InfluencerDashboard() {
           <Card>
             <CardContent className="p-4">
               <CampaignTable
-              items={completed}
-              onAccept={handleAccept}
-              onReject={handleReject}
-            />
+                items={completed}
+                onAccept={handleAccept}
+                onReject={handleReject}
+              />
             </CardContent>
           </Card>
         </TabsContent>

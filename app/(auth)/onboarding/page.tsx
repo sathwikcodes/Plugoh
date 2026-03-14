@@ -14,12 +14,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2, Briefcase, Sparkles, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/lib/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
+
+const BUSINESS_TYPES = [
+  "restaurant",
+  "retail",
+  "service",
+  "agency",
+  "ecommerce",
+  "other",
+];
 
 export default function Onboarding() {
   const {
@@ -37,6 +53,8 @@ export default function Onboarding() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [businessType, setBusinessType] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -74,9 +92,17 @@ export default function Onboarding() {
         .insert({ user_id: user.id, role: selectedRole });
       if (roleError) throw roleError;
 
+      const profileUpdate: Database["public"]["Tables"]["profiles"]["Update"] =
+        { full_name: fullName, phone, location };
+
+      if (selectedRole === "business") {
+        profileUpdate.business_name = businessName || null;
+        profileUpdate.business_type = businessType || null;
+      }
+
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({ full_name: fullName, phone, location })
+        .update(profileUpdate)
         .eq("id", user.id);
       if (profileError) throw profileError;
 
@@ -191,6 +217,42 @@ export default function Onboarding() {
                   required
                 />
               </div>
+
+              {selectedRole === "business" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="onboard-business-name">Business Name</Label>
+                    <Input
+                      id="onboard-business-name"
+                      placeholder="e.g. Spice Garden Restaurant"
+                      value={businessName}
+                      onChange={(e) => setBusinessName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="onboard-business-type">
+                      Business Type (optional)
+                    </Label>
+                    <Select
+                      value={businessType}
+                      onValueChange={(v) => setBusinessType(v ?? "")}
+                    >
+                      <SelectTrigger id="onboard-business-type">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BUSINESS_TYPES.map((t) => (
+                          <SelectItem key={t} value={t} className="capitalize">
+                            {t.charAt(0).toUpperCase() + t.slice(1)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="onboard-phone">Phone (optional)</Label>
                 <Input

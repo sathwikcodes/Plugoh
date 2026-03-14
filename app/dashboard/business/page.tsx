@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  AlertTriangle,
   Briefcase,
   Clock,
   CheckCircle,
@@ -30,9 +31,8 @@ import type { Database } from "@/lib/supabase/types";
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 
 export default function BusinessDashboard() {
-  const { user, profile } = useAuth();
+  const { user, profile, isProfileComplete } = useAuth();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -43,7 +43,6 @@ export default function BusinessDashboard() {
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         setCampaigns(data || []);
-        setLoading(false);
       });
   }, [user]);
 
@@ -91,6 +90,22 @@ export default function BusinessDashboard() {
           </Link>
         </Button>
       </div>
+
+      {!isProfileComplete && (
+        <Card className="border-yellow-500/50 bg-yellow-500/5">
+          <CardContent className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-5 w-5 text-yellow-500 shrink-0" />
+              <p className="text-sm font-medium">
+                Complete your business profile to start booking influencers
+              </p>
+            </div>
+            <Button size="sm" asChild>
+              <Link href="/onboarding">Complete Profile →</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats */}
       <div className="grid gap-4 grid-cols-3">

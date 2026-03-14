@@ -61,7 +61,7 @@ const PACKAGE_TYPES = ["reel", "post", "story", "reel+story", "reel+post"];
 export default function InfluencerProfileView() {
   const params = useParams();
   const id = params?.id as string;
-  const { user, profile: myProfile } = useAuth();
+  const { user, profile: myProfile, isProfileComplete } = useAuth();
   const { toast } = useToast();
   const [ip, setIp] = useState<InfluencerProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -338,10 +338,29 @@ export default function InfluencerProfileView() {
           )}
 
           {/* Book CTA */}
+          {!isProfileComplete && (
+            <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/5 p-4 text-center space-y-2">
+              <p className="text-sm font-medium">
+                Complete your business profile to book influencers
+              </p>
+              <Button size="sm" variant="outline" asChild>
+                <Link href="/onboarding">Complete Profile</Link>
+              </Button>
+            </div>
+          )}
           <Dialog open={bookingOpen} onOpenChange={setBookingOpen}>
             <DialogTrigger>
-              <Button size="lg" className="w-full">
-                Book this Influencer
+              <Button
+                size="lg"
+                className="w-full"
+                disabled={!isProfileComplete}
+                onClick={(e) => {
+                  if (!isProfileComplete) e.preventDefault();
+                }}
+              >
+                {isProfileComplete
+                  ? "Book this Influencer"
+                  : "Complete profile to book"}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">

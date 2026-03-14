@@ -146,23 +146,21 @@ function useNumberCycler(
 ) {
   const [currentNumber, setCurrentNumber] = useState(0);
   const timerRef = useRef<NodeJS.Timeout>(undefined);
-  const setupTimerRef = useRef<(() => void) | undefined>(undefined);
+  const paramsRef = useRef({ interval, totalSteps });
+  useEffect(() => {
+    paramsRef.current = { interval, totalSteps };
+  }, [interval, totalSteps]);
 
   const setupTimer = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
-    timerRef.current = setTimeout(() => {
-      setCurrentNumber((prev) => (prev + 1) % totalSteps);
-      setupTimerRef.current?.();
-    }, interval);
-  }, [interval, totalSteps]);
-  useEffect(() => {
-    setupTimerRef.current = setupTimer;
-    return () => {
-      setupTimerRef.current = undefined;
+    const tick = () => {
+      setCurrentNumber((prev) => (prev + 1) % paramsRef.current.totalSteps);
+      timerRef.current = setTimeout(tick, paramsRef.current.interval);
     };
-  }, [setupTimer]);
+    timerRef.current = setTimeout(tick, paramsRef.current.interval);
+  }, []);
 
   const increment = useCallback(() => {
     setCurrentNumber((prev) => (prev + 1) % totalSteps);

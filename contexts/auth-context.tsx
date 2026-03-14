@@ -21,6 +21,7 @@ interface AuthContextType {
   profile: Database["public"]["Tables"]["profiles"]["Row"] | null;
   loading: boolean;
   needsOnboarding: boolean;
+  isProfileComplete: boolean;
   signUp: (
     email: string,
     password: string,
@@ -43,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   >(null);
   const [loading, setLoading] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [isProfileComplete, setIsProfileComplete] = useState(false);
 
   const fetchUserData = useCallback(async (userId: string) => {
     const [roleRes, profileRes] = await Promise.all([
@@ -60,7 +62,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setRole(null);
       setNeedsOnboarding(true);
     }
-    if (profileRes.data) setProfile(profileRes.data);
+    if (profileRes.data) {
+      setProfile(profileRes.data);
+      // Business profile is complete when business_name is set.
+      // Influencer completeness is handled via influencer_profiles separately.
+      const r = roleRes.data?.role;
+      setIsProfileComplete(
+        r === "business" ? !!profileRes.data.business_name : true,
+      );
+    }
   }, []);
 
   const refreshUserData = useCallback(async () => {
@@ -135,6 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRole(null);
     setProfile(null);
     setNeedsOnboarding(false);
+    setIsProfileComplete(false);
   };
 
   return (
@@ -146,6 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         loading,
         needsOnboarding,
+        isProfileComplete,
         signUp,
         signIn,
         signOut,
