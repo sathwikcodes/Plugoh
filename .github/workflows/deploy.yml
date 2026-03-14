@@ -1,4 +1,4 @@
-name: Deploy to Vercel
+name: Deploy
 
 on:
   push:
@@ -10,6 +10,7 @@ env:
 
 jobs:
   deploy:
+    name: Deploy to Vercel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,11 +19,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Install Vercel CLI
         run: npm i -g vercel@latest
 
-      - name: Pull Vercel Config
+      - name: Pull Vercel environment & config
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build
