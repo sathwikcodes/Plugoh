@@ -11,7 +11,7 @@ import { Header } from "./_components/hero-section";
 export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col items-center bg-background">
-      {/* Etheral Shadow background effect */}
+      {/* Etheral Shadow background effects */}
       <div
         className="pointer-events-none fixed inset-0 z-0"
         style={{ contain: "strict" }}
