@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import type { Database } from "@/lib/supabase/types";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
@@ -47,24 +48,30 @@ export async function POST(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
+  type CampaignInsert = Database["public"]["Tables"]["campaigns"]["Insert"] & {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    payment_status: string;
+  };
+  const insertPayload: CampaignInsert = {
+    business_id: user.id,
+    influencer_id: campaignData.influencer_id,
+    influencer_profile_id: campaignData.influencer_profile_id,
+    title: campaignData.title,
+    brief: campaignData.brief,
+    package_type: campaignData.package_type,
+    price_offered: campaignData.price_offered,
+    advance_amount: campaignData.price_offered,
+    business_contact_email: campaignData.business_contact_email,
+    business_contact_phone: campaignData.business_contact_phone,
+    status: "pending",
+    razorpay_order_id,
+    razorpay_payment_id,
+    payment_status: "paid",
+  };
   const { data: campaign, error: insertError } = await db
     .from("campaigns")
-    .insert({
-      business_id: user.id,
-      influencer_id: campaignData.influencer_id,
-      influencer_profile_id: campaignData.influencer_profile_id,
-      title: campaignData.title,
-      brief: campaignData.brief,
-      package_type: campaignData.package_type,
-      price_offered: campaignData.price_offered,
-      advance_amount: campaignData.price_offered,
-      business_contact_email: campaignData.business_contact_email,
-      business_contact_phone: campaignData.business_contact_phone,
-      status: "pending",
-      razorpay_order_id,
-      razorpay_payment_id,
-      payment_status: "paid",
-    } as Record<string, unknown>) // razorpay_* cols added via migration, not in auto-generated types
+    .insert(insertPayload)
     .select("id")
     .single();
 

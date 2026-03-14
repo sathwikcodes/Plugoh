@@ -20,6 +20,7 @@ import {
   Briefcase,
   Clock,
   CheckCircle,
+  Loader2,
   Search,
   ArrowRight,
   Megaphone,
@@ -48,6 +49,14 @@ export default function BusinessDashboard() {
   const active = campaigns.filter((c) => c.status === "accepted").length;
   const pending = campaigns.filter((c) => c.status === "pending").length;
   const completed = campaigns.filter((c) => c.status === "completed").length;
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const statusColor = (s: string) => {
     switch (s) {

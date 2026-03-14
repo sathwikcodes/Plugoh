@@ -6,6 +6,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type MouseEvent,
 } from "react";
 import Image, { type StaticImageData } from "next/image";
@@ -145,7 +146,6 @@ function useNumberCycler(
 ) {
   const [currentNumber, setCurrentNumber] = useState(0);
   const timerRef = useRef<NodeJS.Timeout>(undefined);
-
   const paramsRef = useRef({ interval, totalSteps });
   useEffect(() => {
     paramsRef.current = { interval, totalSteps };
@@ -183,25 +183,23 @@ function useNumberCycler(
 }
 
 function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const compute = () => {
-      const userAgent = navigator.userAgent;
-      const isSmall = window.matchMedia("(max-width: 768px)").matches;
-      const isMobileUserAgent = Boolean(
-        /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.exec(
-          userAgent,
-        ),
-      );
-      const isDev = process.env.NODE_ENV !== "production";
-      return isDev
-        ? isSmall || isMobileUserAgent
-        : isSmall && isMobileUserAgent;
-    };
-    const value = compute();
-    setTimeout(() => setIsMobile(value), 0);
+  const subscribe = useCallback((cb: () => void) => {
+    const mql = window.matchMedia("(max-width: 768px)");
+    mql.addEventListener("change", cb);
+    return () => mql.removeEventListener("change", cb);
   }, []);
-  return isMobile;
+  const getSnapshot = useCallback(() => {
+    const isSmall = window.matchMedia("(max-width: 768px)").matches;
+    const isMobileUserAgent = Boolean(
+      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
+        navigator.userAgent,
+      ),
+    );
+    const isDev = process.env.NODE_ENV !== "production";
+    return isDev ? isSmall || isMobileUserAgent : isSmall && isMobileUserAgent;
+  }, []);
+  const getServerSnapshot = () => false;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
 function IconCheck({ className, ...props }: React.ComponentProps<"svg">) {
@@ -285,7 +283,11 @@ function FeatureCard({
   children: React.ReactNode;
   step: number;
 }) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const isMobile = useIsMobile();
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -295,11 +297,6 @@ function FeatureCard({
     cardRef.current.style.setProperty("--x", `${clientX - left}px`);
     cardRef.current.style.setProperty("--y", `${clientY - top}px`);
   }
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
 
   return (
     <div

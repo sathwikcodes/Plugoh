@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
@@ -23,6 +23,7 @@ import {
   Clock,
   IndianRupee,
   Inbox,
+  Instagram,
   Loader2,
   Pencil,
 } from "lucide-react";
@@ -170,8 +171,10 @@ function CampaignTable({
 export default function InfluencerDashboard() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState("pending");
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get("tab") || "pending",
+  );
   const [ip, setIp] = useState<InfluencerProfile | null>(null);
   const [media, setMedia] = useState<InstagramMedia[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -202,12 +205,6 @@ export default function InfluencerDashboard() {
       setCheckingProfile(false);
     });
   }, [user]);
-
-  useEffect(() => {
-    if (!checkingProfile && !ip) {
-      router.replace("/dashboard/influencer/onboarding");
-    }
-  }, [checkingProfile, ip, router]);
 
   const updateStatus = async (id: string, status: string) => {
     const campaign = campaigns.find((c) => c.id === id);
@@ -251,7 +248,32 @@ export default function InfluencerDashboard() {
     );
   }
 
-  if (!ip) return null;
+  if (!ip) {
+    return (
+      <div className="container py-6 space-y-6 animate-fade-in">
+        <h1 className="text-2xl font-bold sm:text-3xl">
+          Welcome to ReelReach!
+        </h1>
+        <Card>
+          <CardContent className="flex flex-col items-center gap-4 py-12">
+            <Instagram className="h-10 w-10 text-primary" />
+            <p className="text-lg font-semibold">
+              Connect your Instagram to get started
+            </p>
+            <p className="text-sm text-muted-foreground text-center max-w-md">
+              Link your Instagram account to unlock your dashboard, get
+              discovered by brands, and start receiving bookings.
+            </p>
+            <Button asChild>
+              <Link href="/dashboard/influencer/onboarding">
+                Connect Instagram
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const pending = campaigns.filter((c) => c.status === "pending");
   const active = campaigns.filter((c) => c.status === "accepted");
@@ -260,6 +282,9 @@ export default function InfluencerDashboard() {
     (sum, c) => sum + (c.price_offered || 0),
     0,
   );
+
+  const handleAccept = (id: string) => updateStatus(id, "accepted");
+  const handleReject = (id: string) => updateStatus(id, "rejected");
 
   return (
     <div className="container py-6 space-y-6 animate-fade-in">
@@ -271,6 +296,39 @@ export default function InfluencerDashboard() {
           Manage your bookings and profile
         </p>
       </div>
+
+      {!ip.ig_user_id && (
+        <Card className="border-yellow-500/50 bg-yellow-500/5">
+          <CardContent className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-3">
+              <Instagram className="h-5 w-5 text-yellow-500 shrink-0" />
+              <p className="text-sm font-medium">
+                Connect Instagram to get discovered by brands
+              </p>
+            </div>
+            <Button size="sm" asChild>
+              <Link href="/dashboard/influencer/onboarding">Connect Now</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {ip.ig_user_id && (!ip.category || !ip.city || !ip.price_per_reel) && (
+        <Card className="border-primary/50 bg-primary/5">
+          <CardContent className="flex items-center justify-between p-4">
+            <p className="text-sm font-medium">
+              Complete your profile to appear in discovery
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setActiveTab("edit")}
+            >
+              Complete Profile
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Stats */}
       <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
@@ -342,8 +400,8 @@ export default function InfluencerDashboard() {
               <CampaignTable
                 items={pending}
                 showActions
-                onAccept={(id) => updateStatus(id, "accepted")}
-                onReject={(id) => updateStatus(id, "rejected")}
+                onAccept={handleAccept}
+                onReject={handleReject}
               />
             </CardContent>
           </Card>
@@ -353,8 +411,8 @@ export default function InfluencerDashboard() {
             <CardContent className="p-4">
               <CampaignTable
                 items={active}
-                onAccept={(id) => updateStatus(id, "accepted")}
-                onReject={(id) => updateStatus(id, "rejected")}
+                onAccept={handleAccept}
+                onReject={handleReject}
               />
             </CardContent>
           </Card>
@@ -364,8 +422,8 @@ export default function InfluencerDashboard() {
             <CardContent className="p-4">
               <CampaignTable
                 items={completed}
-                onAccept={(id) => updateStatus(id, "accepted")}
-                onReject={(id) => updateStatus(id, "rejected")}
+                onAccept={handleAccept}
+                onReject={handleReject}
               />
             </CardContent>
           </Card>

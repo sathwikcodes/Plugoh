@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { Bell, Check, Inbox } from "lucide-react";
@@ -74,6 +74,25 @@ export function NotificationDrawer() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
+  const now = useSyncExternalStore(
+    (cb) => {
+      const id = setInterval(cb, 60000);
+      return () => clearInterval(id);
+    },
+    () => Date.now(),
+    () => 0,
+  );
+
+  const timeAgo = (date: string, currentNow: number) => {
+    const diff = currentNow - new Date(date).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+  };
+
   const getNotificationText = (n: Notification) => {
     const data = n.data as Record<string, string> | null;
     switch (n.type) {
@@ -88,16 +107,6 @@ export function NotificationDrawer() {
       default:
         return data?.message || "You have a new notification";
     }
-  };
-
-  const timeAgo = (date: string) => {
-    const diff = new Date().getTime() - new Date(date).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "just now";
-    if (mins < 60) return `${mins}m ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return `${Math.floor(hours / 24)}d ago`;
   };
 
   if (!user) return null;
@@ -152,7 +161,7 @@ export function NotificationDrawer() {
                     {getNotificationText(n)}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {timeAgo(n.created_at)}
+                    {timeAgo(n.created_at, now)}
                   </p>
                 </button>
               ))}
