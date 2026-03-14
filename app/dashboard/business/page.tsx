@@ -31,7 +31,7 @@ import type { Database } from "@/lib/supabase/types";
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 
 export default function BusinessDashboard() {
-  const { user, profile, isProfileComplete } = useAuth();
+  const { user, profile, isProfileComplete, loading } = useAuth();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 
   useEffect(() => {
