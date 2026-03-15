@@ -4,15 +4,51 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Briefcase, Sparkles, Instagram } from "lucide-react";
+import { Loader2, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { useAuthTheme } from "@/components/auth/theme-context";
+import { cn } from "@/lib/utils";
+import PhoneInput from "@/components/ui/phone-input";
 import type { Database } from "@/lib/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
+
+const ROLE_TABS = [
+  {
+    role: "business" as AppRole,
+    label: "Brand Owner",
+    description: "Find and collaborate with top creators for your brand",
+    videoUrl:
+      "https://a0.muscache.com/videos/search-bar-icons/webm/house-selected.webm",
+    initialRenderUrl:
+      "https://a0.muscache.com/videos/search-bar-icons/webm/house-twirl-selected.webm",
+  },
+  {
+    role: "influencer" as AppRole,
+    label: "Influencer",
+    description: "Showcase your content and land brand deals",
+    videoUrl:
+      "https://a0.muscache.com/videos/search-bar-icons/webm/consierge-selected.webm",
+    initialRenderUrl:
+      "https://a0.muscache.com/videos/search-bar-icons/webm/consierge-twirl.webm",
+  },
+];
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" as const },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07 } },
+};
 
 export default function Onboarding() {
   const {
@@ -24,12 +60,25 @@ export default function Onboarding() {
   } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const { setTheme } = useAuthTheme();
 
-  const [selectedRole, setSelectedRole] = useState<AppRole>("business");
+  const [selectedRole, setSelectedRole] = useState<AppRole | null>(
+    "influencer",
+  );
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const instagramRedirectInProgress = useRef(false);
+  const videoRefs = useRef<HTMLVideoElement[]>([]);
+  const [tabClicked, setTabClicked] = useState(false);
+
+  useEffect(() => {
+    videoRefs.current = videoRefs.current.slice(0, ROLE_TABS.length);
+  }, []);
+
+  useEffect(() => {
+    setTheme("influencer");
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (profile?.full_name) setFullName(profile.full_name);
@@ -50,15 +99,34 @@ export default function Onboarding() {
 
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
+  const handleRoleSelect = (r: AppRole, index: number) => {
+    setTabClicked(true);
+    setSelectedRole(r);
+    setTheme(r === "influencer" ? "influencer" : "brand");
+
+    videoRefs.current.forEach((video) => {
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+      }
+    });
+
+    const videoElement = videoRefs.current[index];
+    if (videoElement) {
+      videoElement.currentTime = 0;
+      videoElement.play();
+    }
+  };
+
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !selectedRole) return;
     setLoading(true);
 
     try {
@@ -115,119 +183,241 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left panel — hidden on mobile */}
-      <div className="hidden lg:flex lg:w-1/2 bg-muted" />
+    <AuthShell>
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        animate="visible"
+        className="space-y-8"
+      >
+        <motion.div variants={fadeUp} className="lg:hidden mb-2 text-center">
+          <h2
+            className="text-xl font-bold tracking-tight"
+            style={{ color: "var(--auth-text)" }}
+          >
+            ReelReach
+          </h2>
+        </motion.div>
 
-      {/* Right panel */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-8">
-        <div className="w-full max-w-md animate-fade-in space-y-6">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold">Welcome to ReelReach!</h1>
-            <p className="text-sm text-muted-foreground">
-              Tell us who you are to get started.
-            </p>
+        <motion.div variants={fadeUp} className="space-y-2 text-center">
+          <h1
+            className="text-3xl font-semibold tracking-tight"
+            style={{ color: "var(--auth-text)" }}
+          >
+            Welcome to ReelReach
+          </h1>
+          <p
+            className="text-sm"
+            style={{ color: "var(--auth-text-secondary)" }}
+          >
+            Tell us who you are to get started.
+          </p>
+        </motion.div>
+
+        <motion.div variants={fadeUp} className="space-y-4">
+          <div className="flex justify-center gap-6 sm:gap-10">
+            {ROLE_TABS.map((tab, index) => (
+              <motion.button
+                key={tab.role}
+                type="button"
+                whileTap="tapped"
+                whileHover="hovered"
+                onClick={() => handleRoleSelect(tab.role, index)}
+                className="relative flex items-center gap-2 cursor-pointer outline-none"
+                style={{ WebkitTapHighlightColor: "transparent" }}
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{
+                    scale: 1,
+                    transition: {
+                      type: "spring",
+                      bounce: 0.2,
+                      damping: 7,
+                      duration: 0.4,
+                      delay: index * 0.1,
+                    },
+                  }}
+                  variants={{
+                    default: { scale: 1 },
+                    ...(selectedRole !== tab.role && {
+                      hovered: { scale: 1.1 },
+                    }),
+                    ...(selectedRole !== tab.role && {
+                      tapped: {
+                        scale: 0.8,
+                        transition: {
+                          type: "spring",
+                          bounce: 0.2,
+                          damping: 7,
+                          duration: 0.4,
+                        },
+                      },
+                    }),
+                  }}
+                  transition={{ type: "spring" }}
+                  className="relative size-12 sm:size-16"
+                >
+                  <video
+                    key={`initial-${tab.role}`}
+                    ref={(el) => {
+                      if (el) videoRefs.current[index] = el;
+                    }}
+                    muted
+                    playsInline
+                    autoPlay
+                    className={cn(
+                      "absolute inset-0",
+                      tabClicked ? "opacity-0" : "opacity-100",
+                    )}
+                  >
+                    <source src={tab.initialRenderUrl} type="video/webm" />
+                  </video>
+                  <video
+                    key={`clicked-${tab.role}`}
+                    ref={(el) => {
+                      if (el) videoRefs.current[index] = el;
+                    }}
+                    muted
+                    playsInline
+                    autoPlay
+                    className={cn(
+                      "absolute inset-0",
+                      tabClicked ? "opacity-100" : "opacity-0",
+                    )}
+                  >
+                    <source src={tab.videoUrl} type="video/webm" />
+                  </video>
+                </motion.div>
+                <span
+                  className="text-sm sm:text-base tracking-wide transition-all duration-200"
+                  style={{
+                    color:
+                      selectedRole === tab.role
+                        ? "var(--auth-text)"
+                        : "var(--auth-text-tertiary)",
+                    fontWeight: selectedRole === tab.role ? 500 : 400,
+                  }}
+                >
+                  {tab.label}
+                </span>
+              </motion.button>
+            ))}
           </div>
 
-          <Tabs
-            defaultValue="business"
-            onValueChange={(v) => setSelectedRole(v as AppRole)}
-          >
-            <TabsList className="w-full h-12 rounded-xl">
-              <TabsTrigger
-                value="business"
-                className="flex-1 h-full rounded-lg gap-2 text-sm font-medium"
+          <AnimatePresence mode="wait">
+            {selectedRole && (
+              <motion.p
+                key={selectedRole}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="text-[13px] leading-relaxed text-center"
+                style={{ color: "var(--auth-text-secondary)" }}
               >
-                <Briefcase className="h-4 w-4" />
-                Business Owner
-              </TabsTrigger>
-              <TabsTrigger
-                value="influencer"
-                className="flex-1 h-full rounded-lg gap-2 text-sm font-medium"
+                {ROLE_TABS.find((t) => t.role === selectedRole)?.description}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <AnimatePresence>
+          {selectedRole && (
+            <motion.form
+              key="profile-form"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onSubmit={handleSubmit}
+              className="space-y-4 overflow-hidden"
+            >
+              <div className="space-y-2">
+                <label
+                  htmlFor="ob-name"
+                  className="text-xs font-medium uppercase tracking-wider"
+                  style={{ color: "var(--auth-text-tertiary)" }}
+                >
+                  Full Name
+                </label>
+                <input
+                  id="ob-name"
+                  placeholder="Your full name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                  className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
+                  style={{
+                    color: "var(--auth-text)",
+                    background: "var(--auth-card)",
+                    border: "1px solid var(--auth-card-border)",
+                    boxShadow: "0 2px 8px var(--auth-shadow)",
+                  }}
+                  onFocus={(e) =>
+                    (e.currentTarget.style.borderColor = "var(--auth-accent)")
+                  }
+                  onBlur={(e) =>
+                    (e.currentTarget.style.borderColor =
+                      "var(--auth-card-border)")
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="ob-phone"
+                  className="text-xs font-medium uppercase tracking-wider"
+                  style={{ color: "var(--auth-text-tertiary)" }}
+                >
+                  Phone Number
+                </label>
+                <PhoneInput
+                  id="ob-phone"
+                  placeholder="98765 43210"
+                  value={phone}
+                  onChange={setPhone}
+                  required
+                  className="w-full h-14 px-4 rounded-2xl text-[15px] transition-all duration-200"
+                  style={{
+                    color: "var(--auth-text)",
+                    background: "var(--auth-card)",
+                    border: "1px solid var(--auth-card-border)",
+                    boxShadow: "0 2px 8px var(--auth-shadow)",
+                  }}
+                  onFocus={(e) =>
+                    (e.currentTarget.style.borderColor = "var(--auth-accent)")
+                  }
+                  onBlur={(e) =>
+                    (e.currentTarget.style.borderColor =
+                      "var(--auth-card-border)")
+                  }
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                style={{
+                  background: "var(--auth-gradient)",
+                  color: "var(--auth-accent-fg)",
+                  boxShadow: "0 4px 20px var(--auth-glow)",
+                }}
               >
-                <Sparkles className="h-4 w-4" />
-                Influencer
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Business Owner form */}
-            <TabsContent value="business" className="mt-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="ob-name">Full Name</Label>
-                  <Input
-                    id="ob-name"
-                    placeholder="Your full name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                    className="h-11 rounded-xl"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="ob-phone">Phone Number</Label>
-                  <Input
-                    id="ob-phone"
-                    placeholder="+91 98765 43210"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                    className="h-11 rounded-xl"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full h-12 rounded-xl text-base font-semibold"
-                  disabled={loading}
-                >
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Get Started
-                </Button>
-              </form>
-            </TabsContent>
-
-            {/* Influencer form */}
-            <TabsContent value="influencer" className="mt-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="inf-name">Full Name</Label>
-                  <Input
-                    id="inf-name"
-                    placeholder="Your full name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                    className="h-11 rounded-xl"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="inf-phone">Phone Number</Label>
-                  <Input
-                    id="inf-phone"
-                    placeholder="+91 98765 43210"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                    className="h-11 rounded-xl"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full h-12 rounded-xl text-base font-semibold bg-linear-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90 transition-opacity"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Instagram className="mr-2 h-5 w-5" />
-                  )}
-                  Connect with Instagram
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
-    </div>
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : selectedRole === "influencer" ? (
+                  <Instagram className="h-5 w-5" />
+                ) : null}
+                {selectedRole === "influencer"
+                  ? "Connect with Instagram"
+                  : "Get Started"}
+              </button>
+            </motion.form>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </AuthShell>
   );
 }

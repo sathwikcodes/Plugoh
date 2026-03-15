@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -72,7 +73,8 @@ export function Header() {
         </div>
 
         {/* Right — Button */}
-        <div className="hidden md:flex items-center justify-end">
+        <div className="hidden md:flex items-center justify-end gap-2">
+          <ThemeToggle />
           <Link href="/login">
             <ShimmerButton className="px-6 py-2.5 text-sm font-semibold gap-2">
               Get Started
@@ -83,6 +85,7 @@ export function Header() {
 
         {/* Mobile toggle (spans into right col) */}
         <div className="col-span-2 flex items-center justify-end gap-2 md:hidden">
+          <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="inline-flex items-center justify-center size-10 rounded-full border border-white/[0.1] text-foreground hover:bg-white/[0.06]"

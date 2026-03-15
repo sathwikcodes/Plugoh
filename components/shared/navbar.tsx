@@ -13,13 +13,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { Menu, LogOut, User, LayoutDashboard, X } from "lucide-react";
+import {
+  Menu,
+  LogOut,
+  User,
+  LayoutDashboard,
+  X,
+  Sun,
+  Moon,
+} from "lucide-react";
 import { NotificationDrawer } from "@/components/shared/notification-drawer";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { useTheme } from "next-themes";
 
 export function Navbar() {
   const { user, profile, role, signOut } = useAuth();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const dashboardPath =
     role === "influencer" ? "/dashboard/influencer" : "/dashboard/business";
@@ -58,6 +69,7 @@ export function Navbar() {
                   <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
                 </Link>
               </Button>
+              <ThemeToggle />
               <NotificationDrawer />
               <DropdownMenu>
                 <DropdownMenuTrigger>
@@ -148,6 +160,20 @@ export function Navbar() {
                       <Link href={dashboardPath}>
                         <LayoutDashboard className="mr-3 h-5 w-5" /> Dashboard
                       </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start h-12 text-base"
+                      onClick={() =>
+                        setTheme(theme === "dark" ? "light" : "dark")
+                      }
+                    >
+                      {theme === "dark" ? (
+                        <Sun className="mr-3 h-5 w-5" />
+                      ) : (
+                        <Moon className="mr-3 h-5 w-5" />
+                      )}
+                      {theme === "dark" ? "Light Mode" : "Dark Mode"}
                     </Button>
                     <Button
                       variant="ghost"
