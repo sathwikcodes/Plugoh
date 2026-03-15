@@ -94,12 +94,16 @@ export type Database = {
           ig_username: string | null;
           instagram_handle: string | null;
           instagram_url: string | null;
+          content_types: string[] | null;
           is_active: boolean | null;
           languages: string[] | null;
+          portfolio_media_ids: string[] | null;
+          previous_brands: string[] | null;
           price_per_post: number | null;
           price_per_reel: number | null;
           price_per_story: number | null;
           token_expires_at: string | null;
+          turnaround_time: string | null;
           user_id: string;
         };
         Insert: {
@@ -122,12 +126,16 @@ export type Database = {
           ig_username?: string | null;
           instagram_handle?: string | null;
           instagram_url?: string | null;
+          content_types?: string[] | null;
           is_active?: boolean | null;
           languages?: string[] | null;
+          portfolio_media_ids?: string[] | null;
+          previous_brands?: string[] | null;
           price_per_post?: number | null;
           price_per_reel?: number | null;
           price_per_story?: number | null;
           token_expires_at?: string | null;
+          turnaround_time?: string | null;
           user_id: string;
         };
         Update: {
@@ -150,12 +158,16 @@ export type Database = {
           ig_username?: string | null;
           instagram_handle?: string | null;
           instagram_url?: string | null;
+          content_types?: string[] | null;
           is_active?: boolean | null;
           languages?: string[] | null;
+          portfolio_media_ids?: string[] | null;
+          previous_brands?: string[] | null;
           price_per_post?: number | null;
           price_per_reel?: number | null;
           price_per_story?: number | null;
           token_expires_at?: string | null;
+          turnaround_time?: string | null;
           user_id?: string;
         };
         Relationships: [];

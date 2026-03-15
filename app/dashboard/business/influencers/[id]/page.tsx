@@ -49,6 +49,8 @@ import {
   MapPin,
   Globe,
   Loader2,
+  Clock,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/lib/supabase/types";
@@ -64,6 +66,9 @@ export default function InfluencerProfileView() {
   const { user, profile: myProfile, isProfileComplete } = useAuth();
   const { toast } = useToast();
   const [ip, setIp] = useState<InfluencerProfile | null>(null);
+  const [portfolioMedia, setPortfolioMedia] = useState<
+    Database["public"]["Tables"]["instagram_media"]["Row"][]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -82,10 +87,18 @@ export default function InfluencerProfileView() {
       .select("*")
       .eq("id", id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         setIp(data);
         if (data?.price_per_reel)
           setPriceOffered(data.price_per_reel.toString());
+        if (data?.portfolio_media_ids && data.portfolio_media_ids.length > 0) {
+          const { data: mediaData } = await supabase
+            .from("instagram_media")
+            .select("*")
+            .eq("user_id", data.user_id)
+            .in("ig_media_id", data.portfolio_media_ids);
+          setPortfolioMedia(mediaData || []);
+        }
         setLoading(false);
       });
   }, [id]);
@@ -327,6 +340,31 @@ export default function InfluencerProfileView() {
             </Table>
           </div>
 
+          {/* Content Types */}
+          {ip.content_types && ip.content_types.length > 0 && (
+            <div>
+              <h2 className="font-semibold mb-2">Content Types</h2>
+              <div className="flex flex-wrap gap-1.5">
+                {ip.content_types.map((ct) => (
+                  <Badge key={ct} variant="outline">
+                    {ct}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Turnaround Time */}
+          {ip.turnaround_time && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              Typical delivery:{" "}
+              {ip.turnaround_time
+                .replace(/_/g, " ")
+                .replace(/(\d)(\d)/, "$1-$2")}
+            </div>
+          )}
+
           {/* Bio */}
           {ip.bio && (
             <div>
@@ -334,6 +372,50 @@ export default function InfluencerProfileView() {
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {ip.bio}
               </p>
+            </div>
+          )}
+
+          {/* Portfolio Highlights */}
+          {portfolioMedia.length > 0 && (
+            <div>
+              <h2 className="font-semibold mb-2">Portfolio Highlights</h2>
+              <div className="grid grid-cols-3 gap-2">
+                {portfolioMedia.map((item) => {
+                  const imgSrc = item.thumbnail_url || item.media_url;
+                  return (
+                    <div
+                      key={item.ig_media_id}
+                      className="aspect-square rounded-lg overflow-hidden bg-secondary"
+                    >
+                      {imgSrc ? (
+                        <img
+                          src={imgSrc}
+                          alt={item.caption?.slice(0, 50) || "Portfolio"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Previous Brands */}
+          {ip.previous_brands && ip.previous_brands.length > 0 && (
+            <div>
+              <h2 className="font-semibold mb-2">Worked With</h2>
+              <div className="flex flex-wrap gap-1.5">
+                {ip.previous_brands.map((brand) => (
+                  <Badge key={brand} variant="secondary">
+                    {brand}
+                  </Badge>
+                ))}
+              </div>
             </div>
           )}
 

@@ -91,8 +91,16 @@ export function Navbar() {
                   >
                     {profile?.email}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push(dashboardPath)}>
-                    <User className="mr-2 h-4 w-4" /> Profile
+                  <DropdownMenuItem
+                    onClick={() =>
+                      router.push(
+                        role === "influencer"
+                          ? "/dashboard/influencer/profile"
+                          : dashboardPath,
+                      )
+                    }
+                  >
+                    <User className="mr-2 h-4 w-4" /> My Profile
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" /> Logout
@@ -161,6 +169,18 @@ export function Navbar() {
                         <LayoutDashboard className="mr-3 h-5 w-5" /> Dashboard
                       </Link>
                     </Button>
+                    {role === "influencer" && (
+                      <Button
+                        variant="ghost"
+                        className="justify-start h-12 text-base"
+                        asChild
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <Link href="/dashboard/influencer/profile">
+                          <User className="mr-3 h-5 w-5" /> My Profile
+                        </Link>
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       className="justify-start h-12 text-base"

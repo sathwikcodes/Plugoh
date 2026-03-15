@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
@@ -28,7 +28,8 @@ export default function Login() {
     user,
     role,
     needsOnboarding,
-    signInWithMagicLink,
+    signInWithOtp,
+    verifyOtp,
     loading: authLoading,
   } = useAuth();
   const { toast } = useToast();
@@ -37,6 +38,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [verifying, setVerifying] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [canResend, setCanResend] = useState(false);
 
   useEffect(() => {
     if (!authLoading && user && needsOnboarding) {
@@ -56,22 +61,113 @@ export default function Login() {
     );
   }
 
-  const handleMagicLink = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+  // OTP countdown timer
+  useEffect(() => {
+    if (!sent || timeLeft <= 0) {
+      if (timeLeft <= 0) setCanResend(true);
+      return;
+    }
+    const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [sent, timeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const s = (seconds % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
+  const handleOtpChange = useCallback((value: string, index: number) => {
+    if (/^\d?$/.test(value)) {
+      setOtp((prev) => {
+        const updated = [...prev];
+        updated[index] = value;
+        return updated;
+      });
+      if (value && index < 5) {
+        document.getElementById(`otp-${index + 1}`)?.focus();
+      }
+    }
+  }, []);
+
+  const handleOtpKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+      if (e.key === "Backspace" && !otp[index] && index > 0) {
+        document.getElementById(`otp-${index - 1}`)?.focus();
+      }
+    },
+    [otp],
+  );
+
+  const handleSendOtp = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signInWithMagicLink(email);
+      await signInWithOtp(email);
       setSent(true);
+      setTimeLeft(60);
+      setCanResend(false);
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Failed to send link";
+        err instanceof Error ? err.message : "Failed to send code";
       toast({
-        title: "Failed to send magic link",
+        title: "Failed to send verification code",
         description: message,
         variant: "destructive",
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    const code = otp.join("");
+    if (code.length !== 6) {
+      toast({
+        title: "Incomplete code",
+        description: "Please enter the complete 6-digit code.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setVerifying(true);
+    try {
+      await verifyOtp(email, code);
+      // Session is established — onAuthStateChange will handle redirect
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Invalid or expired code";
+      toast({
+        title: "Verification failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      await signInWithOtp(email);
+      setOtp(["", "", "", "", "", ""]);
+      setTimeLeft(60);
+      setCanResend(false);
+      document.getElementById("otp-0")?.focus();
+      toast({
+        title: "Code resent",
+        description: "A new code has been sent to your email.",
+      });
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to resend code";
+      toast({
+        title: "Failed to resend code",
+        description: message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -110,7 +206,7 @@ export default function Login() {
       <AnimatePresence mode="wait">
         {sent ? (
           <motion.div
-            key="check-email"
+            key="otp-verify"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -149,13 +245,13 @@ export default function Login() {
                 className="text-2xl font-semibold tracking-tight"
                 style={{ color: "var(--auth-text)" }}
               >
-                Check your email
+                OTP Verification
               </h1>
               <p
                 className="text-sm leading-relaxed"
                 style={{ color: "var(--auth-text-secondary)" }}
               >
-                We sent a sign-in link to
+                Enter the 6-digit code sent to
               </p>
               <span
                 className="inline-block px-4 py-1.5 rounded-full text-sm font-medium"
@@ -170,11 +266,90 @@ export default function Login() {
               </span>
             </div>
 
+            {/* OTP Inputs */}
+            <div className="flex justify-center gap-3">
+              {otp.map((digit, idx) => (
+                <input
+                  key={idx}
+                  id={`otp-${idx}`}
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  value={digit}
+                  onChange={(e) => handleOtpChange(e.target.value, idx)}
+                  onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                  maxLength={1}
+                  className="w-12 h-14 text-center text-lg font-semibold rounded-xl outline-none transition-all duration-200"
+                  style={{
+                    color: "var(--auth-text)",
+                    background: "var(--auth-card)",
+                    border: "1px solid var(--auth-card-border)",
+                    boxShadow: "0 2px 8px var(--auth-shadow)",
+                  }}
+                  onFocus={(e) =>
+                    (e.currentTarget.style.borderColor = "var(--auth-accent)")
+                  }
+                  onBlur={(e) =>
+                    (e.currentTarget.style.borderColor =
+                      "var(--auth-card-border)")
+                  }
+                />
+              ))}
+            </div>
+
+            {/* Timer */}
+            {!canResend && (
+              <p
+                className="text-xs"
+                style={{ color: "var(--auth-text-tertiary)" }}
+              >
+                Resend code in <strong>{formatTime(timeLeft)}</strong>
+              </p>
+            )}
+
+            {/* Verify Button */}
+            <button
+              onClick={handleVerifyOtp}
+              disabled={verifying}
+              className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              style={{
+                background: "var(--auth-gradient)",
+                color: "var(--auth-accent-fg)",
+                boxShadow: "0 4px 20px var(--auth-glow)",
+              }}
+            >
+              {verifying && <Loader2 className="h-4 w-4 animate-spin" />}
+              Verify OTP
+            </button>
+
+            {/* Resend Button */}
+            <button
+              onClick={handleResend}
+              disabled={!canResend}
+              className="w-full h-12 rounded-2xl text-[15px] font-medium transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-40"
+              style={{
+                color: "var(--auth-text)",
+                background: "var(--auth-card)",
+                border: "1px solid var(--auth-card-border)",
+              }}
+            >
+              {canResend ? "Send Again" : "Resend OTP"}
+              {!canResend && (
+                <span
+                  className="text-xs"
+                  style={{ color: "var(--auth-text-tertiary)" }}
+                >
+                  {formatTime(timeLeft)}
+                </span>
+              )}
+            </button>
+
             <button
               className="inline-flex items-center gap-2 text-sm transition-colors mx-auto"
               style={{ color: "var(--auth-text-secondary)" }}
               onClick={() => {
                 setSent(false);
+                setOtp(["", "", "", "", "", ""]);
                 setEmail("");
               }}
             >
@@ -217,7 +392,7 @@ export default function Login() {
 
             <motion.form
               variants={fadeUp}
-              onSubmit={handleMagicLink}
+              onSubmit={handleSendOtp}
               className="space-y-4"
             >
               <div className="space-y-2">
@@ -254,7 +429,7 @@ export default function Login() {
                   className="text-xs pl-1"
                   style={{ color: "var(--auth-text-tertiary)" }}
                 >
-                  We&apos;ll send you a magic link to sign in.
+                  We&apos;ll send you a verification code to sign in.
                 </p>
               </div>
               <button

@@ -1,22 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   CheckCircle,
   X,
@@ -25,160 +14,89 @@ import {
   Inbox,
   Instagram,
   Loader2,
-  Pencil,
+  ArrowRight,
+  Briefcase,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { CampaignCards } from "@/components/shared/campaign-cards";
-import { EditProfileForm } from "./_components/edit-profile-form";
-import { InfluencerProfileOverview } from "./_components/influencer-profile-overview";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import type { Database } from "@/lib/supabase/types";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
-type InstagramMedia = Database["public"]["Tables"]["instagram_media"]["Row"];
 
-function statusColor(s: string) {
-  switch (s) {
-    case "accepted":
-      return "bg-success/10 text-success border-success/20";
-    case "pending":
-      return "bg-warning/10 text-warning border-warning/20";
-    case "rejected":
-      return "bg-destructive/10 text-destructive border-destructive/20";
-    case "completed":
-      return "bg-primary/10 text-primary border-primary/20";
-    default:
-      return "bg-muted text-muted-foreground";
-  }
-}
+const FILTERS = ["all", "pending", "accepted", "completed"] as const;
+type Filter = (typeof FILTERS)[number];
 
-function EmptyBookings() {
-  return (
-    <div className="flex flex-col items-center gap-4 py-12 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-        <Inbox className="h-7 w-7 text-primary" />
-      </div>
-      <div>
-        <p className="font-semibold text-foreground">No booking requests yet</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          Complete your profile to get discovered by businesses
-        </p>
-      </div>
-    </div>
-  );
-}
+const filterLabels: Record<Filter, string> = {
+  all: "All",
+  pending: "Pending",
+  accepted: "Active",
+  completed: "Done",
+};
 
-function CampaignTable({
-  items,
-  showActions,
-  onAccept,
-  onReject,
-}: {
-  items: Campaign[];
-  showActions?: boolean;
-  onAccept: (id: string) => void;
-  onReject: (id: string) => void;
-}) {
-  if (items.length === 0) return <EmptyBookings />;
-  return (
-    <>
-      <CampaignCards
-        items={items}
-        showActions={showActions}
-        onAccept={onAccept}
-        onReject={onReject}
-        role="influencer"
-      />
-      <div className="hidden md:block overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Package</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Status</TableHead>
-              {showActions && <TableHead>Actions</TableHead>}
-              {!showActions && items[0]?.status === "accepted" && (
-                <TableHead>Contact</TableHead>
-              )}
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.map((c) => (
-              <TableRow key={c.id}>
-                <TableCell className="font-medium">
-                  {c.title || "Untitled"}
-                </TableCell>
-                <TableCell className="capitalize">
-                  {c.package_type || "—"}
-                </TableCell>
-                <TableCell>
-                  ₹{c.price_offered?.toLocaleString() || "—"}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={statusColor(c.status)}>
-                    {c.status}
-                  </Badge>
-                </TableCell>
-                {showActions && (
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="default"
-                        onClick={() => onAccept(c.id)}
-                      >
-                        <CheckCircle className="mr-1 h-3 w-3" /> Accept
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onReject(c.id)}
-                      >
-                        <X className="mr-1 h-3 w-3" /> Reject
-                      </Button>
-                    </div>
-                  </TableCell>
-                )}
-                {!showActions && c.status === "accepted" && (
-                  <TableCell>
-                    <div className="text-xs space-y-0.5">
-                      <p>{c.business_contact_email}</p>
-                      {c.business_contact_phone && (
-                        <p>{c.business_contact_phone}</p>
-                      )}
-                    </div>
-                  </TableCell>
-                )}
-                <TableCell>
-                  <Button size="sm" variant="ghost" asChild>
-                    <Link href={`/dashboard/influencer/campaigns/${c.id}`}>
-                      Details
-                    </Link>
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </>
-  );
+const statusBorderColor: Record<string, string> = {
+  pending: "border-l-yellow-500",
+  accepted: "border-l-green-500",
+  completed: "border-l-primary",
+  rejected: "border-l-red-500",
+};
+
+const GRADIENT_COLORS = [
+  "#0A0A0A",
+  "#dd2a7b",
+  "#8134af",
+  "#f58529",
+  "#515bd4",
+  "#dd2a7b",
+  "#0A0A0A",
+];
+const GRADIENT_STOPS = [20, 40, 55, 65, 75, 85, 100];
+const GRADIENT_STYLE = { opacity: 0.08 } as const;
+
+const FILTER_PILL_STYLE = {
+  background: "linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4)",
+} as const;
+const FILTER_PILL_TRANSITION = {
+  type: "spring" as const,
+  bounce: 0.2,
+  duration: 0.4,
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" as const },
+  },
+};
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
 }
 
 export default function InfluencerDashboard() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
-  const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState(
-    searchParams.get("tab") || "pending",
-  );
   const [ip, setIp] = useState<InfluencerProfile | null>(null);
-  const [media, setMedia] = useState<InstagramMedia[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [checkingProfile, setCheckingProfile] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<Filter>("all");
 
   useEffect(() => {
     if (!user) return;
@@ -193,16 +111,10 @@ export default function InfluencerDashboard() {
         .select("*")
         .eq("influencer_id", user.id)
         .order("created_at", { ascending: false }),
-      supabase
-        .from("instagram_media")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("timestamp", { ascending: false }),
-    ]).then(([ipRes, campRes, mediaRes]) => {
+    ]).then(([ipRes, campRes]) => {
       setIp(ipRes.data);
       setCampaigns(campRes.data || []);
-      setMedia(mediaRes.data || []);
-      setCheckingProfile(false);
+      setLoading(false);
     });
   }, [user]);
 
@@ -240,7 +152,7 @@ export default function InfluencerDashboard() {
     }
   };
 
-  if (checkingProfile) {
+  if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -248,29 +160,23 @@ export default function InfluencerDashboard() {
     );
   }
 
+  // No influencer profile yet — show connect Instagram
   if (!ip) {
     return (
-      <div className="container py-6 space-y-6 animate-fade-in">
-        <h1 className="text-2xl font-bold sm:text-3xl">
-          Welcome to ReelReach!
-        </h1>
-        <Card>
-          <CardContent className="flex flex-col items-center gap-4 py-12">
-            <Instagram className="h-10 w-10 text-primary" />
-            <p className="text-lg font-semibold">
-              Connect your Instagram to get started
-            </p>
-            <p className="text-sm text-muted-foreground text-center max-w-md">
-              Link your Instagram account to unlock your dashboard, get
-              discovered by brands, and start receiving bookings.
-            </p>
-            <Button asChild>
-              <Link href="/dashboard/influencer/onboarding">
-                Connect Instagram
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="container max-w-2xl py-12 space-y-6">
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/60 backdrop-blur-md p-8 text-center space-y-4">
+          <Instagram className="mx-auto h-12 w-12 text-pink-500" />
+          <h1 className="text-2xl font-bold">Welcome to ReelReach!</h1>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            Connect your Instagram to unlock your dashboard, get discovered by
+            brands, and start earning.
+          </p>
+          <Button asChild size="lg" className="rounded-xl">
+            <Link href="/dashboard/influencer/onboarding">
+              Connect Instagram
+            </Link>
+          </Button>
+        </div>
       </div>
     );
   }
@@ -283,253 +189,359 @@ export default function InfluencerDashboard() {
     0,
   );
 
-  const handleAccept = (id: string) => updateStatus(id, "accepted");
-  const handleReject = (id: string) => updateStatus(id, "rejected");
+  const filtered =
+    filter === "all"
+      ? campaigns.filter((c) => c.status !== "rejected")
+      : campaigns.filter((c) => c.status === filter);
 
   return (
-    <div className="container py-6 space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">
-          Hey, {ip.display_name || profile?.full_name || "Creator"} ✨
-        </h1>
-        <p className="text-muted-foreground">
-          Manage your bookings and profile
-        </p>
+    <div className="relative min-h-[calc(100vh-4rem)]">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <AnimatedGradientBackground
+          Breathing
+          gradientColors={GRADIENT_COLORS}
+          gradientStops={GRADIENT_STOPS}
+          startingGap={180}
+          breathingRange={8}
+          animationSpeed={0.015}
+          containerStyle={GRADIENT_STYLE}
+        />
       </div>
 
-      {!ip.ig_user_id && (
-        <Card className="border-yellow-500/50 bg-yellow-500/5">
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <Instagram className="h-5 w-5 text-yellow-500 shrink-0" />
-              <p className="text-sm font-medium">
-                Connect Instagram to get discovered by brands
-              </p>
-            </div>
-            <Button size="sm" asChild>
-              <Link href="/dashboard/influencer/onboarding">Connect Now</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      <div className="relative z-10 container max-w-3xl py-6 space-y-6">
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          animate="visible"
+          className="space-y-6"
+        >
+          {/* Profile Incomplete Banner */}
+          {!ip.is_active && (
+            <motion.div variants={fadeUp}>
+              <div className="relative overflow-hidden rounded-2xl border border-pink-500/20 bg-gradient-to-r from-pink-500/5 via-purple-500/5 to-blue-500/5 backdrop-blur-sm p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-purple-600">
+                      <Instagram className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">
+                        Your profile isn&apos;t visible to brands yet
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Complete your profile to start receiving bookings
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="shrink-0 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:brightness-110 border-0"
+                    asChild
+                  >
+                    <Link href="/dashboard/influencer/complete-profile">
+                      Complete Profile
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-      {ip.ig_user_id && (!ip.category || !ip.city || !ip.price_per_reel) && (
-        <Card className="border-primary/50 bg-primary/5">
-          <CardContent className="flex items-center justify-between p-4">
-            <p className="text-sm font-medium">
-              Complete your profile to appear in discovery
+          {/* Hero Header */}
+          <motion.div variants={fadeUp}>
+            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+              Hey, {ip.display_name || profile?.full_name || "Creator"}{" "}
+              <span className="inline-block animate-[float_3s_ease-in-out_infinite]">
+                ✨
+              </span>
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Your bookings and earnings at a glance
             </p>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setActiveTab("edit")}
-            >
-              Complete Profile
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+          </motion.div>
 
-      {/* Quick Stats */}
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
-        <Card>
-          <CardContent className="flex items-center gap-3 p-4">
-            <Clock className="h-5 w-5 text-warning shrink-0" />
-            <div>
-              <p className="text-lg font-bold">{pending.length}</p>
-              <p className="text-xs text-muted-foreground">Pending</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 p-4">
-            <CheckCircle className="h-5 w-5 text-success shrink-0" />
-            <div>
-              <p className="text-lg font-bold">{active.length}</p>
-              <p className="text-xs text-muted-foreground">Active</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 p-4">
-            <CheckCircle className="h-5 w-5 text-primary shrink-0" />
-            <div>
-              <p className="text-lg font-bold">{completed.length}</p>
-              <p className="text-xs text-muted-foreground">Completed</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 p-4">
-            <IndianRupee className="h-5 w-5 text-accent-foreground shrink-0" />
-            <div>
-              <p className="text-lg font-bold">
+          {/* Stat Cards */}
+          <motion.div variants={fadeUp} className="grid gap-3 grid-cols-3">
+            {/* Earnings */}
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 mb-3">
+                <IndianRupee className="h-4 w-4 text-green-400" />
+              </div>
+              <p className="text-2xl font-extrabold tracking-tight">
                 ₹{totalEarnings.toLocaleString()}
               </p>
-              <p className="text-xs text-muted-foreground">Earnings</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Total Earned
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full overflow-x-auto flex">
-          <TabsTrigger value="pending" className="flex-1 min-w-0">
-            Pending ({pending.length})
-          </TabsTrigger>
-          <TabsTrigger value="active" className="flex-1 min-w-0">
-            Active ({active.length})
-          </TabsTrigger>
-          <TabsTrigger value="completed" className="flex-1 min-w-0">
-            Done ({completed.length})
-          </TabsTrigger>
-          <TabsTrigger value="earnings" className="flex-1 min-w-0">
-            Earnings
-          </TabsTrigger>
-          <TabsTrigger value="profile" className="flex-1 min-w-0">
-            Profile
-          </TabsTrigger>
-          <TabsTrigger value="edit" className="flex-1 min-w-0">
-            Edit
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="pending">
-          <Card>
-            <CardContent className="p-4">
-              <CampaignTable
-                items={pending}
-                showActions
-                onAccept={handleAccept}
-                onReject={handleReject}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="active">
-          <Card>
-            <CardContent className="p-4">
-              <CampaignTable
-                items={active}
-                onAccept={handleAccept}
-                onReject={handleReject}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="completed">
-          <Card>
-            <CardContent className="p-4">
-              <CampaignTable
-                items={completed}
-                onAccept={handleAccept}
-                onReject={handleReject}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="earnings">
-          <div className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <p className="text-3xl font-bold text-primary">
-                    ₹{totalEarnings.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Total Earnings
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <p className="text-3xl font-bold">{completed.length}</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Campaigns Completed
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <p className="text-3xl font-bold">
-                    {active.length + completed.length}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Total Accepted
-                  </p>
-                </CardContent>
-              </Card>
+            {/* New Requests */}
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 mb-3">
+                <Clock className="h-4 w-4 text-yellow-400" />
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="text-2xl font-extrabold tracking-tight">
+                  {pending.length}
+                </p>
+                {pending.length > 0 && (
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-yellow-500" />
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                New Requests
+              </p>
             </div>
-            {completed.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Completed Campaigns</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CampaignCards items={completed} role="influencer" />
-                  <div className="hidden md:block">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>Package</TableHead>
-                          <TableHead>Earned</TableHead>
-                          <TableHead>Date</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {completed.map((c) => (
-                          <TableRow key={c.id}>
-                            <TableCell className="font-medium">
-                              {c.title || "Untitled"}
-                            </TableCell>
-                            <TableCell className="capitalize">
-                              {c.package_type || "—"}
-                            </TableCell>
-                            <TableCell className="font-semibold text-primary">
-                              ₹{c.price_offered?.toLocaleString() || "—"}
-                            </TableCell>
-                            <TableCell className="text-sm text-muted-foreground">
-                              {new Date(c.created_at).toLocaleDateString()}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+
+            {/* Active Jobs */}
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 mb-3">
+                <Briefcase className="h-4 w-4 text-blue-400" />
+              </div>
+              <p className="text-2xl font-extrabold tracking-tight">
+                {active.length}
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Active Jobs
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Filter Pills */}
+          <motion.div variants={fadeUp} className="flex items-center gap-2">
+            {FILTERS.map((f) => {
+              const count =
+                f === "all"
+                  ? campaigns.filter((c) => c.status !== "rejected").length
+                  : f === "pending"
+                    ? pending.length
+                    : f === "accepted"
+                      ? active.length
+                      : completed.length;
+              return (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={cn(
+                    "relative px-4 py-2 rounded-full text-sm font-medium transition-all",
+                    filter === f
+                      ? "text-white"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/5",
+                  )}
+                >
+                  {filter === f && (
+                    <motion.div
+                      layoutId="active-filter"
+                      className="absolute inset-0 rounded-full"
+                      style={FILTER_PILL_STYLE}
+                      transition={FILTER_PILL_TRANSITION}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    {filterLabels[f]}
+                    {count > 0 && (
+                      <span
+                        className={cn(
+                          "text-[10px] px-1.5 py-0.5 rounded-full min-w-[20px] text-center",
+                          filter === f ? "bg-white/20" : "bg-white/10",
+                        )}
+                      >
+                        {count}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </motion.div>
+
+          {/* Campaign Feed */}
+          <motion.div variants={fadeUp} className="space-y-3">
+            <AnimatePresence mode="popLayout">
+              {filtered.length === 0 ? (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-10 text-center"
+                >
+                  <div className="flex h-14 w-14 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 mb-4">
+                    <Inbox className="h-7 w-7 text-muted-foreground" />
                   </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </TabsContent>
+                  <p className="font-semibold">No campaigns here yet</p>
+                  <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
+                    {ip.is_active
+                      ? "Brands will send you booking requests once they discover your profile."
+                      : "Complete your profile to appear in brand discovery and start receiving bookings."}
+                  </p>
+                  {!ip.is_active && (
+                    <Button className="mt-4 rounded-xl" asChild>
+                      <Link href="/dashboard/influencer/complete-profile">
+                        Complete Profile <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
+                </motion.div>
+              ) : (
+                filtered.map((c) => (
+                  <motion.div
+                    key={c.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className={cn(
+                      "rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-5 transition-all hover:border-white/10 border-l-[3px]",
+                      statusBorderColor[c.status] || "border-l-muted",
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "text-[10px] px-2 py-0 h-5 rounded-full border",
+                              c.status === "pending" &&
+                                "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+                              c.status === "accepted" &&
+                                "bg-green-500/10 text-green-400 border-green-500/20",
+                              c.status === "completed" &&
+                                "bg-primary/10 text-primary border-primary/20",
+                            )}
+                          >
+                            {c.status === "accepted" ? "active" : c.status}
+                          </Badge>
+                          <span className="text-[11px] text-muted-foreground">
+                            {timeAgo(c.created_at)}
+                          </span>
+                        </div>
+                        <p className="font-semibold text-[15px] truncate">
+                          {c.title || "Untitled Campaign"}
+                        </p>
+                        <p className="text-xs text-muted-foreground capitalize mt-0.5">
+                          {c.package_type || "—"} package
+                        </p>
+                      </div>
+                      <p className="text-lg font-extrabold shrink-0">
+                        ₹{c.price_offered?.toLocaleString() || "—"}
+                      </p>
+                    </div>
 
-        <TabsContent value="profile">
-          <InfluencerProfileOverview
-            ip={ip}
-            campaigns={campaigns}
-            media={media}
-            onStatusUpdate={updateStatus}
-            onTabChange={setActiveTab}
-          />
-        </TabsContent>
+                    {/* Contact info for active campaigns */}
+                    {c.status === "accepted" &&
+                      (c.business_contact_email ||
+                        c.business_contact_phone) && (
+                        <div className="mt-3 rounded-xl bg-white/5 px-3 py-2 text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">
+                            Brand contact:{" "}
+                          </span>
+                          {c.business_contact_email}
+                          {c.business_contact_phone &&
+                            ` · ${c.business_contact_phone}`}
+                        </div>
+                      )}
 
-        <TabsContent value="edit">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Pencil className="h-5 w-5" /> Edit Profile
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EditProfileForm
-                profile={ip}
-                onSaved={(updated) => setIp(updated)}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 mt-4">
+                      {c.status === "pending" && (
+                        <>
+                          <Button
+                            size="sm"
+                            className="h-9 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:brightness-110 border-0 flex-1 sm:flex-none"
+                            onClick={() => updateStatus(c.id, "accepted")}
+                          >
+                            <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
+                            Accept
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-9 rounded-xl border-white/10 flex-1 sm:flex-none"
+                            onClick={() => updateStatus(c.id, "rejected")}
+                          >
+                            <X className="mr-1.5 h-3.5 w-3.5" />
+                            Decline
+                          </Button>
+                        </>
+                      )}
+                      {c.status === "accepted" && (
+                        <Button
+                          size="sm"
+                          className="h-9 rounded-xl"
+                          onClick={() => updateStatus(c.id, "completed")}
+                        >
+                          <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
+                          Mark Complete
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-9 rounded-xl ml-auto text-muted-foreground"
+                        asChild
+                      >
+                        <Link href={`/dashboard/influencer/campaigns/${c.id}`}>
+                          Details <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Earnings Summary */}
+          {completed.length > 0 && (
+            <motion.div variants={fadeUp}>
+              <div className="rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-5">
+                <p className="text-xs font-medium text-muted-foreground mb-3">
+                  Earnings Summary
+                </p>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-lg font-extrabold">
+                      ₹{totalEarnings.toLocaleString()}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Total Earned
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-extrabold">{completed.length}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Completed
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-extrabold">
+                      ₹
+                      {completed.length > 0
+                        ? Math.round(
+                            completed.reduce(
+                              (s, c) => s + (c.price_offered || 0),
+                              0,
+                            ) / completed.length,
+                          ).toLocaleString()
+                        : "0"}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Avg Campaign
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 }

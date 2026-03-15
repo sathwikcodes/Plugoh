@@ -22,7 +22,8 @@ interface AuthContextType {
   loading: boolean;
   needsOnboarding: boolean;
   isProfileComplete: boolean;
-  signInWithMagicLink: (email: string) => Promise<void>;
+  signInWithOtp: (email: string) => Promise<void>;
+  verifyOtp: (email: string, token: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 }
@@ -106,13 +107,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [fetchUserData]);
 
-  const signInWithMagicLink = async (email: string) => {
+  const signInWithOtp = async (email: string) => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: {
-        emailRedirectTo:
-          typeof window !== "undefined" ? window.location.origin : "",
-      },
+    });
+    if (error) throw error;
+  };
+
+  const verifyOtp = async (email: string, token: string) => {
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: "email",
     });
     if (error) throw error;
   };
@@ -137,7 +143,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         needsOnboarding,
         isProfileComplete,
-        signInWithMagicLink,
+        signInWithOtp,
+        verifyOtp,
         signOut,
         refreshUserData,
       }}
