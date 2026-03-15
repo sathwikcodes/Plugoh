@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
@@ -23,6 +24,16 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { formatNumber } from "@/lib/format";
+import { TURNAROUND_LABELS } from "@/lib/constants";
+import {
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+  stagger,
+  fadeUp,
+} from "@/lib/animations";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import type { Database } from "@/lib/supabase/types";
 
@@ -30,49 +41,10 @@ type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 type InstagramMedia = Database["public"]["Tables"]["instagram_media"]["Row"];
 
-const GRADIENT_COLORS = [
-  "#0A0A0A",
-  "#dd2a7b",
-  "#8134af",
-  "#f58529",
-  "#515bd4",
-  "#dd2a7b",
-  "#0A0A0A",
-];
-const GRADIENT_STOPS = [20, 40, 55, 65, 75, 85, 100];
-const GRADIENT_STYLE = { opacity: 0.08 } as const;
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: "easeOut" as const },
-  },
-};
-
-const TURNAROUND_LABELS: Record<string, string> = {
-  "24_hours": "24 hours",
-  "2_3_days": "2-3 days",
-  "1_week": "1 week",
-  "2_weeks": "2 weeks",
-};
-
-function formatNum(n: number | null): string {
-  if (!n) return "\u2014";
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-  if (n >= 1000) return (n / 1000).toFixed(1) + "K";
-  return n.toString();
-}
-
 export default function InfluencerProfilePage() {
   const { user, profile, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
   const [ip, setIp] = useState<InfluencerProfile | null>(null);
   const [portfolioMedia, setPortfolioMedia] = useState<InstagramMedia[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,24 +55,36 @@ export default function InfluencerProfilePage() {
       setLoading(false);
       return;
     }
-    supabase
-      .from("influencer_profiles")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(async ({ data }) => {
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("influencer_profiles")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (error) throw error;
         setIp(data);
         if (data?.portfolio_media_ids && data.portfolio_media_ids.length > 0) {
-          const { data: mediaData } = await supabase
+          const { data: mediaData, error: mediaError } = await supabase
             .from("instagram_media")
             .select("*")
             .eq("user_id", user.id)
             .in("ig_media_id", data.portfolio_media_ids);
+          if (mediaError) throw mediaError;
           setPortfolioMedia(mediaData || []);
         }
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+        toast({
+          title: "Failed to load profile",
+          description: "Please try refreshing the page.",
+          variant: "destructive",
+        });
+      } finally {
         setLoading(false);
-      });
-  }, [user, authLoading]);
+      }
+    })();
+  }, [user, authLoading, toast]);
 
   useEffect(() => {
     if (!loading && !ip && !authLoading) {
@@ -188,9 +172,11 @@ export default function InfluencerProfilePage() {
                     }}
                   >
                     {ip.ig_profile_picture_url ? (
-                      <img
+                      <Image
                         src={ip.ig_profile_picture_url}
                         alt={ip.display_name || "Profile"}
+                        width={80}
+                        height={80}
                         className="h-20 w-20 rounded-full object-cover border-2 border-background"
                       />
                     ) : (
@@ -289,21 +275,21 @@ export default function InfluencerProfilePage() {
             {[
               {
                 icon: Users,
-                value: formatNum(ip.follower_count),
+                value: formatNumber(ip.follower_count),
                 label: "Followers",
                 gradient: "from-pink-500/20 to-rose-500/20",
                 iconColor: "text-pink-400",
               },
               {
                 icon: Eye,
-                value: formatNum(ip.avg_views_per_reel),
+                value: formatNumber(ip.avg_views_per_reel),
                 label: "Avg Views",
                 gradient: "from-purple-500/20 to-violet-500/20",
                 iconColor: "text-purple-400",
               },
               {
                 icon: Heart,
-                value: formatNum(ip.avg_likes_per_reel),
+                value: formatNumber(ip.avg_likes_per_reel),
                 label: "Avg Likes",
                 gradient: "from-orange-500/20 to-amber-500/20",
                 iconColor: "text-orange-400",
@@ -417,10 +403,12 @@ export default function InfluencerProfilePage() {
                         className="group relative aspect-square rounded-xl overflow-hidden bg-secondary transition-transform hover:scale-[1.03]"
                       >
                         {imgSrc ? (
-                          <img
+                          <Image
                             src={imgSrc}
                             alt={item.caption?.slice(0, 50) || "Portfolio"}
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(max-width: 768px) 33vw, 200px"
+                            className="object-cover"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">

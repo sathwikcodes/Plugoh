@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import Script from "next/script";
 import { supabase } from "@/lib/supabase/client";
 
@@ -53,12 +54,12 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatNumber } from "@/lib/format";
+import { PACKAGE_TYPES } from "@/lib/constants";
 import type { Database } from "@/lib/supabase/types";
 
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
-
-const PACKAGE_TYPES = ["reel", "post", "story", "reel+story", "reel+post"];
 
 export default function InfluencerProfileView() {
   const params = useParams();
@@ -82,26 +83,38 @@ export default function InfluencerProfileView() {
 
   useEffect(() => {
     if (!id) return;
-    supabase
-      .from("influencer_profiles")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle()
-      .then(async ({ data }) => {
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("influencer_profiles")
+          .select("*")
+          .eq("id", id)
+          .maybeSingle();
+        if (error) throw error;
         setIp(data);
         if (data?.price_per_reel)
           setPriceOffered(data.price_per_reel.toString());
         if (data?.portfolio_media_ids && data.portfolio_media_ids.length > 0) {
-          const { data: mediaData } = await supabase
+          const { data: mediaData, error: mediaError } = await supabase
             .from("instagram_media")
             .select("*")
             .eq("user_id", data.user_id)
             .in("ig_media_id", data.portfolio_media_ids);
+          if (mediaError) throw mediaError;
           setPortfolioMedia(mediaData || []);
         }
+      } catch (err) {
+        console.error("Failed to load influencer profile:", err);
+        toast({
+          title: "Failed to load profile",
+          description: "Please try refreshing the page.",
+          variant: "destructive",
+        });
+      } finally {
         setLoading(false);
-      });
-  }, [id]);
+      }
+    })();
+  }, [id, toast]);
 
   useEffect(() => {
     if (myProfile) {
@@ -229,13 +242,6 @@ export default function InfluencerProfileView() {
     );
   }
 
-  const formatNum = (n: number | null) => {
-    if (!n) return "—";
-    if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-    if (n >= 1000) return (n / 1000).toFixed(1) + "K";
-    return n.toString();
-  };
-
   return (
     <div className="container max-w-3xl py-6 space-y-6 animate-fade-in">
       <Button variant="ghost" asChild>
@@ -287,21 +293,21 @@ export default function InfluencerProfileView() {
             <div className="rounded-xl bg-secondary p-4 text-center">
               <Users className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
               <p className="text-xl font-bold">
-                {formatNum(ip.follower_count)}
+                {formatNumber(ip.follower_count)}
               </p>
               <p className="text-xs text-muted-foreground">Followers</p>
             </div>
             <div className="rounded-xl bg-secondary p-4 text-center">
               <Eye className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
               <p className="text-xl font-bold">
-                {formatNum(ip.avg_views_per_reel)}
+                {formatNumber(ip.avg_views_per_reel)}
               </p>
               <p className="text-xs text-muted-foreground">Avg Views</p>
             </div>
             <div className="rounded-xl bg-secondary p-4 text-center">
               <Heart className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
               <p className="text-xl font-bold">
-                {formatNum(ip.avg_likes_per_reel)}
+                {formatNumber(ip.avg_likes_per_reel)}
               </p>
               <p className="text-xs text-muted-foreground">Avg Likes</p>
             </div>
@@ -388,10 +394,12 @@ export default function InfluencerProfileView() {
                       className="aspect-square rounded-lg overflow-hidden bg-secondary"
                     >
                       {imgSrc ? (
-                        <img
+                        <Image
                           src={imgSrc}
                           alt={item.caption?.slice(0, 50) || "Portfolio"}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 768px) 33vw, 200px"
+                          className="object-cover"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">

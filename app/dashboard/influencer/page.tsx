@@ -20,6 +20,16 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { timeAgo } from "@/lib/format";
+import {
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+  FILTER_PILL_STYLE,
+  FILTER_PILL_TRANSITION,
+  stagger,
+  fadeUp,
+} from "@/lib/animations";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import type { Database } from "@/lib/supabase/types";
 
@@ -44,52 +54,6 @@ const statusBorderColor: Record<string, string> = {
   rejected: "border-l-red-500",
 };
 
-const GRADIENT_COLORS = [
-  "#0A0A0A",
-  "#dd2a7b",
-  "#8134af",
-  "#f58529",
-  "#515bd4",
-  "#dd2a7b",
-  "#0A0A0A",
-];
-const GRADIENT_STOPS = [20, 40, 55, 65, 75, 85, 100];
-const GRADIENT_STYLE = { opacity: 0.08 } as const;
-
-const FILTER_PILL_STYLE = {
-  background: "linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4)",
-} as const;
-const FILTER_PILL_TRANSITION = {
-  type: "spring" as const,
-  bounce: 0.2,
-  duration: 0.4,
-};
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: "easeOut" as const },
-  },
-};
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return `${Math.floor(days / 30)}mo ago`;
-}
-
 export default function InfluencerDashboard() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
@@ -100,23 +64,36 @@ export default function InfluencerDashboard() {
 
   useEffect(() => {
     if (!user) return;
-    Promise.all([
-      supabase
-        .from("influencer_profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle(),
-      supabase
-        .from("campaigns")
-        .select("*")
-        .eq("influencer_id", user.id)
-        .order("created_at", { ascending: false }),
-    ]).then(([ipRes, campRes]) => {
-      setIp(ipRes.data);
-      setCampaigns(campRes.data || []);
-      setLoading(false);
-    });
-  }, [user]);
+    (async () => {
+      try {
+        const [ipRes, campRes] = await Promise.all([
+          supabase
+            .from("influencer_profiles")
+            .select("*")
+            .eq("user_id", user.id)
+            .maybeSingle(),
+          supabase
+            .from("campaigns")
+            .select("*")
+            .eq("influencer_id", user.id)
+            .order("created_at", { ascending: false }),
+        ]);
+        if (ipRes.error) throw ipRes.error;
+        if (campRes.error) throw campRes.error;
+        setIp(ipRes.data);
+        setCampaigns(campRes.data || []);
+      } catch (err) {
+        console.error("Failed to load dashboard:", err);
+        toast({
+          title: "Failed to load dashboard",
+          description: "Please try refreshing the page.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [user, toast]);
 
   const updateStatus = async (id: string, status: string) => {
     const campaign = campaigns.find((c) => c.id === id);

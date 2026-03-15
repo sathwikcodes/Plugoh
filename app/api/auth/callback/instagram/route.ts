@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import {
   exchangeCodeForToken,
   exchangeForLongLivedToken,
@@ -8,13 +7,7 @@ import {
   fetchMediaInsights,
 } from "@/lib/instagram/api";
 import { generateInfluencerProfile } from "@/lib/ai/generate-profile";
-
-function serviceClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
-}
+import { createServiceClient } from "@/lib/supabase/server";
 
 function errorRedirect(request: NextRequest, reason: string) {
   return NextResponse.redirect(
@@ -53,7 +46,7 @@ export async function GET(request: NextRequest) {
     const tokenExpiresAt = new Date(
       Date.now() + expiresIn * 1000,
     ).toISOString();
-    const db = serviceClient();
+    const db = createServiceClient();
     const profile = await fetchIGProfile(igUserId, accessToken);
     const mediaItems = await fetchIGMedia(igUserId, accessToken);
     const avgLikes =

@@ -42,29 +42,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isProfileComplete, setIsProfileComplete] = useState(false);
 
   const fetchUserData = useCallback(async (userId: string) => {
-    const [roleRes, profileRes] = await Promise.all([
-      supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .maybeSingle(),
-      supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
-    ]);
-    if (roleRes.data) {
-      setRole(roleRes.data.role);
-      setNeedsOnboarding(false);
-    } else {
-      setRole(null);
-      setNeedsOnboarding(true);
-    }
-    if (profileRes.data) {
-      setProfile(profileRes.data);
-      // Business profile is complete when business_name is set.
-      // Influencer completeness is handled via influencer_profiles separately.
-      const r = roleRes.data?.role;
-      setIsProfileComplete(
-        r === "business" ? !!profileRes.data.business_name : true,
-      );
+    try {
+      const [roleRes, profileRes] = await Promise.all([
+        supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", userId)
+          .maybeSingle(),
+        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+      ]);
+      if (roleRes.data) {
+        setRole(roleRes.data.role);
+        setNeedsOnboarding(false);
+      } else {
+        setRole(null);
+        setNeedsOnboarding(true);
+      }
+      if (profileRes.data) {
+        setProfile(profileRes.data);
+        // Business profile is complete when business_name is set.
+        // Influencer completeness is handled via influencer_profiles separately.
+        const r = roleRes.data?.role;
+        setIsProfileComplete(
+          r === "business" ? !!profileRes.data.business_name : true,
+        );
+      }
+    } catch (err) {
+      console.error("Failed to fetch user data:", err);
     }
   }, []);
 
@@ -74,11 +78,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
+    let initialized = false;
+
+    // Use getSession() for initial load (fires synchronously from cache),
+    // then let onAuthStateChange handle all subsequent updates.
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!mounted) return;
+      initialized = true;
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        await fetchUserData(session.user.id);
+      }
+      if (mounted) setLoading(false);
+    });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!mounted) return;
+      // Skip the initial INITIAL_SESSION event — already handled by getSession above
+      if (!initialized) return;
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -87,16 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(null);
         setProfile(null);
         setNeedsOnboarding(false);
-      }
-      if (mounted) setLoading(false);
-    });
-
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!mounted) return;
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchUserData(session.user.id);
+        setIsProfileComplete(false);
       }
       if (mounted) setLoading(false);
     });

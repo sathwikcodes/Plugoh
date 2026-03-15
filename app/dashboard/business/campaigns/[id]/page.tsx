@@ -21,26 +21,12 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { statusColor } from "@/lib/format";
 import type { Database } from "@/lib/supabase/types";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
-
-const statusColor = (s: string) => {
-  switch (s) {
-    case "accepted":
-      return "bg-success/10 text-success border-success/20";
-    case "pending":
-      return "bg-warning/10 text-warning border-warning/20";
-    case "rejected":
-      return "bg-destructive/10 text-destructive border-destructive/20";
-    case "completed":
-      return "bg-primary/10 text-primary border-primary/20";
-    default:
-      return "bg-muted text-muted-foreground";
-  }
-};
 
 export default function BusinessCampaignDetail() {
   const params = useParams();
@@ -54,24 +40,37 @@ export default function BusinessCampaignDetail() {
 
   useEffect(() => {
     if (!id || !user) return;
-    supabase
-      .from("campaigns")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle()
-      .then(async ({ data }) => {
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("campaigns")
+          .select("*")
+          .eq("id", id)
+          .eq("business_id", user.id)
+          .maybeSingle();
+        if (error) throw error;
         setCampaign(data);
         if (data?.influencer_profile_id) {
-          const { data: ip } = await supabase
+          const { data: ip, error: ipError } = await supabase
             .from("influencer_profiles")
             .select("*")
             .eq("id", data.influencer_profile_id)
             .maybeSingle();
+          if (ipError) throw ipError;
           setInfluencerProfile(ip);
         }
+      } catch (err) {
+        console.error("Failed to load campaign:", err);
+        toast({
+          title: "Failed to load campaign",
+          description: "Please try refreshing the page.",
+          variant: "destructive",
+        });
+      } finally {
         setLoading(false);
-      });
-  }, [id, user]);
+      }
+    })();
+  }, [id, user, toast]);
 
   const updateStatus = async (status: string) => {
     if (!campaign) return;

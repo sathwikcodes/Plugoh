@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -36,36 +37,17 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import {
+  CATEGORIES,
+  LANGUAGES,
+  TURNAROUND_OPTIONS,
+  TURNAROUND_LABELS,
+} from "@/lib/constants";
 import type { Database } from "@/lib/supabase/types";
 
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 type InstagramMedia = Database["public"]["Tables"]["instagram_media"]["Row"];
-
-const CATEGORIES = [
-  "Food",
-  "Fitness",
-  "Beauty",
-  "Lifestyle",
-  "Travel",
-  "Education",
-  "Tech",
-  "Fashion",
-  "Other",
-];
-
-const LANGUAGES = [
-  "English",
-  "Hindi",
-  "Telugu",
-  "Tamil",
-  "Kannada",
-  "Malayalam",
-  "Marathi",
-  "Bengali",
-  "Gujarati",
-  "Punjabi",
-];
 
 const CONTENT_TYPES = [
   "Reels",
@@ -77,13 +59,6 @@ const CONTENT_TYPES = [
   "Unboxing",
   "Behind the Scenes",
   "Event Coverage",
-];
-
-const TURNAROUND_OPTIONS = [
-  { value: "24_hours", label: "24 hours" },
-  { value: "2_3_days", label: "2-3 days" },
-  { value: "1_week", label: "1 week" },
-  { value: "2_weeks", label: "2 weeks" },
 ];
 
 const STEPS = [
@@ -156,38 +131,51 @@ export default function CompleteProfile() {
       setLoading(false);
       return;
     }
-    Promise.all([
-      supabase
-        .from("influencer_profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle(),
-      supabase
-        .from("instagram_media")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("timestamp", { ascending: false }),
-    ]).then(([ipRes, mediaRes]) => {
-      if (ipRes.data) {
-        const p = ipRes.data;
-        setIp(p);
-        setDisplayName(p.display_name || "");
-        setBio(p.bio || "");
-        setCategory(p.category || "");
-        setCity(p.city || "");
-        setLanguages(p.languages || []);
-        setPriceReel(p.price_per_reel?.toString() || "");
-        setPricePost(p.price_per_post?.toString() || "");
-        setPriceStory(p.price_per_story?.toString() || "");
-        setContentTypes(p.content_types || []);
-        setTurnaroundTime(p.turnaround_time || "");
-        setPortfolioIds(p.portfolio_media_ids || []);
-        setPreviousBrands(p.previous_brands || []);
+    (async () => {
+      try {
+        const [ipRes, mediaRes] = await Promise.all([
+          supabase
+            .from("influencer_profiles")
+            .select("*")
+            .eq("user_id", user.id)
+            .maybeSingle(),
+          supabase
+            .from("instagram_media")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("timestamp", { ascending: false }),
+        ]);
+        if (ipRes.error) throw ipRes.error;
+        if (mediaRes.error) throw mediaRes.error;
+        if (ipRes.data) {
+          const p = ipRes.data;
+          setIp(p);
+          setDisplayName(p.display_name || "");
+          setBio(p.bio || "");
+          setCategory(p.category || "");
+          setCity(p.city || "");
+          setLanguages(p.languages || []);
+          setPriceReel(p.price_per_reel?.toString() || "");
+          setPricePost(p.price_per_post?.toString() || "");
+          setPriceStory(p.price_per_story?.toString() || "");
+          setContentTypes(p.content_types || []);
+          setTurnaroundTime(p.turnaround_time || "");
+          setPortfolioIds(p.portfolio_media_ids || []);
+          setPreviousBrands(p.previous_brands || []);
+        }
+        setMedia(mediaRes.data || []);
+      } catch (err) {
+        console.error("Failed to load profile data:", err);
+        toast({
+          title: "Failed to load profile data",
+          description: "Please try refreshing the page.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
       }
-      setMedia(mediaRes.data || []);
-      setLoading(false);
-    });
-  }, [user, authLoading]);
+    })();
+  }, [user, authLoading, toast]);
 
   const currentProfile = useCallback((): InfluencerProfile => {
     return {
@@ -470,7 +458,7 @@ export default function CompleteProfile() {
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   AI filled these from your Instagram. Adjust anything that
-                  doesn't look right.
+                  doesn&apos;t look right.
                 </p>
               </div>
 
@@ -628,8 +616,8 @@ export default function CompleteProfile() {
                   </SelectTrigger>
                   <SelectContent>
                     {TURNAROUND_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
+                      <SelectItem key={opt} value={opt}>
+                        {TURNAROUND_LABELS[opt] || opt}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -669,10 +657,12 @@ export default function CompleteProfile() {
                         )}
                       >
                         {imgSrc ? (
-                          <img
+                          <Image
                             src={imgSrc}
                             alt={item.caption?.slice(0, 50) || "Post"}
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(max-width: 768px) 33vw, 150px"
+                            className="object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-secondary flex items-center justify-center">
@@ -852,8 +842,7 @@ export default function CompleteProfile() {
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     Delivers in{" "}
-                    {TURNAROUND_OPTIONS.find((o) => o.value === turnaroundTime)
-                      ?.label || turnaroundTime}
+                    {TURNAROUND_LABELS[turnaroundTime] || turnaroundTime}
                   </div>
                 )}
 
@@ -906,10 +895,12 @@ export default function CompleteProfile() {
                             className="aspect-square rounded-lg overflow-hidden bg-secondary"
                           >
                             {imgSrc ? (
-                              <img
+                              <Image
                                 src={imgSrc}
                                 alt="Portfolio"
-                                className="w-full h-full object-cover"
+                                fill
+                                sizes="(max-width: 768px) 33vw, 150px"
+                                className="object-cover"
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">

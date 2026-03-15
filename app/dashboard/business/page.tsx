@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
-import { supabase } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,25 +24,12 @@ import {
   Megaphone,
 } from "lucide-react";
 import { CampaignCards } from "@/components/shared/campaign-cards";
-import type { Database } from "@/lib/supabase/types";
-
-type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
+import { useCampaigns } from "@/hooks/queries/use-campaigns";
+import { statusColor } from "@/lib/format";
 
 export default function BusinessDashboard() {
   const { user, profile, isProfileComplete, loading } = useAuth();
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from("campaigns")
-      .select("*")
-      .eq("business_id", user.id)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setCampaigns(data || []);
-      });
-  }, [user]);
+  const { data: campaigns = [] } = useCampaigns(user?.id, "business");
 
   const active = campaigns.filter((c) => c.status === "accepted").length;
   const pending = campaigns.filter((c) => c.status === "pending").length;
@@ -57,21 +42,6 @@ export default function BusinessDashboard() {
       </div>
     );
   }
-
-  const statusColor = (s: string) => {
-    switch (s) {
-      case "accepted":
-        return "bg-success/10 text-success border-success/20";
-      case "pending":
-        return "bg-warning/10 text-warning border-warning/20";
-      case "rejected":
-        return "bg-destructive/10 text-destructive border-destructive/20";
-      case "completed":
-        return "bg-primary/10 text-primary border-primary/20";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
 
   return (
     <div className="container py-6 space-y-6 animate-fade-in">

@@ -1,18 +1,55 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { CTASection } from "./_components/cta-section";
 import { EtheralShadow } from "@/components/ui/etheral-shadow";
-import { ClientsSection } from "./_components/clients-section";
-import { Features5 } from "./_components/features-primary-section";
-import { Features } from "./_components/features-alt-section";
-import { FeatureCarouselSection } from "./_components/feature-carousel-section";
-import { MinimalFooter } from "./_components/footer";
-import { FaqSectionWrapper } from "./_components/faq-section";
 import { Header } from "./_components/hero-section";
+
+// Lazy-load below-the-fold sections for faster initial load
+const ClientsSection = dynamic(
+  () =>
+    import("./_components/clients-section").then((m) => ({
+      default: m.ClientsSection,
+    })),
+  { ssr: false },
+);
+const Features5 = dynamic(
+  () =>
+    import("./_components/features-primary-section").then((m) => ({
+      default: m.Features5,
+    })),
+  { ssr: false },
+);
+const Features = dynamic(
+  () =>
+    import("./_components/features-alt-section").then((m) => ({
+      default: m.Features,
+    })),
+  { ssr: false },
+);
+const FeatureCarouselSection = dynamic(
+  () =>
+    import("./_components/feature-carousel-section").then((m) => ({
+      default: m.FeatureCarouselSection,
+    })),
+  { ssr: false },
+);
+const FaqSectionWrapper = dynamic(
+  () =>
+    import("./_components/faq-section").then((m) => ({
+      default: m.FaqSectionWrapper,
+    })),
+  { ssr: false },
+);
+const MinimalFooter = dynamic(
+  () =>
+    import("./_components/footer").then((m) => ({ default: m.MinimalFooter })),
+  { ssr: false },
+);
 
 export default function Home() {
   const { user, role, loading, needsOnboarding } = useAuth();
@@ -61,7 +98,6 @@ export default function Home() {
         <Features5 />
         <Features />
         <FeatureCarouselSection />
-        {/* <MapSection /> */}
         <FaqSectionWrapper />
         <MinimalFooter />
       </div>

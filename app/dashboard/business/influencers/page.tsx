@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,44 +24,17 @@ import {
   ArrowLeft,
   SearchX,
 } from "lucide-react";
-import type { Database } from "@/lib/supabase/types";
-
-type InfluencerProfile =
-  Database["public"]["Tables"]["influencer_profiles"]["Row"];
-
-const CATEGORIES = [
-  "All",
-  "Food",
-  "Fitness",
-  "Beauty",
-  "Lifestyle",
-  "Travel",
-  "Education",
-  "Tech",
-  "Fashion",
-  "Other",
-];
+import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
+import { formatNumber } from "@/lib/format";
+import { CATEGORIES_WITH_ALL } from "@/lib/constants";
 
 export default function InfluencerDiscovery() {
-  const [profiles, setProfiles] = useState<InfluencerProfile[]>([]);
+  const { data: profiles = [], isLoading: loading } = useInfluencerProfiles();
   const [category, setCategory] = useState("All");
   const [city, setCity] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [minFollowers, setMinFollowers] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    supabase
-      .from("influencer_profiles")
-      .select("*")
-      .eq("is_active", true)
-      .order("follower_count", { ascending: false })
-      .then(({ data }) => {
-        setProfiles(data || []);
-        setLoading(false);
-      });
-  }, []);
 
   const filtered = useMemo(() => {
     let result = [...profiles];
@@ -86,13 +58,6 @@ export default function InfluencerDiscovery() {
       );
     return result;
   }, [category, city, minPrice, maxPrice, minFollowers, profiles]);
-
-  const formatNum = (n: number | null) => {
-    if (!n) return "—";
-    if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-    if (n >= 1000) return (n / 1000).toFixed(1) + "K";
-    return n.toString();
-  };
 
   const clearFilters = () => {
     setCategory("All");
@@ -128,7 +93,7 @@ export default function InfluencerDiscovery() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {CATEGORIES.map((c) => (
+                {CATEGORIES_WITH_ALL.map((c) => (
                   <SelectItem key={c} value={c}>
                     {c}
                   </SelectItem>
@@ -236,7 +201,7 @@ export default function InfluencerDiscovery() {
                   <div className="rounded-lg bg-secondary p-2">
                     <Users className="mx-auto h-4 w-4 text-muted-foreground mb-1" />
                     <p className="text-sm font-semibold">
-                      {formatNum(p.follower_count)}
+                      {formatNumber(p.follower_count)}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
                       Followers
@@ -245,14 +210,14 @@ export default function InfluencerDiscovery() {
                   <div className="rounded-lg bg-secondary p-2">
                     <Eye className="mx-auto h-4 w-4 text-muted-foreground mb-1" />
                     <p className="text-sm font-semibold">
-                      {formatNum(p.avg_views_per_reel)}
+                      {formatNumber(p.avg_views_per_reel)}
                     </p>
                     <p className="text-[10px] text-muted-foreground">Views</p>
                   </div>
                   <div className="rounded-lg bg-secondary p-2">
                     <Heart className="mx-auto h-4 w-4 text-muted-foreground mb-1" />
                     <p className="text-sm font-semibold">
-                      {formatNum(p.avg_likes_per_reel)}
+                      {formatNumber(p.avg_likes_per_reel)}
                     </p>
                     <p className="text-[10px] text-muted-foreground">Likes</p>
                   </div>
