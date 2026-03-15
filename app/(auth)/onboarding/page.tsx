@@ -1,41 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2, Briefcase, Sparkles, ArrowRight } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, Briefcase, Sparkles, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/lib/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
-
-const BUSINESS_TYPES = [
-  "restaurant",
-  "retail",
-  "service",
-  "agency",
-  "ecommerce",
-  "other",
-];
 
 export default function Onboarding() {
   const {
@@ -48,14 +25,11 @@ export default function Onboarding() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const [step, setStep] = useState<"role" | "profile">("role");
   const [selectedRole, setSelectedRole] = useState<AppRole>("business");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [location, setLocation] = useState("");
-  const [businessName, setBusinessName] = useState("");
-  const [businessType, setBusinessType] = useState("");
   const [loading, setLoading] = useState(false);
+  const instagramRedirectInProgress = useRef(false);
 
   useEffect(() => {
     if (profile?.full_name) setFullName(profile.full_name);
@@ -64,6 +38,7 @@ export default function Onboarding() {
   }, [profile, user]);
 
   useEffect(() => {
+    if (instagramRedirectInProgress.current) return;
     if (!authLoading && !user) {
       router.replace("/login");
     } else if (!authLoading && role) {
@@ -81,7 +56,7 @@ export default function Onboarding() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) return;
     setLoading(true);
@@ -93,12 +68,7 @@ export default function Onboarding() {
       if (roleError) throw roleError;
 
       const profileUpdate: Database["public"]["Tables"]["profiles"]["Update"] =
-        { full_name: fullName, phone, location };
-
-      if (selectedRole === "business") {
-        profileUpdate.business_name = businessName || null;
-        profileUpdate.business_type = businessType || null;
-      }
+        { full_name: fullName, phone: phone || null };
 
       const { error: profileError } = await supabase
         .from("profiles")
@@ -112,19 +82,24 @@ export default function Onboarding() {
           .insert({
             user_id: user.id,
             display_name: fullName,
-            city: location || null,
             is_active: false,
           });
         if (ipError && ipError.code !== "23505") throw ipError;
       }
 
-      await refreshUserData();
-
       toast({ title: "Profile set up!", description: "Welcome to ReelReach." });
 
       if (selectedRole === "influencer") {
-        router.push("/dashboard/influencer/onboarding");
+        const res = await fetch(
+          `/api/instagram/connect?userId=${encodeURIComponent(user.id)}`,
+        );
+        const data = await res.json();
+        if (!res.ok)
+          throw new Error(data.error ?? "Failed to start Instagram OAuth");
+        instagramRedirectInProgress.current = true;
+        window.location.href = data.url;
       } else {
+        await refreshUserData();
         router.push("/dashboard/business");
       }
     } catch (err: unknown) {
@@ -140,153 +115,119 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md animate-fade-in">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">
-            {step === "role"
-              ? "Welcome to ReelReach!"
-              : "Complete your profile"}
-          </CardTitle>
-          <CardDescription>
-            {step === "role"
-              ? "Tell us who you are to get started"
-              : "Just a few more details"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {step === "role" ? (
-            <div className="space-y-6">
-              <RadioGroup
-                value={selectedRole}
-                onValueChange={(v) => setSelectedRole(v as AppRole)}
-                className="grid grid-cols-2 gap-4"
-              >
-                <Label
-                  htmlFor="onboard-role-business"
-                  className={`flex cursor-pointer flex-col items-center gap-3 rounded-lg border-2 p-6 transition-all ${
-                    selectedRole === "business"
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-muted-foreground/30"
-                  }`}
-                >
-                  <RadioGroupItem
-                    value="business"
-                    id="onboard-role-business"
-                    className="sr-only"
-                  />
-                  <Briefcase className="h-8 w-8 text-primary" />
-                  <span className="font-medium">Business</span>
-                  <span className="text-xs text-muted-foreground text-center">
-                    I want to book influencers
-                  </span>
-                </Label>
-                <Label
-                  htmlFor="onboard-role-influencer"
-                  className={`flex cursor-pointer flex-col items-center gap-3 rounded-lg border-2 p-6 transition-all ${
-                    selectedRole === "influencer"
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-muted-foreground/30"
-                  }`}
-                >
-                  <RadioGroupItem
-                    value="influencer"
-                    id="onboard-role-influencer"
-                    className="sr-only"
-                  />
-                  <Sparkles className="h-8 w-8 text-primary" />
-                  <span className="font-medium">Influencer</span>
-                  <span className="text-xs text-muted-foreground text-center">
-                    I want brand deals
-                  </span>
-                </Label>
-              </RadioGroup>
-              <Button onClick={() => setStep("profile")} className="w-full">
-                Continue <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="onboard-name">Full Name</Label>
-                <Input
-                  id="onboard-name"
-                  placeholder="Your full name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                />
-              </div>
+    <div className="flex min-h-screen">
+      {/* Left panel — hidden on mobile */}
+      <div className="hidden lg:flex lg:w-1/2 bg-muted" />
 
-              {selectedRole === "business" && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="onboard-business-name">Business Name</Label>
-                    <Input
-                      id="onboard-business-name"
-                      placeholder="e.g. Spice Garden Restaurant"
-                      value={businessName}
-                      onChange={(e) => setBusinessName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="onboard-business-type">
-                      Business Type (optional)
-                    </Label>
-                    <Select
-                      value={businessType}
-                      onValueChange={(v) => setBusinessType(v ?? "")}
-                    >
-                      <SelectTrigger id="onboard-business-type">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {BUSINESS_TYPES.map((t) => (
-                          <SelectItem key={t} value={t} className="capitalize">
-                            {t.charAt(0).toUpperCase() + t.slice(1)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </>
-              )}
+      {/* Right panel */}
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-8">
+        <div className="w-full max-w-md animate-fade-in space-y-6">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold">Welcome to ReelReach!</h1>
+            <p className="text-sm text-muted-foreground">
+              Tell us who you are to get started.
+            </p>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="onboard-phone">Phone (optional)</Label>
-                <Input
-                  id="onboard-phone"
-                  placeholder="+91 98765 43210"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="onboard-location">Location (optional)</Label>
-                <Input
-                  id="onboard-location"
-                  placeholder="e.g. Hyderabad, Telangana"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Get Started
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full"
-                onClick={() => setStep("role")}
+          <Tabs
+            defaultValue="business"
+            onValueChange={(v) => setSelectedRole(v as AppRole)}
+          >
+            <TabsList className="w-full h-12 rounded-xl">
+              <TabsTrigger
+                value="business"
+                className="flex-1 h-full rounded-lg gap-2 text-sm font-medium"
               >
-                Back
-              </Button>
-            </form>
-          )}
-        </CardContent>
-      </Card>
+                <Briefcase className="h-4 w-4" />
+                Business Owner
+              </TabsTrigger>
+              <TabsTrigger
+                value="influencer"
+                className="flex-1 h-full rounded-lg gap-2 text-sm font-medium"
+              >
+                <Sparkles className="h-4 w-4" />
+                Influencer
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Business Owner form */}
+            <TabsContent value="business" className="mt-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="ob-name">Full Name</Label>
+                  <Input
+                    id="ob-name"
+                    placeholder="Your full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                    className="h-11 rounded-xl"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ob-phone">Phone Number</Label>
+                  <Input
+                    id="ob-phone"
+                    placeholder="+91 98765 43210"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                    className="h-11 rounded-xl"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full h-12 rounded-xl text-base font-semibold"
+                  disabled={loading}
+                >
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Get Started
+                </Button>
+              </form>
+            </TabsContent>
+
+            {/* Influencer form */}
+            <TabsContent value="influencer" className="mt-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="inf-name">Full Name</Label>
+                  <Input
+                    id="inf-name"
+                    placeholder="Your full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                    className="h-11 rounded-xl"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="inf-phone">Phone Number</Label>
+                  <Input
+                    id="inf-phone"
+                    placeholder="+91 98765 43210"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                    className="h-11 rounded-xl"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full h-12 rounded-xl text-base font-semibold bg-linear-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90 transition-opacity"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Instagram className="mr-2 h-5 w-5" />
+                  )}
+                  Connect with Instagram
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 }

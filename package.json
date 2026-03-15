@@ -10,7 +10,9 @@
     "style:format": "prettier --write ."
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@base-ui/react": "^1.2.0",
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
     "@paper-design/shaders-react": "^0.0.71",
     "@radix-ui/react-slot": "^1.2.4",

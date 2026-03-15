@@ -1,3 +1,9 @@
+"use client";
+
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { CTASection } from "./_components/cta-section";
 import { EtheralShadow } from "@/components/ui/etheral-shadow";
 import { ClientsSection } from "./_components/clients-section";
@@ -9,6 +15,29 @@ import { FaqSectionWrapper } from "./_components/faq-section";
 import { Header } from "./_components/hero-section";
 
 export default function Home() {
+  const { user, role, loading, needsOnboarding } = useAuth();
+  const router = useRouter();
+  const [showLanding, setShowLanding] = useState(false);
+
+  useEffect(() => {
+    if (loading) return;
+    if (user && role) {
+      router.replace(`/dashboard/${role}`);
+    } else if (user && needsOnboarding) {
+      router.replace("/onboarding");
+    } else {
+      setShowLanding(true);
+    }
+  }, [user, role, loading, needsOnboarding, router]);
+
+  if (!showLanding) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex min-h-screen flex-col items-center bg-background">
       {/* Etheral Shadow background effects */}

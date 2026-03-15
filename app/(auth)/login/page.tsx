@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
@@ -9,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail, ArrowLeft } from "lucide-react";
+
 import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
@@ -17,15 +17,15 @@ export default function Login() {
     user,
     role,
     needsOnboarding,
-    signIn,
+    signInWithMagicLink,
     loading: authLoading,
   } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
   useEffect(() => {
     if (!authLoading && user && needsOnboarding) {
@@ -45,15 +45,17 @@ export default function Login() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleMagicLink = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signIn(email, password);
+      await signInWithMagicLink(email);
+      setSent(true);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Login failed";
+      const message =
+        err instanceof Error ? err.message : "Failed to send link";
       toast({
-        title: "Login failed",
+        title: "Failed to send magic link",
         description: message,
         variant: "destructive",
       });
@@ -92,6 +94,39 @@ export default function Login() {
     }
   };
 
+  if (sent) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-8">
+        <div className="w-full max-w-md animate-fade-in space-y-6 text-center">
+          <div className="flex justify-center">
+            <div className="rounded-full bg-primary/10 p-4">
+              <Mail className="h-8 w-8 text-primary" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold">Check your email</h1>
+            <p className="text-sm text-muted-foreground">
+              We sent a sign-in link to{" "}
+              <span className="font-medium text-foreground">{email}</span>.
+              Click the link to continue.
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            className="text-sm"
+            onClick={() => {
+              setSent(false);
+              setEmail("");
+            }}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Use a different email
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen">
       {/* Left panel — hidden on mobile */}
@@ -100,24 +135,64 @@ export default function Login() {
       {/* Right panel */}
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8">
         <div className="w-full max-w-md animate-fade-in space-y-6">
-          <div className="text-center space-y-1">
-            <h1 className="text-2xl font-semibold">Welcome back</h1>
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold">Log in</h1>
             <p className="text-sm text-muted-foreground">
-              Sign in to your ReelReach account
+              By logging in, you agree to our{" "}
+              <span className="font-semibold text-foreground">
+                Terms of Use.
+              </span>
             </p>
           </div>
 
           <div className="space-y-4">
+            <form onSubmit={handleMagicLink} className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="h-12 rounded-xl"
+                />
+                <p className="text-xs text-muted-foreground">
+                  We will send you an e-mail with a login link.
+                </p>
+              </div>
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-xl text-base font-semibold"
+                disabled={loading}
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Connect
+              </Button>
+            </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-background px-3 text-muted-foreground">
+                  Or
+                </span>
+              </div>
+            </div>
+
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full h-12 rounded-xl text-base"
               onClick={handleGoogleSignIn}
               disabled={googleLoading}
             >
               {googleLoading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
                     fill="#4285F4"
@@ -136,57 +211,14 @@ export default function Login() {
                   />
                 </svg>
               )}
-              Continue with Google
+              Sign in with Google
             </Button>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  or
-                </span>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Sign In
-              </Button>
-            </form>
-
-            <p className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/register"
-                className="text-primary hover:underline font-medium"
-              >
-                Register
-              </Link>
+            <p className="text-xs text-muted-foreground text-center pt-2">
+              For more information, please see our{" "}
+              <span className="font-semibold text-foreground">
+                Privacy policy.
+              </span>
             </p>
           </div>
         </div>

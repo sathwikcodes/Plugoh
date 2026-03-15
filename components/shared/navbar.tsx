@@ -93,9 +93,6 @@ export function Navbar() {
               <Button variant="ghost" asChild>
                 <Link href="/login">Login</Link>
               </Button>
-              <Button asChild>
-                <Link href="/register">Register</Link>
-              </Button>
             </>
           )}
         </nav>
@@ -172,13 +169,6 @@ export function Navbar() {
                       onClick={() => setMobileOpen(false)}
                     >
                       <Link href="/login">Login</Link>
-                    </Button>
-                    <Button
-                      className="justify-start h-12 text-base"
-                      asChild
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      <Link href="/register">Register</Link>
                     </Button>
                   </>
                 )}
