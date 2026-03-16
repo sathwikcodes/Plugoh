@@ -14,6 +14,101 @@ export type Database = {
   };
   public: {
     Tables: {
+      campaign_messages: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          sender_id: string;
+          message_type: string;
+          content: string | null;
+          metadata: Json | null;
+          read_by: string[] | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          sender_id: string;
+          message_type?: string;
+          content?: string | null;
+          metadata?: Json | null;
+          read_by?: string[] | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          campaign_id?: string;
+          sender_id?: string;
+          message_type?: string;
+          content?: string | null;
+          metadata?: Json | null;
+          read_by?: string[] | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "campaign_messages_campaign_id_fkey";
+            columns: ["campaign_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      campaign_files: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          message_id: string | null;
+          uploaded_by: string;
+          file_name: string;
+          file_url: string;
+          file_size: number | null;
+          mime_type: string | null;
+          file_type: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          message_id?: string | null;
+          uploaded_by: string;
+          file_name: string;
+          file_url: string;
+          file_size?: number | null;
+          mime_type?: string | null;
+          file_type?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          campaign_id?: string;
+          message_id?: string | null;
+          uploaded_by?: string;
+          file_name?: string;
+          file_url?: string;
+          file_size?: number | null;
+          mime_type?: string | null;
+          file_type?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "campaign_files_campaign_id_fkey";
+            columns: ["campaign_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "campaign_files_message_id_fkey";
+            columns: ["message_id"];
+            isOneToOne: false;
+            referencedRelation: "campaign_messages";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       campaigns: {
         Row: {
           advance_amount: number | null;

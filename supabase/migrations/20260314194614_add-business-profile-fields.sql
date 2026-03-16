@@ -3,4 +3,5 @@
 -- business_type is optional context about the kind of business.
 ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS business_name TEXT,
-  ADD COLUMN IF NOT EXISTS business_type TEXT;
+  ADD COLUMN IF NOT EXISTS business_type TEXT,
+  ADD COLUMN IF NOT EXISTS location TEXT;

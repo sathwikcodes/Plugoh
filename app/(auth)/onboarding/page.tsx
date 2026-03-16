@@ -11,6 +11,7 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import { useAuthTheme } from "@/components/auth/theme-context";
 import { cn } from "@/lib/utils";
 import PhoneInput from "@/components/ui/phone-input";
+import { BUSINESS_TYPES } from "@/lib/constants";
 import type { Database } from "@/lib/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
@@ -67,6 +68,9 @@ export default function Onboarding() {
   );
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [businessType, setBusinessType] = useState("");
+  const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const instagramRedirectInProgress = useRef(false);
   const videoRefs = useRef<HTMLVideoElement[]>([]);
@@ -135,14 +139,32 @@ export default function Onboarding() {
         .insert({ user_id: user.id, role: selectedRole });
       if (roleError) throw roleError;
 
-      const profileUpdate: Database["public"]["Tables"]["profiles"]["Update"] =
-        { full_name: fullName, phone: phone || null };
+      const profilePayload: Database["public"]["Tables"]["profiles"]["Insert"] =
+        {
+          id: user.id,
+          email: user.email ?? null,
+          full_name: fullName,
+          phone: phone || null,
+          ...(selectedRole === "business" && {
+            business_name: businessName.trim(),
+            business_type: businessType || null,
+            location: location || null,
+          }),
+        };
 
-      const { error: profileError } = await supabase
+      const { data: updatedProfile, error: profileError } = await supabase
         .from("profiles")
-        .update(profileUpdate)
-        .eq("id", user.id);
+        .upsert(profilePayload, { onConflict: "id" })
+        .select()
+        .single();
       if (profileError) throw profileError;
+
+      // Verify business_name was actually saved
+      if (selectedRole === "business" && !updatedProfile?.business_name) {
+        throw new Error(
+          "Business name was not saved. Please check that the 'business_name' column exists in the profiles table and run any pending Supabase migrations.",
+        );
+      }
 
       if (selectedRole === "influencer") {
         const { error: ipError } = await supabase
@@ -168,7 +190,7 @@ export default function Onboarding() {
         window.location.href = data.url;
       } else {
         await refreshUserData();
-        router.push("/dashboard/business");
+        router.replace("/dashboard/business");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Setup failed";
@@ -395,9 +417,126 @@ export default function Onboarding() {
                 />
               </div>
 
+              <AnimatePresence>
+                {selectedRole === "business" && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="space-y-4 overflow-hidden"
+                  >
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="ob-business-name"
+                        className="text-xs font-medium uppercase tracking-wider"
+                        style={{ color: "var(--auth-text-tertiary)" }}
+                      >
+                        Business Name
+                      </label>
+                      <input
+                        id="ob-business-name"
+                        placeholder="Your brand or business name"
+                        value={businessName}
+                        onChange={(e) => setBusinessName(e.target.value)}
+                        required
+                        className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
+                        style={{
+                          color: "var(--auth-text)",
+                          background: "var(--auth-card)",
+                          border: "1px solid var(--auth-card-border)",
+                          boxShadow: "0 2px 8px var(--auth-shadow)",
+                        }}
+                        onFocus={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            "var(--auth-accent)")
+                        }
+                        onBlur={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            "var(--auth-card-border)")
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="ob-business-type"
+                        className="text-xs font-medium uppercase tracking-wider"
+                        style={{ color: "var(--auth-text-tertiary)" }}
+                      >
+                        Business Type
+                      </label>
+                      <select
+                        id="ob-business-type"
+                        value={businessType}
+                        onChange={(e) => setBusinessType(e.target.value)}
+                        className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200 appearance-none cursor-pointer"
+                        style={{
+                          color: businessType
+                            ? "var(--auth-text)"
+                            : "var(--auth-text-tertiary)",
+                          background: "var(--auth-card)",
+                          border: "1px solid var(--auth-card-border)",
+                          boxShadow: "0 2px 8px var(--auth-shadow)",
+                        }}
+                        onFocus={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            "var(--auth-accent)")
+                        }
+                        onBlur={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            "var(--auth-card-border)")
+                        }
+                      >
+                        <option value="">Select type (optional)</option>
+                        {BUSINESS_TYPES.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="ob-location"
+                        className="text-xs font-medium uppercase tracking-wider"
+                        style={{ color: "var(--auth-text-tertiary)" }}
+                      >
+                        City / Location
+                      </label>
+                      <input
+                        id="ob-location"
+                        placeholder="e.g. Hyderabad"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
+                        style={{
+                          color: "var(--auth-text)",
+                          background: "var(--auth-card)",
+                          border: "1px solid var(--auth-card-border)",
+                          boxShadow: "0 2px 8px var(--auth-shadow)",
+                        }}
+                        onFocus={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            "var(--auth-accent)")
+                        }
+                        onBlur={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            "var(--auth-card-border)")
+                        }
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <button
                 type="submit"
-                disabled={loading}
+                disabled={
+                  loading ||
+                  (selectedRole === "business" && !businessName.trim())
+                }
                 className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 style={{
                   background: "var(--auth-gradient)",

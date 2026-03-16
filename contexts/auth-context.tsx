@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Influencer completeness is handled via influencer_profiles separately.
         const r = roleRes.data?.role;
         setIsProfileComplete(
-          r === "business" ? !!profileRes.data.business_name : true,
+          r === "business" ? !!profileRes.data.business_name?.trim() : true,
         );
       }
     } catch (err) {

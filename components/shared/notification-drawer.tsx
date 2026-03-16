@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { Bell, Check, Inbox } from "lucide-react";
@@ -74,14 +74,12 @@ export function NotificationDrawer() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
-  const now = useSyncExternalStore(
-    (cb) => {
-      const id = setInterval(cb, 60000);
-      return () => clearInterval(id);
-    },
-    () => Date.now(),
-    () => 0,
-  );
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   const timeAgo = (date: string, currentNow: number) => {
     const diff = currentNow - new Date(date).getTime();
@@ -104,6 +102,24 @@ export function NotificationDrawer() {
         return `Your booking "${data?.title || ""}" was declined.`;
       case "booking_completed":
         return `Campaign "${data?.title || ""}" marked as completed.`;
+      case "new_message":
+        return `New message in "${data?.title || "a campaign"}"`;
+      case "new_inquiry":
+        return `New inquiry: "${data?.title || "Untitled"}"`;
+      case "terms_proposed":
+        return `New terms proposed for "${data?.title || ""}"`;
+      case "terms_accepted":
+        return `Terms accepted for "${data?.title || ""}"`;
+      case "deliverable_submitted":
+        return `Content submitted for review: "${data?.title || ""}"`;
+      case "revision_requested":
+        return `Revision requested for "${data?.title || ""}"`;
+      case "deliverable_approved":
+        return `Content approved: "${data?.title || ""}"`;
+      case "payment_released":
+        return `Payment released for "${data?.title || ""}"`;
+      case "review_received":
+        return `You received a review for "${data?.title || ""}"`;
       default:
         return data?.message || "You have a new notification";
     }

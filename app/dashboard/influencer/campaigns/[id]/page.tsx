@@ -20,10 +20,12 @@ import {
   CheckCircle,
   X,
 } from "lucide-react";
+import { CampaignChat } from "@/components/campaign/campaign-chat";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/lib/supabase/types";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
+type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 const statusColor = (s: string) => {
   switch (s) {
@@ -43,9 +45,10 @@ const statusColor = (s: string) => {
 export default function InfluencerCampaignDetail() {
   const params = useParams();
   const id = params?.id as string;
-  const { user } = useAuth();
+  const { user, profile: myProfile } = useAuth();
   const { toast } = useToast();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
+  const [businessProfile, setBusinessProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -58,6 +61,14 @@ export default function InfluencerCampaignDetail() {
       .then(({ data }) => {
         setCampaign(data);
         setLoading(false);
+        if (data?.business_id) {
+          supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", data.business_id)
+            .maybeSingle()
+            .then(({ data: bp }) => setBusinessProfile(bp));
+        }
       });
   }, [id, user]);
 
@@ -236,6 +247,22 @@ export default function InfluencerCampaignDetail() {
           )}
         </CardContent>
       </Card>
+
+      {/* Campaign Chat */}
+      {campaign.status !== "rejected" && (
+        <CampaignChat
+          campaignId={campaign.id}
+          businessId={campaign.business_id}
+          influencerId={campaign.influencer_id}
+          businessName={
+            businessProfile?.business_name ||
+            businessProfile?.full_name ||
+            "Business"
+          }
+          influencerName={myProfile?.full_name || "Influencer"}
+          disabled={campaign.status === "completed"}
+        />
+      )}
     </div>
   );
 }

@@ -61,3 +61,14 @@ export const PACKAGE_TYPES = [
   "reel+story",
   "reel+post",
 ] as const;
+
+export const BUSINESS_TYPES = [
+  "Restaurant / Cafe",
+  "D2C Brand",
+  "Local Business",
+  "E-commerce",
+  "SaaS / Tech",
+  "Agency",
+  "Personal Brand",
+  "Other",
+] as const;

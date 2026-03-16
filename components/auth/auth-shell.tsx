@@ -63,7 +63,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
         <AnimatedGradientBackground
           key={`right-${theme}-${isDark}`}
           {...gradientConfig}
-          containerStyle={{ opacity: 0.25 }}
+          containerStyle={{ opacity: theme === "brand" ? 0.35 : 0.25 }}
           startingGap={200}
           topOffset={-30}
         />

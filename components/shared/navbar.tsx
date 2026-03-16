@@ -64,11 +64,13 @@ export function Navbar() {
         <nav className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
-              <Button variant="ghost" asChild>
-                <Link href={dashboardPath}>
-                  <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
-                </Link>
-              </Button>
+              {role !== "influencer" ? (
+                <Button variant="ghost" asChild>
+                  <Link href={dashboardPath}>
+                    <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
+                  </Link>
+                </Button>
+              ) : null}
               <ThemeToggle />
               <NotificationDrawer />
               <DropdownMenu>
@@ -96,7 +98,7 @@ export function Navbar() {
                       router.push(
                         role === "influencer"
                           ? "/dashboard/influencer/profile"
-                          : dashboardPath,
+                          : "/dashboard/business/settings",
                       )
                     }
                   >
@@ -119,108 +121,151 @@ export function Navbar() {
 
         {/* Mobile nav */}
         <div className="flex items-center gap-1 md:hidden">
-          {user && <NotificationDrawer />}
-          <Drawer
-            direction="right"
-            open={mobileOpen}
-            onOpenChange={setMobileOpen}
-          >
-            <DrawerTrigger>
-              <Button variant="ghost" size="icon" className="h-11 w-11">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent className="h-full w-[min(300px,85vw)] ml-auto rounded-none">
-              <div className="flex items-center justify-between p-4 border-b">
-                <span className="font-display font-bold text-lg">Menu</span>
+          {user ? <NotificationDrawer /> : null}
+          {user && role === "influencer" ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setMobileOpen(false)}
+                  className="relative h-9 w-9 rounded-full"
                 >
-                  <X className="h-5 w-5" />
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
                 </Button>
-              </div>
-              <nav className="flex flex-col gap-1 p-4">
-                {user ? (
-                  <>
-                    <div className="flex items-center gap-3 p-3 mb-2">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm truncate">
-                          {profile?.full_name || "User"}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {profile?.email}
-                        </p>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuItem
+                  className="text-muted-foreground text-xs"
+                  disabled
+                >
+                  {profile?.email}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                >
+                  {theme === "dark" ? (
+                    <Sun className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Moon className="mr-2 h-4 w-4" />
+                  )}
+                  {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" /> Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Drawer
+              direction="right"
+              open={mobileOpen}
+              onOpenChange={setMobileOpen}
+            >
+              <DrawerTrigger>
+                <Button variant="ghost" size="icon" className="h-11 w-11">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="h-full w-[min(300px,85vw)] ml-auto rounded-none">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <span className="font-display font-bold text-lg">Menu</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <nav className="flex flex-col gap-1 p-4">
+                  {user ? (
+                    <>
+                      <div className="flex items-center gap-3 p-3 mb-2">
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {profile?.full_name || "User"}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {profile?.email}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      className="justify-start h-12 text-base"
-                      asChild
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      <Link href={dashboardPath}>
-                        <LayoutDashboard className="mr-3 h-5 w-5" /> Dashboard
-                      </Link>
-                    </Button>
-                    {role === "influencer" && (
                       <Button
                         variant="ghost"
                         className="justify-start h-12 text-base"
                         asChild
                         onClick={() => setMobileOpen(false)}
                       >
-                        <Link href="/dashboard/influencer/profile">
+                        <Link href={dashboardPath}>
+                          <LayoutDashboard className="mr-3 h-5 w-5" /> Dashboard
+                        </Link>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="justify-start h-12 text-base"
+                        asChild
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <Link
+                          href={
+                            role === "influencer"
+                              ? "/dashboard/influencer/profile"
+                              : "/dashboard/business/settings"
+                          }
+                        >
                           <User className="mr-3 h-5 w-5" /> My Profile
                         </Link>
                       </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      className="justify-start h-12 text-base"
-                      onClick={() =>
-                        setTheme(theme === "dark" ? "light" : "dark")
-                      }
-                    >
-                      {theme === "dark" ? (
-                        <Sun className="mr-3 h-5 w-5" />
-                      ) : (
-                        <Moon className="mr-3 h-5 w-5" />
-                      )}
-                      {theme === "dark" ? "Light Mode" : "Dark Mode"}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start h-12 text-base text-destructive"
-                      onClick={() => {
-                        handleSignOut();
-                        setMobileOpen(false);
-                      }}
-                    >
-                      <LogOut className="mr-3 h-5 w-5" /> Logout
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="ghost"
-                      className="justify-start h-12 text-base"
-                      asChild
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      <Link href="/login">Login</Link>
-                    </Button>
-                  </>
-                )}
-              </nav>
-            </DrawerContent>
-          </Drawer>
+                      <Button
+                        variant="ghost"
+                        className="justify-start h-12 text-base"
+                        onClick={() =>
+                          setTheme(theme === "dark" ? "light" : "dark")
+                        }
+                      >
+                        {theme === "dark" ? (
+                          <Sun className="mr-3 h-5 w-5" />
+                        ) : (
+                          <Moon className="mr-3 h-5 w-5" />
+                        )}
+                        {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="justify-start h-12 text-base text-destructive"
+                        onClick={() => {
+                          handleSignOut();
+                          setMobileOpen(false);
+                        }}
+                      >
+                        <LogOut className="mr-3 h-5 w-5" /> Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="ghost"
+                        className="justify-start h-12 text-base"
+                        asChild
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <Link href="/login">Login</Link>
+                      </Button>
+                    </>
+                  )}
+                </nav>
+              </DrawerContent>
+            </Drawer>
+          )}
         </div>
       </div>
     </header>

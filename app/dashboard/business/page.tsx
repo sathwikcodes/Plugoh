@@ -22,6 +22,9 @@ import {
   Search,
   ArrowRight,
   Megaphone,
+  IndianRupee,
+  User,
+  ListChecks,
 } from "lucide-react";
 import { CampaignCards } from "@/components/shared/campaign-cards";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
@@ -34,6 +37,9 @@ export default function BusinessDashboard() {
   const active = campaigns.filter((c) => c.status === "accepted").length;
   const pending = campaigns.filter((c) => c.status === "pending").length;
   const completed = campaigns.filter((c) => c.status === "completed").length;
+  const totalSpent = campaigns
+    .filter((c) => c.status === "completed")
+    .reduce((sum, c) => sum + (c.price_offered || 0), 0);
 
   if (loading) {
     return (
@@ -63,22 +69,31 @@ export default function BusinessDashboard() {
 
       {!isProfileComplete && (
         <Card className="border-yellow-500/50 bg-yellow-500/5">
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5 text-yellow-500 shrink-0" />
-              <p className="text-sm font-medium">
-                Complete your business profile to start booking influencers
-              </p>
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5 text-yellow-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">
+                    Complete your business profile
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Add your business name to start booking influencers
+                  </p>
+                </div>
+              </div>
+              <Button size="sm" asChild>
+                <Link href="/dashboard/business/settings">
+                  Complete Profile <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
-            <Button size="sm" asChild>
-              <Link href="/onboarding">Complete Profile →</Link>
-            </Button>
           </CardContent>
         </Card>
       )}
 
       {/* Stats */}
-      <div className="grid gap-4 grid-cols-3">
+      <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
         <Card>
           <CardContent className="flex items-center gap-3 p-4 sm:gap-4 sm:p-6">
             <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
@@ -118,12 +133,68 @@ export default function BusinessDashboard() {
             </div>
           </CardContent>
         </Card>
+        <Card>
+          <CardContent className="flex items-center gap-3 p-4 sm:gap-4 sm:p-6">
+            <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+              <IndianRupee className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-xl sm:text-2xl font-bold">
+                {totalSpent > 0 ? `₹${totalSpent.toLocaleString()}` : "₹0"}
+              </p>
+              <p className="text-[10px] sm:text-sm text-muted-foreground">
+                Total Spent
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid gap-3 grid-cols-3">
+        <Link href="/dashboard/business/influencers">
+          <Card className="h-full transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
+            <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                <Search className="h-5 w-5 text-primary" />
+              </div>
+              <p className="text-xs sm:text-sm font-medium">Find Influencers</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/dashboard/business/campaigns">
+          <Card className="h-full transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
+            <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                <ListChecks className="h-5 w-5 text-primary" />
+              </div>
+              <p className="text-xs sm:text-sm font-medium">All Campaigns</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/dashboard/business/settings">
+          <Card className="h-full transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
+            <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                <User className="h-5 w-5 text-primary" />
+              </div>
+              <p className="text-xs sm:text-sm font-medium">Business Profile</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Campaign Table/Cards */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Recent Campaigns</CardTitle>
+          {campaigns.length > 0 && (
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/dashboard/business/campaigns">
+                View All <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
           {campaigns.length === 0 ? (

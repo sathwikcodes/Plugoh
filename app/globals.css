@@ -292,20 +292,20 @@
 }
 
 .dark [data-auth-theme="brand"] {
-  --auth-bg: #121212;
-  --auth-surface: #1e1d1a;
-  --auth-surface-hover: #2a2820;
-  --auth-border: rgba(212, 175, 55, 0.2);
+  --auth-bg: #0f0e0a;
+  --auth-surface: #1e1c14;
+  --auth-surface-hover: #2a2718;
+  --auth-border: rgba(212, 175, 55, 0.3);
   --auth-accent: #d4af37;
-  --auth-accent-fg: #121212;
-  --auth-gradient: linear-gradient(135deg, #d4af37, #c5a028, #b8860b);
-  --auth-glow: rgba(212, 175, 55, 0.1);
-  --auth-card: #24221a;
-  --auth-card-border: rgba(212, 175, 55, 0.18);
-  --auth-shadow: rgba(0, 0, 0, 0.4);
-  --auth-text: #ffffff;
-  --auth-text-secondary: rgba(255, 255, 255, 0.5);
-  --auth-text-tertiary: rgba(255, 255, 255, 0.35);
+  --auth-accent-fg: #0f0e0a;
+  --auth-gradient: linear-gradient(135deg, #e6c240, #d4af37, #b8860b);
+  --auth-glow: rgba(212, 175, 55, 0.25);
+  --auth-card: #1a1810;
+  --auth-card-border: rgba(212, 175, 55, 0.28);
+  --auth-shadow: rgba(180, 150, 40, 0.15);
+  --auth-text: #fff8e1;
+  --auth-text-secondary: rgba(255, 248, 225, 0.6);
+  --auth-text-tertiary: rgba(255, 248, 225, 0.4);
 }
 
 /* Smooth theme transitions for auth pages */

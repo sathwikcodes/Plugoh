@@ -69,16 +69,16 @@ const configs: Record<
     dark: {
       gradientColors: [
         "#0A0A0A",
+        "#e6c240",
         "#d4af37",
         "#b8860b",
-        "#9a7209",
-        "#d4af37",
+        "#e6c240",
         "#0A0A0A",
       ],
-      gradientStops: [25, 45, 58, 72, 86, 100],
-      startingGap: 160,
-      breathingRange: 6,
-      animationSpeed: 0.015,
+      gradientStops: [20, 40, 55, 70, 85, 100],
+      startingGap: 140,
+      breathingRange: 10,
+      animationSpeed: 0.025,
       topOffset: 0,
     },
     light: {

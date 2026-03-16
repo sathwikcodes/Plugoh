@@ -61,6 +61,29 @@ import type { Database } from "@/lib/supabase/types";
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
+const BRIEF_TEMPLATES: { label: string; template: string }[] = [
+  {
+    label: "Product Review",
+    template:
+      "Product/Service:\nKey Message:\nDos:\nDon'ts:\nDelivery Deadline:",
+  },
+  {
+    label: "Restaurant Visit",
+    template:
+      "Restaurant/Location:\nDishes to Feature:\nVibe/Atmosphere to Highlight:\nDos:\nDon'ts:\nDelivery Deadline:",
+  },
+  {
+    label: "Unboxing",
+    template:
+      "Product:\nKey Features to Highlight:\nUnboxing Style (casual/detailed):\nDos:\nDon'ts:\nDelivery Deadline:",
+  },
+  {
+    label: "Brand Mention",
+    template:
+      "Brand/Product:\nKey Talking Points:\nIntegration Style (organic/dedicated):\nDos:\nDon'ts:\nDelivery Deadline:",
+  },
+];
+
 export default function InfluencerProfileView() {
   const params = useParams();
   const id = params?.id as string;
@@ -122,6 +145,18 @@ export default function InfluencerProfileView() {
       setContactPhone(myProfile.phone || "");
     }
   }, [myProfile]);
+
+  // Get listed price based on selected package type
+  const getListedPrice = (pkg: string): number | null => {
+    if (!ip) return null;
+    if (pkg === "reel" || pkg === "reel+story" || pkg === "reel+post")
+      return ip.price_per_reel;
+    if (pkg === "post") return ip.price_per_post;
+    if (pkg === "story") return ip.price_per_story;
+    return ip.price_per_reel;
+  };
+
+  const listedPrice = getListedPrice(packageType);
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -434,7 +469,9 @@ export default function InfluencerProfileView() {
                 Complete your business profile to book influencers
               </p>
               <Button size="sm" variant="outline" asChild>
-                <Link href="/onboarding">Complete Profile</Link>
+                <Link href="/dashboard/business/settings">
+                  Complete Profile
+                </Link>
               </Button>
             </div>
           )}
@@ -469,18 +506,36 @@ export default function InfluencerProfileView() {
                 </div>
                 <div className="space-y-2">
                   <Label>Brief</Label>
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {BRIEF_TEMPLATES.map((t) => (
+                      <button
+                        key={t.label}
+                        type="button"
+                        onClick={() => setBrief(t.template)}
+                        className="text-[11px] px-2.5 py-1 rounded-full border border-border bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
                   <Textarea
                     placeholder="Describe what you need..."
                     value={brief}
                     onChange={(e) => setBrief(e.target.value)}
                     required
+                    rows={5}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Package Type</Label>
                   <Select
                     value={packageType}
-                    onValueChange={(v) => v && setPackageType(v)}
+                    onValueChange={(v) => {
+                      if (!v) return;
+                      setPackageType(v);
+                      const price = getListedPrice(v);
+                      if (price) setPriceOffered(price.toString());
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -495,7 +550,14 @@ export default function InfluencerProfileView() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Price Offered (₹)</Label>
+                  <div className="flex items-center justify-between">
+                    <Label>Price Offered (₹)</Label>
+                    {listedPrice && (
+                      <span className="text-[11px] text-muted-foreground">
+                        Listed: ₹{listedPrice.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
                   <Input
                     type="number"
                     value={priceOffered}
