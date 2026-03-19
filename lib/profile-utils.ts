@@ -51,10 +51,7 @@ export function getMissingItems(profile: InfluencerProfile): MissingItem[] {
     )
   )
     items.push({ label: "Set prices", weight: 15, step: 2 });
-  if (
-    !profile.portfolio_media_ids ||
-    profile.portfolio_media_ids.length === 0
-  )
+  if (!profile.portfolio_media_ids || profile.portfolio_media_ids.length === 0)
     items.push({ label: "Add portfolio", weight: 15, step: 3 });
   if (!profile.content_types || profile.content_types.length === 0)
     items.push({ label: "Add content types", weight: 15, step: 2 });

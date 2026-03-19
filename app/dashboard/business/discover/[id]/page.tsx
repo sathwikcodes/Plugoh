@@ -446,9 +446,7 @@ export default function InfluencerProfileView() {
                 Complete your business profile to book influencers
               </p>
               <Button size="sm" variant="outline" asChild>
-                <Link href="/dashboard/business/profile">
-                  Complete Profile
-                </Link>
+                <Link href="/dashboard/business/profile">Complete Profile</Link>
               </Button>
             </div>
           )}

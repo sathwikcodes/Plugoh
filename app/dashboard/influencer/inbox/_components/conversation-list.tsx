@@ -31,13 +31,10 @@ export function ConversationList({
     const q = search.toLowerCase();
     return conversations.filter((c) => {
       const brandName =
-        c.businessProfile?.business_name ||
-        c.businessProfile?.full_name ||
-        "";
+        c.businessProfile?.business_name || c.businessProfile?.full_name || "";
       const title = c.campaign.title || "";
       return (
-        brandName.toLowerCase().includes(q) ||
-        title.toLowerCase().includes(q)
+        brandName.toLowerCase().includes(q) || title.toLowerCase().includes(q)
       );
     });
   }, [conversations, search]);
@@ -90,11 +87,7 @@ export function ConversationList({
             )}
           </div>
         ) : (
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            animate="visible"
-          >
+          <motion.div variants={stagger} initial="hidden" animate="visible">
             {filtered.map((convo) => (
               <motion.div key={convo.campaign.id} variants={fadeUp}>
                 <ConversationItem

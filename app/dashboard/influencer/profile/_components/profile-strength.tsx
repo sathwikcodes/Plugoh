@@ -5,10 +5,7 @@ import { motion } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Check, ArrowRight } from "lucide-react";
-import {
-  calculateCompleteness,
-  getMissingItems,
-} from "@/lib/profile-utils";
+import { calculateCompleteness, getMissingItems } from "@/lib/profile-utils";
 import type { Database } from "@/lib/supabase/types";
 
 type InfluencerProfile =

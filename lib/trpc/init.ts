@@ -1,10 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
-import {
-  authenticateUser,
-  createServiceClient,
-} from "@/lib/supabase/server";
+import { authenticateUser, createServiceClient } from "@/lib/supabase/server";
 import type { User } from "@supabase/supabase-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/types";

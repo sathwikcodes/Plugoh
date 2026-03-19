@@ -30,8 +30,7 @@ export function ConversationList({
     if (!search.trim()) return conversations;
     const q = search.toLowerCase();
     return conversations.filter((c) => {
-      const influencerName =
-        c.influencerProfile?.full_name || "";
+      const influencerName = c.influencerProfile?.full_name || "";
       const title = c.campaign.title || "";
       return (
         influencerName.toLowerCase().includes(q) ||
@@ -88,11 +87,7 @@ export function ConversationList({
             )}
           </div>
         ) : (
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            animate="visible"
-          >
+          <motion.div variants={stagger} initial="hidden" animate="visible">
             {filtered.map((convo) => (
               <motion.div key={convo.campaign.id} variants={fadeUp}>
                 <ConversationItem

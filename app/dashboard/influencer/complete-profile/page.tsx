@@ -46,10 +46,7 @@ import {
   TURNAROUND_OPTIONS,
   TURNAROUND_LABELS,
 } from "@/lib/constants";
-import {
-  calculateCompleteness,
-  canGoLive,
-} from "@/lib/profile-utils";
+import { calculateCompleteness, canGoLive } from "@/lib/profile-utils";
 import type { Database } from "@/lib/supabase/types";
 
 type InfluencerProfile =
@@ -90,7 +87,9 @@ export default function CompleteProfile() {
 
   // React Query hooks for reads
   const { data: ip, isLoading: ipLoading } = useMyInfluencerProfile(user?.id);
-  const { data: media = [], isLoading: mediaLoading } = useInstagramMedia(user?.id);
+  const { data: media = [], isLoading: mediaLoading } = useInstagramMedia(
+    user?.id,
+  );
   const loading = authLoading || ipLoading || mediaLoading;
 
   // Form state

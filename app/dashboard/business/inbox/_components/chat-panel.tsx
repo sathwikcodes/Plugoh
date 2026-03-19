@@ -6,7 +6,10 @@ import {
   useCampaignMessages,
   useSendMessage,
 } from "@/hooks/queries/use-campaign-messages";
-import { MessageBubble, SystemMessage } from "@/components/campaign/message-bubble";
+import {
+  MessageBubble,
+  SystemMessage,
+} from "@/components/campaign/message-bubble";
 import { MessageInput } from "@/components/campaign/message-input";
 import { ChatHeader } from "./chat-header";
 import { Loader2, MessageSquare } from "lucide-react";
@@ -25,11 +28,12 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const { campaign, influencerProfile } = conversation;
   const { data: messages, isLoading } = useCampaignMessages(campaign.id);
   const sendMessage = useSendMessage();
-  const insertFile = useMutation(trpc.campaignFile.insertCampaignFile.mutationOptions());
+  const insertFile = useMutation(
+    trpc.campaignFile.insertCampaignFile.mutationOptions(),
+  );
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const influencerName =
-    influencerProfile?.full_name || "Influencer";
+  const influencerName = influencerProfile?.full_name || "Influencer";
   const brandName =
     myProfile?.business_name || myProfile?.full_name || "Business";
   const disabled = campaign.status === "completed";

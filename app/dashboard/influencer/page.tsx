@@ -106,8 +106,13 @@ export default function InfluencerDashboard() {
 
       for (const c of campaigns) {
         if (c.status === "pending") p.push(c);
-        else if (c.status === "accepted") { a.push(c); te += c.price_offered || 0; }
-        else if (c.status === "completed") { comp.push(c); te += c.price_offered || 0; }
+        else if (c.status === "accepted") {
+          a.push(c);
+          te += c.price_offered || 0;
+        } else if (c.status === "completed") {
+          comp.push(c);
+          te += c.price_offered || 0;
+        }
 
         // Build filtered list in same pass
         if (filter === "all" ? c.status !== "rejected" : c.status === filter) {

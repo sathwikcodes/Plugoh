@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,12 +35,21 @@ export default function BusinessDashboard() {
   const { user, profile, isProfileComplete, loading } = useAuth();
   const { data: campaigns = [] } = useCampaigns(user?.id, "business");
 
-  const active = campaigns.filter((c) => c.status === "accepted").length;
-  const pending = campaigns.filter((c) => c.status === "pending").length;
-  const completed = campaigns.filter((c) => c.status === "completed").length;
-  const totalSpent = campaigns
-    .filter((c) => c.status === "completed")
-    .reduce((sum, c) => sum + (c.price_offered || 0), 0);
+  const { active, pending, completed, totalSpent } = useMemo(() => {
+    let a = 0,
+      p = 0,
+      comp = 0,
+      spent = 0;
+    for (const c of campaigns) {
+      if (c.status === "accepted") a++;
+      else if (c.status === "pending") p++;
+      else if (c.status === "completed") {
+        comp++;
+        spent += c.price_offered || 0;
+      }
+    }
+    return { active: a, pending: p, completed: comp, totalSpent: spent };
+  }, [campaigns]);
 
   if (loading) {
     return (

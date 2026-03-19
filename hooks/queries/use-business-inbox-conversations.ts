@@ -76,6 +76,7 @@ export function useBusinessInboxConversations(userId: string | undefined) {
     queryKey: ["business-inbox-conversations", userId],
     queryFn: () => fetchBusinessConversations(userId!),
     enabled: !!userId,
+    staleTime: 30_000,
   });
 
   useEffect(() => {

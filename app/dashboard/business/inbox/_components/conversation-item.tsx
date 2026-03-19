@@ -21,8 +21,7 @@ export function ConversationItem({
 }: ConversationItemProps) {
   const { campaign, influencerProfile, lastMessage } = conversation;
 
-  const influencerName =
-    influencerProfile?.full_name || "Influencer";
+  const influencerName = influencerProfile?.full_name || "Influencer";
   const initials = influencerName
     .split(" ")
     .map((w) => w[0])

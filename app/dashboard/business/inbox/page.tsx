@@ -15,8 +15,9 @@ export default function BusinessInboxPage() {
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("chat");
 
-  const { data: conversations = [], isLoading } =
-    useBusinessInboxConversations(user?.id);
+  const { data: conversations = [], isLoading } = useBusinessInboxConversations(
+    user?.id,
+  );
 
   const selectedConversation = useMemo(
     () => conversations.find((c) => c.campaign.id === selectedId) ?? null,

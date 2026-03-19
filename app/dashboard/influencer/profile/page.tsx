@@ -2,7 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { useMyInfluencerProfile, useUpdateInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
+import {
+  useMyInfluencerProfile,
+  useUpdateInfluencerProfile,
+} from "@/hooks/queries/use-influencer-profiles";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { usePortfolioMedia } from "@/hooks/queries/use-instagram-media";
 import { useToast } from "@/hooks/use-toast";

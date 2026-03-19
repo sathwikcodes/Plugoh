@@ -16,19 +16,17 @@ export const profileRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { db, user } = ctx;
 
-      const { error } = await db
-        .from("profiles")
-        .upsert(
-          {
-            id: user.id,
-            full_name: input.fullName,
-            business_name: input.businessName,
-            business_type: input.businessType || null,
-            location: input.location || null,
-            phone: input.phone || null,
-          },
-          { onConflict: "id" },
-        );
+      const { error } = await db.from("profiles").upsert(
+        {
+          id: user.id,
+          full_name: input.fullName,
+          business_name: input.businessName,
+          business_type: input.businessType || null,
+          location: input.location || null,
+          phone: input.phone || null,
+        },
+        { onConflict: "id" },
+      );
 
       if (error) {
         throw new TRPCError({

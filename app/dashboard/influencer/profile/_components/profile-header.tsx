@@ -137,8 +137,7 @@ export default function ProfileHeader({
                 )}
                 {profile.languages && profile.languages.length > 0 && (
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Globe className="h-3 w-3" />{" "}
-                    {profile.languages.join(", ")}
+                    <Globe className="h-3 w-3" /> {profile.languages.join(", ")}
                   </span>
                 )}
               </div>
@@ -188,9 +187,7 @@ export default function ProfileHeader({
           <div
             className={cn(
               "flex items-center justify-between rounded-xl px-3 py-2.5",
-              profile.is_active
-                ? "bg-green-500/10"
-                : "bg-amber-500/10",
+              profile.is_active ? "bg-green-500/10" : "bg-amber-500/10",
             )}
           >
             <div className="flex items-center gap-2">
@@ -206,9 +203,7 @@ export default function ProfileHeader({
                   profile.is_active ? "text-green-400" : "text-amber-400",
                 )}
               >
-                {profile.is_active
-                  ? "Visible to brands"
-                  : "Hidden from brands"}
+                {profile.is_active ? "Visible to brands" : "Hidden from brands"}
               </span>
             </div>
             <Switch
