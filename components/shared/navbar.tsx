@@ -64,7 +64,7 @@ export function Navbar() {
         <nav className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
-              {role !== "influencer" ? (
+              {role !== "influencer" && role !== "business" ? (
                 <Button variant="ghost" asChild>
                   <Link href={dashboardPath}>
                     <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
@@ -98,7 +98,7 @@ export function Navbar() {
                       router.push(
                         role === "influencer"
                           ? "/dashboard/influencer/profile"
-                          : "/dashboard/business/settings",
+                          : "/dashboard/business/profile",
                       )
                     }
                   >
@@ -122,7 +122,7 @@ export function Navbar() {
         {/* Mobile nav */}
         <div className="flex items-center gap-1 md:hidden">
           {user ? <NotificationDrawer /> : null}
-          {user && role === "influencer" ? (
+          {user && (role === "influencer" || role === "business") ? (
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Button
@@ -219,7 +219,7 @@ export function Navbar() {
                           href={
                             role === "influencer"
                               ? "/dashboard/influencer/profile"
-                              : "/dashboard/business/settings"
+                              : "/dashboard/business/profile"
                           }
                         >
                           <User className="mr-3 h-5 w-5" /> My Profile

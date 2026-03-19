@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
-import { supabase } from "@/lib/supabase/client";
+import { useMyInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
+import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
+import { useTRPC } from "@/lib/trpc/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,11 +46,14 @@ import {
   TURNAROUND_OPTIONS,
   TURNAROUND_LABELS,
 } from "@/lib/constants";
+import {
+  calculateCompleteness,
+  canGoLive,
+} from "@/lib/profile-utils";
 import type { Database } from "@/lib/supabase/types";
 
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
-type InstagramMedia = Database["public"]["Tables"]["instagram_media"]["Row"];
 
 const CONTENT_TYPES = [
   "Reels",
@@ -68,47 +74,24 @@ const STEPS = [
   { id: 4, label: "Preview", icon: Eye },
 ];
 
-function calculateCompleteness(profile: InfluencerProfile): number {
-  let score = 0;
-  if (profile.display_name) score += 10;
-  if (profile.bio) score += 10;
-  if (profile.category) score += 10;
-  if (profile.city) score += 5;
-  if (profile.languages && profile.languages.length > 0) score += 5;
-  if (
-    profile.price_per_reel ||
-    profile.price_per_post ||
-    profile.price_per_story
-  )
-    score += 15;
-  if (profile.content_types && profile.content_types.length > 0) score += 15;
-  if (profile.turnaround_time) score += 5;
-  if (profile.portfolio_media_ids && profile.portfolio_media_ids.length > 0)
-    score += 15;
-  if (profile.previous_brands && profile.previous_brands.length > 0)
-    score += 10;
-  return score;
-}
-
-function canGoLive(profile: InfluencerProfile): boolean {
-  return !!(
-    profile.display_name &&
-    profile.category &&
-    (profile.price_per_reel ||
-      profile.price_per_post ||
-      profile.price_per_story)
-  );
-}
-
 export default function CompleteProfile() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const initialStep = Number(searchParams.get("step")) || 1;
+  const [step, setStep] = useState(
+    initialStep >= 1 && initialStep <= 4 ? initialStep : 1,
+  );
   const [saving, setSaving] = useState(false);
-  const [ip, setIp] = useState<InfluencerProfile | null>(null);
-  const [media, setMedia] = useState<InstagramMedia[]>([]);
+  const [formPopulated, setFormPopulated] = useState(false);
+
+  // React Query hooks for reads
+  const { data: ip, isLoading: ipLoading } = useMyInfluencerProfile(user?.id);
+  const { data: media = [], isLoading: mediaLoading } = useInstagramMedia(user?.id);
+  const loading = authLoading || ipLoading || mediaLoading;
 
   // Form state
   const [displayName, setDisplayName] = useState("");
@@ -125,60 +108,45 @@ export default function CompleteProfile() {
   const [previousBrands, setPreviousBrands] = useState<string[]>([]);
   const [brandInput, setBrandInput] = useState("");
 
+  // Populate form state from query data (runs once when data arrives)
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-    (async () => {
-      try {
-        const [ipRes, mediaRes] = await Promise.all([
-          supabase
-            .from("influencer_profiles")
-            .select("*")
-            .eq("user_id", user.id)
-            .maybeSingle(),
-          supabase
-            .from("instagram_media")
-            .select("*")
-            .eq("user_id", user.id)
-            .order("timestamp", { ascending: false }),
-        ]);
-        if (ipRes.error) throw ipRes.error;
-        if (mediaRes.error) throw mediaRes.error;
-        if (ipRes.data) {
-          const p = ipRes.data;
-          setIp(p);
-          setDisplayName(p.display_name || "");
-          setBio(p.bio || "");
-          setCategory(p.category || "");
-          setCity(p.city || "");
-          setLanguages(p.languages || []);
-          setPriceReel(p.price_per_reel?.toString() || "");
-          setPricePost(p.price_per_post?.toString() || "");
-          setPriceStory(p.price_per_story?.toString() || "");
-          setContentTypes(p.content_types || []);
-          setTurnaroundTime(p.turnaround_time || "");
-          setPortfolioIds(p.portfolio_media_ids || []);
-          setPreviousBrands(p.previous_brands || []);
-        }
-        setMedia(mediaRes.data || []);
-      } catch (err) {
-        console.error("Failed to load profile data:", err);
+    if (formPopulated || !ip) return;
+    setDisplayName(ip.display_name || "");
+    setBio(ip.bio || "");
+    setCategory(ip.category || "");
+    setCity(ip.city || "");
+    setLanguages(ip.languages || []);
+    setPriceReel(ip.price_per_reel?.toString() || "");
+    setPricePost(ip.price_per_post?.toString() || "");
+    setPriceStory(ip.price_per_story?.toString() || "");
+    setContentTypes(ip.content_types || []);
+    setTurnaroundTime(ip.turnaround_time || "");
+    setPortfolioIds(ip.portfolio_media_ids || []);
+    setPreviousBrands(ip.previous_brands || []);
+    setFormPopulated(true);
+  }, [ip, formPopulated]);
+
+  // tRPC mutation for writes
+  const profileMutation = useMutation(
+    trpc.profile.updateInfluencerProfile.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["my-influencer-profile"] });
+        queryClient.invalidateQueries({ queryKey: ["influencer-profile"] });
+        queryClient.invalidateQueries({ queryKey: ["influencer-profiles"] });
+      },
+      onError: (err) => {
         toast({
-          title: "Failed to load profile data",
-          description: "Please try refreshing the page.",
+          title: "Error",
+          description: err.message || "Save failed",
           variant: "destructive",
         });
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [user, authLoading, toast]);
+      },
+    }),
+  );
 
-  const currentProfile = useCallback((): InfluencerProfile => {
-    return {
+  // Derive completeness + canLive directly from form state
+  const { completeness, canLive } = useMemo(() => {
+    const prof = {
       ...(ip as InfluencerProfile),
       display_name: displayName,
       bio,
@@ -192,6 +160,10 @@ export default function CompleteProfile() {
       turnaround_time: turnaroundTime,
       portfolio_media_ids: portfolioIds,
       previous_brands: previousBrands,
+    };
+    return {
+      completeness: calculateCompleteness(prof),
+      canLive: canGoLive(prof),
     };
   }, [
     ip,
@@ -209,31 +181,27 @@ export default function CompleteProfile() {
     previousBrands,
   ]);
 
+  const getProfilePayload = (goLive = false) => ({
+    displayName,
+    bio,
+    category,
+    city,
+    languages,
+    pricePerReel: Number(priceReel) || null,
+    pricePerPost: Number(pricePost) || null,
+    pricePerStory: Number(priceStory) || null,
+    contentTypes: contentTypes.length > 0 ? contentTypes : null,
+    turnaroundTime: turnaroundTime || null,
+    portfolioMediaIds: portfolioIds.length > 0 ? portfolioIds : null,
+    previousBrands: previousBrands.length > 0 ? previousBrands : null,
+    ...(goLive ? { isActive: true } : {}),
+  });
+
   const saveProgress = async () => {
     if (!ip) return;
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("influencer_profiles")
-        .update({
-          display_name: displayName,
-          bio,
-          category,
-          city,
-          languages,
-          price_per_reel: Number(priceReel) || null,
-          price_per_post: Number(pricePost) || null,
-          price_per_story: Number(priceStory) || null,
-          content_types: contentTypes.length > 0 ? contentTypes : null,
-          turnaround_time: turnaroundTime || null,
-          portfolio_media_ids: portfolioIds.length > 0 ? portfolioIds : null,
-          previous_brands: previousBrands.length > 0 ? previousBrands : null,
-        })
-        .eq("id", ip.id);
-      if (error) throw error;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Save failed";
-      toast({ title: "Error", description: message, variant: "destructive" });
+      await profileMutation.mutateAsync(getProfilePayload());
     } finally {
       setSaving(false);
     }
@@ -250,8 +218,7 @@ export default function CompleteProfile() {
 
   const handleGoLive = async () => {
     if (!ip) return;
-    const prof = currentProfile();
-    if (!canGoLive(prof)) {
+    if (!canLive) {
       toast({
         title: "Profile incomplete",
         description:
@@ -262,25 +229,7 @@ export default function CompleteProfile() {
     }
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("influencer_profiles")
-        .update({
-          display_name: displayName,
-          bio,
-          category,
-          city,
-          languages,
-          price_per_reel: Number(priceReel) || null,
-          price_per_post: Number(pricePost) || null,
-          price_per_story: Number(priceStory) || null,
-          content_types: contentTypes.length > 0 ? contentTypes : null,
-          turnaround_time: turnaroundTime || null,
-          portfolio_media_ids: portfolioIds.length > 0 ? portfolioIds : null,
-          previous_brands: previousBrands.length > 0 ? previousBrands : null,
-          is_active: true,
-        })
-        .eq("id", ip.id);
-      if (error) throw error;
+      await profileMutation.mutateAsync(getProfilePayload(true));
       toast({
         title: ip?.is_active ? "Profile updated!" : "You're live!",
         description: ip?.is_active
@@ -351,9 +300,6 @@ export default function CompleteProfile() {
     );
   }
 
-  const prof = currentProfile();
-  const completeness = calculateCompleteness(prof);
-  const canLive = canGoLive(prof);
   const formatNum = (n: number | null) => {
     if (!n) return "—";
     if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";

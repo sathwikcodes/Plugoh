@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
-import { supabase } from "@/lib/supabase/client";
+import { useCampaigns } from "@/hooks/queries/use-campaigns";
+import { useTRPC } from "@/lib/trpc/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, X, Inbox, Loader2, ArrowRight } from "lucide-react";
@@ -17,9 +19,6 @@ import {
   stagger,
   fadeUp,
 } from "@/lib/animations";
-import type { Database } from "@/lib/supabase/types";
-
-type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 
 const FILTERS = ["all", "pending", "accepted", "completed"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -41,81 +40,58 @@ const statusBorderColor: Record<string, string> = {
 export default function CampaignsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [loading, setLoading] = useState(true);
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const { data: campaigns = [], isLoading: loading } = useCampaigns(
+    user?.id,
+    "influencer",
+  );
   const [filter, setFilter] = useState<Filter>("all");
 
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      try {
-        const { data, error } = await supabase
-          .from("campaigns")
-          .select("*")
-          .eq("influencer_id", user.id)
-          .order("created_at", { ascending: false });
-        if (error) throw error;
-        setCampaigns(data || []);
-      } catch {
-        toast({
-          title: "Failed to load campaigns",
-          description: "Please try refreshing.",
-          variant: "destructive",
+  const statusMutation = useMutation(
+    trpc.campaign.updateStatus.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+        queryClient.invalidateQueries({ queryKey: ["campaign"] });
+        queryClient.invalidateQueries({ queryKey: ["inbox-conversations"] });
+        queryClient.invalidateQueries({
+          queryKey: ["business-inbox-conversations"],
         });
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [user]);
-
-  const updateStatus = useCallback(
-    async (id: string, status: string) => {
-      const campaign = campaigns.find((c) => c.id === id);
-      const { error } = await supabase
-        .from("campaigns")
-        .update({ status })
-        .eq("id", id);
-      if (error) {
+        toast({ title: "Campaign updated" });
+      },
+      onError: (err) => {
         toast({
           title: "Error",
-          description: error.message,
+          description: err.message,
           variant: "destructive",
         });
-        return;
-      }
-      setCampaigns((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, status } : c)),
-      );
-      toast({ title: `Campaign ${status}` });
-
-      if (campaign) {
-        const notifType =
-          status === "accepted"
-            ? "booking_accepted"
-            : status === "rejected"
-              ? "booking_rejected"
-              : "booking_completed";
-        await supabase.from("notifications").insert({
-          user_id: campaign.business_id,
-          type: notifType,
-          data: {
-            title: campaign.title || "Untitled",
-            campaign_id: campaign.id,
-          },
-        });
-      }
-    },
-    [campaigns],
+      },
+    }),
   );
 
+  const updateStatus = (id: string, status: string) => {
+    statusMutation.mutate({
+      campaignId: id,
+      status: status as "accepted" | "rejected" | "completed",
+    });
+  };
+
   const { pending, active, completed, filtered } = useMemo(() => {
-    const p = campaigns.filter((c) => c.status === "pending");
-    const a = campaigns.filter((c) => c.status === "accepted");
-    const comp = campaigns.filter((c) => c.status === "completed");
-    const f =
-      filter === "all"
-        ? campaigns.filter((c) => c.status !== "rejected")
-        : campaigns.filter((c) => c.status === filter);
+    const p: typeof campaigns = [];
+    const a: typeof campaigns = [];
+    const comp: typeof campaigns = [];
+    const f: typeof campaigns = [];
+
+    for (const c of campaigns) {
+      if (c.status === "pending") p.push(c);
+      else if (c.status === "accepted") a.push(c);
+      else if (c.status === "completed") comp.push(c);
+
+      if (filter === "all" ? c.status !== "rejected" : c.status === filter) {
+        f.push(c);
+      }
+    }
+
     return { pending: p, active: a, completed: comp, filtered: f };
   }, [campaigns, filter]);
 

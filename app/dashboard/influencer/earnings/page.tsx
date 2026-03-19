@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useAuth } from "@/contexts/auth-context";
+import { useCampaigns } from "@/hooks/queries/use-campaigns";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import {
   IndianRupee,
@@ -19,53 +20,44 @@ import { cn } from "@/lib/utils";
 import { stagger, fadeUp } from "@/lib/animations";
 import type { Database } from "@/lib/supabase/types";
 
-type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function EarningsPage() {
   const { user } = useAuth();
-  const { toast } = useToast();
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [businessProfiles, setBusinessProfiles] = useState<
-    Map<string, Profile>
-  >(new Map());
-  const [loading, setLoading] = useState(true);
+  const { data: allCampaigns = [], isLoading: campaignsLoading } = useCampaigns(
+    user?.id,
+    "influencer",
+  );
 
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      try {
-        const { data, error } = await supabase
-          .from("campaigns")
-          .select("*")
-          .eq("influencer_id", user.id)
-          .in("status", ["accepted", "completed"])
-          .order("updated_at", { ascending: false });
-        if (error) throw error;
+  // Only show accepted + completed campaigns for earnings
+  const campaigns = useMemo(
+    () =>
+      allCampaigns.filter(
+        (c) => c.status === "accepted" || c.status === "completed",
+      ),
+    [allCampaigns],
+  );
 
-        const camps = data || [];
-        setCampaigns(camps);
+  // Fetch business profiles for the campaigns (depends on campaign data)
+  const businessIds = useMemo(
+    () => [...new Set(campaigns.map((c) => c.business_id))],
+    [campaigns],
+  );
 
-        const bids = [...new Set(camps.map((c) => c.business_id))];
-        if (bids.length > 0) {
-          const { data: profiles } = await supabase
-            .from("profiles")
-            .select("*")
-            .in("id", bids);
-          setBusinessProfiles(new Map((profiles || []).map((p) => [p.id, p])));
-        }
-      } catch (err) {
-        console.error("Failed to load earnings:", err);
-        toast({
-          title: "Failed to load earnings",
-          description: "Please try refreshing.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [user]);
+  const { data: businessProfiles = new Map<string, Profile>() } = useQuery({
+    queryKey: ["business-profiles-batch", businessIds],
+    queryFn: async () => {
+      if (businessIds.length === 0) return new Map<string, Profile>();
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .in("id", businessIds);
+      if (error) throw error;
+      return new Map((data || []).map((p) => [p.id, p]));
+    },
+    enabled: businessIds.length > 0,
+    staleTime: 30_000,
+  });
 
   const {
     completed,
@@ -145,7 +137,7 @@ export default function EarningsPage() {
     };
   }, [campaigns]);
 
-  if (loading) {
+  if (campaignsLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

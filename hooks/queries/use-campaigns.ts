@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
 
@@ -21,6 +21,7 @@ export function useCampaigns(
       return data as Campaign[];
     },
     enabled: !!userId,
+    staleTime: 30_000,
   });
 }
 
@@ -37,24 +38,6 @@ export function useCampaign(id: string | undefined, userId?: string) {
       return data as Campaign | null;
     },
     enabled: !!id,
-  });
-}
-
-export function useUpdateCampaignStatus() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from("campaigns")
-        .update({ status })
-        .eq("id", id);
-      if (error) throw error;
-      return { id, status };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
-      queryClient.invalidateQueries({ queryKey: ["campaign"] });
-    },
+    staleTime: 30_000,
   });
 }

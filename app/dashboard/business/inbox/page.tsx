@@ -3,21 +3,20 @@
 import { useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { useInboxConversations } from "@/hooks/queries/use-inbox-conversations";
+import { useBusinessInboxConversations } from "@/hooks/queries/use-business-inbox-conversations";
 import { ConversationList } from "./_components/conversation-list";
 import { ChatPanel } from "./_components/chat-panel";
 import { InboxEmptyState } from "./_components/inbox-empty-state";
 import { AnimatePresence, motion } from "framer-motion";
 
-export default function InboxPage() {
+export default function BusinessInboxPage() {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("chat");
 
-  const { data: conversations = [], isLoading } = useInboxConversations(
-    user?.id,
-  );
+  const { data: conversations = [], isLoading } =
+    useBusinessInboxConversations(user?.id);
 
   const selectedConversation = useMemo(
     () => conversations.find((c) => c.campaign.id === selectedId) ?? null,
@@ -26,20 +25,17 @@ export default function InboxPage() {
 
   const handleSelect = useCallback(
     (campaignId: string) => {
-      router.push(`/dashboard/influencer/inbox?chat=${campaignId}`);
+      router.push(`/dashboard/business/inbox?chat=${campaignId}`);
     },
     [router],
   );
 
   const handleBack = useCallback(() => {
-    router.push("/dashboard/influencer/inbox");
+    router.push("/dashboard/business/inbox");
   }, [router]);
 
   return (
     <div className="h-[calc(100dvh-4rem)] flex overflow-hidden">
-      {/* Desktop: always show both panels */}
-      {/* Mobile: show list OR chat */}
-
       {/* Left panel — conversation list */}
       <div
         className={

@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
-import { supabase } from "@/lib/supabase/client";
+import { useMyInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
+import { useCampaigns } from "@/hooks/queries/use-campaigns";
+import { useTRPC } from "@/lib/trpc/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -31,11 +34,6 @@ import {
   fadeUp,
 } from "@/lib/animations";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import type { Database } from "@/lib/supabase/types";
-
-type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
-type InfluencerProfile =
-  Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
 const FILTERS = ["all", "pending", "accepted", "completed"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -57,77 +55,74 @@ const statusBorderColor: Record<string, string> = {
 export default function InfluencerDashboard() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
-  const [ip, setIp] = useState<InfluencerProfile | null>(null);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [loading, setLoading] = useState(true);
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  const { data: ip, isLoading: ipLoading } = useMyInfluencerProfile(user?.id);
+  const { data: campaigns = [], isLoading: campaignsLoading } = useCampaigns(
+    user?.id,
+    "influencer",
+  );
+
   const [filter, setFilter] = useState<Filter>("all");
 
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      try {
-        const [ipRes, campRes] = await Promise.all([
-          supabase
-            .from("influencer_profiles")
-            .select("*")
-            .eq("user_id", user.id)
-            .maybeSingle(),
-          supabase
-            .from("campaigns")
-            .select("*")
-            .eq("influencer_id", user.id)
-            .order("created_at", { ascending: false }),
-        ]);
-        if (ipRes.error) throw ipRes.error;
-        if (campRes.error) throw campRes.error;
-        setIp(ipRes.data);
-        setCampaigns(campRes.data || []);
-      } catch (err) {
-        console.error("Failed to load dashboard:", err);
+  const statusMutation = useMutation(
+    trpc.campaign.updateStatus.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+        queryClient.invalidateQueries({ queryKey: ["campaign"] });
+        queryClient.invalidateQueries({ queryKey: ["inbox-conversations"] });
+        queryClient.invalidateQueries({
+          queryKey: ["business-inbox-conversations"],
+        });
+        toast({ title: "Campaign updated" });
+      },
+      onError: (err) => {
         toast({
-          title: "Failed to load dashboard",
-          description: "Please try refreshing the page.",
+          title: "Error",
+          description: err.message,
           variant: "destructive",
         });
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [user, toast]);
+      },
+    }),
+  );
 
-  const updateStatus = async (id: string, status: string) => {
-    const campaign = campaigns.find((c) => c.id === id);
-    const { error } = await supabase
-      .from("campaigns")
-      .update({ status })
-      .eq("id", id);
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-    setCampaigns((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, status } : c)),
-    );
-    toast({ title: `Campaign ${status}` });
-
-    if (campaign) {
-      const notifType =
-        status === "accepted"
-          ? "booking_accepted"
-          : status === "rejected"
-            ? "booking_rejected"
-            : "booking_completed";
-      await supabase.from("notifications").insert({
-        user_id: campaign.business_id,
-        type: notifType,
-        data: { title: campaign.title || "Untitled", campaign_id: campaign.id },
-      });
-    }
+  const updateStatus = (id: string, status: string) => {
+    statusMutation.mutate({
+      campaignId: id,
+      status: status as "accepted" | "rejected" | "completed",
+    });
   };
+
+  const loading = ipLoading || campaignsLoading;
+
+  const { pending, active, completed, totalEarnings, filtered } =
+    useMemo(() => {
+      const p: typeof campaigns = [];
+      const a: typeof campaigns = [];
+      const comp: typeof campaigns = [];
+      const f: typeof campaigns = [];
+      let te = 0;
+
+      for (const c of campaigns) {
+        if (c.status === "pending") p.push(c);
+        else if (c.status === "accepted") { a.push(c); te += c.price_offered || 0; }
+        else if (c.status === "completed") { comp.push(c); te += c.price_offered || 0; }
+
+        // Build filtered list in same pass
+        if (filter === "all" ? c.status !== "rejected" : c.status === filter) {
+          f.push(c);
+        }
+      }
+
+      return {
+        pending: p,
+        active: a,
+        completed: comp,
+        totalEarnings: te,
+        filtered: f,
+      };
+    }, [campaigns, filter]);
 
   if (loading) {
     return (
@@ -157,19 +152,6 @@ export default function InfluencerDashboard() {
       </div>
     );
   }
-
-  const pending = campaigns.filter((c) => c.status === "pending");
-  const active = campaigns.filter((c) => c.status === "accepted");
-  const completed = campaigns.filter((c) => c.status === "completed");
-  const totalEarnings = [...active, ...completed].reduce(
-    (sum, c) => sum + (c.price_offered || 0),
-    0,
-  );
-
-  const filtered =
-    filter === "all"
-      ? campaigns.filter((c) => c.status !== "rejected")
-      : campaigns.filter((c) => c.status === filter);
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)]">

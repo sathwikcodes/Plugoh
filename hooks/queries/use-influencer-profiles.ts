@@ -17,6 +17,7 @@ export function useInfluencerProfiles() {
       if (error) throw error;
       return data as InfluencerProfile[];
     },
+    staleTime: 30_000,
   });
 }
 
@@ -33,6 +34,7 @@ export function useInfluencerProfile(id: string | undefined) {
       return data as InfluencerProfile | null;
     },
     enabled: !!id,
+    staleTime: 30_000,
   });
 }
 
@@ -49,6 +51,7 @@ export function useMyInfluencerProfile(userId: string | undefined) {
       return data as InfluencerProfile | null;
     },
     enabled: !!userId,
+    staleTime: 30_000,
   });
 }
 

@@ -147,7 +147,7 @@ export default function CampaignsList() {
             </div>
             {campaigns.length === 0 ? (
               <Button asChild size="lg" className="h-12">
-                <Link href="/dashboard/business/influencers">
+                <Link href="/dashboard/business/discover">
                   Browse Influencers <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

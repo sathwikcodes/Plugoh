@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
-import { supabase } from "@/lib/supabase/client";
+import { useCampaign } from "@/hooks/queries/use-campaigns";
+import { useProfile } from "@/hooks/queries/use-profile";
+import { useTRPC } from "@/lib/trpc/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,10 +24,6 @@ import {
 } from "lucide-react";
 import { CampaignChat } from "@/components/campaign/campaign-chat";
 import { useToast } from "@/hooks/use-toast";
-import type { Database } from "@/lib/supabase/types";
-
-type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
-type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 const statusColor = (s: string) => {
   switch (s) {
@@ -47,61 +45,41 @@ export default function InfluencerCampaignDetail() {
   const id = params?.id as string;
   const { user, profile: myProfile } = useAuth();
   const { toast } = useToast();
-  const [campaign, setCampaign] = useState<Campaign | null>(null);
-  const [businessProfile, setBusinessProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!id || !user) return;
-    supabase
-      .from("campaigns")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle()
-      .then(({ data }) => {
-        setCampaign(data);
-        setLoading(false);
-        if (data?.business_id) {
-          supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", data.business_id)
-            .maybeSingle()
-            .then(({ data: bp }) => setBusinessProfile(bp));
-        }
-      });
-  }, [id, user]);
+  const { data: campaign, isLoading: campaignLoading } = useCampaign(id);
+  const { data: businessProfile } = useProfile(campaign?.business_id);
 
-  const updateStatus = async (status: string) => {
-    if (!campaign) return;
-    const { error } = await supabase
-      .from("campaigns")
-      .update({ status })
-      .eq("id", campaign.id);
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-    setCampaign({ ...campaign, status });
-    toast({ title: `Campaign ${status}` });
-    const notifType =
-      status === "accepted"
-        ? "booking_accepted"
-        : status === "rejected"
-          ? "booking_rejected"
-          : "booking_completed";
-    await supabase.from("notifications").insert({
-      user_id: campaign.business_id,
-      type: notifType,
-      data: { title: campaign.title || "Untitled", campaign_id: campaign.id },
+  const statusMutation = useMutation(
+    trpc.campaign.updateStatus.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+        queryClient.invalidateQueries({ queryKey: ["campaign"] });
+        queryClient.invalidateQueries({ queryKey: ["inbox-conversations"] });
+        queryClient.invalidateQueries({
+          queryKey: ["business-inbox-conversations"],
+        });
+        toast({ title: "Campaign updated" });
+      },
+      onError: (err) => {
+        toast({
+          title: "Error",
+          description: err.message,
+          variant: "destructive",
+        });
+      },
+    }),
+  );
+
+  const updateStatus = (status: string) => {
+    statusMutation.mutate({
+      campaignId: id,
+      status: status as "accepted" | "rejected" | "completed",
     });
   };
 
-  if (loading) {
+  if (campaignLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

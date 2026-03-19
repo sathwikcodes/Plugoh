@@ -17,6 +17,7 @@ export function useInstagramMedia(userId: string | undefined) {
       return data as InstagramMedia[];
     },
     enabled: !!userId,
+    staleTime: 30_000,
   });
 }
 

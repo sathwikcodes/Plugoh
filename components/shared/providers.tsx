@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SentryUserIdentifier } from "@/components/shared/sentry-user-identifier";
+import { TRPCProvider, trpcClient } from "@/lib/trpc/client";
 import { useState } from "react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -23,13 +24,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
-          <SentryUserIdentifier />
-          {children}
-          <Toaster />
-        </AuthProvider>
-      </TooltipProvider>
+      <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
+        <TooltipProvider>
+          <AuthProvider>
+            <SentryUserIdentifier />
+            {children}
+            <Toaster />
+          </AuthProvider>
+        </TooltipProvider>
+      </TRPCProvider>
     </QueryClientProvider>
   );
 }

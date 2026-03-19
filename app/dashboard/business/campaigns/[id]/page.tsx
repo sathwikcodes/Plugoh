@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
-import { supabase } from "@/lib/supabase/client";
+import { useCampaign } from "@/hooks/queries/use-campaigns";
+import { useInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
+import { useTRPC } from "@/lib/trpc/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,11 +32,6 @@ import {
 import { CampaignChat } from "@/components/campaign/campaign-chat";
 import { useToast } from "@/hooks/use-toast";
 import { statusColor } from "@/lib/format";
-import type { Database } from "@/lib/supabase/types";
-
-type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
-type InfluencerProfile =
-  Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
 const STATUS_STEPS = [
   { key: "pending", label: "Pending" },
@@ -108,71 +106,65 @@ export default function BusinessCampaignDetail() {
   const id = params?.id as string;
   const { user, profile } = useAuth();
   const { toast } = useToast();
-  const [campaign, setCampaign] = useState<Campaign | null>(null);
-  const [influencerProfile, setInfluencerProfile] =
-    useState<InfluencerProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
-  // Edit state
+  const { data: campaign, isLoading: campaignLoading } = useCampaign(
+    id,
+    user?.id,
+  );
+  const { data: influencerProfile } = useInfluencerProfile(
+    campaign?.influencer_profile_id ?? undefined,
+  );
+
+  // Edit state (UI-only)
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editBrief, setEditBrief] = useState("");
-  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!id || !user) return;
-    (async () => {
-      try {
-        const { data, error } = await supabase
-          .from("campaigns")
-          .select("*")
-          .eq("id", id)
-          .eq("business_id", user.id)
-          .maybeSingle();
-        if (error) throw error;
-        setCampaign(data);
-        if (data?.influencer_profile_id) {
-          const { data: ip, error: ipError } = await supabase
-            .from("influencer_profiles")
-            .select("*")
-            .eq("id", data.influencer_profile_id)
-            .maybeSingle();
-          if (ipError) throw ipError;
-          setInfluencerProfile(ip);
-        }
-      } catch (err) {
-        console.error("Failed to load campaign:", err);
+  const statusMutation = useMutation(
+    trpc.campaign.updateStatus.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+        queryClient.invalidateQueries({ queryKey: ["campaign"] });
+        queryClient.invalidateQueries({ queryKey: ["inbox-conversations"] });
+        queryClient.invalidateQueries({
+          queryKey: ["business-inbox-conversations"],
+        });
+        toast({ title: "Campaign updated" });
+      },
+      onError: (err) => {
         toast({
-          title: "Failed to load campaign",
-          description: "Please try refreshing the page.",
+          title: "Error",
+          description: err.message,
           variant: "destructive",
         });
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [id, user, toast]);
+      },
+    }),
+  );
 
-  const updateStatus = async (status: string) => {
-    if (!campaign) return;
-    const { error } = await supabase
-      .from("campaigns")
-      .update({ status })
-      .eq("id", campaign.id);
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-    setCampaign({ ...campaign, status });
-    toast({ title: `Campaign ${status}` });
-    await supabase.from("notifications").insert({
-      user_id: campaign.influencer_id,
-      type: status === "completed" ? "booking_completed" : "booking_accepted",
-      data: { title: campaign.title || "Untitled", campaign_id: campaign.id },
+  const editMutation = useMutation(
+    trpc.campaign.editCampaign.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["campaign", id] });
+        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+        setIsEditing(false);
+        toast({ title: "Campaign updated" });
+      },
+      onError: (err) => {
+        toast({
+          title: "Error",
+          description: err.message,
+          variant: "destructive",
+        });
+      },
+    }),
+  );
+
+  const updateStatus = (status: string) => {
+    statusMutation.mutate({
+      campaignId: id,
+      status: status as "accepted" | "rejected" | "completed",
     });
   };
 
@@ -187,27 +179,16 @@ export default function BusinessCampaignDetail() {
     setIsEditing(false);
   };
 
-  const saveEdits = async () => {
+  const saveEdits = () => {
     if (!campaign) return;
-    setSaving(true);
-    try {
-      const { error } = await supabase
-        .from("campaigns")
-        .update({ title: editTitle, brief: editBrief })
-        .eq("id", campaign.id);
-      if (error) throw error;
-      setCampaign({ ...campaign, title: editTitle, brief: editBrief });
-      setIsEditing(false);
-      toast({ title: "Campaign updated" });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to save";
-      toast({ title: "Error", description: message, variant: "destructive" });
-    } finally {
-      setSaving(false);
-    }
+    editMutation.mutate({
+      campaignId: campaign.id,
+      title: editTitle,
+      brief: editBrief,
+    });
   };
 
-  if (loading) {
+  if (campaignLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -229,6 +210,7 @@ export default function BusinessCampaignDetail() {
   const isAccepted =
     campaign.status === "accepted" || campaign.status === "completed";
   const isPending = campaign.status === "pending";
+  const saving = editMutation.isPending;
 
   return (
     <div className="container max-w-3xl py-6 space-y-6 animate-fade-in">
@@ -388,7 +370,7 @@ export default function BusinessCampaignDetail() {
                     </div>
                     <Button size="sm" variant="outline" asChild>
                       <Link
-                        href={`/dashboard/business/influencers/${influencerProfile.id}`}
+                        href={`/dashboard/business/discover/${influencerProfile.id}`}
                       >
                         View Profile
                       </Link>

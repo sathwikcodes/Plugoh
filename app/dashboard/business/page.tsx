@@ -61,7 +61,7 @@ export default function BusinessDashboard() {
           </p>
         </div>
         <Button asChild className="h-12 sm:h-10">
-          <Link href="/dashboard/business/influencers">
+          <Link href="/dashboard/business/discover">
             <Search className="mr-2 h-4 w-4" /> Find Influencers
           </Link>
         </Button>
@@ -83,7 +83,7 @@ export default function BusinessDashboard() {
                 </div>
               </div>
               <Button size="sm" asChild>
-                <Link href="/dashboard/business/settings">
+                <Link href="/dashboard/business/profile">
                   Complete Profile <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
@@ -152,7 +152,7 @@ export default function BusinessDashboard() {
 
       {/* Quick Actions */}
       <div className="grid gap-3 grid-cols-3">
-        <Link href="/dashboard/business/influencers">
+        <Link href="/dashboard/business/discover">
           <Card className="h-full transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
             <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
@@ -172,7 +172,7 @@ export default function BusinessDashboard() {
             </CardContent>
           </Card>
         </Link>
-        <Link href="/dashboard/business/settings">
+        <Link href="/dashboard/business/profile">
           <Card className="h-full transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
             <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
@@ -211,7 +211,7 @@ export default function BusinessDashboard() {
                 </p>
               </div>
               <Button asChild size="lg" className="h-12">
-                <Link href="/dashboard/business/influencers">
+                <Link href="/dashboard/business/discover">
                   Browse Influencers <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
