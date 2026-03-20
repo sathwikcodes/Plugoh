@@ -2,6 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import {
   useMyInfluencerProfile,
   useUpdateInfluencerProfile,
@@ -20,8 +24,13 @@ import PortfolioSection from "./_components/portfolio-section";
 import SocialProof from "./_components/social-proof";
 
 export default function InfluencerProfilePage() {
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+  };
   const { toast } = useToast();
 
   const { data: ip, isLoading: profileLoading } = useMyInfluencerProfile(
@@ -97,6 +106,31 @@ export default function InfluencerProfilePage() {
           <PortfolioSection media={portfolioMedia || []} />
 
           <SocialProof brands={ip.previous_brands} />
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Preferences</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Theme</p>
+                  <p className="text-xs text-muted-foreground">
+                    Switch between light and dark mode
+                  </p>
+                </div>
+                <ThemeToggle />
+              </div>
+              <Button
+                variant="outline"
+                className="w-full h-11 text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/5"
+                onClick={handleSignOut}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Log Out
+              </Button>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </div>

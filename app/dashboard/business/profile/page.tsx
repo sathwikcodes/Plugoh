@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation } from "@tanstack/react-query";
@@ -16,13 +17,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Save, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { BUSINESS_TYPES } from "@/lib/constants";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 
 export default function BusinessSettings() {
-  const { user, profile, loading: authLoading, refreshUserData } = useAuth();
+  const {
+    user,
+    profile,
+    loading: authLoading,
+    refreshUserData,
+    signOut,
+  } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   const trpc = useTRPC();
 
   const [fullName, setFullName] = useState("");
@@ -72,6 +81,11 @@ export default function BusinessSettings() {
   };
 
   const saving = upsertProfile.isPending;
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+  };
 
   if (authLoading) {
     return (
@@ -188,6 +202,30 @@ export default function BusinessSettings() {
               <Save className="mr-2 h-4 w-4" />
             )}
             Save Changes
+          </Button>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Preferences</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Theme</p>
+              <p className="text-xs text-muted-foreground">
+                Switch between light and dark mode
+              </p>
+            </div>
+            <ThemeToggle />
+          </div>
+          <Button
+            variant="outline"
+            className="w-full h-11 text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/5"
+            onClick={handleSignOut}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Log Out
           </Button>
         </CardContent>
       </Card>

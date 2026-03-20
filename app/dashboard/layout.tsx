@@ -1,11 +1,8 @@
 "use client";
 
-import { Navbar } from "@/components/shared/navbar";
 import { ProtectedRoute } from "@/components/shared/protected-route";
-import { InfluencerTabBar } from "@/components/shared/influencer-tab-bar";
-import { InfluencerSidebar } from "@/components/shared/influencer-sidebar";
-import { BusinessTabBar } from "@/components/shared/business-tab-bar";
-import { BusinessSidebar } from "@/components/shared/business-sidebar";
+import { BusinessDock } from "@/components/shared/business-dock";
+import { InfluencerDock } from "@/components/shared/influencer-dock";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
 
@@ -28,18 +25,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Navbar />
-      {isInfluencer ? <InfluencerSidebar /> : null}
-      {isBusiness ? <BusinessSidebar /> : null}
-      <main
-        className={cn(
-          (isInfluencer || isBusiness) && "pb-20 md:pb-0 md:ml-[200px]",
-        )}
-      >
+      <main className={cn((isInfluencer || isBusiness) && "pb-24")}>
         {children}
       </main>
-      {isInfluencer ? <InfluencerTabBar /> : null}
-      {isBusiness ? <BusinessTabBar /> : null}
+      {isInfluencer ? <InfluencerDock /> : null}
+      {isBusiness ? <BusinessDock /> : null}
     </>
   );
 }
