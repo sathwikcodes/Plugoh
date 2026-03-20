@@ -11,11 +11,22 @@ import type { Database } from "@/lib/supabase/types";
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
+// Maps step numbers from getMissingItems to tab names
+const STEP_TO_TAB: Record<number, string> = {
+  1: "overview",
+  2: "pricing",
+  3: "portfolio",
+};
+
 interface ProfileStrengthProps {
   profile: InfluencerProfile;
+  onNavigateToTab?: (tab: string) => void;
 }
 
-export default function ProfileStrength({ profile }: ProfileStrengthProps) {
+export default function ProfileStrength({
+  profile,
+  onNavigateToTab,
+}: ProfileStrengthProps) {
   const completeness = calculateCompleteness(profile);
   const missing = getMissingItems(profile).slice(0, 3);
   const isComplete = completeness === 100;
@@ -93,21 +104,38 @@ export default function ProfileStrength({ profile }: ProfileStrengthProps) {
               Profile Strength
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {missing.map((item) => (
-                <Link
-                  key={item.label}
-                  href={`/dashboard/influencer/complete-profile?step=${item.step}`}
-                  className={cn(
-                    "inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-                    bgColor,
-                    "hover:brightness-125",
-                  )}
-                >
-                  {item.label}{" "}
-                  <span className="opacity-60">+{item.weight}%</span>
-                  <ArrowRight className="h-3 w-3 opacity-50" />
-                </Link>
-              ))}
+              {missing.map((item) => {
+                const targetTab = STEP_TO_TAB[item.step];
+                const sharedClass = cn(
+                  "inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                  bgColor,
+                  "hover:brightness-125",
+                );
+                if (onNavigateToTab && targetTab && item.step !== 1) {
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={() => onNavigateToTab(targetTab)}
+                      className={sharedClass}
+                    >
+                      {item.label}{" "}
+                      <span className="opacity-60">+{item.weight}%</span>
+                      <ArrowRight className="h-3 w-3 opacity-50" />
+                    </button>
+                  );
+                }
+                return (
+                  <Link
+                    key={item.label}
+                    href={`/dashboard/influencer/complete-profile?step=${item.step}`}
+                    className={sharedClass}
+                  >
+                    {item.label}{" "}
+                    <span className="opacity-60">+{item.weight}%</span>
+                    <ArrowRight className="h-3 w-3 opacity-50" />
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
