@@ -41,8 +41,13 @@ export function ConversationList({
 
   return (
     <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="px-4 pt-4 pb-2 shrink-0">
+        <h2 className="text-base font-bold tracking-tight">Messages</h2>
+      </div>
+
       {/* Search */}
-      <div className="p-3 shrink-0">
+      <div className="px-3 pb-3 shrink-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
           <input
@@ -59,11 +64,6 @@ export function ConversationList({
             )}
           />
         </div>
-      </div>
-
-      {/* Header */}
-      <div className="px-4 pb-2 shrink-0">
-        <h2 className="text-base font-bold tracking-tight">Messages</h2>
       </div>
 
       {/* Conversation list */}

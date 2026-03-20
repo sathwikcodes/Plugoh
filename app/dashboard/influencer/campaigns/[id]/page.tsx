@@ -17,7 +17,6 @@ import {
   Phone,
   FileText,
   Package,
-  IndianRupee,
   Calendar,
   CheckCircle,
   X,
@@ -135,7 +134,11 @@ export default function InfluencerCampaignDetail() {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <IndianRupee className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <img
+                src="/coin.png"
+                alt="coin"
+                className="h-5 w-5 object-contain mt-0.5"
+              />
               <div>
                 <p className="text-xs text-muted-foreground">Price Offered</p>
                 <p className="font-medium">

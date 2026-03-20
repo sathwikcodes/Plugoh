@@ -13,7 +13,6 @@ import {
   CheckCircle,
   X,
   Clock,
-  IndianRupee,
   Inbox,
   Instagram,
   Loader2,
@@ -230,7 +229,11 @@ export default function InfluencerDashboard() {
             {/* Earnings */}
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 mb-3">
-                <IndianRupee className="h-4 w-4 text-green-400" />
+                <img
+                  src="/coin.png"
+                  alt="coin"
+                  className="h-4 w-4 object-contain"
+                />
               </div>
               <p className="text-2xl font-extrabold tracking-tight">
                 ₹{totalEarnings.toLocaleString()}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -24,14 +24,23 @@ const BASE_SIZE = 46; // px — resting icon size
 const MAX_SIZE = 64; // px — max icon size when cursor is directly over it
 const DIST = 140; // px — magnification influence radius
 
+function useIsTouchDevice() {
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => {
+    setIsTouch(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
+  return isTouch;
+}
+
 interface DockIconProps {
   app: DockApp;
   mouseX: ReturnType<typeof useMotionValue<number>>;
   isOpen: boolean;
   onClick: () => void;
+  isTouch: boolean;
 }
 
-function DockIcon({ app, mouseX, isOpen, onClick }: DockIconProps) {
+function DockIcon({ app, mouseX, isOpen, onClick, isTouch }: DockIconProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   // Distance from cursor to this icon's center — computed as a derived motion value
@@ -48,29 +57,42 @@ function DockIcon({ app, mouseX, isOpen, onClick }: DockIconProps) {
     [BASE_SIZE, MAX_SIZE, BASE_SIZE],
   );
 
-  // Spring smoothing — fast, no wobble
-  const size = useSpring(sizeSync, { mass: 0.1, stiffness: 200, damping: 20 });
+  // Spring smoothing — fast, no wobble (desktop only)
+  const sizeSpring = useSpring(sizeSync, {
+    mass: 0.1,
+    stiffness: 200,
+    damping: 20,
+  });
 
   return (
     <div
       className="relative flex flex-col items-center justify-end group cursor-pointer"
-      style={{ paddingBottom: isOpen ? "6px" : "0px" }}
+      style={{
+        paddingBottom: isOpen ? "6px" : "0px",
+        touchAction: "manipulation",
+        WebkitTapHighlightColor: "transparent",
+      }}
       onClick={onClick}
     >
-      {/* Tooltip */}
-      <div
-        className="absolute -top-9 left-1/2 -translate-x-1/2 pointer-events-none
-                   opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10"
-      >
-        <span className="whitespace-nowrap text-[11px] font-medium text-white/90 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-md">
-          {app.name}
-        </span>
-      </div>
+      {/* Tooltip — desktop only */}
+      {!isTouch && (
+        <div
+          className="absolute -top-9 left-1/2 -translate-x-1/2 pointer-events-none
+                     opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10"
+        >
+          <span className="whitespace-nowrap text-[11px] font-medium text-white/90 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-md">
+            {app.name}
+          </span>
+        </div>
+      )}
 
       {/* Icon image */}
       <motion.div
         ref={ref}
-        style={{ width: size, height: size }}
+        style={{
+          width: isTouch ? BASE_SIZE : sizeSpring,
+          height: isTouch ? BASE_SIZE : sizeSpring,
+        }}
         className="relative"
       >
         {/* Unread badge */}
@@ -119,11 +141,12 @@ export default function MacOSDock({
   className,
 }: MacOSDockProps) {
   const mouseX = useMotionValue(Infinity);
+  const isTouch = useIsTouchDevice();
 
   return (
     <motion.div
-      onMouseMove={(e) => mouseX.set(e.pageX)}
-      onMouseLeave={() => mouseX.set(Infinity)}
+      onMouseMove={isTouch ? undefined : (e) => mouseX.set(e.pageX)}
+      onMouseLeave={isTouch ? undefined : () => mouseX.set(Infinity)}
       className={cn(
         "flex items-end justify-between md:justify-start gap-0 md:gap-5 px-4 md:px-8 py-1.5 md:py-2.5",
         "rounded-2xl",
@@ -150,6 +173,7 @@ export default function MacOSDock({
             mouseX={mouseX}
             isOpen={openApps.includes(app.id)}
             onClick={() => onAppClick(app.id)}
+            isTouch={isTouch}
           />,
         );
         return nodes;

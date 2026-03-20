@@ -1,9 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { timeAgo } from "@/lib/format";
 import type { Conversation } from "@/hooks/queries/use-inbox-conversations";
 
 interface ConversationItemProps {
@@ -11,6 +9,33 @@ interface ConversationItemProps {
   isSelected: boolean;
   currentUserId: string;
   onClick: () => void;
+}
+
+const statusDot: Record<string, string> = {
+  pending: "bg-amber-400",
+  accepted: "bg-green-400",
+  completed: "bg-violet-400",
+  rejected: "bg-white/20",
+};
+
+function shortTime(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return "now";
+  if (mins < 60) return `${mins}m`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d`;
+  const date = new Date(dateStr);
+  const now = new Date();
+  if (date.getFullYear() === now.getFullYear())
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "2-digit",
+  });
 }
 
 export function ConversationItem({
@@ -40,18 +65,6 @@ export function ConversationItem({
   const msgTime = lastMessage?.created_at || campaign.created_at;
   const isOwn = lastMessage?.sender_id === currentUserId;
 
-  const statusLabel =
-    campaign.status === "accepted" ? "active" : campaign.status;
-  const statusClasses = cn(
-    "text-[9px] px-1.5 py-0 h-4 rounded-full border shrink-0",
-    campaign.status === "pending" &&
-      "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-    campaign.status === "accepted" &&
-      "bg-green-500/10 text-green-400 border-green-500/20",
-    campaign.status === "completed" &&
-      "bg-primary/10 text-primary border-primary/20",
-  );
-
   return (
     <button
       type="button"
@@ -70,24 +83,30 @@ export function ConversationItem({
       </Avatar>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <p className="font-semibold text-sm truncate">{brandName}</p>
-          <span className="text-[11px] text-muted-foreground shrink-0">
-            {timeAgo(msgTime)}
+        {/* Row 1: Name · dot · Campaign title */}
+        <div className="flex items-center gap-1.5 min-w-0">
+          <p className="font-semibold text-sm shrink-0">{brandName}</p>
+          <span
+            className={cn(
+              "h-2 w-2 rounded-full shrink-0",
+              statusDot[campaign.status] || "bg-white/20",
+            )}
+          />
+          <p className="text-[13px] text-muted-foreground truncate">
+            {campaign.title || "Untitled Campaign"}
+          </p>
+        </div>
+        {/* Row 2: Message preview · timestamp */}
+        <div className="flex items-center gap-2 mt-0.5">
+          <p className="text-xs text-muted-foreground/60 truncate flex-1">
+            {isOwn ? "You: " : ""}
+            {msgPreview}
+          </p>
+          <span className="text-[11px] text-muted-foreground/50 shrink-0">
+            {shortTime(msgTime)}
           </span>
         </div>
-        <p className="text-[13px] text-muted-foreground truncate mt-0.5">
-          {campaign.title || "Untitled Campaign"}
-        </p>
-        <p className="text-xs text-muted-foreground/60 truncate mt-0.5">
-          {isOwn ? "You: " : ""}
-          {msgPreview}
-        </p>
       </div>
-
-      <Badge variant="outline" className={statusClasses}>
-        {statusLabel}
-      </Badge>
     </button>
   );
 }

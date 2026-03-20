@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, IndianRupee, TrendingUp, Building2 } from "lucide-react";
+import { Briefcase, TrendingUp, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,8 @@ export default function CareerStats({ campaigns }: CareerStatsProps) {
       iconColor: "text-blue-400",
     },
     {
-      icon: IndianRupee,
+      icon: null,
+      coinIcon: true,
       value: `\u20B9${totalEarned.toLocaleString()}`,
       label: "Total Earned",
       gradient: "from-green-500/20 to-emerald-500/20",
@@ -75,7 +76,19 @@ export default function CareerStats({ campaigns }: CareerStatsProps) {
                     stat.gradient,
                   )}
                 >
-                  <stat.icon className={cn("h-3.5 w-3.5", stat.iconColor)} />
+                  {stat.coinIcon ? (
+                    <img
+                      src="/coin.png"
+                      alt="coin"
+                      className="h-3.5 w-3.5 object-contain"
+                    />
+                  ) : (
+                    stat.icon && (
+                      <stat.icon
+                        className={cn("h-3.5 w-3.5", stat.iconColor)}
+                      />
+                    )
+                  )}
                 </div>
                 <p className="text-[11px] text-muted-foreground">
                   {stat.label}
