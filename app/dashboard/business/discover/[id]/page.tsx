@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Script from "next/script";
@@ -88,6 +88,7 @@ const BRIEF_TEMPLATES: { label: string; template: string }[] = [
 
 export default function InfluencerProfileView() {
   const params = useParams();
+  const router = useRouter();
   const id = params?.id as string;
   const { user, profile: myProfile, isProfileComplete } = useAuth();
   const { toast } = useToast();
@@ -220,6 +221,12 @@ export default function InfluencerProfileView() {
           setBookingOpen(false);
           setTitle("");
           setBrief("");
+          // Navigate to inbox with the new conversation open
+          if (verifyData.campaignId) {
+            router.push(
+              `/dashboard/business/inbox?chat=${verifyData.campaignId}`,
+            );
+          }
         },
         modal: {
           ondismiss: () => setSubmitting(false),

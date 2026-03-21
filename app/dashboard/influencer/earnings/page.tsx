@@ -5,18 +5,14 @@ import { useAuth } from "@/contexts/auth-context";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase/client";
-import { Badge } from "@/components/ui/badge";
 import { AwardBadge, type AwardBadgeType } from "@/components/ui/award-badge";
+import { TransactionTable } from "@/components/ui/transaction-table";
 import {
   TrendingUp,
   TrendingDown,
   Briefcase,
   Loader2,
-  ArrowUpRight,
-  Wallet,
-  Lock,
   Star,
-  Trophy,
   CheckCircle2,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -528,9 +524,11 @@ export default function EarningsPage() {
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 mb-3">
-              <ArrowUpRight className="h-4 w-4 text-yellow-400" />
-            </div>
+            <img
+              src="/clock.png"
+              alt="pending"
+              className="h-9 w-9 object-contain mb-3"
+            />
             <p className="text-xl font-extrabold tracking-tight">
               ₹<AnimatedNumber value={pendingEarnings} />
             </p>
@@ -538,9 +536,11 @@ export default function EarningsPage() {
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/20 to-violet-500/20 mb-3">
-              <Briefcase className="h-4 w-4 text-purple-400" />
-            </div>
+            <img
+              src="/premium_target.png"
+              alt="completed"
+              className="h-9 w-9 object-contain mb-3"
+            />
             <p className="text-xl font-extrabold tracking-tight">
               {completed.length}
             </p>
@@ -590,7 +590,11 @@ export default function EarningsPage() {
                         </div>
                       </>
                     ) : (
-                      <Lock className="h-4 w-4 text-muted-foreground/50" />
+                      <img
+                        src="/lock.png"
+                        alt="locked"
+                        className="h-5 w-5 object-contain opacity-50"
+                      />
                     )}
                   </div>
                   <p className="text-[9px] text-center text-muted-foreground leading-tight font-medium line-clamp-2">
@@ -608,7 +612,11 @@ export default function EarningsPage() {
             <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Trophy className="h-4 w-4 text-amber-400" />
+                  <img
+                    src="/trophy.png"
+                    alt="trophy"
+                    className="h-5 w-5 object-contain"
+                  />
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Next Milestone
                   </p>
@@ -714,71 +722,32 @@ export default function EarningsPage() {
         {/* ── Transaction History ── */}
         <motion.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Transaction History
-            </p>
-
-            {completed.length === 0 && active.length === 0 ? (
-              <div className="py-8 text-center">
-                <Wallet className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  No transactions yet. Complete campaigns to see your earnings
-                  here.
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Transaction History
+              </p>
+              {completed.length + active.length > 0 && (
+                <p className="text-[11px] text-muted-foreground">
+                  {completed.length + active.length} transaction
+                  {completed.length + active.length !== 1 ? "s" : ""}
                 </p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {[...completed, ...active].map((c) => {
-                  const bp = businessProfiles.get(c.business_id);
-                  const brandName =
-                    bp?.business_name || bp?.full_name || "Brand";
-                  const isCompleted = c.status === "completed";
-                  return (
-                    <div
-                      key={c.id}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-white/3 hover:bg-white/6 transition-colors"
-                    >
-                      <div
-                        className={cn(
-                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-                          isCompleted ? "bg-green-500/10" : "bg-yellow-500/10",
-                        )}
-                      >
-                        <img
-                          src="/coin.png"
-                          alt="coin"
-                          className="h-4 w-4 object-contain"
-                        />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium truncate">
-                          {c.title || "Untitled Campaign"}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {brandName} &middot; {c.package_type || "—"}
-                        </p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-sm font-bold">
-                          ₹{(c.price_offered || 0).toLocaleString()}
-                        </p>
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "text-[9px] px-1.5 py-0 h-4 rounded-full border",
-                            isCompleted
-                              ? "bg-green-500/10 text-green-400 border-green-500/20"
-                              : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-                          )}
-                        >
-                          {isCompleted ? "earned" : "pending"}
-                        </Badge>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+              )}
+            </div>
+
+            <TransactionTable
+              transactions={[...completed, ...active].map((c) => {
+                const bp = businessProfiles.get(c.business_id);
+                return {
+                  id: c.id,
+                  title: c.title,
+                  brandName: bp?.business_name || bp?.full_name || "Brand",
+                  packageType: c.package_type,
+                  amount: c.price_offered,
+                  status: c.status as "completed" | "accepted",
+                  date: c.updated_at || c.created_at,
+                };
+              })}
+            />
           </div>
         </motion.div>
       </motion.div>

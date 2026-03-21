@@ -6,7 +6,11 @@ import {
   useCampaignMessages,
   useSendMessage,
 } from "@/hooks/queries/use-campaign-messages";
-import { MessageBubble, SystemMessage } from "./message-bubble";
+import {
+  MessageBubble,
+  SystemMessage,
+  BookingCardMessage,
+} from "./message-bubble";
 import { MessageInput } from "./message-input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, Loader2 } from "lucide-react";
@@ -104,7 +108,9 @@ export function CampaignChat({
           ) : messages && messages.length > 0 ? (
             <>
               {messages.map((msg) =>
-                msg.message_type === "system" ? (
+                msg.message_type === "booking_card" ? (
+                  <BookingCardMessage key={msg.id} metadata={msg.metadata} />
+                ) : msg.message_type === "system" ? (
                   <SystemMessage key={msg.id} content={msg.content} />
                 ) : (
                   <MessageBubble

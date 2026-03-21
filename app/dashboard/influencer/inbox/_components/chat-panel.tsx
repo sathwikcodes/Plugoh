@@ -9,12 +9,14 @@ import {
 import {
   MessageBubble,
   SystemMessage,
+  BookingCardMessage,
 } from "@/components/campaign/message-bubble";
 import { MessageInput } from "@/components/campaign/message-input";
 import { ChatHeader } from "./chat-header";
 import { Loader2, MessageSquare } from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import type { Conversation } from "@/hooks/queries/use-inbox-conversations";
 
 interface ChatPanelProps {
@@ -25,18 +27,40 @@ interface ChatPanelProps {
 export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const { user, profile: myProfile } = useAuth();
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const { campaign, businessProfile } = conversation;
   const { data: messages, isLoading } = useCampaignMessages(campaign.id);
   const sendMessage = useSendMessage();
   const insertFile = useMutation(
     trpc.campaignFile.insertCampaignFile.mutationOptions(),
   );
+  const statusMutation = useMutation(
+    trpc.campaign.updateStatus.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+        queryClient.invalidateQueries({ queryKey: ["inbox-conversations"] });
+        queryClient.invalidateQueries({
+          queryKey: ["business-inbox-conversations"],
+        });
+        toast({ title: "Campaign updated" });
+      },
+      onError: (err) => {
+        toast({
+          title: "Error",
+          description: err.message,
+          variant: "destructive",
+        });
+      },
+    }),
+  );
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const brandName =
     businessProfile?.business_name || businessProfile?.full_name || "Business";
   const influencerName = myProfile?.full_name || "Influencer";
-  const disabled = campaign.status === "completed";
+  const isPending = campaign.status === "pending";
+  const disabled = campaign.status === "completed" || isPending;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -93,15 +117,35 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
       />
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 min-h-0">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/40" />
           </div>
         ) : messages && messages.length > 0 ? (
           <>
             {messages.map((msg) =>
-              msg.message_type === "system" ? (
+              msg.message_type === "booking_card" ? (
+                <BookingCardMessage
+                  key={msg.id}
+                  metadata={msg.metadata}
+                  campaignStatus={campaign.status}
+                  isInfluencer={true}
+                  onAccept={() =>
+                    statusMutation.mutate({
+                      campaignId: campaign.id,
+                      status: "accepted",
+                    })
+                  }
+                  onDecline={() =>
+                    statusMutation.mutate({
+                      campaignId: campaign.id,
+                      status: "rejected",
+                    })
+                  }
+                  isMutating={statusMutation.isPending}
+                />
+              ) : msg.message_type === "system" ? (
                 <SystemMessage key={msg.id} content={msg.content} />
               ) : (
                 <MessageBubble
@@ -119,9 +163,12 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
           </>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <MessageSquare className="h-8 w-8 text-muted-foreground/30 mb-2" />
-            <p className="text-sm text-muted-foreground">
-              No messages yet. Start the conversation!
+            <MessageSquare className="h-7 w-7 text-muted-foreground/20 mb-3" />
+            <p className="text-sm font-medium text-muted-foreground/50">
+              No messages yet
+            </p>
+            <p className="text-xs text-muted-foreground/30 mt-1">
+              Start the conversation!
             </p>
           </div>
         )}

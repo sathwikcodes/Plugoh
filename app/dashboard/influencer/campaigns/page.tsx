@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   Mail,
   Phone,
+  MessageSquare,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -428,6 +429,18 @@ export default function CampaignsPage() {
                       >
                         <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
                         Mark Complete
+                      </Button>
+                    )}
+                    {c.status !== "rejected" && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-9 w-9 rounded-xl p-0 text-muted-foreground hover:text-foreground"
+                        asChild
+                      >
+                        <Link href={`/dashboard/influencer/inbox?chat=${c.id}`}>
+                          <MessageSquare className="h-3.5 w-3.5" />
+                        </Link>
                       </Button>
                     )}
                     <Button

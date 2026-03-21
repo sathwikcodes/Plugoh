@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import MacOSDock from "@/components/ui/mac-os-dock";
+import { DockAutoHideWrapper } from "@/components/shared/dock-auto-hide-wrapper";
 import { makeDockIcon } from "@/lib/dock-icon-utils";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 
@@ -92,10 +93,7 @@ export function BusinessDock() {
   }));
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none px-4 md:px-0"
-      style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))" }}
-    >
+    <DockAutoHideWrapper>
       <MacOSDock
         apps={apps}
         onAppClick={(id) => {
@@ -105,6 +103,6 @@ export function BusinessDock() {
         openApps={activeId ? [activeId] : []}
         className="pointer-events-auto w-full md:w-auto"
       />
-    </div>
+    </DockAutoHideWrapper>
   );
 }

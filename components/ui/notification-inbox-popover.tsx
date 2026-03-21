@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import {
@@ -46,10 +47,12 @@ const NOTIFICATION_ICONS: Record<string, LucideIcon> = {
 };
 
 export function NotificationInboxPopover() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [tab, setTab] = useState("all");
   const [now, setNow] = useState(() => Date.now());
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -157,7 +160,7 @@ export function NotificationInboxPopover() {
   if (!user) return null;
 
   return (
-    <Popover>
+    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger
         aria-label="Notifications"
         className="relative inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent transition-colors text-foreground"
@@ -211,7 +214,19 @@ export function NotificationInboxPopover() {
                 return (
                   <button
                     key={n.id}
-                    onClick={() => !n.read && markRead(n.id)}
+                    onClick={() => {
+                      if (!n.read) markRead(n.id);
+                      const data = n.data as Record<string, string> | null;
+                      const campaignId = data?.campaign_id;
+                      if (campaignId) {
+                        const basePath =
+                          role === "business"
+                            ? "/dashboard/business/inbox"
+                            : "/dashboard/influencer/inbox";
+                        router.push(`${basePath}?chat=${campaignId}`);
+                        setPopoverOpen(false);
+                      }
+                    }}
                     className={`flex w-full items-start gap-3 border-b px-3 py-3 text-left hover:bg-accent transition-colors ${
                       n.read ? "" : "bg-primary/5"
                     }`}

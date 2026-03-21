@@ -145,8 +145,14 @@ export default function MacOSDock({
 
   return (
     <motion.div
-      onMouseMove={isTouch ? undefined : (e) => mouseX.set(e.pageX)}
-      onMouseLeave={isTouch ? undefined : () => mouseX.set(Infinity)}
+      onPointerMove={(e) => {
+        if (e.pointerType !== "mouse") return;
+        mouseX.set(e.pageX);
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType !== "mouse") return;
+        mouseX.set(Infinity);
+      }}
       className={cn(
         "flex items-end justify-between md:justify-start gap-0 md:gap-5 px-4 md:px-8 py-1.5 md:py-2.5",
         "rounded-2xl",

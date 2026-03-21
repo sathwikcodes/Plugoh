@@ -2,7 +2,6 @@
 
 import { ArrowLeft } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface ChatHeaderProps {
@@ -11,6 +10,25 @@ interface ChatHeaderProps {
   status: string;
   onBack: () => void;
 }
+
+const statusStyles: Record<string, { label: string; classes: string }> = {
+  pending: {
+    label: "Pending",
+    classes: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  },
+  accepted: {
+    label: "Active",
+    classes: "bg-green-500/10 text-green-400 border-green-500/20",
+  },
+  completed: {
+    label: "Completed",
+    classes: "bg-violet-500/10 text-violet-400 border-violet-500/20",
+  },
+  rejected: {
+    label: "Declined",
+    classes: "bg-white/[0.04] text-white/40 border-white/[0.08]",
+  },
+};
 
 export function ChatHeader({
   brandName,
@@ -25,42 +43,41 @@ export function ChatHeader({
     .toUpperCase()
     .slice(0, 2);
 
-  const statusLabel = status === "accepted" ? "active" : status;
-  const statusClasses = cn(
-    "text-[9px] px-1.5 py-0 h-4 rounded-full border",
-    status === "pending" &&
-      "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-    status === "accepted" &&
-      "bg-green-500/10 text-green-400 border-green-500/20",
-    status === "completed" && "bg-primary/10 text-primary border-primary/20",
-  );
+  const st = statusStyles[status] || statusStyles.pending;
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-white/6 bg-card/80 backdrop-blur-sm shrink-0">
+    <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.05] bg-background/60 backdrop-blur-xl shrink-0">
       <button
         type="button"
         onClick={onBack}
-        className="md:hidden shrink-0 p-1 -ml-1 rounded-lg hover:bg-white/6 transition-colors"
+        className="md:hidden shrink-0 p-1.5 -ml-1.5 rounded-xl hover:bg-white/[0.06] transition-colors"
       >
-        <ArrowLeft className="h-5 w-5" />
+        <ArrowLeft className="h-5 w-5 text-foreground/70" />
       </button>
 
-      <Avatar className="h-9 w-9 shrink-0">
-        <AvatarFallback className="bg-linear-to-br from-pink-500/20 to-purple-500/20 text-xs font-semibold">
+      <Avatar className="h-9 w-9 shrink-0 ring-1 ring-white/[0.06]">
+        <AvatarFallback className="bg-gradient-to-br from-pink-500/15 to-purple-500/15 text-xs font-semibold text-foreground/80">
           {initials}
         </AvatarFallback>
       </Avatar>
 
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-sm truncate">{brandName}</p>
-        <p className="text-[11px] text-muted-foreground truncate">
+        <p className="font-semibold text-[15px] truncate leading-tight text-foreground/90">
+          {brandName}
+        </p>
+        <p className="text-xs text-muted-foreground/50 truncate mt-0.5 leading-tight">
           {campaignTitle}
         </p>
       </div>
 
-      <Badge variant="outline" className={statusClasses}>
-        {statusLabel}
-      </Badge>
+      <span
+        className={cn(
+          "text-[10px] font-semibold px-2.5 py-1 rounded-full border shrink-0",
+          st.classes,
+        )}
+      >
+        {st.label}
+      </span>
     </div>
   );
 }

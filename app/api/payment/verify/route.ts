@@ -79,13 +79,38 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
+  // Fetch business profile for the real business name
+  const { data: bizProfile } = await db
+    .from("profiles")
+    .select("business_name, full_name")
+    .eq("id", user.id)
+    .maybeSingle();
+  const businessName =
+    bizProfile?.business_name || bizProfile?.full_name || "A brand";
+
+  // Notify the influencer
   await db.from("notifications").insert({
     user_id: campaignData.influencer_id,
     type: "new_booking",
     data: {
       title: campaignData.title || "Untitled",
-      business_name: campaignData.business_contact_email,
+      business_name: businessName,
       campaign_id: campaign.id,
+    },
+  });
+
+  // Insert a booking card message so the chat isn't empty
+  await db.from("campaign_messages").insert({
+    campaign_id: campaign.id,
+    sender_id: user.id,
+    message_type: "booking_card",
+    content: "New booking request",
+    metadata: {
+      title: campaignData.title || "Untitled Campaign",
+      package_type: campaignData.package_type || null,
+      price_offered: campaignData.price_offered || 0,
+      brief: campaignData.brief || "",
+      business_name: businessName,
     },
   });
 

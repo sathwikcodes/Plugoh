@@ -4,6 +4,7 @@ import { ProtectedRoute } from "@/components/shared/protected-route";
 import { BusinessDock } from "@/components/shared/business-dock";
 import { InfluencerDock } from "@/components/shared/influencer-dock";
 import { useAuth } from "@/contexts/auth-context";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
@@ -20,12 +21,16 @@ export default function DashboardLayout({
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const { role } = useAuth();
+  const pathname = usePathname();
   const isInfluencer = role === "influencer";
   const isBusiness = role === "business";
+  const isInboxPage = pathname.includes("/inbox");
 
   return (
     <>
-      <main className={cn((isInfluencer || isBusiness) && "pb-24")}>
+      <main
+        className={cn((isInfluencer || isBusiness) && !isInboxPage && "pb-24")}
+      >
         {children}
       </main>
       {isInfluencer ? <InfluencerDock /> : null}

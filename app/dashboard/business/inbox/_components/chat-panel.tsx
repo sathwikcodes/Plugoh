@@ -9,6 +9,7 @@ import {
 import {
   MessageBubble,
   SystemMessage,
+  BookingCardMessage,
 } from "@/components/campaign/message-bubble";
 import { MessageInput } from "@/components/campaign/message-input";
 import { ChatHeader } from "./chat-header";
@@ -101,7 +102,14 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         ) : messages && messages.length > 0 ? (
           <>
             {messages.map((msg) =>
-              msg.message_type === "system" ? (
+              msg.message_type === "booking_card" ? (
+                <BookingCardMessage
+                  key={msg.id}
+                  metadata={msg.metadata}
+                  campaignStatus={campaign.status}
+                  isInfluencer={false}
+                />
+              ) : msg.message_type === "system" ? (
                 <SystemMessage key={msg.id} content={msg.content} />
               ) : (
                 <MessageBubble

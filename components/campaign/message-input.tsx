@@ -77,9 +77,11 @@ export function MessageInput({
     }
   };
 
+  const canSend = !disabled && !uploading && (text.trim() || pendingFile);
+
   return (
-    <div className="border-t bg-card p-3">
-      <div className="flex items-end gap-2">
+    <div className="border-t border-white/[0.05] bg-background/60 backdrop-blur-xl p-4 shrink-0">
+      <div className="flex items-end gap-2.5">
         <input
           ref={fileInputRef}
           type="file"
@@ -91,7 +93,7 @@ export function MessageInput({
           type="button"
           variant="ghost"
           size="icon"
-          className="shrink-0 h-9 w-9"
+          className="shrink-0 h-9 w-9 rounded-xl text-muted-foreground/50 hover:text-foreground/70 hover:bg-white/[0.04] transition-colors"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled || uploading}
         >
@@ -107,16 +109,16 @@ export function MessageInput({
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className="min-h-[40px] max-h-[120px] resize-none text-sm"
+          className="min-h-[40px] max-h-[120px] resize-none text-sm rounded-xl bg-white/[0.03] border-white/[0.06] focus:border-white/[0.12] placeholder:text-muted-foreground/30 transition-colors"
           rows={1}
           disabled={disabled || uploading}
         />
         <Button
           type="button"
           size="icon"
-          className="shrink-0 h-9 w-9"
+          className="shrink-0 h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-foreground/70 hover:text-foreground border-0 transition-all active:scale-95 disabled:opacity-30"
           onClick={handleSend}
-          disabled={disabled || uploading || (!text.trim() && !pendingFile)}
+          disabled={!canSend}
         >
           <Send className="h-4 w-4" />
         </Button>

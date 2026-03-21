@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { Bell, Check, Inbox } from "lucide-react";
@@ -19,7 +20,8 @@ import type { Database } from "@/lib/supabase/types";
 type Notification = Database["public"]["Tables"]["notifications"]["Row"];
 
 export function NotificationDrawer() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
 
@@ -166,7 +168,19 @@ export function NotificationDrawer() {
               {notifications.map((n) => (
                 <button
                   key={n.id}
-                  onClick={() => !n.read && markRead(n.id)}
+                  onClick={() => {
+                    if (!n.read) markRead(n.id);
+                    const data = n.data as Record<string, string> | null;
+                    const campaignId = data?.campaign_id;
+                    if (campaignId) {
+                      const basePath =
+                        role === "business"
+                          ? "/dashboard/business/inbox"
+                          : "/dashboard/influencer/inbox";
+                      router.push(`${basePath}?chat=${campaignId}`);
+                      setOpen(false);
+                    }
+                  }}
                   className={`w-full text-left rounded-lg p-3 transition-colors ${
                     n.read
                       ? "bg-muted/30"
