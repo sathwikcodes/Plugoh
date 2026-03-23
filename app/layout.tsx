@@ -12,9 +12,35 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "ReelReach – Connect Brands with Creators",
+  metadataBase: new URL("https://plugoh.com"),
+  title: {
+    default: "Plugoh – Connect Brands with Creators",
+    template: "%s | Plugoh",
+  },
   description:
-    "The fastest way for businesses to find and book Instagram influencers for reels, posts, and stories.",
+    "The fastest way for businesses to discover and book Instagram influencers for reels, posts, and stories in India.",
+  keywords: [
+    "influencer marketing",
+    "brand collaborations",
+    "Instagram influencers",
+    "creator marketplace",
+    "influencer platform India",
+    "reels marketing",
+  ],
+  openGraph: {
+    title: "Plugoh – Connect Brands with Creators",
+    description:
+      "The fastest way for businesses to discover and book Instagram influencers for reels, posts, and stories in India.",
+    url: "https://plugoh.com",
+    siteName: "Plugoh",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Plugoh – Connect Brands with Creators",
+    description:
+      "The fastest way for businesses to discover and book Instagram influencers for reels, posts, and stories in India.",
+  },
 };
 
 export const viewport: Viewport = {

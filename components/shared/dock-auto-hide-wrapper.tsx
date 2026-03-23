@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { motion } from "motion/react";
+import { m } from "framer-motion";
 import { useDockAutoHide } from "@/hooks/use-dock-auto-hide";
 
 function DockAutoHideInner({ children }: { children: React.ReactNode }) {
@@ -24,7 +24,7 @@ function DockAutoHideInner({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Animated dock container */}
-      <motion.div
+      <m.div
         className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none px-4 md:px-0"
         style={{
           paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))",
@@ -35,7 +35,7 @@ function DockAutoHideInner({ children }: { children: React.ReactNode }) {
         onMouseLeave={onDockLeave}
       >
         {children}
-      </motion.div>
+      </m.div>
     </>
   );
 }

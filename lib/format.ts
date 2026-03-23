@@ -68,6 +68,16 @@ export function formatMessageTime(dateStr: string): string {
 }
 
 /**
+ * Compact number display (e.g. 1500 → "1.5K", 2000000 → "2.0M").
+ * Unlike formatNumber, returns the raw number string for 0 and small values.
+ */
+export function compactNumber(n: number): string {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+  if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
+  return n.toString();
+}
+
+/**
  * Returns a human-readable relative time string (e.g. "5m ago", "2d ago").
  */
 export function timeAgo(dateStr: string): string {

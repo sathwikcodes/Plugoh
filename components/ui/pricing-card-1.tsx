@@ -1,5 +1,5 @@
 import * as React from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Diamond } from "lucide-react";
@@ -56,7 +56,7 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
     ref,
   ) => {
     return (
-      <motion.div
+      <m.div
         ref={ref}
         variants={cardVariants}
         initial="initial"
@@ -82,7 +82,7 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
               )}
             </div>
             {imageSrc && (
-              <motion.img
+              <m.img
                 src={imageSrc}
                 alt={imageAlt || title}
                 width={80}
@@ -113,7 +113,7 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
         <div className="mt-6">
           <Button className="w-full">{buttonText}</Button>
         </div>
-      </motion.div>
+      </m.div>
     );
   },
 );

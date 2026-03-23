@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Instagram, Users, Eye, Heart, BarChart2, Link } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -72,14 +72,14 @@ export default function InstagramTab({ profile }: InstagramTabProps) {
   ];
 
   return (
-    <motion.div
+    <m.div
       variants={stagger}
       initial="hidden"
       animate="visible"
       className="space-y-4 pt-4"
     >
       {/* Connection status */}
-      <motion.div variants={fadeUp}>
+      <m.div variants={fadeUp}>
         <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Connected Account
@@ -125,11 +125,11 @@ export default function InstagramTab({ profile }: InstagramTabProps) {
             </div>
           )}
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Stats grid */}
       {isConnected && (
-        <motion.div variants={fadeUp}>
+        <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Account Stats
@@ -162,26 +162,26 @@ export default function InstagramTab({ profile }: InstagramTabProps) {
               ))}
             </div>
           </div>
-        </motion.div>
+        </m.div>
       )}
 
       {/* Media count info */}
       {profile.ig_media_count && (
-        <motion.div variants={fadeUp}>
+        <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md px-5 py-4">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Total posts</span>
               <span className="font-semibold">{profile.ig_media_count}</span>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       )}
 
-      <motion.div variants={fadeUp}>
+      <m.div variants={fadeUp}>
         <p className="text-xs text-muted-foreground text-center px-4">
           Stats are synced automatically from your connected Instagram account.
         </p>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }

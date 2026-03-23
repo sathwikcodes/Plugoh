@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Pencil } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { TURNAROUND_LABELS } from "@/lib/constants";
@@ -24,7 +24,7 @@ export default function RateCard({ profile }: RateCardProps) {
   if (!hasAnyPrice) return null;
 
   return (
-    <motion.div variants={fadeUp}>
+    <m.div variants={fadeUp}>
       <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -94,6 +94,6 @@ export default function RateCard({ profile }: RateCardProps) {
           </div>
         )}
       </div>
-    </motion.div>
+    </m.div>
   );
 }

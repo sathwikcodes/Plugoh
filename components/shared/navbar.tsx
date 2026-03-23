@@ -56,7 +56,7 @@ export function Navbar() {
             <span className="text-sm font-bold text-primary-foreground">R</span>
           </div>
           <span className="font-display text-xl font-bold text-foreground">
-            ReelReach
+            Plugoh
           </span>
         </Link>
 

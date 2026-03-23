@@ -6,7 +6,7 @@ import { useMyInfluencerProfile } from "@/hooks/queries/use-influencer-profiles"
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { usePortfolioMedia } from "@/hooks/queries/use-instagram-media";
 import { Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { stagger } from "@/lib/animations";
 import { ProfileDiscreteTabBar } from "@/components/ui/discrete-tab";
 import ProfileCard from "./_components/profile-card";
@@ -46,7 +46,7 @@ export default function InfluencerProfilePage() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)]">
       <div className="relative z-10 container max-w-2xl py-6 pb-24">
-        <motion.div
+        <m.div
           variants={stagger}
           initial="hidden"
           animate="visible"
@@ -90,7 +90,7 @@ export default function InfluencerProfilePage() {
               <SettingsTab profile={ip} userId={user.id} onSignOut={signOut} />
             )}
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

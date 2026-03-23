@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
 
 interface SocialProofProps {
@@ -12,7 +12,7 @@ interface SocialProofProps {
 export default function SocialProof({ brands }: SocialProofProps) {
   if (!brands || brands.length === 0) {
     return (
-      <motion.div variants={fadeUp}>
+      <m.div variants={fadeUp}>
         <Link
           href="/dashboard/influencer/complete-profile?step=3"
           className="block rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:border-white/20 hover:bg-white/[0.04]"
@@ -21,12 +21,12 @@ export default function SocialProof({ brands }: SocialProofProps) {
             Add brands you&apos;ve collaborated with
           </p>
         </Link>
-      </motion.div>
+      </m.div>
     );
   }
 
   return (
-    <motion.div variants={fadeUp}>
+    <m.div variants={fadeUp}>
       <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Worked With
@@ -43,6 +43,6 @@ export default function SocialProof({ brands }: SocialProofProps) {
           ))}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

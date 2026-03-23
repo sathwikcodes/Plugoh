@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import React, { useEffect, useRef, memo } from "react";
 
 interface AnimatedGradientBackgroundProps {
@@ -95,7 +95,7 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> =
       ]);
 
       return (
-        <motion.div
+        <m.div
           key="animated-gradient-background"
           initial={INITIAL_ANIM}
           animate={ANIMATE_ANIM}
@@ -106,7 +106,7 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> =
             style={containerStyle}
             className="absolute inset-0 transition-transform"
           />
-        </motion.div>
+        </m.div>
       );
     },
   );

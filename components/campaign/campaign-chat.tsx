@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import {
   useCampaignMessages,
@@ -44,11 +44,14 @@ export function CampaignChat({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages?.length]);
 
+  const recipientId = user?.id === businessId ? influencerId : businessId;
+
   const handleSendMessage = (content: string) => {
     if (!user) return;
     sendMessage.mutate({
       campaignId,
       senderId: user.id,
+      recipientId,
       content,
     });
   };
@@ -58,6 +61,7 @@ export function CampaignChat({
     sendMessage.mutate({
       campaignId,
       senderId: user.id,
+      recipientId,
       content: file.name,
       messageType: "file",
       metadata: {
@@ -79,11 +83,14 @@ export function CampaignChat({
     });
   };
 
-  const getSenderName = (senderId: string) => {
-    if (senderId === businessId) return businessName;
-    if (senderId === influencerId) return influencerName;
-    return "System";
-  };
+  const getSenderName = useCallback(
+    (senderId: string) => {
+      if (senderId === businessId) return businessName;
+      if (senderId === influencerId) return influencerName;
+      return "System";
+    },
+    [businessId, influencerId, businessName, influencerName],
+  );
 
   if (!user) return null;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { useState, useRef, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
@@ -86,7 +86,7 @@ function Component({ className }: { className?: string }) {
     <div className="flex flex-col items-center w-full">
       <div className={cn("flex space-x-8 rounded-full", className)}>
         {tabs.map((tab, index) => (
-          <motion.button
+          <m.button
             key={tab.id}
             whileTap={"tapped"}
             whileHover={"hovered"}
@@ -100,13 +100,13 @@ function Component({ className }: { className?: string }) {
             style={{ WebkitTapHighlightColor: "transparent" }}
           >
             {activeTab === tab.id && (
-              <motion.span
+              <m.span
                 layoutId="bubble"
                 className="absolute bottom-0 w-full left-0 z-10 bg-black dark:bg-white rounded-full h-1"
                 transition={{ type: "spring", bounce: 0.19, duration: 0.4 }}
               />
             )}
-            <motion.div
+            <m.div
               initial={{ scale: 0 }}
               animate={{
                 scale: 1,
@@ -174,9 +174,9 @@ function Component({ className }: { className?: string }) {
                   <source src={tab.video_url} type="video/webm" />
                 </video>
               </div>
-            </motion.div>
+            </m.div>
             <span>{tab.label}</span>
-          </motion.button>
+          </m.button>
         ))}
       </div>
     </div>

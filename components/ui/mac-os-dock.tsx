@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import { m, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface DockApp {
@@ -87,7 +87,7 @@ function DockIcon({ app, mouseX, isOpen, onClick, isTouch }: DockIconProps) {
       )}
 
       {/* Icon image */}
-      <motion.div
+      <m.div
         ref={ref}
         style={{
           width: isTouch ? BASE_SIZE : sizeSpring,
@@ -121,7 +121,7 @@ function DockIcon({ app, mouseX, isOpen, onClick, isTouch }: DockIconProps) {
           className="w-full h-full object-contain rounded-xl select-none"
           draggable={false}
         />
-      </motion.div>
+      </m.div>
 
       {/* Active indicator dot */}
       <span
@@ -144,7 +144,7 @@ export default function MacOSDock({
   const isTouch = useIsTouchDevice();
 
   return (
-    <motion.div
+    <m.div
       onPointerMove={(e) => {
         if (e.pointerType !== "mouse") return;
         mouseX.set(e.pageX);
@@ -184,6 +184,6 @@ export default function MacOSDock({
         );
         return nodes;
       })}
-    </motion.div>
+    </m.div>
   );
 }

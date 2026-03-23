@@ -7,7 +7,7 @@ import { useInboxConversations } from "@/hooks/queries/use-inbox-conversations";
 import { ConversationList } from "./_components/conversation-list";
 import { ChatPanel } from "./_components/chat-panel";
 import { InboxEmptyState } from "./_components/inbox-empty-state";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 
 export default function InboxPage() {
   const { user } = useAuth();
@@ -67,7 +67,7 @@ export default function InboxPage() {
       >
         <AnimatePresence mode="wait">
           {selectedConversation ? (
-            <motion.div
+            <m.div
               key={selectedConversation.campaign.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -79,16 +79,16 @@ export default function InboxPage() {
                 conversation={selectedConversation}
                 onBack={handleBack}
               />
-            </motion.div>
+            </m.div>
           ) : (
-            <motion.div
+            <m.div
               key="empty"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="h-full"
             >
               <InboxEmptyState />
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ChevronUp, BookOpen, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
@@ -136,7 +136,7 @@ function SortHeader({
         {label}
       </span>
       {/* Single arrow — rotates 180° to flip between up (asc) and down (desc) */}
-      <motion.div
+      <m.div
         animate={{ rotate: isDesc ? 180 : 0 }}
         transition={{ type: "spring", stiffness: 320, damping: 26 }}
         className={cn(
@@ -146,7 +146,7 @@ function SortHeader({
         )}
       >
         <ChevronUp className="h-3 w-3" strokeWidth={isActive ? 2.5 : 2} />
-      </motion.div>
+      </m.div>
     </button>
   );
 }
@@ -261,7 +261,7 @@ export function TransactionTable({
           </div>
 
           {/* Rows */}
-          <motion.div
+          <m.div
             className="space-y-1.5"
             variants={containerVariants}
             initial="hidden"
@@ -272,8 +272,8 @@ export function TransactionTable({
               const pkg = getPackageConfig(tx.packageType);
 
               return (
-                <motion.div key={tx.id} variants={rowVariants}>
-                  <motion.div
+                <m.div key={tx.id} variants={rowVariants}>
+                  <m.div
                     className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] overflow-hidden"
                     whileHover={{
                       y: -1,
@@ -379,11 +379,11 @@ export function TransactionTable({
                         </span>
                       </div>
                     </div>
-                  </motion.div>
-                </motion.div>
+                  </m.div>
+                </m.div>
               );
             })}
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </div>

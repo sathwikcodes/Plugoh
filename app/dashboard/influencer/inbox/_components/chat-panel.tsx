@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import {
   useCampaignMessages,
   useSendMessage,
+  useMarkNotificationsReadForCampaign,
 } from "@/hooks/queries/use-campaign-messages";
 import {
   MessageBubble,
@@ -32,6 +33,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const { campaign, businessProfile } = conversation;
   const { data: messages, isLoading } = useCampaignMessages(campaign.id);
   const sendMessage = useSendMessage();
+  const markRead = useMarkNotificationsReadForCampaign();
   const insertFile = useMutation(
     trpc.campaignFile.insertCampaignFile.mutationOptions(),
   );
@@ -66,11 +68,19 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages?.length]);
 
+  // Mark new_message notifications as read when this conversation is opened
+  useEffect(() => {
+    if (!user?.id || !campaign.id) return;
+    markRead.mutate({ campaignId: campaign.id, userId: user.id });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campaign.id, user?.id]);
+
   const handleSendMessage = (content: string) => {
     if (!user) return;
     sendMessage.mutate({
       campaignId: campaign.id,
       senderId: user.id,
+      recipientId: campaign.business_id,
       content,
     });
   };
@@ -80,6 +90,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     sendMessage.mutate({
       campaignId: campaign.id,
       senderId: user.id,
+      recipientId: campaign.business_id,
       content: file.name,
       messageType: "file",
       metadata: {
@@ -99,11 +110,14 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     });
   };
 
-  const getSenderName = (senderId: string) => {
-    if (senderId === campaign.business_id) return brandName;
-    if (senderId === campaign.influencer_id) return influencerName;
-    return "System";
-  };
+  const getSenderName = useCallback(
+    (senderId: string) => {
+      if (senderId === campaign.business_id) return brandName;
+      if (senderId === campaign.influencer_id) return influencerName;
+      return "System";
+    },
+    [campaign.business_id, campaign.influencer_id, brandName, influencerName],
+  );
 
   if (!user) return null;
 

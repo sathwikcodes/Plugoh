@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Instagram, MapPin } from "lucide-react";
 import { RealReachVerifiedBadge } from "@/components/ui/realreach-verified-badge";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/lib/supabase/types";
@@ -37,7 +37,7 @@ export default function ProfileCard({
     (handle ? `https://instagram.com/${handle}` : null);
 
   return (
-    <motion.div variants={fadeUp}>
+    <m.div variants={fadeUp}>
       <div
         className="rounded-3xl border border-white/[0.08] p-6 space-y-5 shadow-2xl"
         style={{
@@ -161,6 +161,6 @@ export default function ProfileCard({
           </div>
         )}
       </div>
-    </motion.div>
+    </m.div>
   );
 }

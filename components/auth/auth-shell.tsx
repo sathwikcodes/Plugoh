@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useAuthTheme, type AuthTheme } from "./theme-context";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
@@ -32,16 +32,16 @@ export function AuthShell({ children }: { children: ReactNode }) {
           {...gradientConfig}
         />
         <div className="relative z-10 text-center px-12">
-          <motion.h1
+          <m.h1
             className="text-4xl font-bold tracking-tight mb-3"
             style={{ color: "var(--auth-text)", opacity: 0.9 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 0.9, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            ReelReach
-          </motion.h1>
-          <motion.p
+            Plugoh
+          </m.h1>
+          <m.p
             key={theme}
             className="text-lg max-w-xs mx-auto"
             style={{ color: "var(--auth-text-secondary)" }}
@@ -51,7 +51,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
             transition={{ duration: 0.4 }}
           >
             {taglines[theme]}
-          </motion.p>
+          </m.p>
         </div>
       </div>
 

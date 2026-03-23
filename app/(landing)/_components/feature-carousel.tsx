@@ -11,7 +11,7 @@ import {
 } from "react";
 import Image, { type StaticImageData } from "next/image";
 import clsx from "clsx";
-import { AnimatePresence, motion, type Variants } from "motion/react";
+import { AnimatePresence, m, type Variants } from "motion/react";
 import Balancer from "react-wrap-balancer";
 
 import { cn } from "@/lib/utils";
@@ -253,7 +253,7 @@ const StepImage = forwardRef<HTMLImageElement, StepImageProps>(
 );
 StepImage.displayName = "StepImage";
 
-const MotionStepImage = motion.create(StepImage);
+const MotionStepImage = m.create(StepImage);
 
 const AnimatedStepImage = ({
   preset = "fadeInScale",
@@ -313,7 +313,7 @@ function FeatureCard({
       >
         <div className="m-4 sm:m-6 md:m-10 min-h-[350px] sm:min-h-[400px] md:min-h-[450px] w-full pt-14 md:pt-0">
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={step}
               className="flex w-full md:w-4/6 flex-col gap-2 sm:gap-3"
               initial={{ opacity: 0, y: 20 }}
@@ -324,7 +324,7 @@ function FeatureCard({
                 ease: [0.23, 1, 0.32, 1],
               }}
             >
-              <motion.h2
+              <m.h2
                 className="text-xl font-bold tracking-tight text-white md:text-2xl"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -335,8 +335,8 @@ function FeatureCard({
                 }}
               >
                 {steps[step].title}
-              </motion.h2>
-              <motion.div
+              </m.h2>
+              <m.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
@@ -348,8 +348,8 @@ function FeatureCard({
                 <p className="text-sm leading-5 text-neutral-300 sm:text-base sm:leading-5 dark:text-zinc-400">
                   <Balancer>{steps[step].description}</Balancer>
                 </p>
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
           </AnimatePresence>
           {mounted ? children : null}
         </div>
@@ -379,7 +379,7 @@ function Steps({
           const isFuture = !isCompleted && !isCurrent;
 
           return (
-            <motion.li
+            <m.li
               key={`${step.name}-${stepIdx}`}
               initial="inactive"
               animate={isCurrent ? "active" : "inactive"}
@@ -398,7 +398,7 @@ function Steps({
                 onClick={() => onChange(stepIdx)}
               >
                 <span className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
-                  <motion.span
+                  <m.span
                     initial={false}
                     animate={{
                       scale: isCurrent ? 1.2 : 1,
@@ -412,7 +412,7 @@ function Steps({
                     )}
                   >
                     {isCompleted ? (
-                      <motion.div
+                      <m.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{
@@ -422,7 +422,7 @@ function Steps({
                         }}
                       >
                         <IconCheck className="h-3 w-3 stroke-white stroke-[3] text-white dark:stroke-black" />
-                      </motion.div>
+                      </m.div>
                     ) : (
                       <span
                         className={cn(
@@ -433,8 +433,8 @@ function Steps({
                         {stepIdx + 1}
                       </span>
                     )}
-                  </motion.span>
-                  <motion.span
+                  </m.span>
+                  <m.span
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     className={clsx(
@@ -445,10 +445,10 @@ function Steps({
                     )}
                   >
                     {step.name}
-                  </motion.span>
+                  </m.span>
                 </span>
               </div>
-            </motion.li>
+            </m.li>
           );
         })}
       </ol>
@@ -499,7 +499,7 @@ export const FeatureCarousel = ({
       switch (step) {
         case 0:
           return (
-            <motion.div
+            <m.div
               className="relative w-full h-full"
               onAnimationComplete={handleAnimationComplete}
             >
@@ -516,11 +516,11 @@ export const FeatureCarousel = ({
                 preset="slideInRight"
                 delay={0.1}
               />
-            </motion.div>
+            </m.div>
           );
         case 1:
           return (
-            <motion.div
+            <m.div
               className="relative w-full h-full"
               onAnimationComplete={handleAnimationComplete}
             >
@@ -537,7 +537,7 @@ export const FeatureCarousel = ({
                 preset="fadeInScale"
                 delay={0.1}
               />
-            </motion.div>
+            </m.div>
           );
         case 2:
           return (
@@ -566,13 +566,13 @@ export const FeatureCarousel = ({
 
     return (
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={step}
           {...ANIMATION_PRESETS.fadeInScale}
           className="w-full h-full absolute"
         >
           {content()}
-        </motion.div>
+        </m.div>
       </AnimatePresence>
     );
   };
@@ -580,14 +580,14 @@ export const FeatureCarousel = ({
   return (
     <FeatureCard {...props} step={step}>
       {renderStepContent()}
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
         className="absolute left-0 top-3 md:top-5 z-50 w-full cursor-pointer"
       >
         <Steps current={step} onChange={() => {}} steps={steps} />
-      </motion.div>
+      </m.div>
       <div
         className="absolute right-0 top-0 z-50 h-full w-full cursor-pointer"
         onClick={handleIncrement}

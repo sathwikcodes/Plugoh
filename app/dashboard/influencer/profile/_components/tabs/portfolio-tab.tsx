@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -98,14 +98,14 @@ export default function PortfolioTab({
     (profile.portfolio_media_ids && profile.portfolio_media_ids.length > 0);
 
   return (
-    <motion.div
+    <m.div
       variants={stagger}
       initial="hidden"
       animate="visible"
       className="space-y-4 pt-4"
     >
       {/* Portfolio Media */}
-      <motion.div variants={fadeUp}>
+      <m.div variants={fadeUp}>
         <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -315,11 +315,11 @@ export default function PortfolioTab({
             </div>
           )}
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Previous brands (view only when not editing) */}
       {!isEditing && (
-        <motion.div variants={fadeUp}>
+        <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Worked With
@@ -345,8 +345,8 @@ export default function PortfolioTab({
               </button>
             )}
           </div>
-        </motion.div>
+        </m.div>
       )}
-    </motion.div>
+    </m.div>
   );
 }

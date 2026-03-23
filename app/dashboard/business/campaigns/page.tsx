@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,7 +25,8 @@ import {
 import { CampaignCards } from "@/components/shared/campaign-cards";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { statusColor } from "@/lib/format";
-import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase/client";
+import { m, AnimatePresence } from "framer-motion";
 
 const STATUS_FILTERS = [
   "All",
@@ -43,6 +44,18 @@ export default function CampaignsList() {
   );
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [search, setSearch] = useState("");
+
+  // Clear booking-response notifications when business visits campaigns page
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase
+      .from("notifications")
+      .update({ read: true })
+      .eq("user_id", user.id)
+      .in("type", ["booking_accepted", "booking_rejected"])
+      .eq("read", false)
+      .then(() => {});
+  }, [user?.id]);
 
   const filtered = useMemo(() => {
     let result = [...campaigns];
@@ -91,7 +104,7 @@ export default function CampaignsList() {
                 className="relative px-4 py-2 rounded-full text-sm font-medium transition-colors"
               >
                 {statusFilter === s && (
-                  <motion.div
+                  <m.div
                     layoutId="activeStatusPill"
                     className="absolute inset-0 bg-primary rounded-full"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
@@ -186,7 +199,7 @@ export default function CampaignsList() {
                 <TableBody>
                   <AnimatePresence>
                     {filtered.map((c) => (
-                      <motion.tr
+                      <m.tr
                         key={c.id}
                         layout
                         initial={{ opacity: 0 }}
@@ -223,7 +236,7 @@ export default function CampaignsList() {
                             </Link>
                           </Button>
                         </TableCell>
-                      </motion.tr>
+                      </m.tr>
                     ))}
                   </AnimatePresence>
                 </TableBody>

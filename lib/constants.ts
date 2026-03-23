@@ -72,3 +72,114 @@ export const BUSINESS_TYPES = [
   "Personal Brand",
   "Other",
 ] as const;
+
+// ─── Campaign Status Config ─────────────────────────────────────────────────
+export const CAMPAIGN_STATUS_CONFIG = {
+  pending: {
+    label: "New Offer",
+    badge: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+    border: "border-l-amber-400",
+    cardBg: "from-amber-500/8 to-yellow-500/5",
+  },
+  accepted: {
+    label: "In Progress",
+    badge: "bg-green-500/15 text-green-400 border-green-500/20",
+    border: "border-l-green-400",
+    cardBg: "from-green-500/8 to-emerald-500/5",
+  },
+  completed: {
+    label: "Completed",
+    badge: "bg-violet-500/15 text-violet-400 border-violet-500/20",
+    border: "border-l-violet-400",
+    cardBg: "from-violet-500/8 to-purple-500/5",
+  },
+  rejected: {
+    label: "Declined",
+    badge: "bg-white/5 text-muted-foreground border-white/10",
+    border: "border-l-white/10",
+    cardBg: "from-transparent to-transparent",
+  },
+} as const;
+
+export type CampaignStatus = keyof typeof CAMPAIGN_STATUS_CONFIG;
+
+// ─── Earnings Tier Config ────────────────────────────────────────────────────
+export const TIERS = [
+  {
+    name: "Rising Star",
+    threshold: 0,
+    next: 25000,
+    emoji: "/star.png",
+    fromClass: "from-emerald-500",
+    toClass: "to-teal-500",
+    borderClass: "border-emerald-500/30",
+    bgClass: "from-emerald-500/10 to-teal-500/10",
+    textClass: "text-emerald-400",
+    barClass: "from-emerald-500 to-teal-400",
+  },
+  {
+    name: "Creator",
+    threshold: 25000,
+    next: 100000,
+    emoji: "/star.png",
+    fromClass: "from-blue-500",
+    toClass: "to-indigo-500",
+    borderClass: "border-blue-500/30",
+    bgClass: "from-blue-500/10 to-indigo-500/10",
+    textClass: "text-blue-400",
+    barClass: "from-blue-500 to-indigo-400",
+  },
+  {
+    name: "Pro Creator",
+    threshold: 100000,
+    next: 500000,
+    emoji: "/star.png",
+    fromClass: "from-amber-500",
+    toClass: "to-orange-500",
+    borderClass: "border-amber-500/30",
+    bgClass: "from-amber-500/10 to-orange-500/10",
+    textClass: "text-amber-400",
+    barClass: "from-amber-500 to-orange-400",
+  },
+  {
+    name: "Elite Creator",
+    threshold: 500000,
+    next: 1500000,
+    emoji: "/star.png",
+    fromClass: "from-violet-500",
+    toClass: "to-purple-500",
+    borderClass: "border-violet-500/30",
+    bgClass: "from-violet-500/10 to-purple-500/10",
+    textClass: "text-violet-400",
+    barClass: "from-violet-500 to-purple-400",
+  },
+  {
+    name: "Top Creator",
+    threshold: 1500000,
+    next: null,
+    emoji: "/star.png",
+    fromClass: "from-yellow-400",
+    toClass: "to-amber-300",
+    borderClass: "border-yellow-400/30",
+    bgClass: "from-yellow-400/10 to-amber-300/10",
+    textClass: "text-yellow-400",
+    barClass: "from-yellow-400 to-amber-300",
+  },
+] as const;
+
+export const MILESTONES = [
+  10000, 25000, 50000, 100000, 250000, 500000, 1000000,
+];
+
+// ─── Complete Profile Content Types ──────────────────────────────────────────
+export const INFLUENCER_CONTENT_TYPES = [
+  "Reels",
+  "Stories",
+  "Static Posts",
+  "UGC",
+  "Product Reviews",
+  "Tutorials",
+  "Unboxing",
+  "Behind the Scenes",
+  "Event Coverage",
+] as const;

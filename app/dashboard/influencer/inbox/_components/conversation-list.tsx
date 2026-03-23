@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ConversationItem } from "./conversation-item";
 import type { Conversation } from "@/hooks/queries/use-inbox-conversations";
@@ -109,23 +109,30 @@ export function ConversationList({
             )}
           </div>
         ) : (
-          <motion.div
+          <m.div
             className="px-2 space-y-0.5"
             variants={listStagger}
             initial="hidden"
             animate="visible"
           >
             {filtered.map((convo) => (
-              <motion.div key={convo.campaign.id} variants={itemFade}>
+              <m.div
+                key={convo.campaign.id}
+                variants={itemFade}
+                style={{
+                  contentVisibility: "auto",
+                  containIntrinsicSize: "0 76px",
+                }}
+              >
                 <ConversationItem
                   conversation={convo}
                   isSelected={selectedId === convo.campaign.id}
                   currentUserId={currentUserId}
                   onClick={() => onSelect(convo.campaign.id)}
                 />
-              </motion.div>
+              </m.div>
             ))}
-          </motion.div>
+          </m.div>
         )}
       </div>
     </div>

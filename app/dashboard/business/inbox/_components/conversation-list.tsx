@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search, MessageCircle, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ConversationItem } from "./conversation-item";
@@ -87,18 +87,18 @@ export function ConversationList({
             )}
           </div>
         ) : (
-          <motion.div variants={stagger} initial="hidden" animate="visible">
+          <m.div variants={stagger} initial="hidden" animate="visible">
             {filtered.map((convo) => (
-              <motion.div key={convo.campaign.id} variants={fadeUp}>
+              <m.div key={convo.campaign.id} variants={fadeUp}>
                 <ConversationItem
                   conversation={convo}
                   isSelected={selectedId === convo.campaign.id}
                   currentUserId={currentUserId}
                   onClick={() => onSelect(convo.campaign.id)}
                 />
-              </motion.div>
+              </m.div>
             ))}
-          </motion.div>
+          </m.div>
         )}
       </ScrollArea>
     </div>

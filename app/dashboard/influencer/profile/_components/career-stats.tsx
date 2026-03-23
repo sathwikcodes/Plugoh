@@ -1,7 +1,7 @@
 "use client";
 
 import { Briefcase, TrendingUp, Building2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/lib/supabase/types";
@@ -58,7 +58,7 @@ export default function CareerStats({ campaigns }: CareerStatsProps) {
   ];
 
   return (
-    <motion.div variants={fadeUp}>
+    <m.div variants={fadeUp}>
       <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Career Stats
@@ -101,6 +101,6 @@ export default function CareerStats({ campaigns }: CareerStatsProps) {
           ))}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

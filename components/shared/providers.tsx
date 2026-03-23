@@ -1,6 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LazyMotion, domAnimation } from "framer-motion";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,11 +27,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
         <TooltipProvider>
-          <AuthProvider>
-            <SentryUserIdentifier />
-            {children}
-            <Toaster />
-          </AuthProvider>
+          <LazyMotion features={domAnimation} strict>
+            <AuthProvider>
+              <SentryUserIdentifier />
+              {children}
+              <Toaster />
+            </AuthProvider>
+          </LazyMotion>
         </TooltipProvider>
       </TRPCProvider>
     </QueryClientProvider>

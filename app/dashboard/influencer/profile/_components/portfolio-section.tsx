@@ -10,7 +10,7 @@ import {
   Pencil,
   Plus,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
 import type { Database } from "@/lib/supabase/types";
 
@@ -28,7 +28,7 @@ export default function PortfolioSection({ media }: PortfolioSectionProps) {
   if (media.length === 0 && emptySlots === 0) return null;
 
   return (
-    <motion.div variants={fadeUp}>
+    <m.div variants={fadeUp}>
       <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -96,6 +96,6 @@ export default function PortfolioSection({ media }: PortfolioSectionProps) {
           ))}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

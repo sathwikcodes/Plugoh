@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { Loader2, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { useAuthTheme } from "@/components/auth/theme-context";
 import { cn } from "@/lib/utils";
@@ -177,7 +177,7 @@ export default function Onboarding() {
         if (ipError && ipError.code !== "23505") throw ipError;
       }
 
-      toast({ title: "Profile set up!", description: "Welcome to ReelReach." });
+      toast({ title: "Profile set up!", description: "Welcome to Plugoh." });
 
       if (selectedRole === "influencer") {
         const res = await fetch(
@@ -206,27 +206,27 @@ export default function Onboarding() {
 
   return (
     <AuthShell>
-      <motion.div
+      <m.div
         variants={stagger}
         initial="hidden"
         animate="visible"
         className="space-y-8"
       >
-        <motion.div variants={fadeUp} className="lg:hidden mb-2 text-center">
+        <m.div variants={fadeUp} className="lg:hidden mb-2 text-center">
           <h2
             className="text-xl font-bold tracking-tight"
             style={{ color: "var(--auth-text)" }}
           >
-            ReelReach
+            Plugoh
           </h2>
-        </motion.div>
+        </m.div>
 
-        <motion.div variants={fadeUp} className="space-y-2 text-center">
+        <m.div variants={fadeUp} className="space-y-2 text-center">
           <h1
             className="text-3xl font-semibold tracking-tight"
             style={{ color: "var(--auth-text)" }}
           >
-            Welcome to ReelReach
+            Welcome to Plugoh
           </h1>
           <p
             className="text-sm"
@@ -234,12 +234,12 @@ export default function Onboarding() {
           >
             Tell us who you are to get started.
           </p>
-        </motion.div>
+        </m.div>
 
-        <motion.div variants={fadeUp} className="space-y-4">
+        <m.div variants={fadeUp} className="space-y-4">
           <div className="flex justify-center gap-6 sm:gap-10">
             {ROLE_TABS.map((tab, index) => (
-              <motion.button
+              <m.button
                 key={tab.role}
                 type="button"
                 whileTap="tapped"
@@ -248,7 +248,7 @@ export default function Onboarding() {
                 className="relative flex items-center gap-2 cursor-pointer outline-none"
                 style={{ WebkitTapHighlightColor: "transparent" }}
               >
-                <motion.div
+                <m.div
                   initial={{ scale: 0 }}
                   animate={{
                     scale: 1,
@@ -310,7 +310,7 @@ export default function Onboarding() {
                   >
                     <source src={tab.videoUrl} type="video/webm" />
                   </video>
-                </motion.div>
+                </m.div>
                 <span
                   className="text-sm sm:text-base tracking-wide transition-all duration-200"
                   style={{
@@ -323,13 +323,13 @@ export default function Onboarding() {
                 >
                   {tab.label}
                 </span>
-              </motion.button>
+              </m.button>
             ))}
           </div>
 
           <AnimatePresence mode="wait">
             {selectedRole && (
-              <motion.p
+              <m.p
                 key={selectedRole}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -339,14 +339,14 @@ export default function Onboarding() {
                 style={{ color: "var(--auth-text-secondary)" }}
               >
                 {ROLE_TABS.find((t) => t.role === selectedRole)?.description}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
-        </motion.div>
+        </m.div>
 
         <AnimatePresence>
           {selectedRole && (
-            <motion.form
+            <m.form
               key="profile-form"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
@@ -419,7 +419,7 @@ export default function Onboarding() {
 
               <AnimatePresence>
                 {selectedRole === "business" && (
-                  <motion.div
+                  <m.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
@@ -527,7 +527,7 @@ export default function Onboarding() {
                         }
                       />
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
 
@@ -553,10 +553,10 @@ export default function Onboarding() {
                   ? "Connect with Instagram"
                   : "Get Started"}
               </button>
-            </motion.form>
+            </m.form>
           )}
         </AnimatePresence>
-      </motion.div>
+      </m.div>
     </AuthShell>
   );
 }

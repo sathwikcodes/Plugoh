@@ -52,7 +52,7 @@ async function fetchConversations(userId: string): Promise<Conversation[]> {
     lastMessage: messageMap.get(c.id) || null,
   }));
 
-  convos.sort((a, b) => {
+  return convos.toSorted((a, b) => {
     const aTime =
       a.lastMessage?.created_at ||
       a.campaign.updated_at ||
@@ -63,8 +63,6 @@ async function fetchConversations(userId: string): Promise<Conversation[]> {
       b.campaign.created_at;
     return new Date(bTime).getTime() - new Date(aTime).getTime();
   });
-
-  return convos;
 }
 
 export function useInboxConversations(userId: string | undefined) {
@@ -76,7 +74,7 @@ export function useInboxConversations(userId: string | undefined) {
     enabled: !!userId,
   });
 
-  // Realtime: invalidate when any new message arrives for user's campaigns
+  // Realtime: invalidate only when a new message arrives for one of this user's campaigns
   useEffect(() => {
     if (!userId) return;
 
@@ -89,10 +87,21 @@ export function useInboxConversations(userId: string | undefined) {
           schema: "public",
           table: "campaign_messages",
         },
-        () => {
-          queryClient.invalidateQueries({
-            queryKey: ["inbox-conversations", userId],
-          });
+        (payload) => {
+          const newMsg = payload.new as { campaign_id: string };
+          const cached = queryClient.getQueryData<Conversation[]>([
+            "inbox-conversations",
+            userId,
+          ]);
+          // Only invalidate if the message belongs to a campaign this user is part of
+          if (
+            !cached ||
+            cached.some((c) => c.campaign.id === newMsg.campaign_id)
+          ) {
+            queryClient.invalidateQueries({
+              queryKey: ["inbox-conversations", userId],
+            });
+          }
         },
       )
       .subscribe();

@@ -171,7 +171,7 @@ export default function InfluencerProfileView() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: "ReelReach",
+        name: "Plugoh",
         description: `Campaign: ${title}`,
         order_id: orderData.orderId,
         prefill: { email: contactEmail, contact: contactPhone },

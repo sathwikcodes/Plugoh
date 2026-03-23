@@ -14,7 +14,6 @@ export function useDockAutoHide() {
   const isInboxPage = pathname.includes("/inbox");
   const hasChatOpen = searchParams.get("chat") !== null;
 
-  // Desktop auto-hide hover state
   const [isHovered, setIsHovered] = useState(false);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -25,12 +24,11 @@ export function useDockAutoHide() {
     }
   }, []);
 
-  // Reset hover state when navigating away from inbox
+  // Reset hover state when chat closes or we leave inbox
   useEffect(() => {
-    if (!isInboxPage) setIsHovered(false);
-  }, [isInboxPage]);
+    if (!hasChatOpen) setIsHovered(false);
+  }, [hasChatOpen]);
 
-  // Cleanup timer on unmount
   useEffect(() => () => clearHideTimer(), [clearHideTimer]);
 
   const onTriggerEnter = useCallback(() => {
@@ -46,16 +44,15 @@ export function useDockAutoHide() {
     hideTimerRef.current = setTimeout(() => setIsHovered(false), HIDE_DELAY_MS);
   }, []);
 
-  // Resolve final visibility
   let shouldHideDock = false;
   let showTriggerZone = false;
 
-  if (isInboxPage) {
+  if (isInboxPage && hasChatOpen) {
     if (isMobile) {
-      // Mobile: hide dock when in active chat, show on conversation list
-      shouldHideDock = hasChatOpen;
+      // Mobile: hard hide, no way to peek
+      shouldHideDock = true;
     } else {
-      // Desktop: auto-hide with hover trigger
+      // Desktop: hidden but hover at bottom edge peeks it back
       shouldHideDock = !isHovered;
       showTriggerZone = !isHovered;
     }

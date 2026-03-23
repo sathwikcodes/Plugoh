@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -255,7 +255,7 @@ function PricingSliderCard({
 
   return (
     // No whileHover — removed zoom animation as requested
-    <motion.div
+    <m.div
       variants={fadeUp}
       className="flex flex-col rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md"
     >
@@ -266,7 +266,7 @@ function PricingSliderCard({
             <h3 className="text-base font-semibold leading-tight">{title}</h3>
             <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
           </div>
-          <motion.img
+          <m.img
             src="/coin.png"
             alt="coin"
             width={52}
@@ -311,7 +311,7 @@ function PricingSliderCard({
         {/* Slider — animates in/out */}
         <AnimatePresence initial={false}>
           {isEditing && (
-            <motion.div
+            <m.div
               key="slider"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -328,7 +328,7 @@ function PricingSliderCard({
                   onChange={setDraft}
                 />
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>
@@ -371,7 +371,7 @@ function PricingSliderCard({
           </Button>
         )}
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -449,7 +449,7 @@ export default function PricingTab({ profile, userId }: PricingTabProps) {
   };
 
   return (
-    <motion.div
+    <m.div
       variants={stagger}
       initial="hidden"
       animate="visible"
@@ -481,7 +481,7 @@ export default function PricingTab({ profile, userId }: PricingTabProps) {
       </div>
 
       {/* Content types + turnaround — collapsible */}
-      <motion.div variants={fadeUp}>
+      <m.div variants={fadeUp}>
         <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md overflow-hidden">
           {/* Toggle header */}
           <button
@@ -491,17 +491,17 @@ export default function PricingTab({ profile, userId }: PricingTabProps) {
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Content Types & Turnaround
             </p>
-            <motion.div
+            <m.div
               animate={{ rotate: metaOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
             >
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            </motion.div>
+            </m.div>
           </button>
 
           <AnimatePresence initial={false}>
             {metaOpen && (
-              <motion.div
+              <m.div
                 key="meta-content"
                 initial={{ height: 0 }}
                 animate={{ height: "auto" }}
@@ -641,11 +641,11 @@ export default function PricingTab({ profile, userId }: PricingTabProps) {
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }

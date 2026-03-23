@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Check, ArrowRight } from "lucide-react";
@@ -48,7 +48,7 @@ export default function ProfileStrength({
   // If 100%, show compact badge
   if (isComplete) {
     return (
-      <motion.div variants={fadeUp}>
+      <m.div variants={fadeUp}>
         <div className="flex items-center gap-2 rounded-2xl border border-green-500/20 bg-green-500/5 backdrop-blur-md px-4 py-3">
           <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
             <Check className="h-3.5 w-3.5 text-white" />
@@ -57,12 +57,12 @@ export default function ProfileStrength({
             Profile complete
           </span>
         </div>
-      </motion.div>
+      </m.div>
     );
   }
 
   return (
-    <motion.div variants={fadeUp}>
+    <m.div variants={fadeUp}>
       <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5">
         <div className="flex items-center gap-5">
           {/* Circular Progress Ring */}
@@ -140,6 +140,6 @@ export default function ProfileStrength({
           </div>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

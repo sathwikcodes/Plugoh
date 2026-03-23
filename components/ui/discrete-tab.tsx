@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { m } from "framer-motion";
 import {
   LayoutDashboard,
   Banknote,
@@ -73,7 +73,7 @@ function TabPill({
   }, [isActive, isLoaded]);
 
   return (
-    <motion.div
+    <m.div
       layoutId={"profile-tab-" + id}
       transition={{ layout: SPRING }}
       onClick={() => {
@@ -83,7 +83,7 @@ function TabPill({
       className="w-fit h-fit flex cursor-pointer"
       style={{ willChange: "transform" }}
     >
-      <motion.div
+      <m.div
         layout
         transition={{ layout: SPRING }}
         className={cn(
@@ -97,17 +97,17 @@ function TabPill({
         style={{ borderRadius: "25px" }}
       >
         {/* Icon */}
-        <motion.div
+        <m.div
           layoutId={"profile-tab-icon-" + id}
           className="shrink-0"
           style={{ willChange: "transform" }}
         >
           <Icon size={18} strokeWidth={isActive ? 2.2 : 1.8} />
-        </motion.div>
+        </m.div>
 
         {/* Label — only rendered when active */}
         {isActive && (
-          <motion.span
+          <m.span
             layoutId={"profile-tab-label-" + id}
             initial={isLoaded ? { opacity: 0, filter: "blur(4px)" } : false}
             animate={{ opacity: 1, filter: "blur(0px)" }}
@@ -119,10 +119,10 @@ function TabPill({
             style={{ willChange: "transform" }}
           >
             {label}
-          </motion.span>
+          </m.span>
         )}
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }
 

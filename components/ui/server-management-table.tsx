@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { X, Power, Pause, Play, RotateCcw } from "lucide-react";
 
@@ -328,7 +328,7 @@ export function ServerManagementTable({
           </div>
         </div>
 
-        <motion.div
+        <m.div
           className="space-y-2"
           variants={{
             visible: {
@@ -349,7 +349,7 @@ export function ServerManagementTable({
           </div>
 
           {servers.map((server) => (
-            <motion.div
+            <m.div
               key={server.id}
               variants={{
                 hidden: {
@@ -376,7 +376,7 @@ export function ServerManagementTable({
               onMouseLeave={() => setHoveredServer(null)}
               onClick={() => openServerModal(server)}
             >
-              <motion.div
+              <m.div
                 className="relative bg-muted/50 border border-border/50 rounded-xl p-4 overflow-hidden"
                 whileHover={{
                   y: -1,
@@ -423,14 +423,14 @@ export function ServerManagementTable({
                     {getStatusBadge(server.status)}
                   </div>
                 </div>
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
 
         <AnimatePresence>
           {selectedServer && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -461,7 +461,7 @@ export function ServerManagementTable({
                 </div>
                 <div className="flex items-center gap-2">
                   {selectedServer.status === "active" ? (
-                    <motion.button
+                    <m.button
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-sm transition-colors"
                       onClick={() =>
                         handleStatusChange(selectedServer.id, "inactive")
@@ -471,9 +471,9 @@ export function ServerManagementTable({
                     >
                       <Power className="w-3 h-3" />
                       Stop
-                    </motion.button>
+                    </m.button>
                   ) : (
-                    <motion.button
+                    <m.button
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg text-sm transition-colors"
                       onClick={() =>
                         handleStatusChange(selectedServer.id, "active")
@@ -483,10 +483,10 @@ export function ServerManagementTable({
                     >
                       <Play className="w-3 h-3" />
                       Start
-                    </motion.button>
+                    </m.button>
                   )}
                   {selectedServer.status === "paused" ? (
-                    <motion.button
+                    <m.button
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg text-sm transition-colors"
                       onClick={() =>
                         handleStatusChange(selectedServer.id, "active")
@@ -496,9 +496,9 @@ export function ServerManagementTable({
                     >
                       <Play className="w-3 h-3" />
                       Resume
-                    </motion.button>
+                    </m.button>
                   ) : (
-                    <motion.button
+                    <m.button
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-lg text-sm transition-colors"
                       onClick={() =>
                         handleStatusChange(selectedServer.id, "paused")
@@ -508,9 +508,9 @@ export function ServerManagementTable({
                     >
                       <Pause className="w-3 h-3" />
                       Pause
-                    </motion.button>
+                    </m.button>
                   )}
-                  <motion.button
+                  <m.button
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg text-sm transition-colors"
                     onClick={() => {
                       handleStatusChange(selectedServer.id, "inactive");
@@ -524,15 +524,15 @@ export function ServerManagementTable({
                   >
                     <RotateCcw className="w-3 h-3" />
                     Restart
-                  </motion.button>
-                  <motion.button
+                  </m.button>
+                  <m.button
                     className="w-8 h-8 bg-background/80 hover:bg-background rounded-full flex items-center justify-center border border-border/50 ml-2"
                     onClick={closeServerModal}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <X className="w-4 h-4" />
-                  </motion.button>
+                  </m.button>
                 </div>
               </div>
               <div className="flex-1 p-4 space-y-4 overflow-y-auto">
@@ -591,7 +591,7 @@ export function ServerManagementTable({
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

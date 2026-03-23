@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { ChevronDown, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ const FaqSection = React.forwardRef<HTMLElement, FaqSectionProps>(
       >
         <div className="container px-4 sm:px-6 md:px-8">
           {/* Header */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -47,7 +47,7 @@ const FaqSection = React.forwardRef<HTMLElement, FaqSectionProps>(
             {description && (
               <p className="text-sm text-muted-foreground">{description}</p>
             )}
-          </motion.div>
+          </m.div>
 
           {/* FAQ Items */}
           <div className="max-w-2xl mx-auto space-y-2">
@@ -63,7 +63,7 @@ const FaqSection = React.forwardRef<HTMLElement, FaqSectionProps>(
 
           {/* Contact Section */}
           {contactInfo && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
@@ -81,7 +81,7 @@ const FaqSection = React.forwardRef<HTMLElement, FaqSectionProps>(
               <Button size="sm" onClick={contactInfo.onContact}>
                 {contactInfo.buttonText}
               </Button>
-            </motion.div>
+            </m.div>
           )}
         </div>
       </section>
@@ -103,7 +103,7 @@ const FaqItem = React.forwardRef<
   const { question, answer, index } = props;
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -131,7 +131,7 @@ const FaqItem = React.forwardRef<
         >
           {question}
         </h3>
-        <motion.div
+        <m.div
           animate={{
             rotate: isOpen ? 180 : 0,
             scale: isOpen ? 1.1 : 1,
@@ -144,11 +144,11 @@ const FaqItem = React.forwardRef<
           )}
         >
           <ChevronDown className="h-4 w-4" />
-        </motion.div>
+        </m.div>
       </Button>
       <AnimatePresence initial={false}>
         {isOpen && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{
               height: "auto",
@@ -162,19 +162,19 @@ const FaqItem = React.forwardRef<
             }}
           >
             <div className="px-6 pb-4 pt-2">
-              <motion.p
+              <m.p
                 initial={{ y: -10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -10, opacity: 0 }}
                 className="text-sm text-muted-foreground leading-relaxed"
               >
                 {answer}
-              </motion.p>
+              </m.p>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 });
 FaqItem.displayName = "FaqItem";

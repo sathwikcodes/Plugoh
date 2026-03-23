@@ -64,14 +64,30 @@ export const campaignRouter = router({
             ? "booking_rejected"
             : "booking_completed";
 
-      await db.from("notifications").insert({
-        user_id: notifyUserId,
-        type: notifType,
-        data: {
-          title: campaign.title || "Untitled",
-          campaign_id: campaign.id,
-        },
-      });
+      // Parallelize independent DB operations: notify counterparty + clear own badge
+      await Promise.all([
+        db.from("notifications").insert({
+          user_id: notifyUserId,
+          type: notifType,
+          data: {
+            title: campaign.title || "Untitled",
+            campaign_id: campaign.id,
+          },
+        }),
+        // When influencer acts, clear their own new_booking notification so
+        // the campaigns badge drops immediately
+        ...(isInfluencer
+          ? [
+              db
+                .from("notifications")
+                .update({ read: true })
+                .eq("user_id", user.id)
+                .eq("type", "new_booking")
+                .eq("read", false)
+                .contains("data", { campaign_id: input.campaignId }),
+            ]
+          : []),
+      ]);
 
       return { success: true };
     }),

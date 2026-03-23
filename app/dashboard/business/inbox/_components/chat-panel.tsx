@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/auth-context";
 import {
   useCampaignMessages,
   useSendMessage,
+  useMarkNotificationsReadForCampaign,
 } from "@/hooks/queries/use-campaign-messages";
 import {
   MessageBubble,
@@ -29,6 +30,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const { campaign, influencerProfile } = conversation;
   const { data: messages, isLoading } = useCampaignMessages(campaign.id);
   const sendMessage = useSendMessage();
+  const markRead = useMarkNotificationsReadForCampaign();
   const insertFile = useMutation(
     trpc.campaignFile.insertCampaignFile.mutationOptions(),
   );
@@ -43,11 +45,19 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages?.length]);
 
+  // Mark new_message notifications as read when this conversation is opened
+  useEffect(() => {
+    if (!user?.id || !campaign.id) return;
+    markRead.mutate({ campaignId: campaign.id, userId: user.id });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campaign.id, user?.id]);
+
   const handleSendMessage = (content: string) => {
     if (!user) return;
     sendMessage.mutate({
       campaignId: campaign.id,
       senderId: user.id,
+      recipientId: campaign.influencer_id,
       content,
     });
   };
@@ -57,6 +67,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     sendMessage.mutate({
       campaignId: campaign.id,
       senderId: user.id,
+      recipientId: campaign.influencer_id,
       content: file.name,
       messageType: "file",
       metadata: {

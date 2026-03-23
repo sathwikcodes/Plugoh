@@ -48,7 +48,7 @@ export function Header() {
           <Link href="/" className="flex items-center gap-2.5">
             <Image
               src="/logo-true.png"
-              alt="ReelReach"
+              alt="Plugoh"
               width={120}
               height={40}
               className="h-8 w-auto object-contain"

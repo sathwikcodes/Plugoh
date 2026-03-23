@@ -53,7 +53,7 @@ export function FeatureCarouselSection() {
                   "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop",
                 step4light:
                   "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2032&auto=format&fit=crop",
-                alt: "ReelReach platform feature",
+                alt: "Plugoh platform feature",
               }}
               bgClass="bg-gradient-to-tr from-neutral-900/90 to-neutral-800/90"
             />

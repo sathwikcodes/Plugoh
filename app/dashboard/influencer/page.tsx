@@ -1,148 +1,288 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { useMyInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
+import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
-import { useTRPC } from "@/lib/trpc/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
-  CheckCircle,
-  X,
-  Clock,
-  Inbox,
   Instagram,
-  Loader2,
-  ArrowRight,
-  Briefcase,
+  Film,
+  ImageIcon,
+  TrendingUp,
+  TrendingDown,
+  Bookmark,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { m } from "framer-motion";
 import { timeAgo } from "@/lib/format";
 import {
   GRADIENT_COLORS,
   GRADIENT_STOPS,
   GRADIENT_STYLE,
-  FILTER_PILL_STYLE,
-  FILTER_PILL_TRANSITION,
   stagger,
   fadeUp,
 } from "@/lib/animations";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import { PageLoadingSpinner } from "@/components/ui/loading-spinner";
 
-const FILTERS = ["all", "pending", "accepted", "completed"] as const;
-type Filter = (typeof FILTERS)[number];
-
-const filterLabels: Record<Filter, string> = {
-  all: "All",
-  pending: "Pending",
-  accepted: "Active",
-  completed: "Done",
-};
-
-const statusBorderColor: Record<string, string> = {
-  pending: "border-l-yellow-500",
-  accepted: "border-l-green-500",
-  completed: "border-l-primary",
-  rejected: "border-l-red-500",
-};
+import { PulseStats, type PulseStatsData } from "./_components/pulse-stats";
+import { TopContent, type TopContentItem } from "./_components/top-content";
+import {
+  CreatorInsights,
+  type InsightItem,
+} from "./_components/creator-insights";
+import {
+  RecentActivity,
+  type RecentActivityItem,
+} from "./_components/recent-activity";
+import {
+  QuickActions,
+  type QuickActionItem,
+} from "./_components/quick-actions";
 
 export default function InfluencerDashboard() {
   const { user, profile } = useAuth();
-  const { toast } = useToast();
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
 
   const { data: ip, isLoading: ipLoading } = useMyInfluencerProfile(user?.id);
+  const { data: media = [], isLoading: mediaLoading } = useInstagramMedia(
+    user?.id,
+  );
   const { data: campaigns = [], isLoading: campaignsLoading } = useCampaigns(
     user?.id,
     "influencer",
   );
 
-  const [filter, setFilter] = useState<Filter>("all");
+  const loading = ipLoading || mediaLoading || campaignsLoading;
 
-  const statusMutation = useMutation(
-    trpc.campaign.updateStatus.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
-        queryClient.invalidateQueries({ queryKey: ["campaign"] });
-        queryClient.invalidateQueries({ queryKey: ["inbox-conversations"] });
-        queryClient.invalidateQueries({
-          queryKey: ["business-inbox-conversations"],
-        });
-        toast({ title: "Campaign updated" });
+  // ── Quick Pulse Stats (single reduce pass) ───────────────────────────────
+  const pulseStats = useMemo<PulseStatsData>(() => {
+    const followers = ip?.ig_followers_count || 0;
+    const avgLikes = ip?.avg_likes_per_reel || 0;
+
+    const engagementRate = followers > 0 ? (avgLikes / followers) * 100 : 0;
+    const engagementColor =
+      engagementRate >= 3
+        ? "text-green-400"
+        : engagementRate >= 1
+          ? "text-yellow-400"
+          : "text-red-400";
+    const engagementBg =
+      engagementRate >= 3
+        ? "from-green-500/20 to-emerald-500/20"
+        : engagementRate >= 1
+          ? "from-yellow-500/20 to-orange-500/20"
+          : "from-red-500/20 to-rose-500/20";
+
+    // Single reduce pass for all media aggregates
+    const agg = media.reduce(
+      (acc, m) => {
+        acc.reach += m.reach || 0;
+        acc.likes += m.like_count || 0;
+        acc.comments += m.comments_count || 0;
+        acc.saves += m.saves || 0;
+        acc.impressions += m.impressions || 0;
+        return acc;
       },
-      onError: (err) => {
-        toast({
-          title: "Error",
-          description: err.message,
-          variant: "destructive",
-        });
-      },
-    }),
-  );
+      { reach: 0, likes: 0, comments: 0, saves: 0, impressions: 0 },
+    );
 
-  const updateStatus = (id: string, status: string) => {
-    statusMutation.mutate({
-      campaignId: id,
-      status: status as "accepted" | "rejected" | "completed",
-    });
-  };
+    let contentScore = 0;
+    if (agg.impressions > 0) {
+      const interactionRate =
+        ((agg.likes + agg.comments * 2 + agg.saves * 3) / agg.impressions) *
+        100;
+      contentScore = Math.min(100, Math.round(interactionRate * 10));
+    } else if (media.length > 0) {
+      contentScore = Math.min(100, Math.round(engagementRate * 15));
+    }
 
-  const loading = ipLoading || campaignsLoading;
+    return {
+      engagementRate,
+      engagementColor,
+      engagementBg,
+      totalReach: agg.reach,
+      contentScore,
+      // Extra fields consumed by insights (not part of PulseStatsData UI)
+      _totalSaves: agg.saves,
+    } as PulseStatsData & { _totalSaves: number };
+  }, [ip, media]);
 
-  const { pending, active, completed, totalEarnings, filtered } =
-    useMemo(() => {
-      const p: typeof campaigns = [];
-      const a: typeof campaigns = [];
-      const comp: typeof campaigns = [];
-      const f: typeof campaigns = [];
-      let te = 0;
+  // ── Top Performing Content ────────────────────────────────────────────────
+  const topContent = useMemo<TopContentItem[]>(() => {
+    if (media.length === 0) return [];
+    return media
+      .toSorted(
+        (a, b) =>
+          (b.like_count || 0) +
+          (b.comments_count || 0) * 2 +
+          (b.saves || 0) * 3 -
+          ((a.like_count || 0) +
+            (a.comments_count || 0) * 2 +
+            (a.saves || 0) * 3),
+      )
+      .slice(0, 5)
+      .map((m) => ({
+        ...m,
+        performanceScore:
+          (m.like_count || 0) +
+          (m.comments_count || 0) * 2 +
+          (m.saves || 0) * 3,
+      }));
+  }, [media]);
 
-      for (const c of campaigns) {
-        if (c.status === "pending") p.push(c);
-        else if (c.status === "accepted") {
-          a.push(c);
-          te += c.price_offered || 0;
-        } else if (c.status === "completed") {
-          comp.push(c);
-          te += c.price_offered || 0;
+  // ── Creator Insights (single partition pass for videos/images) ────────────
+  const insights = useMemo<InsightItem[]>(() => {
+    const result: InsightItem[] = [];
+    if (media.length === 0) return result;
+
+    // Single pass to partition videos and images
+    const videos: typeof media = [];
+    const images: typeof media = [];
+    for (const m of media) {
+      if (m.media_type === "VIDEO") videos.push(m);
+      else if (m.media_type === "IMAGE") images.push(m);
+    }
+
+    // 1. Content Type Performance: VIDEO vs IMAGE
+    if (videos.length >= 3 && images.length >= 3) {
+      const avgVideoEng =
+        videos.reduce((s, m) => s + (m.like_count || 0), 0) / videos.length;
+      const avgImageEng =
+        images.reduce((s, m) => s + (m.like_count || 0), 0) / images.length;
+      if (avgVideoEng > avgImageEng) {
+        const pct = Math.round(
+          ((avgVideoEng - avgImageEng) / avgImageEng) * 100,
+        );
+        if (pct > 5) {
+          result.push({
+            icon: Film,
+            title: `Reels get ${pct}% more likes`,
+            detail: "Your video content consistently outperforms static posts",
+            color: "from-purple-500/20 to-pink-500/20",
+          });
         }
-
-        // Build filtered list in same pass
-        if (filter === "all" ? c.status !== "rejected" : c.status === filter) {
-          f.push(c);
+      } else if (avgImageEng > avgVideoEng && avgVideoEng > 0) {
+        const pct = Math.round(
+          ((avgImageEng - avgVideoEng) / avgVideoEng) * 100,
+        );
+        if (pct > 5) {
+          result.push({
+            icon: ImageIcon,
+            title: `Photos get ${pct}% more likes`,
+            detail: "Your audience engages more with image content",
+            color: "from-blue-500/20 to-cyan-500/20",
+          });
         }
       }
+    }
 
-      return {
-        pending: p,
-        active: a,
-        completed: comp,
-        totalEarnings: te,
-        filtered: f,
-      };
-    }, [campaigns, filter]);
+    // 2. Engagement Trend: recent 10 vs older 10
+    if (media.length >= 20) {
+      const recent = media.slice(0, 10);
+      const older = media.slice(10, 20);
+      const recentAvg =
+        recent.reduce((s, m) => s + (m.like_count || 0), 0) / recent.length;
+      const olderAvg =
+        older.reduce((s, m) => s + (m.like_count || 0), 0) / older.length;
+      if (olderAvg > 0) {
+        const trendPct = Math.round(((recentAvg - olderAvg) / olderAvg) * 100);
+        if (Math.abs(trendPct) > 5) {
+          result.push({
+            icon: trendPct > 0 ? TrendingUp : TrendingDown,
+            title: `Engagement ${trendPct > 0 ? "up" : "down"} ${Math.abs(trendPct)}%`,
+            detail:
+              trendPct > 0
+                ? "Your recent content is resonating better with your audience"
+                : "Consider experimenting with new content formats",
+            color:
+              trendPct > 0
+                ? "from-green-500/20 to-emerald-500/20"
+                : "from-orange-500/20 to-red-500/20",
+          });
+        }
+      }
+    }
 
+    // 3. Saves Rate — reuse totalSaves and totalReach from pulseStats
+    const totalSaves = (pulseStats as PulseStatsData & { _totalSaves: number })
+      ._totalSaves;
+    const totalReach = pulseStats.totalReach;
+    if (totalSaves > 0 && totalReach > 0) {
+      const saveRate = ((totalSaves / totalReach) * 100).toFixed(1);
+      result.push({
+        icon: Bookmark,
+        title: `${saveRate}% save rate`,
+        detail: "Top creators average 2-3% — saves signal high-value content",
+        color: "from-amber-500/20 to-yellow-500/20",
+      });
+    }
+
+    return result.slice(0, 3);
+  }, [media, pulseStats]);
+
+  // ── Recent Activity ──────────────────────────────────────────────────────
+  const recentActivity = useMemo<RecentActivityItem[]>(() => {
+    return campaigns
+      .filter((c) => c.status !== "rejected")
+      .sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+      )
+      .slice(0, 4)
+      .map((c) => ({
+        id: c.id,
+        title: c.title || "Untitled Campaign",
+        status: c.status,
+        time: timeAgo(c.updated_at),
+        price: c.price_offered,
+      }));
+  }, [campaigns]);
+
+  // ── Smart Subtitle (computed inline — trivial string) ─────────────────────
+  const pendingCount = campaigns.filter((c) => c.status === "pending").length;
+  const subtitle =
+    pendingCount > 0
+      ? `You have ${pendingCount} new offer${pendingCount > 1 ? "s" : ""} waiting`
+      : pulseStats.engagementRate >= 3
+        ? "Your content is performing great"
+        : media.length > 0
+          ? "Here's how your content is doing"
+          : "Your creator command center";
+
+  // ── Quick Actions (computed inline — trivial array) ───────────────────────
+  const quickActions: QuickActionItem[] = [];
+  if (pendingCount > 0) {
+    quickActions.push({
+      label: `${pendingCount} offer${pendingCount > 1 ? "s" : ""} waiting`,
+      href: "/dashboard/influencer/campaigns",
+      highlight: true,
+    });
+  }
+  if (ip && !ip.is_active) {
+    quickActions.push({
+      label: "Complete your profile",
+      href: "/dashboard/influencer/complete-profile",
+    });
+  }
+  quickActions.push({
+    label: "Check earnings",
+    href: "/dashboard/influencer/earnings",
+  });
+
+  // ── Loading ──────────────────────────────────────────────────────────────
   if (loading) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <PageLoadingSpinner />;
   }
 
-  // No influencer profile yet — show connect Instagram
+  // ── No Influencer Profile → Connect Instagram ────────────────────────────
   if (!ip) {
     return (
       <div className="container max-w-2xl py-12 space-y-6">
         <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/60 backdrop-blur-md p-8 text-center space-y-4">
           <Instagram className="mx-auto h-12 w-12 text-pink-500" />
-          <h1 className="text-2xl font-bold">Welcome to ReelReach!</h1>
+          <h1 className="text-2xl font-bold">Welcome to Plugoh!</h1>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
             Connect your Instagram to unlock your dashboard, get discovered by
             brands, and start earning.
@@ -172,16 +312,16 @@ export default function InfluencerDashboard() {
         />
       </div>
 
-      <div className="relative z-10 container max-w-3xl py-6 space-y-6">
-        <motion.div
+      <div className="relative z-10 container max-w-3xl py-6 pb-32 space-y-6">
+        <m.div
           variants={stagger}
           initial="hidden"
           animate="visible"
           className="space-y-6"
         >
-          {/* Profile Incomplete Banner */}
+          {/* ── Profile Incomplete Banner ── */}
           {!ip.is_active && (
-            <motion.div variants={fadeUp}>
+            <m.div variants={fadeUp}>
               <div className="relative overflow-hidden rounded-2xl border border-pink-500/20 bg-gradient-to-r from-pink-500/5 via-purple-500/5 to-blue-500/5 backdrop-blur-sm p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
@@ -208,306 +348,45 @@ export default function InfluencerDashboard() {
                   </Button>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           )}
 
-          {/* Hero Header */}
-          <motion.div variants={fadeUp}>
+          {/* ── Greeting + Smart Subtitle ── */}
+          <m.div variants={fadeUp}>
             <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
               Hey, {ip.display_name || profile?.full_name || "Creator"}{" "}
               <span className="inline-block animate-[float_3s_ease-in-out_infinite]">
                 ✨
               </span>
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Your bookings and earnings at a glance
-            </p>
-          </motion.div>
+            <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+          </m.div>
 
-          {/* Stat Cards */}
-          <motion.div variants={fadeUp} className="grid gap-3 grid-cols-3">
-            {/* Earnings */}
-            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 mb-3">
-                <img
-                  src="/coin.png"
-                  alt="coin"
-                  className="h-4 w-4 object-contain"
-                />
-              </div>
-              <p className="text-2xl font-extrabold tracking-tight">
-                ₹{totalEarnings.toLocaleString()}
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                Total Earned
-              </p>
-            </div>
+          {/* ── Quick Pulse Strip ── */}
+          <m.div variants={fadeUp}>
+            <PulseStats stats={pulseStats} hasMedia={media.length > 0} />
+          </m.div>
 
-            {/* New Requests */}
-            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 mb-3">
-                <Clock className="h-4 w-4 text-yellow-400" />
-              </div>
-              <div className="flex items-center gap-2">
-                <p className="text-2xl font-extrabold tracking-tight">
-                  {pending.length}
-                </p>
-                {pending.length > 0 && (
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-yellow-500" />
-                  </span>
-                )}
-              </div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                New Requests
-              </p>
-            </div>
+          {/* ── Top Performing Content ── */}
+          <m.div variants={fadeUp}>
+            <TopContent items={topContent} totalMediaCount={media.length} />
+          </m.div>
 
-            {/* Active Jobs */}
-            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 mb-3">
-                <Briefcase className="h-4 w-4 text-blue-400" />
-              </div>
-              <p className="text-2xl font-extrabold tracking-tight">
-                {active.length}
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                Active Jobs
-              </p>
-            </div>
-          </motion.div>
+          {/* ── Creator Insights ── */}
+          <m.div variants={fadeUp}>
+            <CreatorInsights insights={insights} />
+          </m.div>
 
-          {/* Filter Pills */}
-          <motion.div variants={fadeUp} className="flex items-center gap-2">
-            {FILTERS.map((f) => {
-              const count =
-                f === "all"
-                  ? campaigns.filter((c) => c.status !== "rejected").length
-                  : f === "pending"
-                    ? pending.length
-                    : f === "accepted"
-                      ? active.length
-                      : completed.length;
-              return (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={cn(
-                    "relative px-4 py-2 rounded-full text-sm font-medium transition-all",
-                    filter === f
-                      ? "text-white"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/5",
-                  )}
-                >
-                  {filter === f && (
-                    <motion.div
-                      layoutId="active-filter"
-                      className="absolute inset-0 rounded-full"
-                      style={FILTER_PILL_STYLE}
-                      transition={FILTER_PILL_TRANSITION}
-                    />
-                  )}
-                  <span className="relative z-10 flex items-center gap-1.5">
-                    {filterLabels[f]}
-                    {count > 0 && (
-                      <span
-                        className={cn(
-                          "text-[10px] px-1.5 py-0.5 rounded-full min-w-[20px] text-center",
-                          filter === f ? "bg-white/20" : "bg-white/10",
-                        )}
-                      >
-                        {count}
-                      </span>
-                    )}
-                  </span>
-                </button>
-              );
-            })}
-          </motion.div>
+          {/* ── Recent Activity ── */}
+          <m.div variants={fadeUp}>
+            <RecentActivity items={recentActivity} />
+          </m.div>
 
-          {/* Campaign Feed */}
-          <motion.div variants={fadeUp} className="space-y-3">
-            <AnimatePresence mode="popLayout">
-              {filtered.length === 0 ? (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-10 text-center"
-                >
-                  <div className="flex h-14 w-14 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 mb-4">
-                    <Inbox className="h-7 w-7 text-muted-foreground" />
-                  </div>
-                  <p className="font-semibold">No campaigns here yet</p>
-                  <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-                    {ip.is_active
-                      ? "Brands will send you booking requests once they discover your profile."
-                      : "Complete your profile to appear in brand discovery and start receiving bookings."}
-                  </p>
-                  {!ip.is_active && (
-                    <Button className="mt-4 rounded-xl" asChild>
-                      <Link href="/dashboard/influencer/complete-profile">
-                        Complete Profile <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  )}
-                </motion.div>
-              ) : (
-                filtered.map((c) => (
-                  <motion.div
-                    key={c.id}
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className={cn(
-                      "rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-5 transition-all hover:border-white/10 border-l-[3px]",
-                      statusBorderColor[c.status] || "border-l-muted",
-                    )}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge
-                            variant="outline"
-                            className={cn(
-                              "text-[10px] px-2 py-0 h-5 rounded-full border",
-                              c.status === "pending" &&
-                                "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-                              c.status === "accepted" &&
-                                "bg-green-500/10 text-green-400 border-green-500/20",
-                              c.status === "completed" &&
-                                "bg-primary/10 text-primary border-primary/20",
-                            )}
-                          >
-                            {c.status === "accepted" ? "active" : c.status}
-                          </Badge>
-                          <span className="text-[11px] text-muted-foreground">
-                            {timeAgo(c.created_at)}
-                          </span>
-                        </div>
-                        <p className="font-semibold text-[15px] truncate">
-                          {c.title || "Untitled Campaign"}
-                        </p>
-                        <p className="text-xs text-muted-foreground capitalize mt-0.5">
-                          {c.package_type || "—"} package
-                        </p>
-                      </div>
-                      <p className="text-lg font-extrabold shrink-0">
-                        ₹{c.price_offered?.toLocaleString() || "—"}
-                      </p>
-                    </div>
-
-                    {/* Contact info for active campaigns */}
-                    {c.status === "accepted" &&
-                      (c.business_contact_email ||
-                        c.business_contact_phone) && (
-                        <div className="mt-3 rounded-xl bg-white/5 px-3 py-2 text-xs text-muted-foreground">
-                          <span className="font-medium text-foreground">
-                            Brand contact:{" "}
-                          </span>
-                          {c.business_contact_email}
-                          {c.business_contact_phone &&
-                            ` · ${c.business_contact_phone}`}
-                        </div>
-                      )}
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 mt-4">
-                      {c.status === "pending" && (
-                        <>
-                          <Button
-                            size="sm"
-                            className="h-9 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:brightness-110 border-0 flex-1 sm:flex-none"
-                            onClick={() => updateStatus(c.id, "accepted")}
-                          >
-                            <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
-                            Accept
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-9 rounded-xl border-white/10 flex-1 sm:flex-none"
-                            onClick={() => updateStatus(c.id, "rejected")}
-                          >
-                            <X className="mr-1.5 h-3.5 w-3.5" />
-                            Decline
-                          </Button>
-                        </>
-                      )}
-                      {c.status === "accepted" && (
-                        <Button
-                          size="sm"
-                          className="h-9 rounded-xl"
-                          onClick={() => updateStatus(c.id, "completed")}
-                        >
-                          <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
-                          Mark Complete
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-9 rounded-xl ml-auto text-muted-foreground"
-                        asChild
-                      >
-                        <Link href={`/dashboard/influencer/campaigns/${c.id}`}>
-                          Details <ArrowRight className="ml-1 h-3.5 w-3.5" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </AnimatePresence>
-          </motion.div>
-
-          {/* Earnings Summary */}
-          {completed.length > 0 && (
-            <motion.div variants={fadeUp}>
-              <div className="rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-5">
-                <p className="text-xs font-medium text-muted-foreground mb-3">
-                  Earnings Summary
-                </p>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-lg font-extrabold">
-                      ₹{totalEarnings.toLocaleString()}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      Total Earned
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-extrabold">{completed.length}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      Completed
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-extrabold">
-                      ₹
-                      {completed.length > 0
-                        ? Math.round(
-                            completed.reduce(
-                              (s, c) => s + (c.price_offered || 0),
-                              0,
-                            ) / completed.length,
-                          ).toLocaleString()
-                        : "0"}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      Avg Campaign
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </motion.div>
+          {/* ── Quick Actions ── */}
+          <m.div variants={fadeUp}>
+            <QuickActions actions={quickActions} />
+          </m.div>
+        </m.div>
       </div>
     </div>
   );

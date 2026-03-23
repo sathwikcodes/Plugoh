@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { Loader2, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useTheme } from "next-themes";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import { getGradientConfig } from "@/components/auth/auth-gradient-config";
@@ -64,13 +64,13 @@ export default function InfluencerOnboarding() {
         containerStyle={{ opacity: 0.4 }}
       />
 
-      <motion.div
+      <m.div
         variants={stagger}
         initial="hidden"
         animate="visible"
         className="w-full max-w-md space-y-8 text-center relative z-10"
       >
-        <motion.div variants={fadeUp} className="flex justify-center">
+        <m.div variants={fadeUp} className="flex justify-center">
           <div className="relative">
             <div
               className="absolute inset-0 rounded-full"
@@ -91,9 +91,9 @@ export default function InfluencerOnboarding() {
               <Instagram className="w-10 h-10 text-white" />
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div variants={fadeUp} className="space-y-3">
+        <m.div variants={fadeUp} className="space-y-3">
           <h1
             className="text-2xl font-semibold tracking-tight"
             style={{ color: "var(--auth-text)" }}
@@ -107,12 +107,9 @@ export default function InfluencerOnboarding() {
             We&apos;ll automatically import your profile, content, and analytics
             — no manual entry needed.
           </p>
-        </motion.div>
+        </m.div>
 
-        <motion.div
-          variants={fadeUp}
-          className="grid grid-cols-3 gap-3 text-center"
-        >
+        <m.div variants={fadeUp} className="grid grid-cols-3 gap-3 text-center">
           {[
             { label: "Auto-import", desc: "Profile & media" },
             { label: "Analytics", desc: "Engagement data" },
@@ -141,9 +138,9 @@ export default function InfluencerOnboarding() {
               </p>
             </div>
           ))}
-        </motion.div>
+        </m.div>
 
-        <motion.div variants={fadeUp} className="space-y-4">
+        <m.div variants={fadeUp} className="space-y-4">
           <button
             onClick={handleConnect}
             disabled={loading}
@@ -180,8 +177,8 @@ export default function InfluencerOnboarding() {
           >
             Skip for now
           </Link>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </div>
   );
 }

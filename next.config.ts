@@ -38,7 +38,7 @@ export default withSentryConfig(nextConfig, {
 
   org: "sathwik-57",
 
-  project: "reelreach",
+  project: "plugoh",
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,

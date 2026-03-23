@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { Loader2, Mail, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { AuthShell } from "@/components/auth/auth-shell";
 
 const stagger = {
@@ -205,7 +205,7 @@ export default function Login() {
     <AuthShell>
       <AnimatePresence mode="wait">
         {sent ? (
-          <motion.div
+          <m.div
             key="otp-verify"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -356,9 +356,9 @@ export default function Login() {
               <ArrowLeft className="h-4 w-4" />
               Use a different email
             </button>
-          </motion.div>
+          </m.div>
         ) : (
-          <motion.div
+          <m.div
             key="login-form"
             variants={stagger}
             initial="hidden"
@@ -366,16 +366,16 @@ export default function Login() {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-8"
           >
-            <motion.div variants={fadeUp} className="lg:hidden mb-2">
+            <m.div variants={fadeUp} className="lg:hidden mb-2">
               <h2
                 className="text-xl font-bold tracking-tight"
                 style={{ color: "var(--auth-text)" }}
               >
-                ReelReach
+                Plugoh
               </h2>
-            </motion.div>
+            </m.div>
 
-            <motion.div variants={fadeUp} className="space-y-2">
+            <m.div variants={fadeUp} className="space-y-2">
               <h1
                 className="text-3xl font-semibold tracking-tight"
                 style={{ color: "var(--auth-text)" }}
@@ -388,9 +388,9 @@ export default function Login() {
               >
                 Sign in to continue to your dashboard
               </p>
-            </motion.div>
+            </m.div>
 
-            <motion.form
+            <m.form
               variants={fadeUp}
               onSubmit={handleSendOtp}
               className="space-y-4"
@@ -445,9 +445,9 @@ export default function Login() {
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 Continue
               </button>
-            </motion.form>
+            </m.form>
 
-            <motion.div variants={fadeUp} className="relative">
+            <m.div variants={fadeUp} className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div
                   className="w-full"
@@ -465,9 +465,9 @@ export default function Login() {
                   or
                 </span>
               </div>
-            </motion.div>
+            </m.div>
 
-            <motion.div variants={fadeUp}>
+            <m.div variants={fadeUp}>
               <button
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
@@ -510,9 +510,9 @@ export default function Login() {
                 )}
                 Sign in with Google
               </button>
-            </motion.div>
+            </m.div>
 
-            <motion.p
+            <m.p
               variants={fadeUp}
               className="text-xs text-center leading-relaxed"
               style={{ color: "var(--auth-text-tertiary)" }}
@@ -532,8 +532,8 @@ export default function Login() {
                 Privacy Policy
               </span>
               .
-            </motion.p>
-          </motion.div>
+            </m.p>
+          </m.div>
         )}
       </AnimatePresence>
     </AuthShell>

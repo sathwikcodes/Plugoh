@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -72,14 +72,14 @@ export default function SettingsTab({
 
   return (
     <>
-      <motion.div
+      <m.div
         variants={stagger}
         initial="hidden"
         animate="visible"
         className="space-y-4 pt-4"
       >
         {/* Visibility */}
-        <motion.div variants={fadeUp}>
+        <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Visibility
@@ -121,10 +121,10 @@ export default function SettingsTab({
               </div>
             )}
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Preferences */}
-        <motion.div variants={fadeUp}>
+        <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Preferences
@@ -139,10 +139,10 @@ export default function SettingsTab({
               <ThemeToggle />
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Account */}
-        <motion.div variants={fadeUp}>
+        <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Account
@@ -156,8 +156,8 @@ export default function SettingsTab({
               Log Out
             </Button>
           </div>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
 
       <AlertDialog
         open={showDeactivateDialog}

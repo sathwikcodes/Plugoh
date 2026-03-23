@@ -62,7 +62,7 @@ export async function generateInfluencerProfile(
       .map((c, i) => `${i + 1}. ${c.slice(0, 200)}`)
       .join("\n");
 
-    const prompt = `You are helping set up an influencer's profile on ReelReach, a platform connecting brands with Instagram influencers in India.
+    const prompt = `You are helping set up an influencer's profile on Plugoh, a platform connecting brands with Instagram influencers in India.
 
 Given the following Instagram data, generate profile fields:
 

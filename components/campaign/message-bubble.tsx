@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { formatFileSize } from "@/lib/file-upload";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { Json } from "@/lib/supabase/types";
 
 interface MessageBubbleProps {
@@ -227,7 +227,7 @@ export function BookingCardMessage({
 
   return (
     <div className="flex justify-center py-4">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 16, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
@@ -239,7 +239,7 @@ export function BookingCardMessage({
         {/* ── Gradient header ── */}
         <div className="relative px-5 pt-5 pb-4 bg-gradient-to-br from-white/[0.06] via-white/[0.03] to-transparent">
           <div className="flex items-start gap-3">
-            <motion.div
+            <m.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{
@@ -251,7 +251,7 @@ export function BookingCardMessage({
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-white/[0.06]"
             >
               <Briefcase className="h-5 w-5 text-pink-400" />
-            </motion.div>
+            </m.div>
             <div className="min-w-0 flex-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">
                 Collaboration Proposal
@@ -271,17 +271,17 @@ export function BookingCardMessage({
         {/* ── Body ── */}
         <div className="px-5 pb-5 space-y-4">
           {/* Campaign title */}
-          <motion.h3
+          <m.h3
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.15 }}
             className="text-[15px] font-bold leading-snug tracking-tight"
           >
             {meta.title || "Untitled Campaign"}
-          </motion.h3>
+          </m.h3>
 
           {/* Info rows */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.25 }}
@@ -340,11 +340,11 @@ export function BookingCardMessage({
                 </span>
               </div>
             )}
-          </motion.div>
+          </m.div>
 
           {/* Brief */}
           {truncatedBrief && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.35 }}
@@ -353,12 +353,12 @@ export function BookingCardMessage({
               <p className="text-xs text-muted-foreground/80 leading-relaxed italic">
                 &ldquo;{truncatedBrief}&rdquo;
               </p>
-            </motion.div>
+            </m.div>
           )}
 
           {/* Accept / Decline actions */}
           {showActions && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45 }}
@@ -392,10 +392,10 @@ export function BookingCardMessage({
                 <X className="h-3.5 w-3.5" />
                 Decline
               </button>
-            </motion.div>
+            </m.div>
           )}
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

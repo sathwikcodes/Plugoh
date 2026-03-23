@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
+import { supabase } from "@/lib/supabase/client";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
+import { useCampaignCounts } from "@/hooks/use-campaign-counts";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -11,7 +13,6 @@ import {
   CheckCircle,
   X,
   Inbox,
-  Loader2,
   ArrowRight,
   Briefcase,
   Clock,
@@ -21,7 +22,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { timeAgo } from "@/lib/format";
 import {
@@ -30,6 +31,8 @@ import {
   stagger,
   fadeUp,
 } from "@/lib/animations";
+import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
+import { PageLoadingSpinner } from "@/components/ui/loading-spinner";
 
 const FILTERS = ["all", "pending", "accepted", "completed"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -41,33 +44,22 @@ const filterLabels: Record<Filter, string> = {
   completed: "Done",
 };
 
-const statusLabel: Record<string, string> = {
-  pending: "New Offer",
-  accepted: "In Progress",
-  completed: "Completed",
-  rejected: "Declined",
-};
+const getStatusConfig = (status: string) =>
+  CAMPAIGN_STATUS_CONFIG[status as CampaignStatus] ??
+  CAMPAIGN_STATUS_CONFIG.rejected;
 
-const statusBadgeCn: Record<string, string> = {
-  pending: "bg-amber-500/15 text-amber-400 border-amber-500/20",
-  accepted: "bg-green-500/15 text-green-400 border-green-500/20",
-  completed: "bg-violet-500/15 text-violet-400 border-violet-500/20",
-  rejected: "bg-white/5 text-muted-foreground border-white/10",
-};
-
-const statusBorderColor: Record<string, string> = {
-  pending: "border-l-amber-400",
-  accepted: "border-l-green-400",
-  completed: "border-l-violet-400",
-  rejected: "border-l-white/10",
-};
-
-const statusCardBg: Record<string, string> = {
-  pending: "from-amber-500/8 to-yellow-500/5",
-  accepted: "from-green-500/8 to-emerald-500/5",
-  completed: "from-violet-500/8 to-purple-500/5",
-  rejected: "from-transparent to-transparent",
-};
+// ── Hoisted static empty state (rendering-hoist-jsx) ────────────────────────
+const EMPTY_CAMPAIGNS = (
+  <div className="rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-10 text-center">
+    <div className="flex h-14 w-14 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 mb-4">
+      <Inbox className="h-7 w-7 text-muted-foreground" />
+    </div>
+    <p className="font-semibold">No campaigns here</p>
+    <p className="text-sm text-muted-foreground mt-1">
+      Brands will send you booking requests once they discover your profile.
+    </p>
+  </div>
+);
 
 export default function CampaignsPage() {
   const { user } = useAuth();
@@ -79,6 +71,21 @@ export default function CampaignsPage() {
     "influencer",
   );
   const [filter, setFilter] = useState<Filter>("all");
+
+  // Clear new_booking notifications when influencer visits campaigns page
+  // useRef guard prevents re-execution on React strict-mode double-mount
+  const notifCleared = useRef(false);
+  useEffect(() => {
+    if (!user?.id || notifCleared.current) return;
+    notifCleared.current = true;
+    supabase
+      .from("notifications")
+      .update({ read: true })
+      .eq("user_id", user.id)
+      .eq("type", "new_booking")
+      .eq("read", false)
+      .then(() => {});
+  }, [user?.id]);
 
   const statusMutation = useMutation(
     trpc.campaign.updateStatus.mutationOptions({
@@ -108,63 +115,45 @@ export default function CampaignsPage() {
     });
   };
 
-  const { pending, active, completed, pendingValue, filtered } = useMemo(() => {
-    const p: typeof campaigns = [];
-    const a: typeof campaigns = [];
-    const comp: typeof campaigns = [];
-    const f: typeof campaigns = [];
+  // Single-pass counts via shared hook
+  const counts = useCampaignCounts(campaigns);
 
-    for (const c of campaigns) {
-      if (c.status === "pending") p.push(c);
-      else if (c.status === "accepted") a.push(c);
-      else if (c.status === "completed") comp.push(c);
-
-      if (filter === "all" ? c.status !== "rejected" : c.status === filter) {
-        f.push(c);
-      }
-    }
-
-    const pv = p.reduce((sum, c) => sum + (c.price_offered || 0), 0);
-
-    return {
-      pending: p,
-      active: a,
-      completed: comp,
-      pendingValue: pv,
-      filtered: f,
-    };
-  }, [campaigns, filter]);
+  // Filtered list for current tab
+  const filtered = useMemo(
+    () =>
+      campaigns.filter((c) =>
+        filter === "all" ? c.status !== "rejected" : c.status === filter,
+      ),
+    [campaigns, filter],
+  );
 
   const stats = [
     {
       label: "Active",
-      value: active.length,
+      value: counts.active,
       sub: undefined as string | undefined,
       icon: Briefcase,
-      coinIcon: false,
       gradient: "from-green-500/20 to-emerald-500/20",
       iconColor: "text-green-400",
       accent: "border-green-500/20",
     },
     {
       label: "Pending Offers",
-      value: pending.length,
+      value: counts.pending,
       sub:
-        pendingValue > 0
-          ? `₹${pendingValue.toLocaleString()} waiting`
+        counts.pendingValue > 0
+          ? `₹${counts.pendingValue.toLocaleString()} waiting`
           : undefined,
       icon: Clock,
-      coinIcon: false,
       gradient: "from-amber-500/20 to-yellow-500/20",
       iconColor: "text-amber-400",
       accent: "border-amber-500/20",
     },
     {
       label: "Completed",
-      value: completed.length,
+      value: counts.completed,
       sub: undefined as string | undefined,
       icon: CheckCircle2,
-      coinIcon: false,
       gradient: "from-violet-500/20 to-purple-500/20",
       iconColor: "text-violet-400",
       accent: "border-violet-500/20",
@@ -172,35 +161,31 @@ export default function CampaignsPage() {
   ];
 
   if (loading) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <PageLoadingSpinner />;
   }
 
   return (
     <div className="container max-w-3xl py-6 space-y-5">
-      <motion.div
+      <m.div
         variants={stagger}
         initial="hidden"
         animate="visible"
         className="space-y-5"
       >
         {/* Header */}
-        <motion.div variants={fadeUp}>
+        <m.div variants={fadeUp}>
           <h1 className="text-2xl font-extrabold tracking-tight">
             My Campaigns
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {pending.length > 0
-              ? `${pending.length} pending offer${pending.length > 1 ? "s" : ""} waiting for you`
+            {counts.pending > 0
+              ? `${counts.pending} pending offer${counts.pending > 1 ? "s" : ""} waiting for you`
               : "Manage your brand collaborations"}
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Stats Strip */}
-        <motion.div variants={fadeUp} className="grid grid-cols-3 gap-3">
+        <m.div variants={fadeUp} className="grid grid-cols-3 gap-3">
           {stats.map((stat) => (
             <div
               key={stat.label}
@@ -232,22 +217,15 @@ export default function CampaignsPage() {
               </div>
             </div>
           ))}
-        </motion.div>
+        </m.div>
 
         {/* Filter Pills */}
-        <motion.div
-          variants={fadeUp}
-          className="flex items-center gap-2 flex-wrap"
-        >
+        <m.div variants={fadeUp} className="flex items-center gap-2 flex-wrap">
           {FILTERS.map((f) => {
             const count =
               f === "all"
-                ? campaigns.filter((c) => c.status !== "rejected").length
-                : f === "pending"
-                  ? pending.length
-                  : f === "accepted"
-                    ? active.length
-                    : completed.length;
+                ? campaigns.length - counts.rejected
+                : counts[f === "accepted" ? "active" : f];
             return (
               <button
                 key={f}
@@ -260,7 +238,7 @@ export default function CampaignsPage() {
                 )}
               >
                 {filter === f && (
-                  <motion.div
+                  <m.div
                     layoutId="campaign-filter"
                     className="absolute inset-0 rounded-full"
                     style={FILTER_PILL_STYLE}
@@ -283,42 +261,49 @@ export default function CampaignsPage() {
               </button>
             );
           })}
-        </motion.div>
+        </m.div>
 
         {/* Campaign List */}
-        <motion.div variants={fadeUp} className="space-y-3">
+        <m.div variants={fadeUp} className="space-y-3">
           <AnimatePresence mode="popLayout">
             {filtered.length === 0 ? (
-              <motion.div
+              <m.div
                 key="empty"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-10 text-center"
               >
-                <div className="flex h-14 w-14 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 mb-4">
-                  <Inbox className="h-7 w-7 text-muted-foreground" />
-                </div>
-                <p className="font-semibold">No campaigns here</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {filter === "all"
-                    ? "Brands will send you booking requests once they discover your profile."
-                    : `No ${filterLabels[filter].toLowerCase()} campaigns yet.`}
-                </p>
-              </motion.div>
+                {filter === "all" ? (
+                  EMPTY_CAMPAIGNS
+                ) : (
+                  <div className="rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-10 text-center">
+                    <div className="flex h-14 w-14 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 mb-4">
+                      <Inbox className="h-7 w-7 text-muted-foreground" />
+                    </div>
+                    <p className="font-semibold">No campaigns here</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {`No ${filterLabels[filter].toLowerCase()} campaigns yet.`}
+                    </p>
+                  </div>
+                )}
+              </m.div>
             ) : (
               filtered.map((c) => (
-                <motion.div
+                <m.div
                   key={c.id}
                   layout
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
+                  style={{
+                    contentVisibility: "auto",
+                    containIntrinsicSize: "0 200px",
+                  }}
                   className={cn(
                     "rounded-2xl border border-white/10 bg-gradient-to-br backdrop-blur-sm p-5 border-l-[3px] transition-all hover:border-white/20",
-                    statusCardBg[c.status] || "from-transparent to-transparent",
-                    statusBorderColor[c.status] || "border-l-white/10",
+                    getStatusConfig(c.status).cardBg,
+                    getStatusConfig(c.status).border,
                     c.status === "rejected" && "opacity-60",
                   )}
                 >
@@ -328,10 +313,10 @@ export default function CampaignsPage() {
                       <span
                         className={cn(
                           "text-[10px] px-2 py-0.5 rounded-full border font-medium",
-                          statusBadgeCn[c.status] || statusBadgeCn.rejected,
+                          getStatusConfig(c.status).badge,
                         )}
                       >
-                        {statusLabel[c.status] || c.status}
+                        {getStatusConfig(c.status).label}
                       </span>
                       <span className="text-[11px] text-muted-foreground">
                         {timeAgo(c.created_at)}
@@ -454,12 +439,12 @@ export default function CampaignsPage() {
                       </Link>
                     </Button>
                   </div>
-                </motion.div>
+                </m.div>
               ))
             )}
           </AnimatePresence>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </div>
   );
 }

@@ -58,18 +58,18 @@ export function useCampaignMessages(campaignId: string | undefined) {
 }
 
 export function useSendMessage() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async ({
       campaignId,
       senderId,
+      recipientId,
       content,
       messageType = "text",
       metadata = {},
     }: {
       campaignId: string;
       senderId: string;
+      recipientId: string;
       content: string;
       messageType?: string;
       metadata?: Json;
@@ -86,40 +86,42 @@ export function useSendMessage() {
         .select()
         .single();
       if (error) throw error;
+
+      // Fire-and-forget: notify the recipient
+      supabase
+        .from("notifications")
+        .insert({
+          user_id: recipientId,
+          type: "new_message",
+          data: { campaign_id: campaignId },
+        })
+        .then(({ error: notifError }) => {
+          if (notifError)
+            console.error("Notification insert failed:", notifError);
+        });
+
       return data as CampaignMessage;
     },
-    onSuccess: (data) => {
-      // Realtime will handle adding to cache, but invalidate as fallback
-      queryClient.invalidateQueries({
-        queryKey: ["campaign-messages", data.campaign_id],
-      });
-    },
+    // No onSuccess invalidation — realtime subscription is the source of truth
   });
 }
 
-export function useMarkMessagesRead() {
+export function useMarkNotificationsReadForCampaign() {
   return useMutation({
     mutationFn: async ({
-      messageIds,
+      campaignId,
       userId,
     }: {
-      messageIds: string[];
+      campaignId: string;
       userId: string;
     }) => {
-      // Update read_by array for all unread messages
-      for (const id of messageIds) {
-        await supabase
-          .rpc(
-            "append_read_by" as never,
-            {
-              message_id: id,
-              user_id: userId,
-            } as never,
-          )
-          .then(() => {
-            // Fallback: direct update if RPC doesn't exist
-          });
-      }
+      await supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("user_id", userId)
+        .eq("type", "new_message")
+        .eq("read", false)
+        .contains("data", { campaign_id: campaignId });
     },
   });
 }

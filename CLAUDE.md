@@ -15,7 +15,7 @@ No test suite is configured.
 
 ## Architecture
 
-**ReelReach** is a Next.js App Router application connecting brands with Instagram influencers. It uses Supabase for auth and database, with a multi-role system (business, influencer, admin, creator).
+**Plugoh** is a Next.js App Router application connecting brands with Instagram influencers. It uses Supabase for auth and database, with a multi-role system (business, influencer, admin, creator).
 
 ### Key Directories
 
@@ -95,7 +95,7 @@ Run against `localhost:3000` (the dev server). The skill auto-detects the port.
 
 Reports and screenshots are saved to `.gstack/qa-reports/`. Each report includes a health score (0–100) weighted across Console, Links, Visual, Functional, UX, Performance, Content, and Accessibility.
 
-**ReelReach-specific QA priorities:**
+**Plugoh-specific QA priorities:**
 
 - Auth flows: signup → onboarding → role-based dashboard redirect
 - Role gating: business vs influencer vs admin vs creator pages

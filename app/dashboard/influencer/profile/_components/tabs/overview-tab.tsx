@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Globe } from "lucide-react";
 import ProfileStrength from "../profile-strength";
@@ -23,7 +23,7 @@ export default function OverviewTab({
   onNavigateToTab,
 }: OverviewTabProps) {
   return (
-    <motion.div
+    <m.div
       variants={stagger}
       initial="hidden"
       animate="visible"
@@ -34,7 +34,7 @@ export default function OverviewTab({
       <CareerStats campaigns={campaigns} />
 
       {profile.bio && (
-        <motion.div variants={fadeUp}>
+        <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Bio
@@ -43,11 +43,11 @@ export default function OverviewTab({
               {profile.bio}
             </p>
           </div>
-        </motion.div>
+        </m.div>
       )}
 
       {profile.languages && profile.languages.length > 0 && (
-        <motion.div variants={fadeUp}>
+        <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Languages
@@ -63,8 +63,8 @@ export default function OverviewTab({
               ))}
             </div>
           </div>
-        </motion.div>
+        </m.div>
       )}
-    </motion.div>
+    </m.div>
   );
 }
