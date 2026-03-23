@@ -3,287 +3,376 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  AlertTriangle,
-  Briefcase,
-  Clock,
-  CheckCircle,
-  Loader2,
-  Search,
-  ArrowRight,
-  Megaphone,
-  IndianRupee,
-  User,
-  ListChecks,
-} from "lucide-react";
-import { CampaignCards } from "@/components/shared/campaign-cards";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
-import { statusColor } from "@/lib/format";
+import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
+import {
+  Building2,
+  TrendingUp,
+  TrendingDown,
+  Film,
+  ImageIcon,
+  Search,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { m } from "framer-motion";
+import { timeAgo } from "@/lib/format";
+import {
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+  stagger,
+  fadeUp,
+} from "@/lib/animations";
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import { PageLoadingSpinner } from "@/components/ui/loading-spinner";
+
+import { SpendStats, type SpendStatsData } from "./_components/spend-stats";
+import {
+  ActiveCampaignsOverview,
+  type ActiveCampaignCard,
+} from "./_components/active-campaigns-overview";
+import {
+  BrandInsights,
+  type BrandInsightItem,
+} from "./_components/brand-insights";
+import {
+  RecentActivity,
+  type BusinessActivityItem,
+} from "./_components/recent-activity";
+import {
+  QuickActions,
+  type QuickActionItem,
+} from "./_components/quick-actions";
 
 export default function BusinessDashboard() {
   const { user, profile, isProfileComplete, loading } = useAuth();
-  const { data: campaigns = [] } = useCampaigns(user?.id, "business");
 
-  const { active, pending, completed, totalSpent } = useMemo(() => {
-    let a = 0,
-      p = 0,
-      comp = 0,
-      spent = 0;
+  const { data: campaigns = [], isLoading: campaignsLoading } = useCampaigns(
+    user?.id,
+    "business",
+  );
+  const { data: influencerProfiles = [], isLoading: profilesLoading } =
+    useInfluencerProfiles();
+
+  const isLoading = loading || campaignsLoading || profilesLoading;
+
+  // Build a Map<influencerProfileId, influencer> for O(1) lookups
+  const influencerMap = useMemo(
+    () => new Map(influencerProfiles.map((ip) => [ip.id, ip])),
+    [influencerProfiles],
+  );
+
+  // ── Spend Stats (single reduce pass) ─────────────────────────────────────
+  const spendStats = useMemo<SpendStatsData>(() => {
+    let totalSpent = 0;
+    let activeCampaigns = 0;
+    let acceptedOrCompleted = 0;
+    let total = 0;
+    let completedCount = 0;
+
     for (const c of campaigns) {
-      if (c.status === "accepted") a++;
-      else if (c.status === "pending") p++;
-      else if (c.status === "completed") {
-        comp++;
-        spent += c.price_offered || 0;
+      if (c.status === "rejected") continue;
+      total++;
+      if (c.status === "accepted") {
+        activeCampaigns++;
+        acceptedOrCompleted++;
+      } else if (c.status === "completed") {
+        totalSpent += c.price_offered || 0;
+        completedCount++;
+        acceptedOrCompleted++;
+      } else if (c.status === "pending") {
+        // not yet accepted
       }
     }
-    return { active: a, pending: p, completed: comp, totalSpent: spent };
+
+    const acceptanceRate =
+      total > 0 ? Math.round((acceptedOrCompleted / total) * 100) : 0;
+    const avgCampaignValue =
+      completedCount > 0 ? Math.round(totalSpent / completedCount) : 0;
+
+    const acceptanceColor =
+      acceptanceRate >= 70
+        ? "text-green-400"
+        : acceptanceRate >= 40
+          ? "text-yellow-400"
+          : "text-red-400";
+    const acceptanceBg =
+      acceptanceRate >= 70
+        ? "from-green-500/20 to-emerald-500/20"
+        : acceptanceRate >= 40
+          ? "from-yellow-500/20 to-orange-500/20"
+          : "from-red-500/20 to-rose-500/20";
+
+    return {
+      totalSpent,
+      activeCampaigns,
+      acceptanceRate,
+      avgCampaignValue,
+      acceptanceColor,
+      acceptanceBg,
+    };
   }, [campaigns]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+  // ── Active Campaign Cards (pending + accepted, max 8 for horizontal scroll)
+  const activeCampaignCards = useMemo<ActiveCampaignCard[]>(() => {
+    return campaigns
+      .filter((c) => c.status === "pending" || c.status === "accepted")
+      .sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+      )
+      .slice(0, 8)
+      .map((c) => ({
+        campaign: c,
+        influencer: c.influencer_profile_id
+          ? (influencerMap.get(c.influencer_profile_id) ?? null)
+          : null,
+      }));
+  }, [campaigns, influencerMap]);
+
+  // ── Brand Insights (computed from campaign data) ───────────────────────────
+  const insights = useMemo<BrandInsightItem[]>(() => {
+    const result: BrandInsightItem[] = [];
+    const completed = campaigns.filter((c) => c.status === "completed");
+    if (completed.length === 0) return result;
+
+    // 1. Best package type
+    const packageCounts: Record<string, { count: number; total: number }> = {};
+    for (const c of completed) {
+      const pkg = c.package_type || "other";
+      if (!packageCounts[pkg]) packageCounts[pkg] = { count: 0, total: 0 };
+      packageCounts[pkg].count++;
+      packageCounts[pkg].total += c.price_offered || 0;
+    }
+    const entries = Object.entries(packageCounts).sort(
+      (a, b) => b[1].count - a[1].count,
     );
+    if (entries.length > 0) {
+      const [topPkg, { count }] = entries[0];
+      result.push({
+        icon: Film,
+        title: `${capitalize(topPkg)} is your top format`,
+        detail: `${count} completed ${topPkg} campaign${count > 1 ? "s" : ""} — your best performing content type`,
+        color: "from-purple-500/20 to-pink-500/20",
+      });
+    }
+
+    // 2. Spend trend: this month vs last month
+    const now = new Date();
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+    const thisMonthSpend = completed
+      .filter((c) => new Date(c.created_at) >= thisMonthStart)
+      .reduce((s, c) => s + (c.price_offered || 0), 0);
+    const lastMonthSpend = completed
+      .filter(
+        (c) =>
+          new Date(c.created_at) >= lastMonthStart &&
+          new Date(c.created_at) < thisMonthStart,
+      )
+      .reduce((s, c) => s + (c.price_offered || 0), 0);
+
+    if (lastMonthSpend > 0) {
+      const trendPct = Math.round(
+        ((thisMonthSpend - lastMonthSpend) / lastMonthSpend) * 100,
+      );
+      if (Math.abs(trendPct) > 5) {
+        result.push({
+          icon: trendPct > 0 ? TrendingUp : TrendingDown,
+          title: `Spend ${trendPct > 0 ? "up" : "down"} ${Math.abs(trendPct)}% this month`,
+          detail:
+            trendPct > 0
+              ? "You're investing more in influencer marketing this month"
+              : "Lower spend this month — good time to book new campaigns",
+          color:
+            trendPct > 0
+              ? "from-blue-500/20 to-indigo-500/20"
+              : "from-amber-500/20 to-orange-500/20",
+        });
+      }
+    }
+
+    // 3. Influencer tier insight
+    const microInfluencers = completed.filter((c) => {
+      const ip = c.influencer_profile_id
+        ? influencerMap.get(c.influencer_profile_id)
+        : null;
+      return ip && (ip.ig_followers_count || ip.follower_count || 0) < 100_000;
+    }).length;
+    const macroInfluencers = completed.length - microInfluencers;
+
+    if (microInfluencers > 0 || macroInfluencers > 0) {
+      const topTier = microInfluencers >= macroInfluencers ? "micro" : "macro";
+      result.push({
+        icon: ImageIcon,
+        title: `${capitalize(topTier)}-influencers drive your results`,
+        detail:
+          topTier === "micro"
+            ? "Creators under 100K followers tend to have higher engagement rates"
+            : "Larger influencers give you broader reach and brand visibility",
+        color: "from-green-500/20 to-emerald-500/20",
+      });
+    }
+
+    return result.slice(0, 3);
+  }, [campaigns, influencerMap]);
+
+  // ── Recent Activity (last 4, non-rejected) ────────────────────────────────
+  const recentActivity = useMemo<BusinessActivityItem[]>(() => {
+    return campaigns
+      .filter((c) => c.status !== "rejected")
+      .sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+      )
+      .slice(0, 4)
+      .map((c) => {
+        const ip = c.influencer_profile_id
+          ? influencerMap.get(c.influencer_profile_id)
+          : null;
+        return {
+          id: c.id,
+          title: c.title || "Untitled Campaign",
+          status: c.status,
+          time: timeAgo(c.updated_at),
+          price: c.price_offered,
+          influencerName: ip?.display_name ?? null,
+        };
+      });
+  }, [campaigns, influencerMap]);
+
+  // ── Smart Subtitle ────────────────────────────────────────────────────────
+  const pendingCount = campaigns.filter((c) => c.status === "pending").length;
+  const subtitle =
+    pendingCount > 0
+      ? `${pendingCount} campaign${pendingCount > 1 ? "s" : ""} awaiting influencer response`
+      : spendStats.activeCampaigns > 0
+        ? `${spendStats.activeCampaigns} active campaign${spendStats.activeCampaigns > 1 ? "s" : ""} in progress`
+        : "Your brand command center";
+
+  // ── Quick Actions ─────────────────────────────────────────────────────────
+  const quickActions: QuickActionItem[] = [];
+  if (pendingCount > 0) {
+    quickActions.push({
+      label: `${pendingCount} awaiting response`,
+      href: "/dashboard/business/campaigns",
+      highlight: true,
+    });
+  }
+  if (!isProfileComplete) {
+    quickActions.push({
+      label: "Complete your profile",
+      href: "/dashboard/business/profile",
+    });
+  }
+  quickActions.push({
+    label: "Discover influencers",
+    href: "/dashboard/business/discover",
+  });
+
+  if (isLoading) {
+    return <PageLoadingSpinner />;
   }
 
   return (
-    <div className="container py-6 space-y-6 animate-fade-in">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">
-            Welcome, {profile?.full_name || "there"} 👋
-          </h1>
-          <p className="text-muted-foreground">
-            Manage your campaigns and discover influencers
-          </p>
-        </div>
-        <Button asChild className="h-12 sm:h-10">
-          <Link href="/dashboard/business/discover">
-            <Search className="mr-2 h-4 w-4" /> Find Influencers
-          </Link>
-        </Button>
+    <div className="relative min-h-[calc(100vh-4rem)]">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <AnimatedGradientBackground
+          Breathing
+          gradientColors={GRADIENT_COLORS}
+          gradientStops={GRADIENT_STOPS}
+          startingGap={180}
+          breathingRange={8}
+          animationSpeed={0.015}
+          containerStyle={GRADIENT_STYLE}
+        />
       </div>
 
-      {!isProfileComplete && (
-        <Card className="border-yellow-500/50 bg-yellow-500/5">
-          <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="h-5 w-5 text-yellow-500 shrink-0" />
-                <div>
-                  <p className="text-sm font-medium">
-                    Complete your business profile
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Add your business name to start booking influencers
-                  </p>
+      <div className="relative z-10 container max-w-3xl py-6 pb-32 space-y-6">
+        <m.div
+          variants={stagger}
+          initial="hidden"
+          animate="visible"
+          className="space-y-6"
+        >
+          {/* ── Profile Incomplete Banner ── */}
+          {!isProfileComplete && (
+            <m.div variants={fadeUp}>
+              <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-yellow-500/5 backdrop-blur-sm p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600">
+                      <Building2 className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">
+                        Complete your business profile
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Add your business name to start booking influencers
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="shrink-0 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:brightness-110 border-0"
+                    asChild
+                  >
+                    <Link href="/dashboard/business/profile">
+                      Set Up Profile
+                    </Link>
+                  </Button>
                 </div>
               </div>
-              <Button size="sm" asChild>
-                <Link href="/dashboard/business/profile">
-                  Complete Profile <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Stats */}
-      <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
-        <Card>
-          <CardContent className="flex items-center gap-3 p-4 sm:gap-4 sm:p-6">
-            <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
-              <Briefcase className="h-6 w-6 text-success" />
-            </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold">{active}</p>
-              <p className="text-[10px] sm:text-sm text-muted-foreground">
-                Active
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 p-4 sm:gap-4 sm:p-6">
-            <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-xl bg-warning/10">
-              <Clock className="h-6 w-6 text-warning" />
-            </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold">{pending}</p>
-              <p className="text-[10px] sm:text-sm text-muted-foreground">
-                Pending
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 p-4 sm:gap-4 sm:p-6">
-            <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-              <CheckCircle className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold">{completed}</p>
-              <p className="text-[10px] sm:text-sm text-muted-foreground">
-                Completed
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 p-4 sm:gap-4 sm:p-6">
-            <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-              <IndianRupee className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold">
-                {totalSpent > 0 ? `₹${totalSpent.toLocaleString()}` : "₹0"}
-              </p>
-              <p className="text-[10px] sm:text-sm text-muted-foreground">
-                Total Spent
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid gap-3 grid-cols-3">
-        <Link href="/dashboard/business/discover">
-          <Card className="h-full transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
-            <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                <Search className="h-5 w-5 text-primary" />
-              </div>
-              <p className="text-xs sm:text-sm font-medium">Find Influencers</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/dashboard/business/campaigns">
-          <Card className="h-full transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
-            <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                <ListChecks className="h-5 w-5 text-primary" />
-              </div>
-              <p className="text-xs sm:text-sm font-medium">All Campaigns</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/dashboard/business/profile">
-          <Card className="h-full transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
-            <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                <User className="h-5 w-5 text-primary" />
-              </div>
-              <p className="text-xs sm:text-sm font-medium">Business Profile</p>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
-
-      {/* Campaign Table/Cards */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Recent Campaigns</CardTitle>
-          {campaigns.length > 0 && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/dashboard/business/campaigns">
-                View All <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
+            </m.div>
           )}
-        </CardHeader>
-        <CardContent>
-          {campaigns.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 py-12 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <Megaphone className="h-8 w-8 text-primary" />
-              </div>
-              <div>
-                <p className="font-semibold text-lg text-foreground">
-                  No campaigns yet
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Find your first influencer and start a campaign ↓
-                </p>
-              </div>
-              <Button asChild size="lg" className="h-12">
-                <Link href="/dashboard/business/discover">
-                  Browse Influencers <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <>
-              {/* Mobile cards */}
-              <CampaignCards items={campaigns} role="business" />
-              {/* Desktop table */}
-              <div className="hidden md:block overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Package</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {campaigns.map((c) => (
-                      <TableRow key={c.id}>
-                        <TableCell className="font-medium">
-                          {c.title || "Untitled"}
-                        </TableCell>
-                        <TableCell className="capitalize">
-                          {c.package_type || "—"}
-                        </TableCell>
-                        <TableCell>
-                          ₹{c.price_offered?.toLocaleString() || "—"}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={statusColor(c.status)}
-                          >
-                            {c.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
-                          {new Date(c.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <Button size="sm" variant="ghost" asChild>
-                            <Link
-                              href={`/dashboard/business/campaigns/${c.id}`}
-                            >
-                              Details
-                            </Link>
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+
+          {/* ── Greeting + Smart Subtitle ── */}
+          <m.div variants={fadeUp}>
+            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+              Hey, {profile?.business_name || profile?.full_name || "there"}{" "}
+              <span className="inline-block animate-[float_3s_ease-in-out_infinite]">
+                👋
+              </span>
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+          </m.div>
+
+          {/* ── Spend Stats Strip ── */}
+          <m.div variants={fadeUp}>
+            <SpendStats
+              stats={spendStats}
+              hasCampaigns={campaigns.length > 0}
+            />
+          </m.div>
+
+          {/* ── Active Campaigns Overview ── */}
+          <m.div variants={fadeUp}>
+            <ActiveCampaignsOverview items={activeCampaignCards} />
+          </m.div>
+
+          {/* ── Brand Insights ── */}
+          <m.div variants={fadeUp}>
+            <BrandInsights insights={insights} />
+          </m.div>
+
+          {/* ── Recent Activity ── */}
+          <m.div variants={fadeUp}>
+            <RecentActivity items={recentActivity} />
+          </m.div>
+
+          {/* ── Quick Actions ── */}
+          <m.div variants={fadeUp}>
+            <QuickActions actions={quickActions} />
+          </m.div>
+        </m.div>
+      </div>
     </div>
   );
+}
+
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

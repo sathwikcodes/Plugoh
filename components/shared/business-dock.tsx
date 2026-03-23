@@ -3,44 +3,18 @@
 import { usePathname, useRouter } from "next/navigation";
 import MacOSDock from "@/components/ui/mac-os-dock";
 import { DockAutoHideWrapper } from "@/components/shared/dock-auto-hide-wrapper";
-import { makeDockIcon } from "@/lib/dock-icon-utils";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 
 // Icon path data from lucide-react v0.577.0
-const HOME_ICON = makeDockIcon([
-  ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" }],
-  [
-    "path",
-    {
-      d: "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
-    },
-  ],
-]);
+const HOME_ICON = "/flash.png";
 
-const SEARCH_ICON = makeDockIcon([
-  ["path", { d: "m21 21-4.34-4.34" }],
-  ["circle", { cx: "11", cy: "11", r: "8" }],
-]);
+const SEARCH_ICON = "/premium_target.png";
 
-const MESSAGE_ICON = makeDockIcon([
-  [
-    "path",
-    {
-      d: "M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719",
-    },
-  ],
-]);
+const MESSAGE_ICON = "/inbox.png";
 
-const BRIEFCASE_ICON = makeDockIcon([
-  ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" }],
-  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2" }],
-]);
+const BRIEFCASE_ICON = "/premium.png";
 
-const PROFILE_ICON = makeDockIcon([
-  ["path", { d: "M18 20a6 6 0 0 0-12 0" }],
-  ["circle", { cx: "12", cy: "10", r: "4" }],
-  ["circle", { cx: "12", cy: "12", r: "10" }],
-]);
+const PROFILE_ICON = "/color.png";
 
 const BUSINESS_DOCK_APPS = [
   { id: "home", name: "Home", icon: HOME_ICON, href: "/dashboard/business" },

@@ -1,93 +1,41 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
-import { useTRPC } from "@/lib/trpc/client";
-import { useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ArrowLeft, Loader2, Save, LogOut } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { BUSINESS_TYPES } from "@/lib/constants";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { useCampaigns } from "@/hooks/queries/use-campaigns";
+import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
+import { Loader2 } from "lucide-react";
+import { m } from "framer-motion";
+import { stagger } from "@/lib/animations";
+import { ProfileDiscreteTabBar } from "@/components/ui/discrete-tab";
+import BusinessProfileCardHeader from "./_components/profile-card-header";
+import OverviewTab from "./_components/tabs/overview-tab";
+import AnalyticsTab from "./_components/tabs/analytics-tab";
+import SpendingTab from "./_components/tabs/spending-tab";
+import SettingsTab from "./_components/tabs/settings-tab";
 
-export default function BusinessSettings() {
-  const {
-    user,
-    profile,
-    loading: authLoading,
-    refreshUserData,
-    signOut,
-  } = useAuth();
-  const { toast } = useToast();
-  const router = useRouter();
-  const trpc = useTRPC();
+type TabValue = "overview" | "analytics" | "spending" | "settings";
 
-  const [fullName, setFullName] = useState("");
-  const [businessName, setBusinessName] = useState("");
-  const [businessType, setBusinessType] = useState("");
-  const [location, setLocation] = useState("");
-  const [phone, setPhone] = useState("");
+const BUSINESS_TABS = [
+  { id: "overview", label: "Overview" },
+  { id: "analytics", label: "Analytics" },
+  { id: "spending", label: "Spending" },
+  { id: "settings", label: "Settings" },
+];
 
-  useEffect(() => {
-    if (profile) {
-      setFullName(profile.full_name || "");
-      setBusinessName(profile.business_name || "");
-      setBusinessType(profile.business_type || "");
-      setLocation(profile.location || "");
-      setPhone(profile.phone || "");
-    }
-  }, [profile]);
+export default function BusinessProfilePage() {
+  const { user, profile, loading: authLoading, signOut } = useAuth();
+  const [activeTab, setActiveTab] = useState<TabValue>("overview");
 
-  const upsertProfile = useMutation(
-    trpc.profile.upsertBusinessProfile.mutationOptions({
-      onSuccess: async () => {
-        await refreshUserData();
-        toast({
-          title: "Profile updated",
-          description: "Your changes have been saved.",
-        });
-      },
-      onError: (err) => {
-        toast({
-          title: "Error",
-          description: err.message || "Failed to save",
-          variant: "destructive",
-        });
-      },
-    }),
+  const { data: campaigns = [], isLoading: campaignsLoading } = useCampaigns(
+    user?.id,
+    "business",
   );
+  const { data: influencerProfiles = [] } = useInfluencerProfiles();
 
-  const handleSave = () => {
-    if (!user || !businessName.trim()) return;
-    upsertProfile.mutate({
-      fullName: fullName || "",
-      businessName: businessName.trim(),
-      businessType: businessType || undefined,
-      location: location || undefined,
-      phone: phone || undefined,
-    });
-  };
+  const loading = authLoading || campaignsLoading;
 
-  const saving = upsertProfile.isPending;
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.push("/login");
-  };
-
-  if (authLoading) {
+  if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -95,140 +43,147 @@ export default function BusinessSettings() {
     );
   }
 
+  if (!user || !profile) return null;
+
+  const totalCampaigns = campaigns.length;
+  const totalSpent = campaigns
+    .filter((c) => c.status === "completed")
+    .reduce((sum, c) => sum + (c.price_offered || 0), 0);
+
   return (
-    <div className="container max-w-2xl py-6 space-y-6 animate-fade-in">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" asChild className="h-11 w-11">
-          <Link href="/dashboard/business">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Business Profile</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage your brand details
-          </p>
-        </div>
-      </div>
+    <div className="relative min-h-[calc(100vh-4rem)]">
+      <div className="relative z-10 container max-w-2xl py-6 pb-24">
+        <m.div
+          variants={stagger}
+          initial="hidden"
+          animate="visible"
+          className="space-y-4"
+        >
+          <BusinessProfileCardHeader
+            profile={profile}
+            totalCampaigns={totalCampaigns}
+            totalSpent={totalSpent}
+            onNavigateToSettings={() => setActiveTab("settings")}
+          />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile Details</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              value={profile?.email || ""}
-              disabled
-              className="h-11 bg-muted/50"
+          {/* Discrete pill tab navigation */}
+          <div className="flex justify-center py-1">
+            <BusinessTabBar
+              activeTab={activeTab}
+              onTabChange={(tab) => setActiveTab(tab as TabValue)}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name</Label>
-            <Input
-              id="fullName"
-              placeholder="Your full name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="h-11"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="businessName">
-              Business Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="businessName"
-              placeholder="Your brand or business name"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              className="h-11"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="businessType">Business Type</Label>
-            <Select
-              value={businessType}
-              onValueChange={(v) => setBusinessType(v || "")}
-            >
-              <SelectTrigger className="h-11">
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                {BUSINESS_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="location">City / Location</Label>
-            <Input
-              id="location"
-              placeholder="e.g. Hyderabad"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="h-11"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              placeholder="Phone number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="h-11"
-            />
-          </div>
-
-          <Button
-            onClick={handleSave}
-            disabled={saving || !businessName.trim()}
-            className="w-full h-11"
-          >
-            {saving ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="mr-2 h-4 w-4" />
+          {/* Tab content */}
+          <div>
+            {activeTab === "overview" && (
+              <OverviewTab
+                profile={profile}
+                campaigns={campaigns}
+                onNavigateToSettings={() => setActiveTab("settings")}
+              />
             )}
-            Save Changes
-          </Button>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Preferences</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">Theme</p>
-              <p className="text-xs text-muted-foreground">
-                Switch between light and dark mode
-              </p>
-            </div>
-            <ThemeToggle />
+            {activeTab === "analytics" && (
+              <AnalyticsTab
+                campaigns={campaigns}
+                influencerProfiles={influencerProfiles}
+              />
+            )}
+            {activeTab === "spending" && (
+              <SpendingTab
+                campaigns={campaigns}
+                influencerProfiles={influencerProfiles}
+              />
+            )}
+            {activeTab === "settings" && (
+              <SettingsTab
+                profile={profile}
+                userId={user.id}
+                onSignOut={signOut}
+              />
+            )}
           </div>
-          <Button
-            variant="outline"
-            className="w-full h-11 text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/5"
-            onClick={handleSignOut}
+        </m.div>
+      </div>
+    </div>
+  );
+}
+
+// ── Custom tab bar for business (4 tabs with different icons) ─────────────────
+import { LayoutDashboard, BarChart3, Wallet, Settings2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { m as motion } from "framer-motion";
+
+const SPRING = {
+  type: "spring" as const,
+  damping: 20,
+  stiffness: 230,
+  mass: 1.2,
+};
+
+function BusinessTabBar({
+  activeTab,
+  onTabChange,
+}: {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}) {
+  const TABS = [
+    { id: "overview", label: "Overview", Icon: LayoutDashboard },
+    { id: "analytics", label: "Analytics", Icon: BarChart3 },
+    { id: "spending", label: "Spending", Icon: Wallet },
+    { id: "settings", label: "Settings", Icon: Settings2 },
+  ];
+
+  return (
+    <div className="flex flex-wrap gap-2 items-center justify-center">
+      {TABS.map((tab) => {
+        const isActive = activeTab === tab.id;
+        return (
+          <motion.div
+            key={tab.id}
+            layoutId={"biz-tab-" + tab.id}
+            transition={{ layout: SPRING }}
+            onClick={() => onTabChange(tab.id)}
+            className="w-fit h-fit flex cursor-pointer"
+            style={{ willChange: "transform" }}
           >
-            <LogOut className="mr-2 h-4 w-4" />
-            Log Out
-          </Button>
-        </CardContent>
-      </Card>
+            <motion.div
+              layout
+              transition={{ layout: SPRING }}
+              className={cn(
+                "flex items-center gap-1.5 bg-secondary shadow-md",
+                "outline-2 outline outline-background overflow-hidden",
+                "transition-colors duration-75 ease-out select-none",
+                isActive
+                  ? "px-4 py-2.5 text-foreground"
+                  : "px-3 py-2.5 text-muted-foreground hover:text-foreground/70",
+              )}
+              style={{ borderRadius: "25px" }}
+            >
+              <motion.div
+                layoutId={"biz-tab-icon-" + tab.id}
+                className="shrink-0"
+                style={{ willChange: "transform" }}
+              >
+                <tab.Icon size={18} strokeWidth={isActive ? 2.2 : 1.8} />
+              </motion.div>
+              {isActive && (
+                <motion.span
+                  layoutId={"biz-tab-label-" + tab.id}
+                  initial={{ opacity: 0, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, filter: "blur(0px)" }}
+                  transition={{ duration: 0.18, ease: [0.86, 0, 0.07, 1] }}
+                  className="text-xs font-semibold uppercase tracking-wide whitespace-nowrap"
+                  style={{ willChange: "transform" }}
+                >
+                  {tab.label}
+                </motion.span>
+              )}
+            </motion.div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
