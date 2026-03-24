@@ -143,7 +143,7 @@ export default function InfluencerDiscovery() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)]">
+    <div className="relative">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <AnimatedGradientBackground
           Breathing
@@ -155,7 +155,7 @@ export default function InfluencerDiscovery() {
           containerStyle={GRADIENT_STYLE}
         />
       </div>
-      <div className="relative z-10 container py-6 pb-32 space-y-6">
+      <div className="relative z-10 container py-6 space-y-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild className="h-11 w-11">
             <Link href="/dashboard/business">

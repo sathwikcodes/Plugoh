@@ -36,13 +36,13 @@ export default function BusinessInboxPage() {
   }, [router]);
 
   return (
-    <div className="h-[calc(100dvh-4rem)] flex overflow-hidden">
+    <div className="h-dvh flex overflow-hidden bg-background">
       {/* Left panel — conversation list */}
       <div
         className={
           selectedId
-            ? "hidden md:flex md:flex-col w-full md:w-[340px] md:shrink-0 md:border-r md:border-white/6 h-full"
-            : "flex flex-col w-full md:w-[340px] md:shrink-0 md:border-r md:border-white/6 h-full"
+            ? "hidden md:flex md:flex-col w-full md:w-[340px] md:shrink-0 md:border-r md:border-white/4 h-full"
+            : "flex flex-col w-full md:w-[340px] md:shrink-0 md:border-r md:border-white/4 h-full"
         }
       >
         <ConversationList

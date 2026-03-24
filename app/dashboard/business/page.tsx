@@ -276,7 +276,7 @@ export default function BusinessDashboard() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)]">
+    <div className="relative">
       {/* Subtle gradient background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <AnimatedGradientBackground
@@ -300,10 +300,10 @@ export default function BusinessDashboard() {
           {/* ── Profile Incomplete Banner ── */}
           {!isProfileComplete && (
             <m.div variants={fadeUp}>
-              <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-yellow-500/5 backdrop-blur-sm p-4">
+              <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-linear-to-r from-amber-500/5 via-orange-500/5 to-yellow-500/5 backdrop-blur-sm p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-amber-500 to-orange-600">
                       <Building2 className="h-5 w-5 text-white" />
                     </div>
                     <div>
@@ -317,7 +317,7 @@ export default function BusinessDashboard() {
                   </div>
                   <Button
                     size="sm"
-                    className="shrink-0 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:brightness-110 border-0"
+                    className="shrink-0 rounded-xl bg-linear-to-r from-amber-500 to-orange-600 hover:brightness-110 border-0"
                     asChild
                   >
                     <Link href="/dashboard/business/profile">

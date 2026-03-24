@@ -8,11 +8,11 @@ import { useUnreadCounts } from "@/hooks/use-unread-counts";
 // Icon path data from lucide-react v0.577.0
 const HOME_ICON = "/flash.png";
 
-const SEARCH_ICON = "/premium_target.png";
+const SEARCH_ICON = "/megaphone.png";
 
 const MESSAGE_ICON = "/inbox.png";
 
-const BRIEFCASE_ICON = "/premium.png";
+const BRIEFCASE_ICON = "/premium_target.png";
 
 const PROFILE_ICON = "/color.png";
 
