@@ -1,6 +1,6 @@
-CREATE TABLE IF NOT EXISTS public.business_profiles (
+CREATE TABLE public.business_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL UNIQUE REFERENCES auth.users (id) ON DELETE CASCADE,
   brand_name TEXT,
   brand_type TEXT,
   brand_location TEXT,
@@ -18,25 +18,36 @@ CREATE TABLE IF NOT EXISTS public.business_profiles (
   instagram_url TEXT,
   access_token TEXT,
   token_expires_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX idx_business_profiles_user_id ON public.business_profiles (user_id);
 
 ALTER TABLE public.business_profiles ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view own business profile"
-  ON public.business_profiles
-  FOR SELECT
+  ON public.business_profiles FOR SELECT
   USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert own business profile"
-  ON public.business_profiles
-  FOR INSERT
+  ON public.business_profiles FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update own business profile"
-  ON public.business_profiles
-  FOR UPDATE
+  ON public.business_profiles FOR UPDATE
   USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view counterpart business profiles"
+  ON public.business_profiles FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.campaigns c
+      WHERE (c.business_id = auth.uid() AND c.influencer_id = business_profiles.user_id)
+         OR (c.influencer_id = auth.uid() AND c.business_id = business_profiles.user_id)
+    )
+  );
+
+GRANT ALL ON TABLE public.business_profiles TO postgres, anon, authenticated, service_role;
 
 INSERT INTO public.business_profiles (
   user_id,
