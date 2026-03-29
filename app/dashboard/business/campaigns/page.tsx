@@ -5,10 +5,13 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, m } from "framer-motion";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
   Clock3,
+  CreditCard,
+  Eye,
   Loader2,
   Megaphone,
   Search,
@@ -37,8 +40,8 @@ type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
 type SortMode = "newest" | "highest_spend" | "recently_updated";
-type StatusFilter = "All" | "pending" | "accepted" | "completed" | "rejected";
-type LaneKey = "requested" | "active" | "completed" | "rejected";
+type StatusFilter = "All" | "requested" | "payment_pending" | "in_escrow" | "completed" | "declined";
+type LaneKey = "requested" | "payment_pending" | "active" | "completed" | "closed";
 
 type EnrichedCampaign = {
   campaign: Campaign;
@@ -54,11 +57,30 @@ type EnrichedCampaign = {
 
 const STATUS_FILTERS: StatusFilter[] = [
   "All",
-  "pending",
-  "accepted",
+  "requested",
+  "payment_pending",
+  "in_escrow",
   "completed",
-  "rejected",
+  "declined",
 ];
+
+const STATUS_FILTER_LABELS: Record<StatusFilter, string> = {
+  All: "All campaigns",
+  requested: "Awaiting response",
+  payment_pending: "Needs payment",
+  in_escrow: "Active",
+  completed: "Completed",
+  declined: "Closed",
+};
+
+const STATUS_FILTER_GROUPS: Record<StatusFilter, string[]> = {
+  All: [],
+  requested: ["requested", "pending"],
+  payment_pending: ["payment_pending"],
+  in_escrow: ["in_escrow", "accepted", "delivery_submitted"],
+  completed: ["completed"],
+  declined: ["declined", "rejected", "expired", "cancelled", "refunded"],
+};
 
 const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
   { value: "newest", label: "Newest" },
@@ -79,16 +101,24 @@ const LANE_CONFIG: Record<
 > = {
   requested: {
     title: "Requested",
-    description: "Bookings you initiated and are waiting on.",
-    statuses: ["pending"],
+    description: "Bookings you sent — waiting for the creator to respond.",
+    statuses: ["requested", "pending"],
     glow: "from-amber-300/20 via-orange-300/10 to-transparent",
     ring: "border-amber-300/20 bg-amber-300/6",
     icon: Clock3,
   },
+  payment_pending: {
+    title: "Action Required",
+    description: "Creator accepted — complete payment to lock in the deal.",
+    statuses: ["payment_pending"],
+    glow: "from-yellow-300/25 via-amber-300/10 to-transparent",
+    ring: "border-yellow-400/30 bg-yellow-400/6",
+    icon: CreditCard,
+  },
   active: {
     title: "Active",
-    description: "Campaigns in motion with creators already hired.",
-    statuses: ["accepted"],
+    description: "Campaigns in motion — creator is working on your content.",
+    statuses: ["in_escrow", "accepted", "delivery_submitted"],
     glow: "from-emerald-300/20 via-cyan-300/10 to-transparent",
     ring: "border-emerald-300/20 bg-emerald-300/6",
     icon: TrendingUp,
@@ -101,10 +131,10 @@ const LANE_CONFIG: Record<
     ring: "border-fuchsia-300/20 bg-fuchsia-300/6",
     icon: CheckCircle2,
   },
-  rejected: {
-    title: "Rejected",
-    description: "Requests that did not move forward.",
-    statuses: ["rejected"],
+  closed: {
+    title: "Closed",
+    description: "Declined, expired, or cancelled requests.",
+    statuses: ["declined", "rejected", "expired", "cancelled", "refunded"],
     glow: "from-rose-300/20 via-red-300/10 to-transparent",
     ring: "border-rose-300/20 bg-rose-300/6",
     icon: XCircle,
@@ -246,10 +276,24 @@ function CampaignCommandCard({ item }: { item: EnrichedCampaign }) {
                 {timeAgo(campaign.updated_at || campaign.created_at)}
               </p>
             </div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition-transform group-hover:translate-x-1">
-              Open campaign
-              <ArrowRight className="h-4 w-4" />
-            </span>
+            {campaign.status === "payment_pending" ? (
+              <span className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-semibold text-black transition-transform group-hover:translate-x-1">
+                <CreditCard className="h-3.5 w-3.5" />
+                Pay Now
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            ) : campaign.status === "delivery_submitted" ? (
+              <span className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white transition-transform group-hover:translate-x-1">
+                <Eye className="h-3.5 w-3.5" />
+                Review
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition-transform group-hover:translate-x-1">
+                Open campaign
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -357,14 +401,17 @@ export default function CampaignsList() {
 
     return {
       totalCampaigns: campaigns.length,
-      activeCampaigns: campaigns.filter(
-        (campaign) => campaign.status === "accepted",
+      actionRequired: campaigns.filter(
+        (campaign) => campaign.status === "payment_pending",
+      ).length,
+      activeCampaigns: campaigns.filter((campaign) =>
+        ["in_escrow", "accepted", "delivery_submitted"].includes(campaign.status),
       ).length,
       completedCampaigns: campaigns.filter(
         (campaign) => campaign.status === "completed",
       ).length,
-      rejectedCampaigns: campaigns.filter(
-        (campaign) => campaign.status === "rejected",
+      closedCampaigns: campaigns.filter((campaign) =>
+        ["declined", "rejected", "expired", "cancelled"].includes(campaign.status),
       ).length,
       totalSpend,
     };
@@ -375,7 +422,9 @@ export default function CampaignsList() {
     let items = [...enrichedCampaigns];
 
     if (statusFilter !== "All") {
-      items = items.filter((item) => item.campaign.status === statusFilter);
+      items = items.filter((item) =>
+        STATUS_FILTER_GROUPS[statusFilter].includes(item.campaign.status),
+      );
     }
 
     if (query) {
@@ -432,14 +481,21 @@ export default function CampaignsList() {
   const statusCounts = useMemo(
     () => ({
       All: campaigns.length,
-      pending: campaigns.filter((campaign) => campaign.status === "pending")
-        .length,
-      accepted: campaigns.filter((campaign) => campaign.status === "accepted")
-        .length,
-      completed: campaigns.filter((campaign) => campaign.status === "completed")
-        .length,
-      rejected: campaigns.filter((campaign) => campaign.status === "rejected")
-        .length,
+      requested: campaigns.filter((c) =>
+        STATUS_FILTER_GROUPS.requested.includes(c.status),
+      ).length,
+      payment_pending: campaigns.filter((c) =>
+        STATUS_FILTER_GROUPS.payment_pending.includes(c.status),
+      ).length,
+      in_escrow: campaigns.filter((c) =>
+        STATUS_FILTER_GROUPS.in_escrow.includes(c.status),
+      ).length,
+      completed: campaigns.filter((c) =>
+        STATUS_FILTER_GROUPS.completed.includes(c.status),
+      ).length,
+      declined: campaigns.filter((c) =>
+        STATUS_FILTER_GROUPS.declined.includes(c.status),
+      ).length,
     }),
     [campaigns],
   );
@@ -504,6 +560,12 @@ export default function CampaignsList() {
             accent="from-cyan-300/25 via-sky-300/10 to-transparent"
           />
           <CampaignMetricCard
+            label="Needs payment"
+            value={compactNumber(metrics.actionRequired)}
+            helper="Creator accepted — pay to start"
+            accent="from-yellow-300/30 via-amber-300/10 to-transparent"
+          />
+          <CampaignMetricCard
             label="Active"
             value={compactNumber(metrics.activeCampaigns)}
             helper="Creators currently in motion"
@@ -514,12 +576,6 @@ export default function CampaignsList() {
             value={compactNumber(metrics.completedCampaigns)}
             helper="Closed loops and delivered work"
             accent="from-violet-300/25 via-fuchsia-300/10 to-transparent"
-          />
-          <CampaignMetricCard
-            label="Rejected"
-            value={compactNumber(metrics.rejectedCampaigns)}
-            helper="Requests that did not move forward"
-            accent="from-rose-300/25 via-red-300/10 to-transparent"
           />
           <CampaignMetricCard
             label="Committed spend"
@@ -569,12 +625,12 @@ export default function CampaignsList() {
                   className={`rounded-full border px-4 py-2 text-sm transition ${
                     statusFilter === status
                       ? "border-white/30 bg-white text-black"
-                      : "border-white/10 bg-white/[0.03] text-white/58 hover:border-white/16 hover:text-white"
+                      : status === "payment_pending" && statusCounts.payment_pending > 0
+                        ? "border-yellow-400/40 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/15 hover:text-yellow-200"
+                        : "border-white/10 bg-white/[0.03] text-white/58 hover:border-white/16 hover:text-white"
                   }`}
                 >
-                  <span className="capitalize">
-                    {status === "All" ? "All campaigns" : status}
-                  </span>
+                  <span>{STATUS_FILTER_LABELS[status]}</span>
                   <span className="ml-2 text-xs opacity-70">
                     {statusCounts[status]}
                   </span>

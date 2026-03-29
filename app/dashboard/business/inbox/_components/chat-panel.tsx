@@ -15,11 +15,12 @@ import {
 } from "@/components/campaign/message-bubble";
 import { MessageInput } from "@/components/campaign/message-input";
 import { ChatHeader } from "./chat-header";
-import { Loader2, MessageSquare } from "lucide-react";
+import { ArrowRight, CreditCard, Loader2, MessageSquare } from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation } from "@tanstack/react-query";
 import type { BusinessConversation } from "@/hooks/queries/use-business-inbox-conversations";
 import { getBusinessDisplayName } from "@/lib/business-profile";
+import Link from "next/link";
 
 interface ChatPanelProps {
   conversation: BusinessConversation;
@@ -105,6 +106,32 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         status={campaign.status}
         onBack={onBack}
       />
+
+      {/* Payment required banner */}
+      {campaign.status === "payment_pending" && (
+        <Link
+          href={`/dashboard/business/campaigns/${campaign.id}`}
+          className="group flex items-center justify-between gap-3 border-b border-yellow-500/20 bg-yellow-500/10 px-5 py-3 transition-colors hover:bg-yellow-500/15"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <CreditCard className="h-4 w-4 text-yellow-300 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-yellow-200">
+                Creator accepted — payment required
+              </p>
+              <p className="text-xs text-yellow-300/70">
+                {campaign.price_offered
+                  ? `₹${campaign.price_offered.toLocaleString("en-IN")} due to start the campaign`
+                  : "Complete payment to lock in the deal"}
+              </p>
+            </div>
+          </div>
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-yellow-400 px-3 py-1 text-xs font-semibold text-black transition-transform group-hover:translate-x-0.5">
+            Pay now
+            <ArrowRight className="h-3 w-3" />
+          </span>
+        </Link>
+      )}
 
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 min-h-0">

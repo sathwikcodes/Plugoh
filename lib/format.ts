@@ -13,14 +13,26 @@ export function formatNumber(n: number | null): string {
  */
 export function statusColor(s: string): string {
   switch (s) {
-    case "accepted":
-      return "bg-success/10 text-success border-success/20";
+    case "requested":
     case "pending":
-      return "bg-warning/10 text-warning border-warning/20";
-    case "rejected":
-      return "bg-destructive/10 text-destructive border-destructive/20";
+      return "bg-amber-500/10 text-amber-400 border-amber-500/20";
+    case "payment_pending":
+      return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
+    case "in_escrow":
+    case "accepted":
+      return "bg-green-500/10 text-green-400 border-green-500/20";
+    case "delivery_submitted":
+      return "bg-blue-500/10 text-blue-400 border-blue-500/20";
     case "completed":
-      return "bg-primary/10 text-primary border-primary/20";
+      return "bg-violet-500/10 text-violet-400 border-violet-500/20";
+    case "disputed":
+      return "bg-red-500/10 text-red-400 border-red-500/20";
+    case "declined":
+    case "rejected":
+    case "expired":
+    case "cancelled":
+    case "refunded":
+      return "bg-muted text-muted-foreground border-muted";
     default:
       return "bg-muted text-muted-foreground";
   }

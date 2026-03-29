@@ -125,6 +125,18 @@ export type Database = {
           status: string;
           title: string | null;
           updated_at: string;
+          // Payment fields
+          razorpay_order_id: string | null;
+          razorpay_payment_id: string | null;
+          payment_status: string | null;
+          platform_fee_amount: number | null;
+          total_charged_amount: number | null;
+          // Timeline fields
+          accepted_at: string | null;
+          payment_captured_at: string | null;
+          delivery_submitted_at: string | null;
+          completed_at: string | null;
+          expires_at: string | null;
         };
         Insert: {
           advance_amount?: number | null;
@@ -141,6 +153,16 @@ export type Database = {
           status?: string;
           title?: string | null;
           updated_at?: string;
+          razorpay_order_id?: string | null;
+          razorpay_payment_id?: string | null;
+          payment_status?: string | null;
+          platform_fee_amount?: number | null;
+          total_charged_amount?: number | null;
+          accepted_at?: string | null;
+          payment_captured_at?: string | null;
+          delivery_submitted_at?: string | null;
+          completed_at?: string | null;
+          expires_at?: string | null;
         };
         Update: {
           advance_amount?: number | null;
@@ -157,6 +179,16 @@ export type Database = {
           status?: string;
           title?: string | null;
           updated_at?: string;
+          razorpay_order_id?: string | null;
+          razorpay_payment_id?: string | null;
+          payment_status?: string | null;
+          platform_fee_amount?: number | null;
+          total_charged_amount?: number | null;
+          accepted_at?: string | null;
+          payment_captured_at?: string | null;
+          delivery_submitted_at?: string | null;
+          completed_at?: string | null;
+          expires_at?: string | null;
         };
         Relationships: [
           {
@@ -167,6 +199,166 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      deliveries: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          submitted_by: string;
+          content_url: string;
+          notes: string | null;
+          submitted_at: string;
+          approved_at: string | null;
+          approved_by: string | null;
+          dispute_reason: string | null;
+          disputed_at: string | null;
+          admin_resolved_at: string | null;
+          admin_notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          submitted_by: string;
+          content_url: string;
+          notes?: string | null;
+          submitted_at?: string;
+          approved_at?: string | null;
+          approved_by?: string | null;
+          dispute_reason?: string | null;
+          disputed_at?: string | null;
+          admin_resolved_at?: string | null;
+          admin_notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          campaign_id?: string;
+          submitted_by?: string;
+          content_url?: string;
+          notes?: string | null;
+          submitted_at?: string;
+          approved_at?: string | null;
+          approved_by?: string | null;
+          dispute_reason?: string | null;
+          disputed_at?: string | null;
+          admin_resolved_at?: string | null;
+          admin_notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "deliveries_campaign_id_fkey";
+            columns: ["campaign_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      escrow_transactions: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          type: string;
+          amount_paise: number;
+          platform_fee_paise: number | null;
+          razorpay_order_id: string | null;
+          razorpay_payment_id: string | null;
+          razorpay_payout_id: string | null;
+          razorpay_refund_id: string | null;
+          status: string;
+          failure_reason: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          type: string;
+          amount_paise: number;
+          platform_fee_paise?: number | null;
+          razorpay_order_id?: string | null;
+          razorpay_payment_id?: string | null;
+          razorpay_payout_id?: string | null;
+          razorpay_refund_id?: string | null;
+          status?: string;
+          failure_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          campaign_id?: string;
+          type?: string;
+          amount_paise?: number;
+          platform_fee_paise?: number | null;
+          razorpay_order_id?: string | null;
+          razorpay_payment_id?: string | null;
+          razorpay_payout_id?: string | null;
+          razorpay_refund_id?: string | null;
+          status?: string;
+          failure_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "escrow_transactions_campaign_id_fkey";
+            columns: ["campaign_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      influencer_payout_details: {
+        Row: {
+          id: string;
+          user_id: string;
+          upi_id: string | null;
+          bank_account_no: string | null;
+          bank_ifsc: string | null;
+          bank_account_name: string | null;
+          preferred_method: string;
+          verified: boolean;
+          razorpay_contact_id: string | null;
+          razorpay_fund_account_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          upi_id?: string | null;
+          bank_account_no?: string | null;
+          bank_ifsc?: string | null;
+          bank_account_name?: string | null;
+          preferred_method?: string;
+          verified?: boolean;
+          razorpay_contact_id?: string | null;
+          razorpay_fund_account_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          upi_id?: string | null;
+          bank_account_no?: string | null;
+          bank_ifsc?: string | null;
+          bank_account_name?: string | null;
+          preferred_method?: string;
+          verified?: boolean;
+          razorpay_contact_id?: string | null;
+          razorpay_fund_account_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
       business_profiles: {
         Row: {

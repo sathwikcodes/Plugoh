@@ -74,7 +74,81 @@ export const BUSINESS_TYPES = [
 ] as const;
 
 // ─── Campaign Status Config ─────────────────────────────────────────────────
+// State machine: requested → payment_pending → in_escrow → delivery_submitted → completed
+// Also: requested → declined | expired | cancelled
+//       delivery_submitted → disputed → completed | refunded
 export const CAMPAIGN_STATUS_CONFIG = {
+  // Brand submitted booking request, awaiting influencer response (no payment taken)
+  requested: {
+    label: "New Offer",
+    badge: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+    border: "border-l-amber-400",
+    cardBg: "from-amber-500/8 to-yellow-500/5",
+  },
+  // Influencer accepted, waiting for brand to complete payment
+  payment_pending: {
+    label: "Awaiting Payment",
+    badge: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20",
+    border: "border-l-yellow-400",
+    cardBg: "from-yellow-500/8 to-amber-500/5",
+  },
+  // Brand paid, funds locked in escrow, influencer is working
+  in_escrow: {
+    label: "In Progress",
+    badge: "bg-green-500/15 text-green-400 border-green-500/20",
+    border: "border-l-green-400",
+    cardBg: "from-green-500/8 to-emerald-500/5",
+  },
+  // Influencer submitted delivery proof, brand needs to approve (7-day auto-release)
+  delivery_submitted: {
+    label: "Review Delivery",
+    badge: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+    border: "border-l-blue-400",
+    cardBg: "from-blue-500/8 to-cyan-500/5",
+  },
+  // Brand approved (or auto-released), payout sent to influencer
+  completed: {
+    label: "Completed",
+    badge: "bg-violet-500/15 text-violet-400 border-violet-500/20",
+    border: "border-l-violet-400",
+    cardBg: "from-violet-500/8 to-purple-500/5",
+  },
+  // Brand raised dispute on delivery, admin reviewing
+  disputed: {
+    label: "Disputed",
+    badge: "bg-red-500/15 text-red-400 border-red-500/20",
+    border: "border-l-red-400",
+    cardBg: "from-red-500/8 to-rose-500/5",
+  },
+  // Influencer declined the booking request
+  declined: {
+    label: "Declined",
+    badge: "bg-white/5 text-muted-foreground border-white/10",
+    border: "border-l-white/10",
+    cardBg: "from-transparent to-transparent",
+  },
+  // No response within 48h (influencer) or 24h (brand after acceptance)
+  expired: {
+    label: "Expired",
+    badge: "bg-white/5 text-muted-foreground border-white/10",
+    border: "border-l-white/10",
+    cardBg: "from-transparent to-transparent",
+  },
+  // Brand cancelled before any response
+  cancelled: {
+    label: "Cancelled",
+    badge: "bg-white/5 text-muted-foreground border-white/10",
+    border: "border-l-white/10",
+    cardBg: "from-transparent to-transparent",
+  },
+  // Admin resolved dispute in brand's favour, refund sent
+  refunded: {
+    label: "Refunded",
+    badge: "bg-white/5 text-muted-foreground border-white/10",
+    border: "border-l-white/10",
+    cardBg: "from-transparent to-transparent",
+  },
+  // Legacy aliases kept for backward compatibility with migrated data
   pending: {
     label: "New Offer",
     badge: "bg-amber-500/15 text-amber-400 border-amber-500/20",
@@ -87,12 +161,6 @@ export const CAMPAIGN_STATUS_CONFIG = {
     border: "border-l-green-400",
     cardBg: "from-green-500/8 to-emerald-500/5",
   },
-  completed: {
-    label: "Completed",
-    badge: "bg-violet-500/15 text-violet-400 border-violet-500/20",
-    border: "border-l-violet-400",
-    cardBg: "from-violet-500/8 to-purple-500/5",
-  },
   rejected: {
     label: "Declined",
     badge: "bg-white/5 text-muted-foreground border-white/10",
@@ -102,6 +170,9 @@ export const CAMPAIGN_STATUS_CONFIG = {
 } as const;
 
 export type CampaignStatus = keyof typeof CAMPAIGN_STATUS_CONFIG;
+
+// Platform commission rate (12% charged to brand on top of influencer price)
+export const PLATFORM_FEE_RATE = 0.12;
 
 // ─── Earnings Tier Config ────────────────────────────────────────────────────
 export const TIERS = [
