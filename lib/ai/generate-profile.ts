@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { BUSINESS_TYPES } from "@/lib/constants";
 
 const VALID_CATEGORIES = [
   "Food",
@@ -43,6 +44,25 @@ interface ProfileResult {
   price_per_reel: number;
   price_per_post: number;
   price_per_story: number;
+}
+
+interface BusinessProfileInput {
+  fullName: string | null;
+  location: string | null;
+  brandName: string | null;
+  brandType: string | null;
+  igBio: string | null;
+  igUsername: string | null;
+  followerCount: number;
+  captions: string[];
+}
+
+interface BusinessProfileResult {
+  brand_name: string | null;
+  brand_type: string | null;
+  brand_location: string | null;
+  brand_summary: string | null;
+  tagline: string | null;
 }
 
 export async function generateInfluencerProfile(
@@ -118,5 +138,101 @@ Return ONLY valid JSON. No explanation, no markdown, no code fences.`;
   } catch (err) {
     console.error("AI profile generation failed (non-blocking):", err);
     return null;
+  }
+}
+
+export async function generateBusinessProfile(
+  input: BusinessProfileInput,
+): Promise<BusinessProfileResult | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  const fallbackBrandName =
+    input.brandName?.trim() || input.igUsername?.trim() || input.fullName?.trim();
+  const fallbackLocation = input.location?.trim() || null;
+
+  if (!apiKey) {
+    return {
+      brand_name: fallbackBrandName ?? null,
+      brand_type: input.brandType?.trim() || "Other",
+      brand_location: fallbackLocation,
+      brand_summary: input.igBio?.trim() || null,
+      tagline: fallbackBrandName ? `Built for growth by ${fallbackBrandName}` : null,
+    };
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-3.1-flash-lite-preview",
+    });
+
+    const captionsSample = input.captions
+      .slice(0, 10)
+      .map((c, i) => `${i + 1}. ${c.slice(0, 200)}`)
+      .join("\n");
+
+    const prompt = `You are helping set up a brand owner's business profile on Plugoh, a platform connecting brands with Instagram influencers in India.
+
+Given the following business context, infer a polished brand profile.
+
+Owner Name: ${input.fullName ?? "Unknown"}
+Manual Brand Name: ${input.brandName ?? "Not provided"}
+Manual Brand Type: ${input.brandType ?? "Not provided"}
+Manual Location: ${input.location ?? "Not provided"}
+Instagram Username: ${input.igUsername ?? "Not connected"}
+Instagram Bio: ${input.igBio ?? "Not provided"}
+Followers: ${input.followerCount}
+Recent post captions:
+${captionsSample || "No captions available"}
+
+Return a JSON object with:
+- brand_name: best public-facing brand name, prefer manual values when present
+- brand_type: one of [${BUSINESS_TYPES.join(", ")}]
+- brand_location: infer from manual location/bio/captions if possible, else null
+- brand_summary: a polished 1-2 sentence summary for the brand profile
+- tagline: a short punchy brand line under 80 characters
+
+Return ONLY valid JSON. No explanation, no markdown, no code fences.`;
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text().trim();
+    if (!text) return null;
+
+    const jsonStr = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
+    const parsed = JSON.parse(jsonStr) as Record<string, unknown>;
+
+    const brandType = BUSINESS_TYPES.includes(
+      parsed.brand_type as (typeof BUSINESS_TYPES)[number],
+    )
+      ? (parsed.brand_type as string)
+      : (input.brandType?.trim() || "Other");
+
+    return {
+      brand_name:
+        typeof parsed.brand_name === "string" && parsed.brand_name.trim()
+          ? parsed.brand_name.trim()
+          : (fallbackBrandName ?? null),
+      brand_type: brandType,
+      brand_location:
+        typeof parsed.brand_location === "string" && parsed.brand_location.trim()
+          ? parsed.brand_location.trim()
+          : fallbackLocation,
+      brand_summary:
+        typeof parsed.brand_summary === "string" && parsed.brand_summary.trim()
+          ? parsed.brand_summary.trim()
+          : (input.igBio?.trim() || null),
+      tagline:
+        typeof parsed.tagline === "string" && parsed.tagline.trim()
+          ? parsed.tagline.trim().slice(0, 80)
+          : null,
+    };
+  } catch (err) {
+    console.error("AI business profile generation failed (non-blocking):", err);
+    return {
+      brand_name: fallbackBrandName ?? null,
+      brand_type: input.brandType?.trim() || "Other",
+      brand_location: fallbackLocation,
+      brand_summary: input.igBio?.trim() || null,
+      tagline: fallbackBrandName ? `Built for growth by ${fallbackBrandName}` : null,
+    };
   }
 }

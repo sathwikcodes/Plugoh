@@ -10,28 +10,40 @@ export const profileRouter = router({
         businessName: z.string().min(1),
         businessType: z.string().optional(),
         location: z.string().optional(),
+        brandLocation: z.string().optional(),
         phone: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const { db, user } = ctx;
 
-      const { error } = await db.from("profiles").upsert(
-        {
-          id: user.id,
-          full_name: input.fullName,
-          business_name: input.businessName,
-          business_type: input.businessType || null,
-          location: input.location || null,
-          phone: input.phone || null,
-        },
-        { onConflict: "id" },
-      );
+      const [profileRes, businessRes] = await Promise.all([
+        db.from("profiles").upsert(
+          {
+            id: user.id,
+            full_name: input.fullName,
+            business_name: input.businessName,
+            business_type: input.businessType || null,
+            location: input.location || null,
+            phone: input.phone || null,
+          },
+          { onConflict: "id" },
+        ),
+        db.from("business_profiles").upsert(
+          {
+            user_id: user.id,
+            brand_name: input.businessName,
+            brand_type: input.businessType || null,
+            brand_location: input.brandLocation || input.location || null,
+          },
+          { onConflict: "user_id" },
+        ),
+      ]);
 
-      if (error) {
+      if (profileRes.error || businessRes.error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error.message,
+          message: profileRes.error?.message || businessRes.error?.message,
         });
       }
 

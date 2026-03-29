@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/auth-context";
+import { useMyBusinessProfile } from "@/hooks/queries/use-business-profiles";
 import {
   useCampaignMessages,
   useSendMessage,
@@ -18,6 +19,7 @@ import { Loader2, MessageSquare } from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation } from "@tanstack/react-query";
 import type { BusinessConversation } from "@/hooks/queries/use-business-inbox-conversations";
+import { getBusinessDisplayName } from "@/lib/business-profile";
 
 interface ChatPanelProps {
   conversation: BusinessConversation;
@@ -25,7 +27,8 @@ interface ChatPanelProps {
 }
 
 export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
-  const { user, profile: myProfile } = useAuth();
+  const { user } = useAuth();
+  const { data: myIdentity } = useMyBusinessProfile(user?.id);
   const trpc = useTRPC();
   const { campaign, influencerProfile } = conversation;
   const { data: messages, isLoading } = useCampaignMessages(campaign.id);
@@ -37,8 +40,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const influencerName = influencerProfile?.full_name || "Influencer";
-  const brandName =
-    myProfile?.business_name || myProfile?.full_name || "Business";
+  const brandName = getBusinessDisplayName(myIdentity ?? null);
   const disabled = campaign.status === "completed";
 
   useEffect(() => {

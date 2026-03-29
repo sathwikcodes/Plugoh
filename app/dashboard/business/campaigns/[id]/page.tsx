@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
+import { useMyBusinessProfile } from "@/hooks/queries/use-business-profiles";
 import { useCampaign } from "@/hooks/queries/use-campaigns";
 import { useInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import { useTRPC } from "@/lib/trpc/client";
@@ -32,6 +33,7 @@ import {
 import { CampaignChat } from "@/components/campaign/campaign-chat";
 import { useToast } from "@/hooks/use-toast";
 import { statusColor } from "@/lib/format";
+import { getBusinessDisplayName } from "@/lib/business-profile";
 
 const STATUS_STEPS = [
   { key: "pending", label: "Pending" },
@@ -105,6 +107,7 @@ export default function BusinessCampaignDetail() {
   const params = useParams();
   const id = params?.id as string;
   const { user, profile } = useAuth();
+  const { data: identity } = useMyBusinessProfile(user?.id);
   const { toast } = useToast();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -437,7 +440,9 @@ export default function BusinessCampaignDetail() {
           businessId={campaign.business_id}
           influencerId={campaign.influencer_id}
           businessName={
-            profile?.business_name || profile?.full_name || "Business"
+            getBusinessDisplayName(
+              identity ?? { basicProfile: profile, businessProfile: null },
+            )
           }
           influencerName={influencerProfile?.display_name || "Influencer"}
           disabled={campaign.status === "completed"}

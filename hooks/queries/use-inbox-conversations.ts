@@ -2,14 +2,16 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
+import type { BusinessIdentity } from "@/lib/business-profile";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type CampaignMessage = Database["public"]["Tables"]["campaign_messages"]["Row"];
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
+type BusinessProfile = Database["public"]["Tables"]["business_profiles"]["Row"];
 
 export interface Conversation {
   campaign: Campaign;
-  businessProfile: Profile | null;
+  businessProfile: BusinessIdentity | null;
   lastMessage: CampaignMessage | null;
 }
 
@@ -27,8 +29,13 @@ async function fetchConversations(userId: string): Promise<Conversation[]> {
   const businessIds = [...new Set(campaigns.map((c) => c.business_id))];
   const campaignIds = campaigns.map((c) => c.id);
 
-  const [{ data: profiles }, { data: allMessages }] = await Promise.all([
+  const [
+    { data: profiles },
+    { data: businessProfiles },
+    { data: allMessages },
+  ] = await Promise.all([
     supabase.from("profiles").select("*").in("id", businessIds),
+    supabase.from("business_profiles").select("*").in("user_id", businessIds),
     supabase
       .from("campaign_messages")
       .select("*")
@@ -37,7 +44,10 @@ async function fetchConversations(userId: string): Promise<Conversation[]> {
       .order("created_at", { ascending: false }),
   ]);
 
-  const profileMap = new Map((profiles || []).map((p) => [p.id, p]));
+  const profileMap = new Map((profiles || []).map((p) => [p.id, p as Profile]));
+  const businessMap = new Map(
+    (businessProfiles || []).map((bp) => [bp.user_id, bp as BusinessProfile]),
+  );
 
   const messageMap = new Map<string, CampaignMessage>();
   for (const msg of allMessages || []) {
@@ -48,7 +58,10 @@ async function fetchConversations(userId: string): Promise<Conversation[]> {
 
   const convos: Conversation[] = campaigns.map((c) => ({
     campaign: c,
-    businessProfile: profileMap.get(c.business_id) || null,
+    businessProfile: {
+      basicProfile: profileMap.get(c.business_id) || null,
+      businessProfile: businessMap.get(c.business_id) || null,
+    },
     lastMessage: messageMap.get(c.id) || null,
   }));
 

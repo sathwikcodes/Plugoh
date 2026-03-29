@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
+import { useMyBusinessProfile } from "@/hooks/queries/use-business-profiles";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
 import {
@@ -11,11 +12,14 @@ import {
   TrendingDown,
   Film,
   ImageIcon,
-  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { m } from "framer-motion";
 import { timeAgo } from "@/lib/format";
+import {
+  getBusinessDisplayName,
+  isBusinessProfileComplete,
+} from "@/lib/business-profile";
 import {
   GRADIENT_COLORS,
   GRADIENT_STOPS,
@@ -46,6 +50,7 @@ import {
 
 export default function BusinessDashboard() {
   const { user, profile, isProfileComplete, loading } = useAuth();
+  const { data: identity } = useMyBusinessProfile(user?.id);
 
   const { data: campaigns = [], isLoading: campaignsLoading } = useCampaigns(
     user?.id,
@@ -55,6 +60,11 @@ export default function BusinessDashboard() {
     useInfluencerProfiles();
 
   const isLoading = loading || campaignsLoading || profilesLoading;
+  const displayName = getBusinessDisplayName(
+    identity ?? { basicProfile: profile, businessProfile: null },
+  );
+  const profileComplete =
+    identity ? isBusinessProfileComplete(identity) : isProfileComplete;
 
   // Build a Map<influencerProfileId, influencer> for O(1) lookups
   const influencerMap = useMemo(
@@ -298,7 +308,7 @@ export default function BusinessDashboard() {
           className="space-y-6"
         >
           {/* ── Profile Incomplete Banner ── */}
-          {!isProfileComplete && (
+          {!profileComplete && (
             <m.div variants={fadeUp}>
               <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-linear-to-r from-amber-500/5 via-orange-500/5 to-yellow-500/5 backdrop-blur-sm p-4">
                 <div className="flex items-center justify-between gap-4">
@@ -311,7 +321,7 @@ export default function BusinessDashboard() {
                         Complete your business profile
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Add your business name to start booking influencers
+                        Add your brand details to start booking influencers
                       </p>
                     </div>
                   </div>
@@ -332,7 +342,7 @@ export default function BusinessDashboard() {
           {/* ── Greeting + Smart Subtitle ── */}
           <m.div variants={fadeUp}>
             <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-              Hey, {profile?.business_name || profile?.full_name || "there"}{" "}
+              Hey, {displayName || "there"}{" "}
               <span className="inline-block animate-[float_3s_ease-in-out_infinite]">
                 👋
               </span>

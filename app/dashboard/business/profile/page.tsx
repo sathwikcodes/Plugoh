@@ -1,39 +1,90 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { useMyBusinessProfile } from "@/hooks/queries/use-business-profiles";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
+import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { m } from "framer-motion";
 import { stagger } from "@/lib/animations";
-import { ProfileDiscreteTabBar } from "@/components/ui/discrete-tab";
+import { toast } from "sonner";
 import BusinessProfileCardHeader from "./_components/profile-card-header";
 import OverviewTab from "./_components/tabs/overview-tab";
+import BusinessInstagramTab from "./_components/tabs/instagram-tab";
 import AnalyticsTab from "./_components/tabs/analytics-tab";
 import SpendingTab from "./_components/tabs/spending-tab";
 import SettingsTab from "./_components/tabs/settings-tab";
+import {
+  AIStatusBanner,
+  ProfileTabSkeleton,
+} from "@/app/dashboard/influencer/profile/_components/profile-page-skeleton";
 
-type TabValue = "overview" | "analytics" | "spending" | "settings";
+type TabValue = "instagram" | "overview" | "analytics" | "spending" | "settings";
 
-const BUSINESS_TABS = [
-  { id: "overview", label: "Overview" },
-  { id: "analytics", label: "Analytics" },
-  { id: "spending", label: "Spending" },
-  { id: "settings", label: "Settings" },
-];
-
-export default function BusinessProfilePage() {
+function BusinessProfilePageInner() {
   const { user, profile, loading: authLoading, signOut } = useAuth();
-  const [activeTab, setActiveTab] = useState<TabValue>("overview");
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+  const isOnboarding =
+    searchParams.get("source") === "onboarding" ||
+    (typeof window !== "undefined" &&
+      sessionStorage.getItem("plugoh_business_ai_pending") === user?.id);
 
+  const [activeTab, setActiveTab] = useState<TabValue>("overview");
+  const [aiStatus, setAiStatus] = useState<"idle" | "running" | "done" | "failed">(
+    isOnboarding ? "running" : "idle",
+  );
+  const aiTriggeredRef = useRef(false);
+
+  const { data: identity, isLoading: identityLoading } = useMyBusinessProfile(
+    user?.id,
+    { refetchInterval: aiStatus === "running" ? 3000 : false },
+  );
   const { data: campaigns = [], isLoading: campaignsLoading } = useCampaigns(
     user?.id,
     "business",
   );
   const { data: influencerProfiles = [] } = useInfluencerProfiles();
+  const { data: media = [] } = useInstagramMedia(user?.id);
 
-  const loading = authLoading || campaignsLoading;
+  const loading = authLoading || campaignsLoading || identityLoading;
+
+  useEffect(() => {
+    if (isOnboarding && user?.id) {
+      sessionStorage.setItem("plugoh_business_ai_pending", user.id);
+    }
+  }, [isOnboarding, user?.id]);
+
+  useEffect(() => {
+    if (!isOnboarding || !user?.id || aiTriggeredRef.current) return;
+    aiTriggeredRef.current = true;
+
+    fetch("/api/ai/generate-business-profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user.id }),
+    })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(() => {
+        setAiStatus("done");
+        sessionStorage.removeItem("plugoh_business_ai_pending");
+        queryClient.invalidateQueries({
+          queryKey: ["my-business-profile", user.id],
+        });
+        queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+      })
+      .catch(() => {
+        setAiStatus("failed");
+        sessionStorage.removeItem("plugoh_business_ai_pending");
+        toast.error(
+          "AI suggestions unavailable — you can finish the brand profile manually.",
+        );
+      });
+  }, [isOnboarding, queryClient, user?.id]);
 
   if (loading) {
     return (
@@ -43,12 +94,18 @@ export default function BusinessProfilePage() {
     );
   }
 
-  if (!user || !profile) return null;
+  if (!user || !profile || !identity) return null;
 
   const totalCampaigns = campaigns.length;
   const totalSpent = campaigns
     .filter((c) => c.status === "completed")
     .reduce((sum, c) => sum + (c.price_offered || 0), 0);
+  const resolvedActiveTab =
+    activeTab === "overview" &&
+    isOnboarding &&
+    identity.businessProfile?.ig_username
+      ? "instagram"
+      : activeTab;
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)]">
@@ -60,44 +117,59 @@ export default function BusinessProfilePage() {
           className="space-y-4"
         >
           <BusinessProfileCardHeader
-            profile={profile}
+            identity={identity}
             totalCampaigns={totalCampaigns}
             totalSpent={totalSpent}
             onNavigateToSettings={() => setActiveTab("settings")}
           />
 
+          <AIStatusBanner visible={aiStatus === "running"} />
+
           {/* Discrete pill tab navigation */}
           <div className="flex justify-center py-1">
             <BusinessTabBar
-              activeTab={activeTab}
+              hasInstagram={!!identity.businessProfile?.ig_username}
+              activeTab={resolvedActiveTab}
               onTabChange={(tab) => setActiveTab(tab as TabValue)}
             />
           </div>
 
           {/* Tab content */}
           <div>
-            {activeTab === "overview" && (
+            {aiStatus === "running" && resolvedActiveTab !== "settings" ? (
+              <ProfileTabSkeleton
+                tab={resolvedActiveTab === "instagram" ? "instagram" : "career"}
+              />
+            ) : null}
+            {aiStatus !== "running" && resolvedActiveTab === "instagram" && (
+              <BusinessInstagramTab
+                businessProfile={identity.businessProfile!}
+                media={media}
+              />
+            )}
+            {aiStatus !== "running" && resolvedActiveTab === "overview" && (
               <OverviewTab
-                profile={profile}
+                identity={identity}
                 campaigns={campaigns}
                 onNavigateToSettings={() => setActiveTab("settings")}
               />
             )}
-            {activeTab === "analytics" && (
+            {aiStatus !== "running" && resolvedActiveTab === "analytics" && (
               <AnalyticsTab
                 campaigns={campaigns}
                 influencerProfiles={influencerProfiles}
               />
             )}
-            {activeTab === "spending" && (
+            {aiStatus !== "running" && resolvedActiveTab === "spending" && (
               <SpendingTab
                 campaigns={campaigns}
                 influencerProfiles={influencerProfiles}
               />
             )}
-            {activeTab === "settings" && (
+            {resolvedActiveTab === "settings" && (
               <SettingsTab
-                profile={profile}
+                key={`${identity.basicProfile?.id ?? "business"}-${identity.businessProfile?.created_at ?? "initial"}-${identity.businessProfile?.brand_name ?? ""}-${identity.basicProfile?.full_name ?? ""}`}
+                identity={identity}
                 userId={user.id}
                 onSignOut={signOut}
               />
@@ -109,8 +181,22 @@ export default function BusinessProfilePage() {
   );
 }
 
+export default function BusinessProfilePage() {
+  return (
+    <Suspense>
+      <BusinessProfilePageInner />
+    </Suspense>
+  );
+}
+
 // ── Custom tab bar for business (4 tabs with different icons) ─────────────────
-import { LayoutDashboard, BarChart3, Wallet, Settings2 } from "lucide-react";
+import {
+  LayoutDashboard,
+  BarChart3,
+  Wallet,
+  Settings2,
+  Instagram,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { m as motion } from "framer-motion";
 
@@ -122,13 +208,18 @@ const SPRING = {
 };
 
 function BusinessTabBar({
+  hasInstagram,
   activeTab,
   onTabChange,
 }: {
+  hasInstagram: boolean;
   activeTab: string;
   onTabChange: (tab: string) => void;
 }) {
   const TABS = [
+    ...(hasInstagram
+      ? [{ id: "instagram", label: "Instagram", Icon: Instagram }]
+      : []),
     { id: "overview", label: "Overview", Icon: LayoutDashboard },
     { id: "analytics", label: "Analytics", Icon: BarChart3 },
     { id: "spending", label: "Spending", Icon: Wallet },

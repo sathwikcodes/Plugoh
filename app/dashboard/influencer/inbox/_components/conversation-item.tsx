@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { Conversation } from "@/hooks/queries/use-inbox-conversations";
+import { getBusinessDisplayName } from "@/lib/business-profile";
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -65,8 +66,7 @@ export function ConversationItem({
 }: ConversationItemProps) {
   const { campaign, businessProfile, lastMessage } = conversation;
 
-  const brandName =
-    businessProfile?.business_name || businessProfile?.full_name || "Brand";
+  const brandName = getBusinessDisplayName(businessProfile);
   const initials = brandName
     .split(" ")
     .map((w) => w[0])

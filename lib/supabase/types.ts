@@ -168,6 +168,75 @@ export type Database = {
           },
         ];
       };
+      business_profiles: {
+        Row: {
+          access_token: string | null;
+          brand_location: string | null;
+          brand_name: string | null;
+          brand_summary: string | null;
+          brand_type: string | null;
+          created_at: string;
+          has_instagram_account: boolean | null;
+          id: string;
+          ig_biography: string | null;
+          ig_followers_count: number | null;
+          ig_follows_count: number | null;
+          ig_media_count: number | null;
+          ig_profile_picture_url: string | null;
+          ig_user_id: string | null;
+          ig_username: string | null;
+          instagram_connected_at: string | null;
+          instagram_url: string | null;
+          tagline: string | null;
+          token_expires_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          access_token?: string | null;
+          brand_location?: string | null;
+          brand_name?: string | null;
+          brand_summary?: string | null;
+          brand_type?: string | null;
+          created_at?: string;
+          has_instagram_account?: boolean | null;
+          id?: string;
+          ig_biography?: string | null;
+          ig_followers_count?: number | null;
+          ig_follows_count?: number | null;
+          ig_media_count?: number | null;
+          ig_profile_picture_url?: string | null;
+          ig_user_id?: string | null;
+          ig_username?: string | null;
+          instagram_connected_at?: string | null;
+          instagram_url?: string | null;
+          tagline?: string | null;
+          token_expires_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          access_token?: string | null;
+          brand_location?: string | null;
+          brand_name?: string | null;
+          brand_summary?: string | null;
+          brand_type?: string | null;
+          created_at?: string;
+          has_instagram_account?: boolean | null;
+          id?: string;
+          ig_biography?: string | null;
+          ig_followers_count?: number | null;
+          ig_follows_count?: number | null;
+          ig_media_count?: number | null;
+          ig_profile_picture_url?: string | null;
+          ig_user_id?: string | null;
+          ig_username?: string | null;
+          instagram_connected_at?: string | null;
+          instagram_url?: string | null;
+          tagline?: string | null;
+          token_expires_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       influencer_profiles: {
         Row: {
           access_token: string | null;

@@ -15,6 +15,7 @@ import {
   useMilestoneInfo,
   useBadges,
 } from "@/hooks/queries/use-earnings-summary";
+import { getBusinessDisplayName } from "@/lib/business-profile";
 
 import { TierHeroCard } from "./_components/tier-hero-card";
 import { StatsRow } from "./_components/stats-row";
@@ -72,7 +73,7 @@ export default function EarningsPage() {
         return {
           id: c.id,
           title: c.title,
-          brandName: bp?.business_name || bp?.full_name || "Brand",
+          brandName: getBusinessDisplayName(bp ?? null),
           packageType: c.package_type,
           amount: c.price_offered,
           status: c.status as "completed" | "accepted",

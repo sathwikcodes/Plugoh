@@ -16,12 +16,16 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/lib/supabase/types";
+import {
+  type BusinessIdentity,
+  getBusinessLocation,
+  isBusinessProfileComplete,
+} from "@/lib/business-profile";
 
-type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 
 interface OverviewTabProps {
-  profile: Profile;
+  identity: BusinessIdentity;
   campaigns: Campaign[];
   onNavigateToSettings: () => void;
 }
@@ -33,34 +37,38 @@ interface StrengthItem {
 }
 
 export default function BusinessOverviewTab({
-  profile,
+  identity,
   campaigns,
   onNavigateToSettings,
 }: OverviewTabProps) {
+  const profile = identity.basicProfile;
+  const businessProfile = identity.businessProfile;
+  const location = getBusinessLocation(identity);
+
   // Profile strength items
   const strengthItems = useMemo<StrengthItem[]>(
     () => [
       {
-        label: "Business name",
-        done: !!profile.business_name,
-        field: "business_name",
+        label: "Brand name",
+        done: !!businessProfile?.brand_name || !!profile?.business_name,
+        field: "brand_name",
       },
       {
-        label: "Business type",
-        done: !!profile.business_type,
-        field: "business_type",
+        label: "Brand type",
+        done: !!businessProfile?.brand_type || !!profile?.business_type,
+        field: "brand_type",
       },
-      { label: "Location", done: !!profile.location, field: "location" },
-      { label: "Phone number", done: !!profile.phone, field: "phone" },
+      { label: "Location", done: !!location, field: "brand_location" },
+      { label: "Phone number", done: !!profile?.phone, field: "phone" },
     ],
-    [profile],
+    [businessProfile, location, profile],
   );
 
   const completedItems = strengthItems.filter((i) => i.done).length;
   const completeness = Math.round(
     (completedItems / strengthItems.length) * 100,
   );
-  const isComplete = completeness === 100;
+  const isComplete = completeness === 100 && isBusinessProfileComplete(identity);
 
   // Campaign stats
   const stats = useMemo(() => {
@@ -243,14 +251,14 @@ export default function BusinessOverviewTab({
       )}
 
       {/* Business Details */}
-      {(profile.business_type || profile.location || profile.phone) && (
+      {(businessProfile?.brand_type || location || profile?.phone) && (
         <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Business Details
             </p>
             <div className="space-y-2.5">
-              {profile.business_type && (
+              {(businessProfile?.brand_type || profile?.business_type) && (
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
                     <Building2 className="h-4 w-4 text-muted-foreground" />
@@ -260,12 +268,12 @@ export default function BusinessOverviewTab({
                       Business Type
                     </p>
                     <p className="text-sm font-medium">
-                      {profile.business_type}
+                      {businessProfile?.brand_type || profile?.business_type}
                     </p>
                   </div>
                 </div>
               )}
-              {profile.location && (
+              {location && (
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -274,11 +282,11 @@ export default function BusinessOverviewTab({
                     <p className="text-[11px] text-muted-foreground">
                       Location
                     </p>
-                    <p className="text-sm font-medium">{profile.location}</p>
+                    <p className="text-sm font-medium">{location}</p>
                   </div>
                 </div>
               )}
-              {profile.phone && (
+              {profile?.phone && (
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
                     <Phone className="h-4 w-4 text-muted-foreground" />

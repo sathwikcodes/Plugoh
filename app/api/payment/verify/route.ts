@@ -80,13 +80,15 @@ export async function POST(request: NextRequest) {
   }
 
   // Fetch business profile for the real business name
-  const { data: bizProfile } = await db
-    .from("profiles")
-    .select("business_name, full_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const [{ data: bizProfile }, { data: businessProfile }] = await Promise.all([
+    db.from("profiles").select("business_name, full_name").eq("id", user.id).maybeSingle(),
+    db.from("business_profiles").select("brand_name").eq("user_id", user.id).maybeSingle(),
+  ]);
   const businessName =
-    bizProfile?.business_name || bizProfile?.full_name || "A brand";
+    businessProfile?.brand_name ||
+    bizProfile?.business_name ||
+    bizProfile?.full_name ||
+    "A brand";
 
   // Notify the influencer
   await db.from("notifications").insert({

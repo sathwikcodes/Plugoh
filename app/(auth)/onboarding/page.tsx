@@ -71,9 +71,13 @@ function OnboardingInner() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [place, setPlace] = useState("");
-  const [businessName, setBusinessName] = useState("");
-  const [businessType, setBusinessType] = useState("");
-  const [location, setLocation] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [brandType, setBrandType] = useState("");
+  const [brandLocation, setBrandLocation] = useState("");
+  const [businessInstagramChoice, setBusinessInstagramChoice] = useState<
+    "yes" | "no" | null
+  >(null);
+  const [manualBusinessFlow, setManualBusinessFlow] = useState(false);
   const [loading, setLoading] = useState(false);
   const instagramRedirectInProgress = useRef(false);
   const videoRefs = useRef<HTMLVideoElement[]>([]);
@@ -92,6 +96,19 @@ function OnboardingInner() {
     else if (user?.user_metadata?.name)
       setFullName(user.user_metadata.name as string);
   }, [profile, user]);
+
+  useEffect(() => {
+    if (profile?.phone) setPhone(profile.phone);
+    if (profile?.location) setPlace(profile.location);
+    if (profile?.business_name) setBrandName(profile.business_name);
+    if (profile?.business_type) setBrandType(profile.business_type);
+  }, [profile]);
+
+  useEffect(() => {
+    if (!brandLocation.trim() && place.trim()) {
+      setBrandLocation(place);
+    }
+  }, [brandLocation, place]);
 
   useEffect(() => {
     if (instagramRedirectInProgress.current) return;
@@ -132,6 +149,8 @@ function OnboardingInner() {
     setTabClicked(true);
     setSelectedRole(r);
     setTheme(r === "influencer" ? "influencer" : "brand");
+    setBusinessInstagramChoice(null);
+    setManualBusinessFlow(false);
 
     videoRefs.current.forEach((video) => {
       if (video) {
@@ -147,74 +166,92 @@ function OnboardingInner() {
     }
   };
 
-  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const upsertCommonProfile = async () => {
+    if (!user || !selectedRole) return null;
+
+    const { error: roleError } = await supabase
+      .from("user_roles")
+      .upsert({ user_id: user.id, role: selectedRole }, { onConflict: "user_id" });
+    if (roleError) throw roleError;
+
+    const profilePayload: Database["public"]["Tables"]["profiles"]["Insert"] = {
+      id: user.id,
+      email: user.email ?? null,
+      full_name: fullName,
+      phone: phone || null,
+      location: place || null,
+      ...(selectedRole === "business" &&
+        manualBusinessFlow && {
+          business_name: brandName.trim(),
+          business_type: brandType || null,
+        }),
+    };
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .upsert(profilePayload, { onConflict: "id" })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  };
+
+  const upsertBusinessProfile = async ({ shellOnly = false } = {}) => {
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from("business_profiles")
+      .upsert(
+        {
+          user_id: user.id,
+          has_instagram_account: businessInstagramChoice === "yes",
+          ...(shellOnly
+            ? {}
+            : {
+                brand_name: brandName.trim() || null,
+                brand_type: brandType || null,
+                brand_location: brandLocation || place || null,
+              }),
+        },
+        { onConflict: "user_id" },
+      )
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  };
+
+  const handleInfluencerSubmit = async (
+    e: React.SyntheticEvent<HTMLFormElement>,
+  ) => {
     e.preventDefault();
-    if (!user || !selectedRole) return;
+    if (!user || selectedRole !== "influencer") return;
     setLoading(true);
 
     try {
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .insert({ user_id: user.id, role: selectedRole });
-      if (roleError) throw roleError;
+      await upsertCommonProfile();
 
-      const profilePayload: Database["public"]["Tables"]["profiles"]["Insert"] =
-        {
-          id: user.id,
-          email: user.email ?? null,
-          full_name: fullName,
-          phone: phone || null,
-          ...(selectedRole === "business" && {
-            business_name: businessName.trim(),
-            business_type: businessType || null,
-            location: location || null,
-          }),
-          ...(selectedRole === "influencer" && {
-            location: place || null,
-          }),
-        };
-
-      const { data: updatedProfile, error: profileError } = await supabase
-        .from("profiles")
-        .upsert(profilePayload, { onConflict: "id" })
-        .select()
-        .single();
-      if (profileError) throw profileError;
-
-      // Verify business_name was actually saved
-      if (selectedRole === "business" && !updatedProfile?.business_name) {
-        throw new Error(
-          "Business name was not saved. Please check that the 'business_name' column exists in the profiles table and run any pending Supabase migrations.",
-        );
-      }
-
-      if (selectedRole === "influencer") {
-        const { error: ipError } = await supabase
-          .from("influencer_profiles")
-          .insert({
-            user_id: user.id,
-            display_name: fullName,
-            city: place || null,
-            is_active: false,
-          });
-        if (ipError && ipError.code !== "23505") throw ipError;
-      }
+      const { error: ipError } = await supabase
+        .from("influencer_profiles")
+        .insert({
+          user_id: user.id,
+          display_name: fullName,
+          city: place || null,
+          is_active: false,
+        });
+      if (ipError && ipError.code !== "23505") throw ipError;
 
       toast({ title: "Profile set up!", description: "Welcome to Plugoh." });
 
-      if (selectedRole === "influencer") {
-        const res = await fetch(
-          `/api/instagram/connect?userId=${encodeURIComponent(user.id)}`,
-        );
-        const data = await res.json();
-        if (!res.ok)
-          throw new Error(data.error ?? "Failed to start Instagram OAuth");
-        instagramRedirectInProgress.current = true;
-        window.location.href = data.url;
-      } else {
-        await refreshUserData();
-        router.replace("/dashboard/business");
-      }
+      const res = await fetch(
+        `/api/instagram/connect?userId=${encodeURIComponent(user.id)}&role=influencer`,
+      );
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(data.error ?? "Failed to start Instagram OAuth");
+      instagramRedirectInProgress.current = true;
+      window.location.href = data.url;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Setup failed";
       toast({
@@ -226,6 +263,70 @@ function OnboardingInner() {
       setLoading(false);
     }
   };
+
+  const handleBusinessContinue = async (
+    e: React.SyntheticEvent<HTMLFormElement>,
+  ) => {
+    e.preventDefault();
+    if (!user || selectedRole !== "business") return;
+    setLoading(true);
+
+    try {
+      await upsertCommonProfile();
+      await upsertBusinessProfile();
+
+      toast({ title: "Profile set up!", description: "Welcome to Plugoh." });
+      await refreshUserData();
+      router.replace("/dashboard/business/profile?source=onboarding");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Setup failed";
+      toast({
+        title: "Setup failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBusinessInstagramConnect = async () => {
+    if (!user || selectedRole !== "business") return;
+    setLoading(true);
+
+    try {
+      await upsertCommonProfile();
+      await upsertBusinessProfile({ shellOnly: true });
+
+      const res = await fetch(
+        `/api/instagram/connect?userId=${encodeURIComponent(user.id)}&role=business`,
+      );
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(data.error ?? "Failed to start Instagram OAuth");
+      instagramRedirectInProgress.current = true;
+      window.location.href = data.url;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Setup failed";
+      toast({
+        title: "Setup failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showManualBusinessFields =
+    selectedRole === "business" &&
+    (businessInstagramChoice === "no" || manualBusinessFlow);
+  const canConnectBusinessInstagram =
+    selectedRole === "business" &&
+    businessInstagramChoice === "yes" &&
+    !!fullName.trim() &&
+    !!phone.trim() &&
+    !!place.trim();
 
   return (
     <AuthShell>
@@ -375,7 +476,11 @@ function OnboardingInner() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              onSubmit={handleSubmit}
+              onSubmit={
+                selectedRole === "influencer"
+                  ? handleInfluencerSubmit
+                  : handleBusinessContinue
+              }
               className="space-y-4 overflow-hidden"
             >
               <div className="space-y-2">
@@ -441,7 +546,8 @@ function OnboardingInner() {
               </div>
 
               <AnimatePresence>
-                {selectedRole === "influencer" && (
+                {(selectedRole === "influencer" ||
+                  selectedRole === "business") && (
                   <m.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
@@ -461,6 +567,7 @@ function OnboardingInner() {
                       placeholder="e.g. Hyderabad"
                       value={place}
                       onChange={(e) => setPlace(e.target.value)}
+                      required
                       className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
                       style={{
                         color: "var(--auth-text)",
@@ -491,132 +598,229 @@ function OnboardingInner() {
                     className="space-y-4 overflow-hidden"
                   >
                     <div className="space-y-2">
-                      <label
-                        htmlFor="ob-business-name"
+                      <p
                         className="text-xs font-medium uppercase tracking-wider"
                         style={{ color: "var(--auth-text-tertiary)" }}
                       >
-                        Business Name
-                      </label>
-                      <input
-                        id="ob-business-name"
-                        placeholder="Your brand or business name"
-                        value={businessName}
-                        onChange={(e) => setBusinessName(e.target.value)}
-                        required
-                        className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
-                        style={{
-                          color: "var(--auth-text)",
-                          background: "var(--auth-card)",
-                          border: "1px solid var(--auth-card-border)",
-                          boxShadow: "0 2px 8px var(--auth-shadow)",
-                        }}
-                        onFocus={(e) =>
-                          (e.currentTarget.style.borderColor =
-                            "var(--auth-accent)")
-                        }
-                        onBlur={(e) =>
-                          (e.currentTarget.style.borderColor =
-                            "var(--auth-card-border)")
-                        }
-                      />
+                        Does your business have an Instagram account?
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        {(["yes", "no"] as const).map((choice) => {
+                          const isActive = businessInstagramChoice === choice;
+                          return (
+                            <button
+                              key={choice}
+                              type="button"
+                              onClick={() => {
+                                setBusinessInstagramChoice(choice);
+                                setManualBusinessFlow(choice === "no");
+                                if (choice === "no" && !brandLocation.trim()) {
+                                  setBrandLocation(place);
+                                }
+                              }}
+                              className="h-14 rounded-2xl border text-[15px] font-medium transition-all duration-200"
+                              style={{
+                                color: isActive
+                                  ? "var(--auth-accent-fg)"
+                                  : "var(--auth-text)",
+                                background: isActive
+                                  ? "var(--auth-gradient)"
+                                  : "var(--auth-card)",
+                                borderColor: isActive
+                                  ? "transparent"
+                                  : "var(--auth-card-border)",
+                                boxShadow: isActive
+                                  ? "0 4px 20px var(--auth-glow)"
+                                  : "0 2px 8px var(--auth-shadow)",
+                              }}
+                            >
+                              {choice === "yes" ? "Yes" : "No"}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="ob-business-type"
-                        className="text-xs font-medium uppercase tracking-wider"
-                        style={{ color: "var(--auth-text-tertiary)" }}
-                      >
-                        Business Type
-                      </label>
-                      <select
-                        id="ob-business-type"
-                        value={businessType}
-                        onChange={(e) => setBusinessType(e.target.value)}
-                        className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200 appearance-none cursor-pointer"
-                        style={{
-                          color: businessType
-                            ? "var(--auth-text)"
-                            : "var(--auth-text-tertiary)",
-                          background: "var(--auth-card)",
-                          border: "1px solid var(--auth-card-border)",
-                          boxShadow: "0 2px 8px var(--auth-shadow)",
-                        }}
-                        onFocus={(e) =>
-                          (e.currentTarget.style.borderColor =
-                            "var(--auth-accent)")
-                        }
-                        onBlur={(e) =>
-                          (e.currentTarget.style.borderColor =
-                            "var(--auth-card-border)")
-                        }
-                      >
-                        <option value="">Select type (optional)</option>
-                        {BUSINESS_TYPES.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <AnimatePresence>
+                      {businessInstagramChoice === "yes" &&
+                        !showManualBusinessFields && (
+                          <m.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden rounded-2xl border p-4 space-y-3"
+                            style={{
+                              borderColor: "var(--auth-card-border)",
+                              background: "var(--auth-card)",
+                            }}
+                          >
+                            <p
+                              className="text-sm leading-relaxed"
+                              style={{ color: "var(--auth-text-secondary)" }}
+                            >
+                              Connect your Instagram business account and we’ll
+                              auto-build your brand profile from your profile and
+                              media.
+                            </p>
+                            <div className="grid gap-3 sm:grid-cols-2">
+                              <button
+                                type="button"
+                                disabled={!canConnectBusinessInstagram || loading}
+                                onClick={handleBusinessInstagramConnect}
+                                className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                style={{
+                                  background: "var(--auth-gradient)",
+                                  color: "var(--auth-accent-fg)",
+                                  boxShadow: "0 4px 20px var(--auth-glow)",
+                                }}
+                              >
+                                {loading ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Instagram className="h-5 w-5" />
+                                )}
+                                Connect with Instagram
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setManualBusinessFlow(true);
+                                  if (!brandLocation.trim()) {
+                                    setBrandLocation(place);
+                                  }
+                                }}
+                                className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
+                                style={{
+                                  background: "var(--auth-card)",
+                                  color: "var(--auth-text)",
+                                  border: "1px solid var(--auth-card-border)",
+                                  boxShadow: "0 2px 8px var(--auth-shadow)",
+                                }}
+                              >
+                                Skip for now
+                              </button>
+                            </div>
+                          </m.div>
+                        )}
+                    </AnimatePresence>
 
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="ob-location"
-                        className="text-xs font-medium uppercase tracking-wider"
-                        style={{ color: "var(--auth-text-tertiary)" }}
-                      >
-                        City / Location
-                      </label>
-                      <input
-                        id="ob-location"
-                        placeholder="e.g. Hyderabad"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
-                        style={{
-                          color: "var(--auth-text)",
-                          background: "var(--auth-card)",
-                          border: "1px solid var(--auth-card-border)",
-                          boxShadow: "0 2px 8px var(--auth-shadow)",
-                        }}
-                        onFocus={(e) =>
-                          (e.currentTarget.style.borderColor =
-                            "var(--auth-accent)")
-                        }
-                        onBlur={(e) =>
-                          (e.currentTarget.style.borderColor =
-                            "var(--auth-card-border)")
-                        }
-                      />
-                    </div>
+                    <AnimatePresence>
+                      {showManualBusinessFields && (
+                        <m.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3, ease: "easeOut" }}
+                          className="space-y-4 overflow-hidden"
+                        >
+                          <div className="space-y-2">
+                            <label
+                              htmlFor="ob-brand-name"
+                              className="text-xs font-medium uppercase tracking-wider"
+                              style={{ color: "var(--auth-text-tertiary)" }}
+                            >
+                              Brand Name
+                            </label>
+                            <input
+                              id="ob-brand-name"
+                              placeholder="Your brand or business name"
+                              value={brandName}
+                              onChange={(e) => setBrandName(e.target.value)}
+                              required={showManualBusinessFields}
+                              className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
+                              style={{
+                                color: "var(--auth-text)",
+                                background: "var(--auth-card)",
+                                border: "1px solid var(--auth-card-border)",
+                                boxShadow: "0 2px 8px var(--auth-shadow)",
+                              }}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label
+                              htmlFor="ob-brand-type"
+                              className="text-xs font-medium uppercase tracking-wider"
+                              style={{ color: "var(--auth-text-tertiary)" }}
+                            >
+                              Brand Type
+                            </label>
+                            <select
+                              id="ob-brand-type"
+                              value={brandType}
+                              onChange={(e) => setBrandType(e.target.value)}
+                              className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200 appearance-none cursor-pointer"
+                              style={{
+                                color: brandType
+                                  ? "var(--auth-text)"
+                                  : "var(--auth-text-tertiary)",
+                                background: "var(--auth-card)",
+                                border: "1px solid var(--auth-card-border)",
+                                boxShadow: "0 2px 8px var(--auth-shadow)",
+                              }}
+                            >
+                              <option value="">Select type</option>
+                              {BUSINESS_TYPES.map((type) => (
+                                <option key={type} value={type}>
+                                  {type}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label
+                              htmlFor="ob-brand-location"
+                              className="text-xs font-medium uppercase tracking-wider"
+                              style={{ color: "var(--auth-text-tertiary)" }}
+                            >
+                              Brand Location
+                            </label>
+                            <input
+                              id="ob-brand-location"
+                              placeholder="e.g. Hyderabad"
+                              value={brandLocation}
+                              onChange={(e) => setBrandLocation(e.target.value)}
+                              className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
+                              style={{
+                                color: "var(--auth-text)",
+                                background: "var(--auth-card)",
+                                border: "1px solid var(--auth-card-border)",
+                                boxShadow: "0 2px 8px var(--auth-shadow)",
+                              }}
+                            />
+                          </div>
+                        </m.div>
+                      )}
+                    </AnimatePresence>
                   </m.div>
                 )}
               </AnimatePresence>
 
-              <button
-                type="submit"
-                disabled={
-                  loading ||
-                  (selectedRole === "business" && !businessName.trim())
-                }
-                className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                style={{
-                  background: "var(--auth-gradient)",
-                  color: "var(--auth-accent-fg)",
-                  boxShadow: "0 4px 20px var(--auth-glow)",
-                }}
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : selectedRole === "influencer" ? (
-                  <Instagram className="h-5 w-5" />
-                ) : null}
-                {selectedRole === "influencer"
-                  ? "Connect with Instagram"
-                  : "Get Started"}
-              </button>
+              {(selectedRole === "influencer" || showManualBusinessFields) && (
+                <button
+                  type="submit"
+                  disabled={
+                    loading ||
+                    (selectedRole === "business" && !brandName.trim())
+                  }
+                  className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  style={{
+                    background: "var(--auth-gradient)",
+                    color: "var(--auth-accent-fg)",
+                    boxShadow: "0 4px 20px var(--auth-glow)",
+                  }}
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : selectedRole === "influencer" ? (
+                    <Instagram className="h-5 w-5" />
+                  ) : null}
+                  {selectedRole === "influencer"
+                    ? "Connect with Instagram"
+                    : "Complete Brand Profile"}
+                </button>
+              )}
             </m.form>
           )}
         </AnimatePresence>

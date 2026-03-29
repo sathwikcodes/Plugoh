@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
@@ -17,48 +17,49 @@ import {
 import { LogOut, Loader2, Save } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useTRPC } from "@/lib/trpc/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 import { BUSINESS_TYPES } from "@/lib/constants";
-import type { Database } from "@/lib/supabase/types";
-
-type Profile = Database["public"]["Tables"]["profiles"]["Row"];
+import type { BusinessIdentity } from "@/lib/business-profile";
 
 interface SettingsTabProps {
-  profile: Profile;
+  identity: BusinessIdentity;
   userId: string;
   onSignOut: () => Promise<void>;
 }
 
 export default function BusinessSettingsTab({
-  profile,
+  identity,
   userId,
   onSignOut,
 }: SettingsTabProps) {
   const router = useRouter();
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
   const { refreshUserData } = useAuth();
+  const profile = identity.basicProfile;
+  const businessProfile = identity.businessProfile;
 
-  const [fullName, setFullName] = useState(profile.full_name ?? "");
-  const [businessName, setBusinessName] = useState(profile.business_name ?? "");
-  const [businessType, setBusinessType] = useState(profile.business_type ?? "");
-  const [location, setLocation] = useState(profile.location ?? "");
-  const [phone, setPhone] = useState(profile.phone ?? "");
-
-  // Sync if profile prop changes (e.g. after refetch)
-  useEffect(() => {
-    setFullName(profile.full_name ?? "");
-    setBusinessName(profile.business_name ?? "");
-    setBusinessType(profile.business_type ?? "");
-    setLocation(profile.location ?? "");
-    setPhone(profile.phone ?? "");
-  }, [profile]);
+  const [fullName, setFullName] = useState(profile?.full_name ?? "");
+  const [businessName, setBusinessName] = useState(
+    businessProfile?.brand_name ?? profile?.business_name ?? "",
+  );
+  const [businessType, setBusinessType] = useState(
+    businessProfile?.brand_type ?? profile?.business_type ?? "",
+  );
+  const [location, setLocation] = useState(profile?.location ?? "");
+  const [brandLocation, setBrandLocation] = useState(
+    businessProfile?.brand_location ?? profile?.location ?? "",
+  );
+  const [phone, setPhone] = useState(profile?.phone ?? "");
 
   const upsertProfile = useMutation(
     trpc.profile.upsertBusinessProfile.mutationOptions({
       onSuccess: async () => {
         await refreshUserData();
+        queryClient.invalidateQueries({ queryKey: ["my-business-profile", userId] });
+        queryClient.invalidateQueries({ queryKey: ["profile", userId] });
         toast.success("Profile updated successfully");
       },
       onError: (err) => {
@@ -74,6 +75,7 @@ export default function BusinessSettingsTab({
       businessName: businessName.trim(),
       businessType: businessType || undefined,
       location: location || undefined,
+      brandLocation: brandLocation || undefined,
       phone: phone || undefined,
     });
   };
@@ -103,7 +105,7 @@ export default function BusinessSettingsTab({
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Email</Label>
             <Input
-              value={profile.email ?? ""}
+              value={profile?.email ?? ""}
               disabled
               className="h-11 bg-white/[0.03] border-white/10 text-muted-foreground"
             />
@@ -158,12 +160,24 @@ export default function BusinessSettingsTab({
           {/* Location */}
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">
-              City / Location
+              Your Place
             </Label>
             <Input
               placeholder="e.g. Bangalore"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
+              className="h-11 bg-white/[0.03] border-white/10"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">
+              Brand Location
+            </Label>
+            <Input
+              placeholder="e.g. Jubilee Hills"
+              value={brandLocation}
+              onChange={(e) => setBrandLocation(e.target.value)}
               className="h-11 bg-white/[0.03] border-white/10"
             />
           </div>

@@ -19,6 +19,7 @@ import { useTRPC } from "@/lib/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { Conversation } from "@/hooks/queries/use-inbox-conversations";
+import { getBusinessDisplayName } from "@/lib/business-profile";
 
 interface ChatPanelProps {
   conversation: Conversation;
@@ -58,8 +59,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   );
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const brandName =
-    businessProfile?.business_name || businessProfile?.full_name || "Business";
+  const brandName = getBusinessDisplayName(businessProfile);
   const influencerName = myProfile?.full_name || "Influencer";
   const isPending = campaign.status === "pending";
   const disabled = campaign.status === "completed" || isPending;

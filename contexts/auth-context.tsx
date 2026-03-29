@@ -11,6 +11,7 @@ import {
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
+import { isBusinessProfileComplete } from "@/lib/business-profile";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
 
@@ -51,6 +52,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .maybeSingle(),
         supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
       ]);
+      const businessProfileRes =
+        roleRes.data?.role === "business"
+          ? await supabase
+              .from("business_profiles")
+              .select("*")
+              .eq("user_id", userId)
+              .maybeSingle()
+          : { data: null, error: null };
       if (roleRes.data) {
         setRole(roleRes.data.role);
         setNeedsOnboarding(false);
@@ -60,11 +69,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (profileRes.data) {
         setProfile(profileRes.data);
-        // Business profile is complete when business_name is set.
-        // Influencer completeness is handled via influencer_profiles separately.
         const r = roleRes.data?.role;
         setIsProfileComplete(
-          r === "business" ? !!profileRes.data.business_name?.trim() : true,
+          r === "business"
+            ? isBusinessProfileComplete({
+                basicProfile: profileRes.data,
+                businessProfile: businessProfileRes.data,
+              })
+            : true,
         );
       }
     } catch (err) {

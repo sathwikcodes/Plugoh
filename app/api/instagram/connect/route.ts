@@ -4,12 +4,16 @@ import { getInstagramAuthUrl } from "@/lib/instagram/api";
 
 export async function GET(request: NextRequest) {
   const userId = request.nextUrl.searchParams.get("userId");
-  if (!userId) {
-    return NextResponse.json({ error: "userId required" }, { status: 400 });
+  const role = request.nextUrl.searchParams.get("role");
+  if (!userId || (role !== "business" && role !== "influencer")) {
+    return NextResponse.json(
+      { error: "userId and valid role required" },
+      { status: 400 },
+    );
   }
 
   const csrf = randomBytes(16).toString("hex");
-  const state = `${csrf}:${userId}`;
+  const state = `${role}:${csrf}:${userId}`;
   const authUrl = getInstagramAuthUrl(state);
 
   const response = NextResponse.json({ url: authUrl });

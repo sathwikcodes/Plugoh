@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Search, Loader2 } from "lucide-react";
 import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { getBusinessDisplayName } from "@/lib/business-profile";
 import { ConversationItem } from "./conversation-item";
 import type { Conversation } from "@/hooks/queries/use-inbox-conversations";
 
@@ -42,8 +43,7 @@ export function ConversationList({
     if (!search.trim()) return conversations;
     const q = search.toLowerCase();
     return conversations.filter((c) => {
-      const brandName =
-        c.businessProfile?.business_name || c.businessProfile?.full_name || "";
+      const brandName = getBusinessDisplayName(c.businessProfile);
       const title = c.campaign.title || "";
       return (
         brandName.toLowerCase().includes(q) || title.toLowerCase().includes(q)
