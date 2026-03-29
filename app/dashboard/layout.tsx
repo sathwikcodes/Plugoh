@@ -29,7 +29,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <main
-        className={cn((isInfluencer || isBusiness) && !isInboxPage && "pb-24")}
+        className={cn(
+          (isInfluencer || isBusiness) &&
+            !isInboxPage &&
+            "pb-[calc(88px+env(safe-area-inset-bottom,0px))] md:pb-4",
+        )}
       >
         {children}
       </main>

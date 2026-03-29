@@ -81,8 +81,16 @@ export async function POST(request: NextRequest) {
 
   // Fetch business profile for the real business name
   const [{ data: bizProfile }, { data: businessProfile }] = await Promise.all([
-    db.from("profiles").select("business_name, full_name").eq("id", user.id).maybeSingle(),
-    db.from("business_profiles").select("brand_name").eq("user_id", user.id).maybeSingle(),
+    db
+      .from("profiles")
+      .select("business_name, full_name")
+      .eq("id", user.id)
+      .maybeSingle(),
+    db
+      .from("business_profiles")
+      .select("brand_name")
+      .eq("user_id", user.id)
+      .maybeSingle(),
   ]);
   const businessName =
     businessProfile?.brand_name ||

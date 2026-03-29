@@ -41,7 +41,10 @@ export async function POST(request: NextRequest) {
     ]);
 
     if (!businessProfile) {
-      return NextResponse.json({ error: "no_business_profile" }, { status: 400 });
+      return NextResponse.json(
+        { error: "no_business_profile" },
+        { status: 400 },
+      );
     }
 
     const captions = (mediaCaptions ?? [])
@@ -51,8 +54,10 @@ export async function POST(request: NextRequest) {
     const aiResult = await generateBusinessProfile({
       fullName: userProfile?.full_name ?? null,
       location: userProfile?.location ?? null,
-      brandName: businessProfile.brand_name ?? userProfile?.business_name ?? null,
-      brandType: businessProfile.brand_type ?? userProfile?.business_type ?? null,
+      brandName:
+        businessProfile.brand_name ?? userProfile?.business_name ?? null,
+      brandType:
+        businessProfile.brand_type ?? userProfile?.business_type ?? null,
       igBio: businessProfile.ig_biography ?? null,
       igUsername: businessProfile.ig_username ?? null,
       followerCount: businessProfile.ig_followers_count ?? 0,

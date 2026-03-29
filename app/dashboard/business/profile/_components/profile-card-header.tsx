@@ -129,16 +129,17 @@ export default function BusinessProfileCardHeader({
             </div>
 
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
-              {businessProfile?.ig_username && businessProfile.instagram_url && (
-                <a
-                  href={businessProfile.instagram_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-pink-400/80 hover:text-pink-300 transition-colors"
-                >
-                  @{businessProfile.ig_username}
-                </a>
-              )}
+              {businessProfile?.ig_username &&
+                businessProfile.instagram_url && (
+                  <a
+                    href={businessProfile.instagram_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-pink-400/80 hover:text-pink-300 transition-colors"
+                  >
+                    @{businessProfile.ig_username}
+                  </a>
+                )}
               {businessProfile?.ig_username && profile?.full_name && (
                 <span className="text-white/20 text-xs">·</span>
               )}

@@ -95,31 +95,33 @@ export async function GET(request: NextRequest) {
         .select("bio,display_name")
         .eq("user_id", userId)
         .maybeSingle();
-      const { error: upsertError } = await db.from("influencer_profiles").upsert(
-        {
-          user_id: userId,
-          ig_user_id: igUserId,
-          ig_username: profile.username,
-          ig_followers_count: profile.followers_count,
-          ig_follows_count: profile.follows_count ?? null,
-          ig_media_count: profile.media_count,
-          ig_biography: profile.biography,
-          ig_profile_picture_url: profile.profile_picture_url,
-          follower_count: profile.followers_count,
-          avg_likes_per_reel: avgLikes,
-          bio: existingProfile?.bio?.trim()
-            ? existingProfile.bio
-            : (profile.biography ?? null),
-          display_name: existingProfile?.display_name?.trim()
-            ? existingProfile.display_name
-            : profile.username,
-          instagram_handle: profile.username,
-          instagram_url: `https://www.instagram.com/${profile.username}`,
-          access_token: accessToken,
-          token_expires_at: tokenExpiresAt,
-        },
-        { onConflict: "user_id" },
-      );
+      const { error: upsertError } = await db
+        .from("influencer_profiles")
+        .upsert(
+          {
+            user_id: userId,
+            ig_user_id: igUserId,
+            ig_username: profile.username,
+            ig_followers_count: profile.followers_count,
+            ig_follows_count: profile.follows_count ?? null,
+            ig_media_count: profile.media_count,
+            ig_biography: profile.biography,
+            ig_profile_picture_url: profile.profile_picture_url,
+            follower_count: profile.followers_count,
+            avg_likes_per_reel: avgLikes,
+            bio: existingProfile?.bio?.trim()
+              ? existingProfile.bio
+              : (profile.biography ?? null),
+            display_name: existingProfile?.display_name?.trim()
+              ? existingProfile.display_name
+              : profile.username,
+            instagram_handle: profile.username,
+            instagram_url: `https://www.instagram.com/${profile.username}`,
+            access_token: accessToken,
+            token_expires_at: tokenExpiresAt,
+          },
+          { onConflict: "user_id" },
+        );
 
       if (upsertError) throw upsertError;
     } else {
@@ -144,8 +146,12 @@ export async function GET(request: NextRequest) {
           token_expires_at: tokenExpiresAt,
           has_instagram_account: true,
           instagram_connected_at: new Date().toISOString(),
-          brand_name: existingProfile?.brand_name?.trim() || profile.name || profile.username,
-          brand_summary: existingProfile?.brand_summary?.trim() || profile.biography || null,
+          brand_name:
+            existingProfile?.brand_name?.trim() ||
+            profile.name ||
+            profile.username,
+          brand_summary:
+            existingProfile?.brand_summary?.trim() || profile.biography || null,
         },
         { onConflict: "user_id" },
       );

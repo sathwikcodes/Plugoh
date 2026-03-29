@@ -23,7 +23,12 @@ import {
   ProfileTabSkeleton,
 } from "@/app/dashboard/influencer/profile/_components/profile-page-skeleton";
 
-type TabValue = "instagram" | "overview" | "analytics" | "spending" | "settings";
+type TabValue =
+  | "instagram"
+  | "overview"
+  | "analytics"
+  | "spending"
+  | "settings";
 
 function BusinessProfilePageInner() {
   const { user, profile, loading: authLoading, signOut } = useAuth();
@@ -35,9 +40,9 @@ function BusinessProfilePageInner() {
       sessionStorage.getItem("plugoh_business_ai_pending") === user?.id);
 
   const [activeTab, setActiveTab] = useState<TabValue>("overview");
-  const [aiStatus, setAiStatus] = useState<"idle" | "running" | "done" | "failed">(
-    isOnboarding ? "running" : "idle",
-  );
+  const [aiStatus, setAiStatus] = useState<
+    "idle" | "running" | "done" | "failed"
+  >(isOnboarding ? "running" : "idle");
   const aiTriggeredRef = useRef(false);
 
   const { data: identity, isLoading: identityLoading } = useMyBusinessProfile(
@@ -108,8 +113,8 @@ function BusinessProfilePageInner() {
       : activeTab;
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)]">
-      <div className="relative z-10 container max-w-2xl py-6 pb-24">
+    <div className="relative min-h-[calc(100dvh-4rem)]">
+      <div className="relative z-10 container max-w-2xl py-6">
         <m.div
           variants={stagger}
           initial="hidden"

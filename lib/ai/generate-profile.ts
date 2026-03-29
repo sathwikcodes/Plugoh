@@ -146,7 +146,9 @@ export async function generateBusinessProfile(
 ): Promise<BusinessProfileResult | null> {
   const apiKey = process.env.GEMINI_API_KEY;
   const fallbackBrandName =
-    input.brandName?.trim() || input.igUsername?.trim() || input.fullName?.trim();
+    input.brandName?.trim() ||
+    input.igUsername?.trim() ||
+    input.fullName?.trim();
   const fallbackLocation = input.location?.trim() || null;
 
   if (!apiKey) {
@@ -155,7 +157,9 @@ export async function generateBusinessProfile(
       brand_type: input.brandType?.trim() || "Other",
       brand_location: fallbackLocation,
       brand_summary: input.igBio?.trim() || null,
-      tagline: fallbackBrandName ? `Built for growth by ${fallbackBrandName}` : null,
+      tagline: fallbackBrandName
+        ? `Built for growth by ${fallbackBrandName}`
+        : null,
     };
   }
 
@@ -204,7 +208,7 @@ Return ONLY valid JSON. No explanation, no markdown, no code fences.`;
       parsed.brand_type as (typeof BUSINESS_TYPES)[number],
     )
       ? (parsed.brand_type as string)
-      : (input.brandType?.trim() || "Other");
+      : input.brandType?.trim() || "Other";
 
     return {
       brand_name:
@@ -213,13 +217,14 @@ Return ONLY valid JSON. No explanation, no markdown, no code fences.`;
           : (fallbackBrandName ?? null),
       brand_type: brandType,
       brand_location:
-        typeof parsed.brand_location === "string" && parsed.brand_location.trim()
+        typeof parsed.brand_location === "string" &&
+        parsed.brand_location.trim()
           ? parsed.brand_location.trim()
           : fallbackLocation,
       brand_summary:
         typeof parsed.brand_summary === "string" && parsed.brand_summary.trim()
           ? parsed.brand_summary.trim()
-          : (input.igBio?.trim() || null),
+          : input.igBio?.trim() || null,
       tagline:
         typeof parsed.tagline === "string" && parsed.tagline.trim()
           ? parsed.tagline.trim().slice(0, 80)
@@ -232,7 +237,9 @@ Return ONLY valid JSON. No explanation, no markdown, no code fences.`;
       brand_type: input.brandType?.trim() || "Other",
       brand_location: fallbackLocation,
       brand_summary: input.igBio?.trim() || null,
-      tagline: fallbackBrandName ? `Built for growth by ${fallbackBrandName}` : null,
+      tagline: fallbackBrandName
+        ? `Built for growth by ${fallbackBrandName}`
+        : null,
     };
   }
 }

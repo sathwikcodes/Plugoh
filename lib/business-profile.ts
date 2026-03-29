@@ -29,6 +29,6 @@ export function getBusinessLocation(identity: BusinessIdentity | null) {
 export function isBusinessProfileComplete(identity: BusinessIdentity | null) {
   return Boolean(
     identity?.businessProfile?.brand_name?.trim() ||
-      identity?.basicProfile?.business_name?.trim(),
+    identity?.basicProfile?.business_name?.trim(),
   );
 }

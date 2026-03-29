@@ -107,10 +107,10 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
       />
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 min-h-0">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/40" />
           </div>
         ) : messages && messages.length > 0 ? (
           <>
@@ -140,9 +140,12 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
           </>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <MessageSquare className="h-8 w-8 text-muted-foreground/30 mb-2" />
-            <p className="text-sm text-muted-foreground">
-              No messages yet. Start the conversation!
+            <MessageSquare className="h-7 w-7 text-muted-foreground/20 mb-3" />
+            <p className="text-sm font-medium text-muted-foreground/50">
+              No messages yet
+            </p>
+            <p className="text-xs text-muted-foreground/30 mt-1">
+              Start the conversation!
             </p>
           </div>
         )}

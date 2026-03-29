@@ -171,7 +171,10 @@ function OnboardingInner() {
 
     const { error: roleError } = await supabase
       .from("user_roles")
-      .upsert({ user_id: user.id, role: selectedRole }, { onConflict: "user_id" });
+      .upsert(
+        { user_id: user.id, role: selectedRole },
+        { onConflict: "user_id" },
+      );
     if (roleError) throw roleError;
 
     const profilePayload: Database["public"]["Tables"]["profiles"]["Insert"] = {
@@ -659,13 +662,15 @@ function OnboardingInner() {
                               style={{ color: "var(--auth-text-secondary)" }}
                             >
                               Connect your Instagram business account and we’ll
-                              auto-build your brand profile from your profile and
-                              media.
+                              auto-build your brand profile from your profile
+                              and media.
                             </p>
                             <div className="grid gap-3 sm:grid-cols-2">
                               <button
                                 type="button"
-                                disabled={!canConnectBusinessInstagram || loading}
+                                disabled={
+                                  !canConnectBusinessInstagram || loading
+                                }
                                 onClick={handleBusinessInstagramConnect}
                                 className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 style={{

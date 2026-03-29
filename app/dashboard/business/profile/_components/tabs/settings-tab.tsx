@@ -58,7 +58,9 @@ export default function BusinessSettingsTab({
     trpc.profile.upsertBusinessProfile.mutationOptions({
       onSuccess: async () => {
         await refreshUserData();
-        queryClient.invalidateQueries({ queryKey: ["my-business-profile", userId] });
+        queryClient.invalidateQueries({
+          queryKey: ["my-business-profile", userId],
+        });
         queryClient.invalidateQueries({ queryKey: ["profile", userId] });
         toast.success("Profile updated successfully");
       },
@@ -159,9 +161,7 @@ export default function BusinessSettingsTab({
 
           {/* Location */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">
-              Your Place
-            </Label>
+            <Label className="text-xs text-muted-foreground">Your Place</Label>
             <Input
               placeholder="e.g. Bangalore"
               value={location}

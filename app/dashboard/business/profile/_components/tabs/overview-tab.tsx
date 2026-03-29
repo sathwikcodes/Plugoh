@@ -68,7 +68,8 @@ export default function BusinessOverviewTab({
   const completeness = Math.round(
     (completedItems / strengthItems.length) * 100,
   );
-  const isComplete = completeness === 100 && isBusinessProfileComplete(identity);
+  const isComplete =
+    completeness === 100 && isBusinessProfileComplete(identity);
 
   // Campaign stats
   const stats = useMemo(() => {

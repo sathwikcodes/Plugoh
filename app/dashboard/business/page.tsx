@@ -63,8 +63,9 @@ export default function BusinessDashboard() {
   const displayName = getBusinessDisplayName(
     identity ?? { basicProfile: profile, businessProfile: null },
   );
-  const profileComplete =
-    identity ? isBusinessProfileComplete(identity) : isProfileComplete;
+  const profileComplete = identity
+    ? isBusinessProfileComplete(identity)
+    : isProfileComplete;
 
   // Build a Map<influencerProfileId, influencer> for O(1) lookups
   const influencerMap = useMemo(
@@ -300,7 +301,7 @@ export default function BusinessDashboard() {
         />
       </div>
 
-      <div className="relative z-10 container max-w-3xl py-6 pb-32 space-y-6">
+      <div className="relative z-10 container max-w-3xl py-6 space-y-6">
         <m.div
           variants={stagger}
           initial="hidden"
