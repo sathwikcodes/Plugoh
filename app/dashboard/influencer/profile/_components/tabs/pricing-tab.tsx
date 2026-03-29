@@ -13,7 +13,9 @@ import {
   Loader2,
   Check,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
   CONTENT_TYPES,
@@ -30,6 +32,36 @@ type InfluencerProfile =
 interface PricingTabProps {
   profile: InfluencerProfile;
   userId: string;
+  showSkeleton?: boolean;
+}
+
+function PricingSkeletonCards() {
+  return (
+    <div className="space-y-4 pt-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3"
+          >
+            <div className="flex items-center justify-between">
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+              <Skeleton className="h-12 w-12 rounded-full" />
+            </div>
+            <Skeleton className="h-8 w-32" />
+            <div className="space-y-1.5">
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-5/6" />
+              <Skeleton className="h-3 w-4/6" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 // ─── Per-card config ────────────────────────────────────────────────────────
@@ -377,7 +409,13 @@ function PricingSliderCard({
 
 // ─── Main Pricing Tab ────────────────────────────────────────────────────────
 
-export default function PricingTab({ profile, userId }: PricingTabProps) {
+export default function PricingTab({
+  profile,
+  userId,
+  showSkeleton,
+}: PricingTabProps) {
+  if (showSkeleton) return <PricingSkeletonCards />;
+
   const [editingCard, setEditingCard] = useState<
     "reel" | "post" | "story" | null
   >(null);
@@ -400,16 +438,14 @@ export default function PricingTab({ profile, userId }: PricingTabProps) {
     price: number,
   ) => {
     setSavingCard(card);
+    const field = `price_per_${card}` as
+      | "price_per_reel"
+      | "price_per_post"
+      | "price_per_story";
     try {
       await updateProfile.mutateAsync({
         userId,
-        data: {
-          price_per_reel: card === "reel" ? price : profile.price_per_reel,
-          price_per_post: card === "post" ? price : profile.price_per_post,
-          price_per_story: card === "story" ? price : profile.price_per_story,
-          content_types: profile.content_types,
-          turnaround_time: profile.turnaround_time,
-        },
+        data: { [field]: price },
       });
       toast.success("Price updated");
       setEditingCard(null);
@@ -479,6 +515,17 @@ export default function PricingTab({ profile, userId }: PricingTabProps) {
           );
         })}
       </div>
+
+      {/* AI suggestion note */}
+      {profile.price_per_reel && (
+        <m.p
+          variants={fadeUp}
+          className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground"
+        >
+          <Sparkles className="h-3 w-3 text-purple-400" />
+          Suggested by Plugoh AI based on your engagement — edit anytime
+        </m.p>
+      )}
 
       {/* Content types + turnaround — collapsible */}
       <m.div variants={fadeUp}>

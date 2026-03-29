@@ -3,10 +3,9 @@
 import { useState, useEffect } from "react";
 import { m } from "framer-motion";
 import {
-  LayoutDashboard,
-  Banknote,
-  Grid3x3,
   Instagram,
+  Banknote,
+  TrendingUp,
   Settings2,
   type LucideIcon,
 } from "lucide-react";
@@ -20,10 +19,9 @@ const SPRING = {
 };
 
 const PROFILE_TABS = [
-  { id: "overview", label: "Overview", Icon: LayoutDashboard },
-  { id: "pricing", label: "Pricing", Icon: Banknote },
-  { id: "portfolio", label: "Portfolio", Icon: Grid3x3 },
   { id: "instagram", label: "Instagram", Icon: Instagram },
+  { id: "pricing", label: "Pricing", Icon: Banknote },
+  { id: "career", label: "Career", Icon: TrendingUp },
   { id: "settings", label: "Settings", Icon: Settings2 },
 ] as const;
 

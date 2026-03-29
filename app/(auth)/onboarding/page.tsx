@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { Loader2, Instagram } from "lucide-react";
@@ -51,7 +51,7 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.07 } },
 };
 
-export default function Onboarding() {
+function OnboardingInner() {
   const {
     user,
     role,
@@ -63,11 +63,14 @@ export default function Onboarding() {
   const router = useRouter();
   const { setTheme } = useAuthTheme();
 
+  const searchParams = useSearchParams();
+
   const [selectedRole, setSelectedRole] = useState<AppRole | null>(
     "influencer",
   );
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [place, setPlace] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("");
   const [location, setLocation] = useState("");
@@ -100,6 +103,22 @@ export default function Onboarding() {
       );
     }
   }, [authLoading, user, role, router]);
+
+  useEffect(() => {
+    const err = searchParams.get("error");
+    if (!err) return;
+    const messages: Record<string, string> = {
+      instagram_denied: "Instagram access was denied. Please try again.",
+      missing_params: "Something went wrong with the Instagram connection.",
+      invalid_state: "Session expired. Please try again.",
+      server_error: "A server error occurred. Please try again.",
+    };
+    toast({
+      title: "Instagram connection failed",
+      description: messages[err] ?? "An unexpected error occurred.",
+      variant: "destructive",
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (authLoading) {
     return (
@@ -150,6 +169,9 @@ export default function Onboarding() {
             business_type: businessType || null,
             location: location || null,
           }),
+          ...(selectedRole === "influencer" && {
+            location: place || null,
+          }),
         };
 
       const { data: updatedProfile, error: profileError } = await supabase
@@ -172,6 +194,7 @@ export default function Onboarding() {
           .insert({
             user_id: user.id,
             display_name: fullName,
+            city: place || null,
             is_active: false,
           });
         if (ipError && ipError.code !== "23505") throw ipError;
@@ -418,6 +441,47 @@ export default function Onboarding() {
               </div>
 
               <AnimatePresence>
+                {selectedRole === "influencer" && (
+                  <m.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="space-y-2 overflow-hidden"
+                  >
+                    <label
+                      htmlFor="ob-place"
+                      className="text-xs font-medium uppercase tracking-wider"
+                      style={{ color: "var(--auth-text-tertiary)" }}
+                    >
+                      City / Place
+                    </label>
+                    <input
+                      id="ob-place"
+                      placeholder="e.g. Hyderabad"
+                      value={place}
+                      onChange={(e) => setPlace(e.target.value)}
+                      className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
+                      style={{
+                        color: "var(--auth-text)",
+                        background: "var(--auth-card)",
+                        border: "1px solid var(--auth-card-border)",
+                        boxShadow: "0 2px 8px var(--auth-shadow)",
+                      }}
+                      onFocus={(e) =>
+                        (e.currentTarget.style.borderColor =
+                          "var(--auth-accent)")
+                      }
+                      onBlur={(e) =>
+                        (e.currentTarget.style.borderColor =
+                          "var(--auth-card-border)")
+                      }
+                    />
+                  </m.div>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence>
                 {selectedRole === "business" && (
                   <m.div
                     initial={{ opacity: 0, height: 0 }}
@@ -558,5 +622,13 @@ export default function Onboarding() {
         </AnimatePresence>
       </m.div>
     </AuthShell>
+  );
+}
+
+export default function Onboarding() {
+  return (
+    <Suspense>
+      <OnboardingInner />
+    </Suspense>
   );
 }

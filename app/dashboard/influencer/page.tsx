@@ -263,7 +263,7 @@ export default function InfluencerDashboard() {
   if (ip && !ip.is_active) {
     quickActions.push({
       label: "Complete your profile",
-      href: "/dashboard/influencer/complete-profile",
+      href: "/dashboard/influencer/profile",
     });
   }
   quickActions.push({
@@ -288,9 +288,7 @@ export default function InfluencerDashboard() {
             brands, and start earning.
           </p>
           <Button asChild size="lg" className="rounded-xl">
-            <Link href="/dashboard/influencer/onboarding">
-              Connect Instagram
-            </Link>
+            <Link href="/onboarding">Connect Instagram</Link>
           </Button>
         </div>
       </div>

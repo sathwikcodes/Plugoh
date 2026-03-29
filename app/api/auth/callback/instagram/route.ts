@@ -6,12 +6,11 @@ import {
   fetchIGMedia,
   fetchMediaInsights,
 } from "@/lib/instagram/api";
-import { generateInfluencerProfile } from "@/lib/ai/generate-profile";
 import { createServiceClient } from "@/lib/supabase/server";
 
 function errorRedirect(request: NextRequest, reason: string) {
   return NextResponse.redirect(
-    new URL(`/dashboard/influencer/onboarding?error=${reason}`, request.url),
+    new URL(`/onboarding?error=${reason}`, request.url),
   );
 }
 
@@ -112,41 +111,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // AI auto-fill: generate profile fields from Instagram data
-    const { data: userProfile } = await db
-      .from("profiles")
-      .select("full_name, phone")
-      .eq("id", userId)
-      .single();
-
-    const aiResult = await generateInfluencerProfile({
-      name: userProfile?.full_name ?? profile.username,
-      phone: userProfile?.phone ?? null,
-      igBio: profile.biography ?? null,
-      igUsername: profile.username,
-      followerCount: profile.followers_count ?? 0,
-      accountType: profile.account_type ?? null,
-      captions: mediaItems
-        .map((item) => item.caption)
-        .filter((c): c is string => !!c),
-    });
-
-    if (aiResult) {
-      await db
-        .from("influencer_profiles")
-        .update({
-          category: aiResult.category,
-          city: aiResult.city,
-          languages: aiResult.languages,
-          bio: aiResult.bio,
-          price_per_reel: aiResult.price_per_reel,
-          price_per_post: aiResult.price_per_post,
-          price_per_story: aiResult.price_per_story,
-        })
-        .eq("user_id", userId);
-    }
-
-    const redirectPath = "/dashboard/influencer/complete-profile";
+    const redirectPath = "/dashboard/influencer/profile?source=onboarding";
 
     const response = NextResponse.redirect(new URL(redirectPath, request.url));
     response.cookies.delete("ig_oauth_state");
