@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { statusColor, timeAgo } from "@/lib/format";
+import { BookingTimer } from "@/components/booking-timer";
 
 declare global {
   interface Window {
@@ -40,6 +41,14 @@ declare global {
 }
 
 const STATUS_STEPS = [
+  { key: "pre_authorized", label: "Booked" },
+  { key: "in_escrow", label: "In Progress" },
+  { key: "delivery_submitted", label: "Delivered" },
+  { key: "completed", label: "Completed" },
+];
+
+// Legacy steps for old-flow campaigns
+const LEGACY_STATUS_STEPS = [
   { key: "requested", label: "Requested" },
   { key: "payment_pending", label: "Accepted" },
   { key: "in_escrow", label: "In Progress" },
@@ -74,6 +83,9 @@ function daysRemaining(fromDate: string, totalDays: number): number {
 }
 
 function StatusTimeline({ status }: { status: string }) {
+  const isLegacy = status === "requested" || status === "payment_pending";
+  const steps = isLegacy ? LEGACY_STATUS_STEPS : STATUS_STEPS;
+
   if (TERMINAL_STATUSES.has(status)) {
     const labels: Record<string, string> = {
       declined: "Declined by the influencer",
@@ -97,11 +109,11 @@ function StatusTimeline({ status }: { status: string }) {
     );
   }
 
-  const currentIndex = STATUS_STEPS.findIndex((step) => step.key === status);
+  const currentIndex = steps.findIndex((step) => step.key === status);
 
   return (
     <div className="flex items-center gap-0 overflow-x-auto py-2">
-      {STATUS_STEPS.map((step, index) => {
+      {steps.map((step, index) => {
         const reached = index <= currentIndex;
         const current = index === currentIndex;
         return (
@@ -126,7 +138,7 @@ function StatusTimeline({ status }: { status: string }) {
                 {step.label}
               </span>
             </div>
-            {index < STATUS_STEPS.length - 1 ? (
+            {index < steps.length - 1 ? (
               <div
                 className={`mx-2 mt-[-18px] h-px w-8 sm:w-12 ${
                   index < currentIndex ? "bg-emerald-300/50" : "bg-white/10"
@@ -318,7 +330,34 @@ export default function BusinessCampaignDetail() {
           </Link>
         </Button>
 
-        {/* ── Payment Pending Banner ─────────────────────────────────────────── */}
+        {/* ── Pre-Authorized Banner (new flow) ─────────────────────────────── */}
+        {campaign.status === "pre_authorized" ? (
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <ShieldCheck className="mt-0.5 h-5 w-5 text-amber-300 shrink-0" />
+                <div>
+                  <p className="font-semibold text-white">Payment pre-authorized — waiting for creator</p>
+                  <p className="mt-1 text-sm text-white/65">
+                    {campaign.payment_method === "upi"
+                      ? "Your UPI payment is held securely. Full refund if the creator doesn't accept."
+                      : "Your card is pre-authorized — no charge yet. You'll only be charged if the creator accepts."}
+                  </p>
+                </div>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <p className="text-[10px] uppercase tracking-[0.16em] text-white/40">Time left</p>
+                <BookingTimer expiresAt={campaign.expires_at} />
+              </div>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/55">
+              The creator has been notified and must accept before the timer runs out.
+              If they don&apos;t respond, your {campaign.payment_method === "upi" ? "payment will be refunded" : "pre-authorization will be released"} automatically.
+            </div>
+          </div>
+        ) : null}
+
+        {/* ── Payment Pending Banner (legacy flow) ──────────────────────────── */}
         {campaign.status === "payment_pending" ? (
           <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-5 space-y-4">
             <div className="flex items-start gap-3">

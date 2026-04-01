@@ -32,6 +32,7 @@ import {
 import { CampaignChat } from "@/components/campaign/campaign-chat";
 import { useToast } from "@/hooks/use-toast";
 import { statusColor } from "@/lib/format";
+import { BookingTimer } from "@/components/booking-timer";
 
 function daysRemaining(fromDate: string, totalDays: number): number {
   const deadline = new Date(fromDate).getTime() + totalDays * 24 * 60 * 60 * 1000;
@@ -64,7 +65,7 @@ export default function InfluencerCampaignDetail() {
     trpc.campaign.acceptBooking.mutationOptions({
       onSuccess: () => {
         invalidate();
-        toast({ title: "Booking accepted!", description: "The brand has been notified to complete payment." });
+        toast({ title: "Booking accepted!", description: "Payment captured — funds are now in escrow. Time to create!" });
       },
       onError: (err) => {
         toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -148,6 +149,57 @@ export default function InfluencerCampaignDetail() {
       </Button>
 
       {/* ── Status banners ────────────────────────────────────────────────── */}
+
+      {/* Pre-authorized: new flow — brand has pre-authorized, influencer must accept within 24h */}
+      {campaign.status === "pre_authorized" ? (
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 space-y-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <Lock className="mt-0.5 h-5 w-5 text-amber-300 shrink-0" />
+              <div>
+                <p className="font-semibold text-white">
+                  ₹{(campaign.price_offered ?? 0).toLocaleString("en-IN")} pre-authorized — accept to confirm
+                </p>
+                <p className="mt-1 text-sm text-white/65">
+                  The brand has secured payment. Accept before the timer runs out to lock it into escrow for you.
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-col items-end gap-1">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-white/40">Time left</p>
+              <BookingTimer
+                expiresAt={campaign.expires_at}
+                onExpire={invalidate}
+              />
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => acceptMutation.mutate({ campaignId: id })}
+              disabled={acceptMutation.isPending || declineMutation.isPending}
+              className="h-11 flex-1 rounded-full bg-white text-black hover:bg-white/90"
+            >
+              {acceptMutation.isPending ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Accepting…</>
+              ) : (
+                `Accept & confirm ₹${(campaign.price_offered ?? 0).toLocaleString("en-IN")}`
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => declineMutation.mutate({ campaignId: id })}
+              disabled={acceptMutation.isPending || declineMutation.isPending}
+              className="h-11 rounded-full border border-white/10 text-white/70 hover:bg-white/8 hover:text-white"
+            >
+              {declineMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Decline"
+              )}
+            </Button>
+          </div>
+        </div>
+      ) : null}
 
       {campaign.status === "payment_pending" ? (
         <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex items-start gap-3">

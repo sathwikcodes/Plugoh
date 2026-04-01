@@ -3,10 +3,7 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowDownUp,
   ArrowLeft,
-  BadgeCheck,
-  Globe,
   Instagram,
   MapPin,
   Search,
@@ -15,7 +12,6 @@ import {
   TrendingUp,
   Users,
   Video,
-  X,
 } from "lucide-react";
 import { m } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -41,7 +37,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
-import { compactNumber, formatNumber } from "@/lib/format";
+import { compactNumber } from "@/lib/format";
 import { CATEGORIES_WITH_ALL, CONTENT_TYPES, LANGUAGES } from "@/lib/constants";
 import {
   fadeUp,
@@ -195,28 +191,6 @@ export default function InfluencerDiscovery() {
     sortField,
   ]);
 
-  const activeFilterChips = [
-    category !== "All" ? { key: "category", label: category } : null,
-    language !== "All" ? { key: "language", label: language } : null,
-    contentType !== "All" ? { key: "contentType", label: contentType } : null,
-    city ? { key: "city", label: city } : null,
-    minPrice
-      ? { key: "minPrice", label: `Min ₹${Number(minPrice).toLocaleString()}` }
-      : null,
-    maxPrice
-      ? { key: "maxPrice", label: `Max ₹${Number(maxPrice).toLocaleString()}` }
-      : null,
-    minFollowers
-      ? {
-          key: "minFollowers",
-          label: `${compactNumber(Number(minFollowers))}+ followers`,
-        }
-      : null,
-  ].filter(Boolean) as { key: string; label: string }[];
-
-  const hasActiveFilters =
-    search.trim().length > 0 || activeFilterChips.length > 0;
-
   const clearFilters = () => {
     setSearch("");
     setCategory("All");
@@ -228,16 +202,6 @@ export default function InfluencerDiscovery() {
     setContentType("All");
     setSortField("followers");
     setSortDirection("desc");
-  };
-
-  const removeFilterChip = (key: string) => {
-    if (key === "category") setCategory("All");
-    if (key === "language") setLanguage("All");
-    if (key === "contentType") setContentType("All");
-    if (key === "city") setCity("");
-    if (key === "minPrice") setMinPrice("");
-    if (key === "maxPrice") setMaxPrice("");
-    if (key === "minFollowers") setMinFollowers("");
   };
 
   return (
@@ -284,10 +248,9 @@ export default function InfluencerDiscovery() {
             </div>
           </m.div>
 
-          <m.section variants={fadeUp} className="space-y-4">
-            <div className="flex flex-col gap-3 rounded-[28px] border border-white/10 bg-black/20 p-4 backdrop-blur-xl sm:p-5">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div className="relative w-full max-w-xl">
+          <m.section variants={fadeUp} className="space-y-3">
+            <div className="flex items-center gap-3 rounded-[28px] border border-white/10 bg-black/20 p-3 backdrop-blur-xl sm:p-4">
+              <div className="relative flex-1">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
                   <Input
                     value={search}
@@ -297,18 +260,10 @@ export default function InfluencerDiscovery() {
                   />
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white/65 sm:flex">
-                    <ArrowDownUp className="h-4 w-4" />
-                    {sortField === "followers" && "Followers"}
-                    {sortField === "price" && "Price"}
-                    {sortField === "engagement" && "Engagement"}
-                  </div>
-
                   <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                     <SheetTrigger
                       render={
-                        <Button className="h-12 rounded-full border border-cyan-300/20 bg-[linear-gradient(135deg,#dfe7ff18,#8be9ff14)] px-5 text-white shadow-[0_12px_32px_rgba(18,24,41,0.35)] backdrop-blur-md hover:bg-white/12" />
+                        <Button className="h-12 shrink-0 rounded-full border border-cyan-300/20 bg-[linear-gradient(135deg,#dfe7ff18,#8be9ff14)] px-5 text-white shadow-[0_12px_32px_rgba(18,24,41,0.35)] backdrop-blur-md hover:bg-white/12" />
                       }
                     >
                       <SlidersHorizontal className="mr-2 h-4 w-4" />
@@ -569,75 +524,12 @@ export default function InfluencerDiscovery() {
                       </div>
                     </SheetContent>
                   </Sheet>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                  {loading
-                    ? "Loading creators..."
-                    : `${filtered.length} creator${filtered.length === 1 ? "" : "s"} ready to review`}
-                </span>
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                  Sort: {sortField}{" "}
-                  {sortDirection === "desc" ? "descending" : "ascending"}
-                </span>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                {hasActiveFilters ? (
-                  <>
-                    {search.trim() ? (
-                      <Badge
-                        variant="outline"
-                        className="gap-1 rounded-full border-white/10 bg-white/[0.05] px-3 py-1.5 text-white/72"
-                      >
-                        Search: {search.trim()}
-                        <button
-                          type="button"
-                          aria-label="Clear search"
-                          onClick={() => setSearch("")}
-                          className="rounded-full text-white/50 transition hover:text-white"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </Badge>
-                    ) : null}
-
-                    {activeFilterChips.map((chip) => (
-                      <Badge
-                        key={chip.key}
-                        variant="outline"
-                        className="gap-1 rounded-full border-white/10 bg-white/[0.05] px-3 py-1.5 text-white/72"
-                      >
-                        {chip.label}
-                        <button
-                          type="button"
-                          aria-label={`Remove ${chip.label}`}
-                          onClick={() => removeFilterChip(chip.key)}
-                          className="rounded-full text-white/50 transition hover:text-white"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </Badge>
-                    ))}
-
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={clearFilters}
-                      className="h-8 rounded-full px-3 text-white/55 hover:bg-white/[0.06] hover:text-white"
-                    >
-                      Clear all
-                    </Button>
-                  </>
-                ) : (
-                  <p className="text-sm text-white/48">
-                    Open sort and filter only when you need to narrow the grid.
-                  </p>
-                )}
-              </div>
             </div>
+            {!loading && (
+              <p className="pl-1 text-xs text-white/40">
+                {filtered.length} creator{filtered.length === 1 ? "" : "s"}
+              </p>
+            )}
           </m.section>
 
           {loading ? (
@@ -677,7 +569,7 @@ export default function InfluencerDiscovery() {
               variants={stagger}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-1 gap-5"
+              className="flex flex-col gap-3"
             >
               {filtered.map((profile) => {
                 const engagementRate = getEngagementRate(
@@ -686,197 +578,100 @@ export default function InfluencerDiscovery() {
                 );
                 const startsAt = getStartsAtPrice(profile);
                 const tier = getCreatorTier(profile.follower_count);
-                const languages = (profile.languages ?? []).slice(0, 2);
-                const content = (profile.content_types ?? []).slice(0, 2);
-                const brands = (profile.previous_brands ?? []).slice(0, 2);
                 const handle = profile.instagram_handle || profile.ig_username;
 
                 return (
                   <m.div key={profile.id} variants={fadeUp}>
-                    <Card className="group relative h-full overflow-hidden rounded-[30px] border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] shadow-[0_26px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_34px_84px_rgba(0,0,0,0.4)]">
-                      <div className="absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top,rgba(145,226,255,0.18),transparent_62%)]" />
-                      <CardContent className="relative flex h-full flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-start lg:gap-6">
-                        <div className="flex min-w-0 flex-1 flex-col gap-5">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex min-w-0 items-center gap-4">
-                              <Avatar
-                                size="lg"
-                                className="h-16 w-16 border border-white/12 bg-black/30 shadow-lg"
-                              >
+                    <Link href={`/dashboard/business/discover/${profile.id}`}>
+                      <Card className="group relative cursor-pointer overflow-hidden rounded-[24px] border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02))] shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-2xl transition duration-300 hover:-translate-y-0.5 hover:border-white/18 hover:shadow-[0_16px_48px_rgba(0,0,0,0.32)]">
+                        <div className="absolute inset-x-0 top-0 h-16 bg-[radial-gradient(circle_at_top_left,rgba(145,226,255,0.10),transparent_55%)]" />
+                        <CardContent className="relative p-4 sm:p-5">
+                          {/* Single horizontal row — stacks on mobile */}
+                          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+
+                            {/* Identity */}
+                            <div className="flex min-w-0 flex-1 items-center gap-3">
+                              <Avatar className="h-12 w-12 shrink-0 border border-white/10 bg-black/30">
                                 <AvatarImage
-                                  src={
-                                    profile.ig_profile_picture_url ?? undefined
-                                  }
+                                  src={profile.ig_profile_picture_url ?? undefined}
                                   alt={profile.display_name || "Creator"}
                                 />
-                                <AvatarFallback className="bg-white/10 text-white">
+                                <AvatarFallback className="bg-white/10 text-sm text-white">
                                   {getProfileInitials(profile.display_name)}
                                 </AvatarFallback>
                               </Avatar>
-                              <div className="min-w-0 space-y-1">
+                              <div className="min-w-0 space-y-0.5">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <h3 className="truncate text-xl font-semibold tracking-tight text-white">
+                                  <h3 className="truncate text-sm font-semibold tracking-tight text-white">
                                     {profile.display_name || "Creator"}
                                   </h3>
-                                  <Badge className="rounded-full border border-cyan-300/18 bg-cyan-300/10 text-[10px] uppercase tracking-[0.18em] text-cyan-100">
+                                  <Badge className="rounded-full border border-cyan-300/20 bg-cyan-300/10 text-[10px] uppercase tracking-[0.14em] text-cyan-100">
                                     {tier}
                                   </Badge>
                                 </div>
-                                <div className="flex flex-wrap items-center gap-2 text-sm text-white/55">
-                                  {profile.category ? (
-                                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-white/68">
-                                      {profile.category}
+                                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-white/45">
+                                  {handle ? (
+                                    <span className="inline-flex items-center gap-1 text-pink-200/65">
+                                      <Instagram className="h-3 w-3" />@{handle}
                                     </span>
                                   ) : null}
+                                  {profile.category ? <span>{profile.category}</span> : null}
                                   {profile.city ? (
                                     <span className="inline-flex items-center gap-1">
-                                      <MapPin className="h-3.5 w-3.5" />
-                                      {profile.city}
+                                      <MapPin className="h-3 w-3" />{profile.city}
                                     </span>
                                   ) : null}
                                 </div>
                               </div>
                             </div>
 
-                            {engagementRate > 0 ? (
-                              <div className="rounded-2xl border border-emerald-400/18 bg-emerald-400/10 px-3 py-2 text-right">
-                                <div className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.18em] text-emerald-200/80">
-                                  <TrendingUp className="h-3 w-3" />
-                                  Engagement
-                                </div>
-                                <p className="mt-1 text-lg font-semibold text-white">
-                                  {engagementRate.toFixed(1)}%
+                            {/* Metrics */}
+                            <div className="flex shrink-0 items-center gap-2">
+                              <div className="rounded-xl border border-white/8 bg-white/[0.04] px-3 py-2 text-center">
+                                <p className="text-xs font-semibold text-white">
+                                  {compactNumber(profile.follower_count)}
                                 </p>
+                                <p className="text-[10px] text-white/38">followers</p>
                               </div>
-                            ) : null}
-                          </div>
-
-                          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                            <div className="min-w-0 flex-1 space-y-4">
-                              {handle ? (
-                                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-pink-400/15 bg-pink-400/10 px-3 py-1.5 text-sm text-pink-100/90">
-                                  <Instagram className="h-4 w-4" />@{handle}
-                                </div>
-                              ) : null}
-
-                              <p className="line-clamp-2 min-h-11 max-w-2xl text-sm leading-6 text-white/62">
-                                {profile.bio?.trim() ||
-                                  "Clean signal creator profile. Open the full page to review pricing, portfolio, and booking details."}
-                              </p>
-
-                              <div className="flex flex-wrap items-center gap-2">
-                                {languages.map((item) => (
-                                  <Badge
-                                    key={item}
-                                    variant="outline"
-                                    className="rounded-full border-white/10 bg-white/[0.03] px-3 py-1 text-white/65"
-                                  >
-                                    <Globe className="mr-1 h-3.5 w-3.5" />
-                                    {item}
-                                  </Badge>
-                                ))}
-                                {content.map((item) => (
-                                  <Badge
-                                    key={item}
-                                    variant="outline"
-                                    className="rounded-full border-white/10 bg-white/[0.03] px-3 py-1 text-white/65"
-                                  >
-                                    {item}
-                                  </Badge>
-                                ))}
+                              <div className="rounded-xl border border-white/8 bg-white/[0.04] px-3 py-2 text-center">
+                                <p className="text-xs font-semibold text-white">
+                                  {compactNumber(profile.avg_views_per_reel)}
+                                </p>
+                                <p className="text-[10px] text-white/38">avg views</p>
                               </div>
-
-                              {brands.length > 0 ? (
-                                <div className="flex flex-wrap items-center gap-2">
-                                  {brands.map((brand) => (
-                                    <Badge
-                                      key={brand}
-                                      className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-white/72"
-                                    >
-                                      {brand}
-                                    </Badge>
-                                  ))}
+                              {engagementRate > 0 ? (
+                                <div className="rounded-xl border border-emerald-400/15 bg-emerald-400/[0.07] px-3 py-2 text-center">
+                                  <p className="text-xs font-semibold text-white">
+                                    {engagementRate.toFixed(1)}%
+                                  </p>
+                                  <p className="text-[10px] text-emerald-300/55">engmt</p>
                                 </div>
                               ) : null}
                             </div>
 
-                            <div className="grid w-full grid-cols-3 gap-3 lg:max-w-[360px]">
-                              <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
-                                <div className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.18em] text-white/35">
-                                  <Users className="h-3.5 w-3.5" />
-                                  Audience
-                                </div>
-                                <p className="mt-2 text-lg font-semibold text-white">
-                                  {formatNumber(profile.follower_count)}
-                                </p>
-                                <p className="text-xs text-white/42">
-                                  Followers
-                                </p>
-                              </div>
-                              <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
-                                <div className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.18em] text-white/35">
-                                  <Video className="h-3.5 w-3.5" />
-                                  Reach
-                                </div>
-                                <p className="mt-2 text-lg font-semibold text-white">
-                                  {formatNumber(profile.avg_views_per_reel)}
-                                </p>
-                                <p className="text-xs text-white/42">
-                                  Avg views
-                                </p>
-                              </div>
-                              <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
-                                <div className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.18em] text-white/35">
-                                  <BadgeCheck className="h-3.5 w-3.5" />
-                                  Market
-                                </div>
-                                <p className="mt-2 text-lg font-semibold text-white">
-                                  {tier}
-                                </p>
-                                <p className="text-xs text-white/42">
-                                  Creator tier
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="w-full lg:min-w-[280px] lg:max-w-[300px]">
-                          <div className="h-full rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-4">
-                            <div className="flex h-full flex-col justify-between gap-6">
-                              <div>
-                                <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">
-                                  Starts at
-                                </p>
-                                <div className="mt-1 flex items-end gap-2">
-                                  <p className="text-2xl font-semibold text-white">
-                                    {startsAt
-                                      ? `₹${startsAt.toLocaleString()}`
-                                      : "Price on request"}
+                            {/* Price + CTA */}
+                            <div className="flex shrink-0 items-center gap-3 sm:ml-2">
+                              {startsAt ? (
+                                <div className="text-right">
+                                  <p className="text-[10px] uppercase tracking-[0.14em] text-white/38">from</p>
+                                  <p className="text-sm font-semibold text-cyan-200">
+                                    ₹{compactNumber(startsAt)}
                                   </p>
                                 </div>
-                                <p className="mt-1 text-xs text-white/45">
-                                  {profile.price_per_reel
-                                    ? `Reels from ₹${profile.price_per_reel.toLocaleString()}`
-                                    : "Review full profile for pricing details"}
-                                </p>
-                              </div>
-
+                              ) : null}
                               <Button
-                                asChild
-                                className="h-11 w-full rounded-full bg-white text-black hover:bg-white/90"
+                                size="sm"
+                                className="h-9 shrink-0 rounded-full bg-white px-4 text-xs font-medium text-black hover:bg-white/90"
+                                onClick={(e) => e.stopPropagation()}
                               >
-                                <Link
-                                  href={`/dashboard/business/discover/${profile.id}`}
-                                >
-                                  View Profile
-                                </Link>
+                                View Profile
                               </Button>
                             </div>
+
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   </m.div>
                 );
               })}

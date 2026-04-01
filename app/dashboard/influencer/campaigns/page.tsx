@@ -20,6 +20,7 @@ import {
   Mail,
   Phone,
   MessageSquare,
+  Timer,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { m, AnimatePresence } from "framer-motion";
@@ -60,6 +61,31 @@ const EMPTY_CAMPAIGNS = (
     </p>
   </div>
 );
+
+// Lightweight inline timer for campaign list cards — avoids full BookingTimer import overhead
+function PreAuthTimer({ expiresAt }: { expiresAt: string }) {
+  const [timeLeft, setTimeLeft] = useState(() =>
+    Math.max(0, new Date(expiresAt).getTime() - Date.now()),
+  );
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTimeLeft(Math.max(0, new Date(expiresAt).getTime() - Date.now()));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [expiresAt]);
+
+  if (timeLeft === 0) return <span className="text-red-400">Expired</span>;
+  const h = Math.floor(timeLeft / 3600000);
+  const m = Math.floor((timeLeft % 3600000) / 60000);
+  const s = Math.floor((timeLeft % 60000) / 1000);
+  const fmt = (n: number) => String(n).padStart(2, "0");
+  return (
+    <span className="font-mono text-amber-200">
+      {fmt(h)}:{fmt(m)}:{fmt(s)}
+    </span>
+  );
+}
 
 export default function CampaignsPage() {
   const { user } = useAuth();
@@ -318,9 +344,17 @@ export default function CampaignsPage() {
                       >
                         {getStatusConfig(c.status).label}
                       </span>
-                      <span className="text-[11px] text-muted-foreground">
-                        {timeAgo(c.created_at)}
-                      </span>
+                      {c.status === "pre_authorized" && c.expires_at ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px]">
+                          <Timer className="h-3 w-3 text-amber-300" />
+                          {/* Inline timer display — shows countdown */}
+                          <PreAuthTimer expiresAt={c.expires_at} />
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground">
+                          {timeAgo(c.created_at)}
+                        </span>
+                      )}
                     </div>
                     {c.price_offered != null && (
                       <div className="flex items-center gap-1.5 shrink-0">

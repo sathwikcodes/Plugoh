@@ -1,8 +1,14 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import Razorpay from "razorpay";
 import { router, protectedProcedure } from "../init";
 import { PLATFORM_FEE_RATE } from "@/lib/constants";
 import { buildCampaignBrief, buildCampaignTitle } from "@/lib/booking";
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID!,
+  key_secret: process.env.RAZORPAY_KEY_SECRET!,
+});
 
 export const campaignRouter = router({
   // ─── Submit Booking Request (brand) ────────────────────────────────────────
@@ -113,7 +119,8 @@ export const campaignRouter = router({
     }),
 
   // ─── Accept Booking (influencer) ───────────────────────────────────────────
-  // Transitions requested → payment_pending. Notifies brand to pay.
+  // Pre-auth flow: captures the pre-authorized payment and transitions pre_authorized → in_escrow.
+  // Legacy flow: transitions requested → payment_pending (kept for backward compat).
   acceptBooking: protectedProcedure
     .input(z.object({ campaignId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -133,11 +140,90 @@ export const campaignRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Only the influencer can accept" });
       }
 
-      if (campaign.status !== "requested") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign is not in requested state" });
+      // ── New pre-auth flow ──────────────────────────────────────────────────
+      if (campaign.status === "pre_authorized") {
+        // Check 24h timer hasn't expired
+        if (campaign.expires_at && new Date(campaign.expires_at) < new Date()) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "This booking has expired. The brand will need to book again.",
+          });
+        }
+
+        const now = new Date().toISOString();
+        const isCard = campaign.payment_method === "card";
+
+        // For card: capture the pre-authorized amount
+        if (isCard && campaign.razorpay_payment_id) {
+          const totalPaise = Math.round((campaign.total_charged_amount ?? 0) * 100);
+          try {
+            await razorpay.payments.capture(campaign.razorpay_payment_id, totalPaise, "INR");
+          } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "Payment capture failed";
+            console.error("[acceptBooking] Razorpay capture failed:", err);
+            throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message });
+          }
+        }
+
+        // Transition to in_escrow
+        const { error: updateError } = await db
+          .from("campaigns")
+          .update({
+            status: "in_escrow",
+            payment_status: "paid",
+            accepted_at: now,
+            payment_captured_at: now,
+          })
+          .eq("id", input.campaignId);
+
+        if (updateError) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: updateError.message });
+        }
+
+        // For card: mark escrow_lock as success now that capture went through
+        if (isCard) {
+          await db
+            .from("escrow_transactions")
+            .update({ status: "success" })
+            .eq("campaign_id", input.campaignId)
+            .eq("type", "escrow_lock");
+        }
+
+        const notifData = { title: campaign.title ?? "Untitled", campaign_id: campaign.id };
+
+        await Promise.all([
+          db.from("notifications").insert({
+            user_id: campaign.business_id,
+            type: "payment_confirmed",
+            data: { ...notifData, amount: campaign.total_charged_amount },
+          }),
+          db.from("notifications").insert({
+            user_id: user.id,
+            type: "booking_accepted",
+            data: { ...notifData, amount: campaign.price_offered },
+          }),
+          db.from("notifications")
+            .update({ read: true })
+            .eq("user_id", user.id)
+            .eq("type", "new_booking")
+            .eq("read", false)
+            .contains("data", { campaign_id: input.campaignId }),
+          db.from("campaign_messages").insert({
+            campaign_id: input.campaignId,
+            sender_id: user.id,
+            message_type: "system",
+            content: `Booking confirmed! ₹${(campaign.price_offered ?? 0).toLocaleString("en-IN")} is now secured in escrow. Time to create!`,
+          }),
+        ]);
+
+        return { success: true };
       }
 
-      // payment_pending expires in 24h if brand doesn't pay
+      // ── Legacy flow (requested → payment_pending) ─────────────────────────
+      if (campaign.status !== "requested") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: `Cannot accept a campaign in '${campaign.status}' state` });
+      }
+
       const paymentExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
       const { error: updateError } = await db
@@ -156,21 +242,17 @@ export const campaignRouter = router({
       const notifData = { title: campaign.title ?? "Untitled", campaign_id: campaign.id };
 
       await Promise.all([
-        // Notify brand to complete payment
         db.from("notifications").insert({
           user_id: campaign.business_id,
           type: "booking_accepted",
           data: notifData,
         }),
-        // Clear influencer's own new_booking badge for this campaign
-        db
-          .from("notifications")
+        db.from("notifications")
           .update({ read: true })
           .eq("user_id", user.id)
           .eq("type", "new_booking")
           .eq("read", false)
           .contains("data", { campaign_id: input.campaignId }),
-        // System message in chat
         db.from("campaign_messages").insert({
           campaign_id: input.campaignId,
           sender_id: user.id,
@@ -183,6 +265,8 @@ export const campaignRouter = router({
     }),
 
   // ─── Decline Booking (influencer) ──────────────────────────────────────────
+  // Pre-auth flow: voids pre-auth (card) or initiates refund (UPI) then marks declined.
+  // Legacy flow: transitions requested → declined.
   declineBooking: protectedProcedure
     .input(z.object({ campaignId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -202,8 +286,42 @@ export const campaignRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Only the influencer can decline" });
       }
 
-      if (campaign.status !== "requested") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign is not in requested state" });
+      const isPreAuth = campaign.status === "pre_authorized";
+      const isRequested = campaign.status === "requested";
+
+      if (!isPreAuth && !isRequested) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot decline a campaign in '${campaign.status}' state`,
+        });
+      }
+
+      let refundMessage = "Booking declined by the influencer. No payment was taken.";
+
+      // Pre-auth flow: handle payment reversal
+      if (isPreAuth && campaign.razorpay_payment_id) {
+        const isUpi = campaign.payment_method === "upi";
+
+        if (isUpi) {
+          // UPI was captured immediately — issue a refund
+          const totalPaise = Math.round((campaign.total_charged_amount ?? 0) * 100);
+          try {
+            await razorpay.payments.refund(campaign.razorpay_payment_id, {
+              amount: totalPaise,
+              notes: { reason: "influencer_declined", campaign_id: campaign.id },
+            });
+            refundMessage =
+              "Booking declined by the influencer. A full refund has been initiated and will reflect in 5–7 business days.";
+          } catch (err) {
+            // Non-fatal: log and continue — finance team can process manually
+            console.error("[declineBooking] UPI refund failed:", err);
+            refundMessage =
+              "Booking declined. Refund will be processed manually — please contact support.";
+          }
+        } else {
+          // Card pre-auth: Razorpay auto-voids within 7 days; nothing to call.
+          refundMessage = "Booking declined by the influencer. Your card pre-authorization has been released — no charge was made.";
+        }
       }
 
       const { error: updateError } = await db
@@ -223,8 +341,7 @@ export const campaignRouter = router({
           type: "booking_rejected",
           data: notifData,
         }),
-        db
-          .from("notifications")
+        db.from("notifications")
           .update({ read: true })
           .eq("user_id", user.id)
           .eq("type", "new_booking")
@@ -234,7 +351,7 @@ export const campaignRouter = router({
           campaign_id: input.campaignId,
           sender_id: user.id,
           message_type: "system",
-          content: "Booking declined by the influencer. No payment was taken.",
+          content: refundMessage,
         }),
       ]);
 
