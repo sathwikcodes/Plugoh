@@ -181,11 +181,11 @@ export function getAvailablePackages(profile: InfluencerProfile) {
 
 export function buildCampaignTitle(
   formState: BookingFormState,
-  profile: InfluencerProfile,
+  profile: Pick<InfluencerProfile, "display_name"> | null,
 ) {
   const objectiveLabel =
     getObjectiveMeta(formState.objective)?.label ??
-    profile.display_name?.trim() ??
+    profile?.display_name?.trim() ??
     "Campaign";
   return `${objectiveLabel} • ${getPackageLabel(formState.packageType)}`;
 }

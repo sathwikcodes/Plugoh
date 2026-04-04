@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Badge } from "@/components/ui/badge";
@@ -123,6 +123,20 @@ const CARD_CONFIG = [
   },
 ] as const;
 
+const HISTOGRAM_BAR_COUNT = 40;
+
+const HISTOGRAM_BARS = Array.from(
+  { length: HISTOGRAM_BAR_COUNT },
+  (_unused: unknown, index: number): number => {
+    const normalized = index / (HISTOGRAM_BAR_COUNT - 1);
+    const baseWave =
+      0.55 +
+      Math.sin(normalized * Math.PI * 1.2) * 0.2 +
+      Math.cos(normalized * Math.PI * 4.6) * 0.08;
+    return Math.max(0.15, baseWave);
+  },
+);
+
 // ─── Histogram Slider ────────────────────────────────────────────────────────
 
 interface HistogramSliderProps {
@@ -142,21 +156,6 @@ function HistogramSlider({
 }: HistogramSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-
-  // Generate 40 smooth bars once — stable across renders (empty deps intentional)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const bars = useMemo(() => {
-    const raw = Array.from({ length: 40 }, () => Math.random());
-    // Two smoothing passes for a natural equalizer look
-    for (let pass = 0; pass < 2; pass++) {
-      for (let i = 1; i < raw.length - 1; i++) {
-        raw[i] = (raw[i - 1] + raw[i] + raw[i + 1]) / 3;
-      }
-    }
-    const maxH = Math.max(...raw);
-    // Floor at 0.15 so no bar vanishes completely
-    return raw.map((v) => Math.max(0.15, v / maxH));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const progress = ((value - min) / (max - min)) * 100;
 
@@ -212,8 +211,8 @@ function HistogramSlider({
         className="absolute inset-x-0 top-0 flex items-end gap-px"
         style={{ bottom: 14 }}
       >
-        {bars.map((height, i) => {
-          const barPct = (i / (bars.length - 1)) * 100;
+        {HISTOGRAM_BARS.map((height, i) => {
+          const barPct = (i / (HISTOGRAM_BARS.length - 1)) * 100;
           const isActive = barPct <= progress;
           return (
             <div
@@ -277,13 +276,16 @@ function PricingSliderCard({
 }: PricingSliderCardProps) {
   const [draft, setDraft] = useState(initialPrice);
 
-  // Reset draft when editing is cancelled or initialPrice changes externally
-  useEffect(() => {
-    if (!isEditing) setDraft(initialPrice);
-  }, [isEditing, initialPrice]);
-
   // Displayed price: raw draft while editing (instant), saved price when not
   const displayPrice = isEditing ? draft : initialPrice;
+  const handleEdit = () => {
+    setDraft(initialPrice);
+    onEdit();
+  };
+  const handleCancel = () => {
+    setDraft(initialPrice);
+    onCancel();
+  };
 
   return (
     // No whileHover — removed zoom animation as requested
@@ -373,7 +375,7 @@ function PricingSliderCard({
               variant="ghost"
               size="sm"
               className="flex-1 border border-white/10"
-              onClick={onCancel}
+              onClick={handleCancel}
               disabled={isSaving}
             >
               <X className="mr-1.5 h-3 w-3" /> Cancel
@@ -397,7 +399,7 @@ function PricingSliderCard({
             variant="outline"
             size="sm"
             className="w-full border-white/10 bg-white/5 hover:bg-white/10"
-            onClick={onEdit}
+            onClick={handleEdit}
           >
             <Pencil className="mr-1.5 h-3 w-3" /> Edit Price
           </Button>
@@ -414,8 +416,6 @@ export default function PricingTab({
   userId,
   showSkeleton,
 }: PricingTabProps) {
-  if (showSkeleton) return <PricingSkeletonCards />;
-
   const [editingCard, setEditingCard] = useState<
     "reel" | "post" | "story" | null
   >(null);
@@ -432,6 +432,8 @@ export default function PricingTab({
   });
 
   const updateProfile = useUpdateInfluencerProfile();
+
+  if (showSkeleton) return <PricingSkeletonCards />;
 
   const handleSavePrice = async (
     card: "reel" | "post" | "story",

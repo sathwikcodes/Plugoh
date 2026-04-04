@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { X, Power, Pause, Play, RotateCcw } from "lucide-react";
@@ -95,11 +95,9 @@ export function ServerManagementTable({
   className = "",
 }: ServerManagementTableProps = {}) {
   const [servers, setServers] = useState<Server[]>(initialServers);
-  const [hoveredServer, setHoveredServer] = useState<string | null>(null);
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
-  const shouldReduceMotion = useReducedMotion();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  useReducedMotion();
+  useTheme();
 
   const handleStatusChange = (
     serverId: string,
@@ -124,14 +122,10 @@ export function ServerManagementTable({
     setSelectedServer(null);
   };
 
-  useEffect(() => {
-    if (selectedServer) {
-      const updatedServer = servers.find((s) => s.id === selectedServer.id);
-      if (updatedServer) {
-        setSelectedServer(updatedServer);
-      }
-    }
-  }, [servers, selectedServer]);
+  const activeSelectedServer = useMemo(() => {
+    if (!selectedServer) return null;
+    return servers.find((server) => server.id === selectedServer.id) ?? null;
+  }, [selectedServer, servers]);
 
   const getOSIcon = (osType: Server["osType"]) => {
     switch (osType) {
@@ -372,8 +366,6 @@ export function ServerManagementTable({
                 },
               }}
               className="relative cursor-pointer"
-              onMouseEnter={() => setHoveredServer(server.id)}
-              onMouseLeave={() => setHoveredServer(null)}
               onClick={() => openServerModal(server)}
             >
               <m.div
@@ -429,7 +421,7 @@ export function ServerManagementTable({
         </m.div>
 
         <AnimatePresence>
-          {selectedServer && (
+          {activeSelectedServer && (
             <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -440,31 +432,31 @@ export function ServerManagementTable({
               <div className="relative bg-gradient-to-r from-muted/50 to-transparent p-4 border-b border-border/30 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="text-2xl font-bold text-muted-foreground">
-                    {selectedServer.number}
+                    {activeSelectedServer.number}
                   </div>
-                  {getOSIcon(selectedServer.osType)}
+                  {getOSIcon(activeSelectedServer.osType)}
                   <div>
                     <h3 className="text-lg font-bold text-foreground">
-                      {selectedServer.serviceName}
+                      {activeSelectedServer.serviceName}
                     </h3>
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded-full overflow-hidden border border-border/30 flex items-center justify-center">
                         <div className="w-full h-full scale-75">
-                          {getCountryFlag(selectedServer.countryCode)}
+                          {getCountryFlag(activeSelectedServer.countryCode)}
                         </div>
                       </div>
                       <span className="text-sm text-muted-foreground">
-                        {selectedServer.serviceLocation}
+                        {activeSelectedServer.serviceLocation}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {selectedServer.status === "active" ? (
+                  {activeSelectedServer.status === "active" ? (
                     <m.button
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-sm transition-colors"
                       onClick={() =>
-                        handleStatusChange(selectedServer.id, "inactive")
+                        handleStatusChange(activeSelectedServer.id, "inactive")
                       }
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -476,7 +468,7 @@ export function ServerManagementTable({
                     <m.button
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg text-sm transition-colors"
                       onClick={() =>
-                        handleStatusChange(selectedServer.id, "active")
+                        handleStatusChange(activeSelectedServer.id, "active")
                       }
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -485,11 +477,11 @@ export function ServerManagementTable({
                       Start
                     </m.button>
                   )}
-                  {selectedServer.status === "paused" ? (
+                  {activeSelectedServer.status === "paused" ? (
                     <m.button
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg text-sm transition-colors"
                       onClick={() =>
-                        handleStatusChange(selectedServer.id, "active")
+                        handleStatusChange(activeSelectedServer.id, "active")
                       }
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -501,7 +493,7 @@ export function ServerManagementTable({
                     <m.button
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-lg text-sm transition-colors"
                       onClick={() =>
-                        handleStatusChange(selectedServer.id, "paused")
+                        handleStatusChange(activeSelectedServer.id, "paused")
                       }
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -513,9 +505,10 @@ export function ServerManagementTable({
                   <m.button
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg text-sm transition-colors"
                     onClick={() => {
-                      handleStatusChange(selectedServer.id, "inactive");
+                      handleStatusChange(activeSelectedServer.id, "inactive");
                       setTimeout(
-                        () => handleStatusChange(selectedServer.id, "active"),
+                        () =>
+                          handleStatusChange(activeSelectedServer.id, "active"),
                         1000,
                       );
                     }}
@@ -542,7 +535,7 @@ export function ServerManagementTable({
                       IP Address
                     </label>
                     <div className="text-sm font-mono font-medium mt-1">
-                      {selectedServer.ip}
+                      {activeSelectedServer.ip}
                     </div>
                   </div>
                   <div className="bg-muted/40 rounded-lg p-3 border border-border/30">
@@ -550,7 +543,7 @@ export function ServerManagementTable({
                       Due Date
                     </label>
                     <div className="text-sm font-medium mt-1">
-                      {selectedServer.dueDate}
+                      {activeSelectedServer.dueDate}
                     </div>
                   </div>
                   <div className="bg-muted/40 rounded-lg p-3 border border-border/30">
@@ -558,7 +551,7 @@ export function ServerManagementTable({
                       Status
                     </label>
                     <div className="mt-1">
-                      {getStatusBadge(selectedServer.status)}
+                      {getStatusBadge(activeSelectedServer.status)}
                     </div>
                   </div>
                 </div>
@@ -567,8 +560,8 @@ export function ServerManagementTable({
                     CPU Usage
                   </label>
                   {getCPUBars(
-                    selectedServer.cpuPercentage,
-                    selectedServer.status,
+                    activeSelectedServer.cpuPercentage,
+                    activeSelectedServer.status,
                   )}
                 </div>
                 <div className="bg-muted/40 rounded-lg p-3 border border-border/30">
@@ -583,10 +576,11 @@ export function ServerManagementTable({
                       [15:42:25] System health check passed
                     </div>
                     <div className="text-yellow-400">
-                      [15:41:18] CPU usage: {selectedServer.cpuPercentage}%
+                      [15:41:18] CPU usage: {activeSelectedServer.cpuPercentage}
+                      %
                     </div>
                     <div className="text-muted-foreground">
-                      [15:40:05] Connection from {selectedServer.ip}
+                      [15:40:05] Connection from {activeSelectedServer.ip}
                     </div>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { MouseEvent, useEffect, useRef, useState } from "react";
+import React, { MouseEvent, useRef, useState } from "react";
 
 export type AwardBadgeType =
   | "golden-kitty"
@@ -181,8 +181,10 @@ export const AwardBadge = ({ type, link }: AwardBadgeProps) => {
     }
   };
 
+  const displayMatrix = isTimeoutFinished ? currentMatrix : matrix;
+
   const onMouseLeave = (e: MouseEvent<HTMLAnchorElement>) => {
-    const oppositeMatrix = getOppositeMatrix(matrix, e.clientY);
+    const oppositeMatrix = getOppositeMatrix(displayMatrix, e.clientY);
     if (enterTimeout.current) clearTimeout(enterTimeout.current);
 
     setCurrentMatrix(oppositeMatrix);
@@ -206,12 +208,6 @@ export const AwardBadge = ({ type, link }: AwardBadgeProps) => {
       });
     });
   };
-
-  useEffect(() => {
-    if (isTimeoutFinished) {
-      setMatrix(currentMatrix);
-    }
-  }, [currentMatrix, isTimeoutFinished]);
 
   const overlayAnimations = [...Array(10).keys()]
     .map(
@@ -238,7 +234,7 @@ export const AwardBadge = ({ type, link }: AwardBadgeProps) => {
       <style>{overlayAnimations}</style>
       <div
         style={{
-          transform: `perspective(700px) matrix3d(${matrix})`,
+          transform: `perspective(700px) matrix3d(${displayMatrix})`,
           transformOrigin: "center center",
           transition: "transform 200ms ease-out",
         }}

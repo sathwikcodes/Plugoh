@@ -1,6 +1,6 @@
 "use client";
 
-import React, { MouseEvent, useEffect, useRef, useState } from "react";
+import React, { MouseEvent, useRef, useState } from "react";
 
 const identityMatrix =
   "1, 0, 0, 0, " + "0, 1, 0, 0, " + "0, 0, 1, 0, " + "0, 0, 0, 1";
@@ -163,8 +163,10 @@ export const RealReachVerifiedBadge = () => {
     }
   };
 
+  const displayMatrix = isTimeoutFinished ? currentMatrix : matrix;
+
   const onMouseLeave = (e: MouseEvent<HTMLDivElement>) => {
-    const oppositeMatrix = getOppositeMatrix(matrix, e.clientY);
+    const oppositeMatrix = getOppositeMatrix(displayMatrix, e.clientY);
     if (enterTimeout.current) clearTimeout(enterTimeout.current);
 
     setCurrentMatrix(oppositeMatrix);
@@ -189,12 +191,6 @@ export const RealReachVerifiedBadge = () => {
     });
   };
 
-  useEffect(() => {
-    if (isTimeoutFinished) {
-      setMatrix(currentMatrix);
-    }
-  }, [currentMatrix, isTimeoutFinished]);
-
   const overlayAnimations = [...Array(10).keys()]
     .map(
       (e) => `
@@ -217,7 +213,7 @@ export const RealReachVerifiedBadge = () => {
       <style>{overlayAnimations}</style>
       <div
         style={{
-          transform: `perspective(700px) matrix3d(${matrix})`,
+          transform: `perspective(700px) matrix3d(${displayMatrix})`,
           transformOrigin: "center center",
           transition: "transform 200ms ease-out",
         }}

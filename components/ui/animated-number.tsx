@@ -16,20 +16,28 @@ export function AnimatedNumber({
   const [displayed, setDisplayed] = useState(0);
 
   useEffect(() => {
+    let rafId = 0;
+
     if (value === 0) {
-      setDisplayed(0);
-      return;
+      rafId = requestAnimationFrame(() => setDisplayed(0));
+      return () => cancelAnimationFrame(rafId);
     }
-    const start = Date.now();
-    let rafId: number;
-    const tick = () => {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setDisplayed(Math.round(value * eased));
-      if (progress < 1) rafId = requestAnimationFrame(tick);
-    };
-    rafId = requestAnimationFrame(tick);
+
+    rafId = requestAnimationFrame(() => {
+      setDisplayed(0);
+      const start = Date.now();
+
+      const tick = () => {
+        const elapsed = Date.now() - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setDisplayed(Math.round(value * eased));
+        if (progress < 1) rafId = requestAnimationFrame(tick);
+      };
+
+      rafId = requestAnimationFrame(tick);
+    });
+
     return () => cancelAnimationFrame(rafId);
   }, [value, duration]);
 

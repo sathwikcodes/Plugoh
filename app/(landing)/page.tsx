@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { CTASection } from "./_components/cta-section";
 import { EtheralShadow } from "@/components/ui/etheral-shadow";
@@ -54,7 +54,6 @@ const MinimalFooter = dynamic(
 export default function Home() {
   const { user, role, loading, needsOnboarding } = useAuth();
   const router = useRouter();
-  const [showLanding, setShowLanding] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -62,10 +61,10 @@ export default function Home() {
       router.replace(`/dashboard/${role}`);
     } else if (user && needsOnboarding) {
       router.replace("/onboarding");
-    } else {
-      setShowLanding(true);
     }
   }, [user, role, loading, needsOnboarding, router]);
+
+  const showLanding = !loading && !user;
 
   if (!showLanding) {
     return (

@@ -68,11 +68,7 @@ export const campaignRouter = router({
         .eq("id", input.influencer_profile_id)
         .maybeSingle();
 
-      const title = buildCampaignTitle(
-        formState,
-        (profile as import("@/lib/booking").InfluencerProfile) ??
-          ({} as import("@/lib/booking").InfluencerProfile),
-      );
+      const title = buildCampaignTitle(formState, profile);
       const brief = buildCampaignBrief(formState);
 
       const { data: campaign, error } = await db

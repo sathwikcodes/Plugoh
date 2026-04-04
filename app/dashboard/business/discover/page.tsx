@@ -207,7 +207,7 @@ export default function InfluencerDiscovery() {
         ...new Set(
           profiles.map((profile) => profile.city?.trim()).filter(Boolean),
         ),
-      ].sort((a, b) => a.localeCompare(b)) as string[],
+      ].sort((a, b) => String(a).localeCompare(String(b))) as string[],
     [profiles],
   );
 
@@ -217,7 +217,7 @@ export default function InfluencerDiscovery() {
         ...new Set(
           profiles.map((profile) => profile.category?.trim()).filter(Boolean),
         ),
-      ].sort((a, b) => a.localeCompare(b)) as string[],
+      ].sort((a, b) => String(a).localeCompare(String(b))) as string[],
     [profiles],
   );
 

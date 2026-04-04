@@ -117,10 +117,7 @@ export async function POST(request: NextRequest) {
     contactPhone: contact_phone ?? "",
   };
 
-  const title = buildCampaignTitle(
-    formState,
-    profile ?? ({} as typeof profile),
-  );
+  const title = buildCampaignTitle(formState, profile);
   const brief = buildCampaignBrief(formState);
 
   const price = Number(price_offered);
