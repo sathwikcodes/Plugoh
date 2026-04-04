@@ -4,6 +4,7 @@ import { useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useInboxConversations } from "@/hooks/queries/use-inbox-conversations";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { ConversationList } from "./_components/conversation-list";
 import { ChatPanel } from "./_components/chat-panel";
 import { InboxEmptyState } from "./_components/inbox-empty-state";
@@ -35,8 +36,17 @@ export default function InboxPage() {
     router.push("/dashboard/influencer/inbox");
   }, [router]);
 
+  const isMobile = useIsMobile();
+  const mobileDockInset = "calc(104px + env(safe-area-inset-bottom, 0px))";
+  const showMobileChat = isMobile && !!selectedConversation;
+
   return (
-    <div className="h-dvh flex overflow-hidden bg-background">
+    <div
+      className="h-dvh flex overflow-hidden bg-background"
+      style={
+        isMobile && !showMobileChat ? { paddingBottom: mobileDockInset } : undefined
+      }
+    >
       {/* Desktop: always show both panels */}
       {/* Mobile: show list OR chat */}
 
@@ -44,8 +54,8 @@ export default function InboxPage() {
       <div
         className={
           selectedId
-            ? "hidden md:flex md:flex-col w-full md:w-[340px] md:shrink-0 md:border-r md:border-white/[0.04] h-full"
-            : "flex flex-col w-full md:w-[340px] md:shrink-0 md:border-r md:border-white/[0.04] h-full"
+            ? "hidden md:flex md:flex-col w-full md:w-[280px] md:shrink-0 md:flex-none md:border-r md:border-white/[0.04] h-full"
+            : "flex flex-col w-full md:w-[280px] md:shrink-0 md:flex-none md:border-r md:border-white/[0.04] h-full"
         }
       >
         <ConversationList

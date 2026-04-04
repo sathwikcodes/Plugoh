@@ -4,8 +4,6 @@ import { useMemo } from "react";
 import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -13,7 +11,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import { Users, IndianRupee, Film, ImageIcon, Mic } from "lucide-react";
+import { Users, IndianRupee, Film, ImageIcon, Mic, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { compactNumber } from "@/lib/format";
 import type { Database } from "@/lib/supabase/types";
@@ -93,29 +91,24 @@ export default function AnalyticsTab({
   // ── Monthly spend (last 6 months) ─────────────────────────────────────────
   const monthlyData = useMemo(() => {
     const now = new Date();
-    const months: {
-      label: string;
-      month: number;
-      year: number;
-      spend: number;
-    }[] = [];
+    const months: { label: string; key: string; spend: number }[] = [];
+    const spendMap = new Map<string, number>();
     for (let i = 5; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      months.push({
-        label: MONTH_LABELS[d.getMonth()],
-        month: d.getMonth(),
-        year: d.getFullYear(),
-        spend: 0,
-      });
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      months.push({ label: MONTH_LABELS[d.getMonth()], key, spend: 0 });
+      spendMap.set(key, 0);
     }
     for (const c of completed) {
       const d = new Date(c.created_at);
-      const m = months.find(
-        (mo) => mo.month === d.getMonth() && mo.year === d.getFullYear(),
-      );
-      if (m) m.spend += c.price_offered || 0;
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      const prev = spendMap.get(key);
+      if (prev !== undefined) spendMap.set(key, prev + (c.price_offered || 0));
     }
-    return months.map((m) => ({ name: m.label, spend: m.spend }));
+    return months.map((m) => ({
+      name: m.label,
+      spend: spendMap.get(m.key) ?? 0,
+    }));
   }, [completed]);
 
   // ── Top 3 influencers by total spend ──────────────────────────────────────
@@ -148,19 +141,22 @@ export default function AnalyticsTab({
 
   // ── Campaign funnel ───────────────────────────────────────────────────────
   const funnel = useMemo(() => {
-    const sent = campaigns.filter((c) => c.status !== "rejected").length;
-    const accepted = campaigns.filter(
-      (c) => c.status === "accepted" || c.status === "completed",
-    ).length;
-    const done = completed.length;
+    let sent = 0;
+    let accepted = 0;
+    let done = 0;
+    for (const c of campaigns) {
+      if (c.status !== "rejected") sent++;
+      if (c.status === "accepted" || c.status === "completed") accepted++;
+      if (c.status === "completed") done++;
+    }
     return { sent, accepted, done };
-  }, [campaigns, completed]);
+  }, [campaigns]);
 
   if (completed.length === 0) {
     return (
       <div className="pt-8 text-center space-y-3">
         <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/10 to-violet-500/10">
-          <BarChart className="h-8 w-8 text-muted-foreground" />
+          <BarChart3 className="h-8 w-8 text-muted-foreground" />
         </div>
         <p className="font-semibold">No analytics yet</p>
         <p className="text-sm text-muted-foreground max-w-xs mx-auto">

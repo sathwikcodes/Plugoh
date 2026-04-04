@@ -1,10 +1,16 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import {
+  CAMPAIGN_STATUS_CONFIG,
+  type CampaignStatus,
+} from "@/lib/constants";
+export { formatConversationTime } from "@/lib/format";
 
 interface SharedConversationItemProps {
   name: string;
+  avatarUrl?: string | null;
   campaignTitle: string;
   preview: string;
   timeLabel: string;
@@ -12,53 +18,6 @@ interface SharedConversationItemProps {
   isSelected: boolean;
   isOwn: boolean;
   onClick: () => void;
-}
-
-const statusConfig: Record<
-  string,
-  { label: string; color: string; bg: string }
-> = {
-  pending: {
-    label: "Pending",
-    color: "text-amber-400",
-    bg: "bg-amber-400/10 border-amber-400/20",
-  },
-  accepted: {
-    label: "Active",
-    color: "text-green-400",
-    bg: "bg-green-400/10 border-green-400/20",
-  },
-  completed: {
-    label: "Done",
-    color: "text-violet-400",
-    bg: "bg-violet-400/10 border-violet-400/20",
-  },
-  rejected: {
-    label: "Declined",
-    color: "text-white/30",
-    bg: "bg-white/[0.04] border-white/[0.08]",
-  },
-};
-
-export function formatConversationTime(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return "now";
-  if (mins < 60) return `${mins}m`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d`;
-  const date = new Date(dateStr);
-  const now = new Date();
-  if (date.getFullYear() === now.getFullYear()) {
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  }
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "2-digit",
-  });
 }
 
 export function buildConversationPreview(
@@ -72,6 +31,7 @@ export function buildConversationPreview(
 
 export function SharedConversationItem({
   name,
+  avatarUrl,
   campaignTitle,
   preview,
   timeLabel,
@@ -86,7 +46,9 @@ export function SharedConversationItem({
     .join("")
     .toUpperCase()
     .slice(0, 2);
-  const statusMeta = statusConfig[status] || statusConfig.pending;
+  const cfg =
+    CAMPAIGN_STATUS_CONFIG[status as CampaignStatus] ??
+    CAMPAIGN_STATUS_CONFIG.requested;
 
   return (
     <button
@@ -103,6 +65,7 @@ export function SharedConversationItem({
       )}
 
       <Avatar className="h-10 w-10 shrink-0 ring-1 ring-white/[0.06]">
+        {avatarUrl ? <AvatarImage src={avatarUrl} alt={name} /> : null}
         <AvatarFallback className="bg-gradient-to-br from-pink-500/15 to-purple-500/15 text-xs font-semibold text-foreground/80">
           {initials}
         </AvatarFallback>
@@ -116,11 +79,10 @@ export function SharedConversationItem({
           <span
             className={cn(
               "text-[9px] font-medium px-1.5 py-px rounded-full border shrink-0",
-              statusMeta.bg,
-              statusMeta.color,
+              cfg.badge,
             )}
           >
-            {statusMeta.label}
+            {cfg.shortLabel}
           </span>
           <span className="text-[11px] text-muted-foreground/40 shrink-0 ml-auto tabular-nums">
             {timeLabel}

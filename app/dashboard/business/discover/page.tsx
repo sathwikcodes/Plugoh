@@ -16,6 +16,7 @@ import {
 } from "@/lib/animations";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { Database } from "@/lib/supabase/types";
 import { InfluencerCard } from "./_components/influencer-card";
 import { InfluencerCardStack } from "./_components/influencer-card-stack";
@@ -150,6 +151,7 @@ function SkeletonCard() {
 
 export default function InfluencerDiscovery() {
   const { data: profiles = [], isLoading: loading } = useInfluencerProfiles();
+  const isMobile = useIsMobile();
 
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -270,11 +272,24 @@ export default function InfluencerDiscovery() {
     setFilterPanelOpen(true);
   };
 
+  const mobileViewportHeight = "calc(100dvh - 4rem)";
+  const mobileBottomInset = "calc(104px + env(safe-area-inset-bottom, 0px))";
+
   return (
     <>
-      <div className="relative min-h-[calc(100dvh-4rem)] overflow-hidden">
+      <div
+        className="relative overflow-hidden md:min-h-[calc(100dvh-4rem)]"
+        style={
+          isMobile
+            ? {
+                height: mobileViewportHeight,
+                minHeight: mobileViewportHeight,
+              }
+            : undefined
+        }
+      >
         {/* Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
           <AnimatedGradientBackground
             Breathing
             gradientColors={GRADIENT_COLORS}
@@ -288,17 +303,20 @@ export default function InfluencerDiscovery() {
           <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#9fb8ff14_0%,transparent_100%)]" />
         </div>
 
-        <div className="relative z-10 container py-6">
+        <div
+          className="relative z-10 container h-full py-4 md:h-auto md:py-6"
+          style={isMobile ? { paddingBottom: mobileBottomInset } : undefined}
+        >
           <m.div
             variants={stagger}
             initial="hidden"
             animate="visible"
-            className="space-y-5 md:space-y-6"
+            className="flex h-full flex-col gap-4 md:h-auto md:gap-6"
           >
             {/* Header */}
             <m.div
               variants={fadeUp}
-              className="flex items-center justify-center gap-3 md:justify-start"
+              className="shrink-0 flex items-center justify-center gap-3 md:justify-start"
             >
               <div className="min-w-0 flex flex-col justify-center text-center md:text-left">
                 <h1 className="heading-mix text-3xl font-semibold tracking-tight text-white sm:text-3xl">
@@ -311,7 +329,7 @@ export default function InfluencerDiscovery() {
             </m.div>
 
             {/* Search + Filter bar */}
-            <m.section variants={fadeUp} className="space-y-3">
+            <m.section variants={fadeUp} className="shrink-0 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="relative flex-1">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
@@ -357,15 +375,18 @@ export default function InfluencerDiscovery() {
                 {/* Mobile skeleton */}
                 <m.div
                   variants={fadeUp}
-                  className="md:hidden flex justify-center"
+                  className="flex flex-1 items-center justify-center md:hidden"
                 >
-                  <div className="w-full max-w-85">
+                  <div className="w-full max-w-[min(85vw,21rem)]">
                     <SkeletonCard />
                   </div>
                 </m.div>
               </>
             ) : filtered.length === 0 ? (
-              <m.div variants={fadeUp}>
+              <m.div
+                variants={fadeUp}
+                className="flex flex-1 items-center md:block"
+              >
                 <Card className="border-white/10 bg-white/4 backdrop-blur-2xl">
                   <CardContent className="flex flex-col items-center gap-5 py-16 text-center">
                     <div className="flex h-18 w-18 items-center justify-center rounded-full border border-white/10 bg-white/6">
@@ -407,8 +428,14 @@ export default function InfluencerDiscovery() {
                 </m.div>
 
                 {/* Mobile: card stack */}
-                <m.div variants={fadeUp} className="md:hidden px-1 pb-1">
-                  <InfluencerCardStack profiles={filtered} />
+                <m.div
+                  variants={fadeUp}
+                  className="flex min-h-0 flex-1 md:hidden"
+                >
+                  <InfluencerCardStack
+                    profiles={filtered}
+                    className="w-full"
+                  />
                 </m.div>
               </>
             )}

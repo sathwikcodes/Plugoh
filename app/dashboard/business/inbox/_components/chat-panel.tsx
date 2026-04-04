@@ -21,6 +21,10 @@ import { useMutation } from "@tanstack/react-query";
 import type { BusinessConversation } from "@/hooks/queries/use-business-inbox-conversations";
 import { getBusinessDisplayName } from "@/lib/business-profile";
 import Link from "next/link";
+import {
+  getInfluencerAvatarUrl,
+  getInfluencerDisplayName,
+} from "./profile-display";
 
 interface ChatPanelProps {
   conversation: BusinessConversation;
@@ -40,7 +44,8 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   );
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const influencerName = influencerProfile?.full_name || "Influencer";
+  const influencerName = getInfluencerDisplayName(influencerProfile);
+  const influencerAvatarUrl = getInfluencerAvatarUrl(influencerProfile);
   const brandName = getBusinessDisplayName(myIdentity ?? null);
   const disabled = campaign.status === "completed";
 
@@ -102,6 +107,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     <div className="flex flex-col h-full">
       <ChatHeader
         influencerName={influencerName}
+        avatarUrl={influencerAvatarUrl}
         campaignTitle={campaign.title || "Untitled Campaign"}
         status={campaign.status}
         onBack={onBack}

@@ -5,11 +5,12 @@ import type { Database } from "@/lib/supabase/types";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type CampaignMessage = Database["public"]["Tables"]["campaign_messages"]["Row"];
-type Profile = Database["public"]["Tables"]["profiles"]["Row"];
+type InfluencerProfile =
+  Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
 export interface BusinessConversation {
   campaign: Campaign;
-  influencerProfile: Profile | null;
+  influencerProfile: InfluencerProfile | null;
   lastMessage: CampaignMessage | null;
 }
 
@@ -30,7 +31,10 @@ async function fetchBusinessConversations(
   const campaignIds = campaigns.map((c) => c.id);
 
   const [{ data: profiles }, { data: allMessages }] = await Promise.all([
-    supabase.from("profiles").select("*").in("id", influencerIds),
+    supabase
+      .from("influencer_profiles")
+      .select("*")
+      .in("user_id", influencerIds),
     supabase
       .from("campaign_messages")
       .select("*")
@@ -39,7 +43,7 @@ async function fetchBusinessConversations(
       .order("created_at", { ascending: false }),
   ]);
 
-  const profileMap = new Map((profiles || []).map((p) => [p.id, p]));
+  const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
 
   const messageMap = new Map<string, CampaignMessage>();
   for (const msg of allMessages || []) {
@@ -54,7 +58,7 @@ async function fetchBusinessConversations(
     lastMessage: messageMap.get(c.id) || null,
   }));
 
-  convos.sort((a, b) => {
+  return convos.toSorted((a, b) => {
     const aTime =
       a.lastMessage?.created_at ||
       a.campaign.updated_at ||
@@ -65,8 +69,6 @@ async function fetchBusinessConversations(
       b.campaign.created_at;
     return new Date(bTime).getTime() - new Date(aTime).getTime();
   });
-
-  return convos;
 }
 
 export function useBusinessInboxConversations(userId: string | undefined) {
@@ -91,10 +93,20 @@ export function useBusinessInboxConversations(userId: string | undefined) {
           schema: "public",
           table: "campaign_messages",
         },
-        () => {
-          queryClient.invalidateQueries({
-            queryKey: ["business-inbox-conversations", userId],
-          });
+        (payload) => {
+          const newMsg = payload.new as { campaign_id: string };
+          const cached = queryClient.getQueryData<BusinessConversation[]>([
+            "business-inbox-conversations",
+            userId,
+          ]);
+          if (
+            !cached ||
+            cached.some((c) => c.campaign.id === newMsg.campaign_id)
+          ) {
+            queryClient.invalidateQueries({
+              queryKey: ["business-inbox-conversations", userId],
+            });
+          }
         },
       )
       .subscribe();

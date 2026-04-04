@@ -1,43 +1,67 @@
+import {
+  CAMPAIGN_STATUS_CONFIG,
+  type CampaignStatus,
+} from "@/lib/constants";
+
 /**
- * Format a number for display (e.g. 1500 → "1.5K", 2000000 → "2.0M").
+ * Returns status badge classes from the canonical CAMPAIGN_STATUS_CONFIG.
+ * Drop-in replacement for the old per-file status mappings.
  */
-export function formatNumber(n: number | null): string {
-  if (!n) return "\u2014";
+export function statusColor(s: string): string {
+  const cfg =
+    CAMPAIGN_STATUS_CONFIG[s as CampaignStatus] ??
+    CAMPAIGN_STATUS_CONFIG.requested;
+  return cfg.badge;
+}
+
+/**
+ * Compact number display (e.g. 1500 → "1.5K", 2000000 → "2.0M").
+ * Pass `fallback` to control what's returned for falsy values (default: "—").
+ */
+export function compactNumber(
+  n: number | null,
+  fallback: string = "\u2014",
+): string {
+  if (!n && n !== 0) return fallback;
+  if (n === 0) return "0";
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
   return n.toString();
 }
 
 /**
- * Returns a status badge class string based on campaign status.
+ * Format a currency value for display in INR (e.g. 1500 → "₹1,500").
  */
-export function statusColor(s: string): string {
-  switch (s) {
-    case "pre_authorized":
-      return "bg-amber-500/10 text-amber-300 border-amber-500/20";
-    case "requested":
-    case "pending":
-      return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-    case "payment_pending":
-      return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
-    case "in_escrow":
-    case "accepted":
-      return "bg-green-500/10 text-green-400 border-green-500/20";
-    case "delivery_submitted":
-      return "bg-blue-500/10 text-blue-400 border-blue-500/20";
-    case "completed":
-      return "bg-violet-500/10 text-violet-400 border-violet-500/20";
-    case "disputed":
-      return "bg-red-500/10 text-red-400 border-red-500/20";
-    case "declined":
-    case "rejected":
-    case "expired":
-    case "cancelled":
-    case "refunded":
-      return "bg-muted text-muted-foreground border-muted";
-    default:
-      return "bg-muted text-muted-foreground";
-  }
+export function formatCurrency(value: number | null): string {
+  if (!value) return "\u2014";
+  return `\u20B9${value.toLocaleString("en-IN")}`;
+}
+
+/**
+ * Capitalize the first letter of a string.
+ */
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * Format a package type for display (e.g. "reel" → "Reel").
+ */
+export function formatPackage(pkg: string | null): string {
+  if (!pkg) return "Campaign";
+  return capitalize(pkg);
+}
+
+/**
+ * Extract up to 2 initials from a name string.
+ */
+export function getInitials(name: string | null): string {
+  return (name?.trim() || "C")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
 /**
@@ -82,16 +106,6 @@ export function formatMessageTime(dateStr: string): string {
 }
 
 /**
- * Compact number display (e.g. 1500 → "1.5K", 2000000 → "2.0M").
- * Unlike formatNumber, returns the raw number string for 0 and small values.
- */
-export function compactNumber(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
-  return n.toString();
-}
-
-/**
  * Returns a human-readable relative time string (e.g. "5m ago", "2d ago").
  */
 export function timeAgo(dateStr: string): string {
@@ -103,4 +117,28 @@ export function timeAgo(dateStr: string): string {
   const days = Math.floor(hours / 24);
   if (days < 30) return `${days}d ago`;
   return `${Math.floor(days / 30)}mo ago`;
+}
+
+/**
+ * Compact conversation timestamp (e.g. "now", "5m", "2h", "3d", "Jun 14").
+ */
+export function formatConversationTime(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return "now";
+  if (mins < 60) return `${mins}m`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d`;
+  const date = new Date(dateStr);
+  const now = new Date();
+  if (date.getFullYear() === now.getFullYear()) {
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "2-digit",
+  });
 }

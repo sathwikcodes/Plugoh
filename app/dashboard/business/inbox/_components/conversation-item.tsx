@@ -6,6 +6,10 @@ import {
   buildConversationPreview,
   formatConversationTime,
 } from "@/components/inbox/shared-conversation-item";
+import {
+  getInfluencerAvatarUrl,
+  getInfluencerDisplayName,
+} from "./profile-display";
 
 interface ConversationItemProps {
   conversation: BusinessConversation;
@@ -22,7 +26,8 @@ export function ConversationItem({
 }: ConversationItemProps) {
   const { campaign, influencerProfile, lastMessage } = conversation;
 
-  const influencerName = influencerProfile?.full_name || "Influencer";
+  const influencerName = getInfluencerDisplayName(influencerProfile);
+  const influencerAvatarUrl = getInfluencerAvatarUrl(influencerProfile);
   const msgPreview = lastMessage
     ? buildConversationPreview(lastMessage.content, lastMessage.message_type)
     : "No messages yet";
@@ -32,6 +37,7 @@ export function ConversationItem({
   return (
     <SharedConversationItem
       name={influencerName}
+      avatarUrl={influencerAvatarUrl}
       campaignTitle={campaign.title || "Untitled Campaign"}
       preview={msgPreview}
       timeLabel={formatConversationTime(msgTime)}

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { m } from "framer-motion";
-import { timeAgo } from "@/lib/format";
+import { timeAgo, capitalize } from "@/lib/format";
 import {
   getBusinessDisplayName,
   isBusinessProfileComplete,
@@ -385,8 +385,4 @@ export default function BusinessDashboard() {
       </div>
     </div>
   );
-}
-
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }

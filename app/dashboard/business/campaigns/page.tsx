@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { m, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft,
   ArrowRight,
   Megaphone,
   Search,
@@ -14,12 +13,11 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
-import { timeAgo } from "@/lib/format";
+import { timeAgo, formatCurrency, formatPackage, getInitials } from "@/lib/format";
 import { supabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import {
   GRADIENT_COLORS,
@@ -106,25 +104,6 @@ const SORT_OPTIONS: Array<{
   },
 ];
 
-function getInitials(name: string | null): string {
-  return (name?.trim() || "C")
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
-function formatCurrency(value: number | null): string {
-  if (!value) return "—";
-  return `₹${value.toLocaleString("en-IN")}`;
-}
-
-function formatPackage(pkg: string | null): string {
-  if (!pkg) return "Campaign";
-  return pkg.charAt(0).toUpperCase() + pkg.slice(1);
-}
-
 // ── Status badge ──────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
   const cfg =
@@ -167,24 +146,7 @@ function CampaignRow({ item }: { item: EnrichedCampaign }) {
         <div
           className={cn(
             "h-2 w-2 shrink-0 rounded-full",
-            campaign.status === "payment_pending"
-              ? "bg-yellow-400"
-              : campaign.status === "delivery_submitted"
-                ? "bg-blue-400"
-                : campaign.status === "in_escrow" ||
-                    campaign.status === "accepted"
-                  ? "bg-emerald-400"
-                  : campaign.status === "completed"
-                    ? "bg-violet-400"
-                    : [
-                          "declined",
-                          "rejected",
-                          "expired",
-                          "cancelled",
-                          "refunded",
-                        ].includes(campaign.status)
-                      ? "bg-white/20"
-                      : "bg-amber-400",
+            (CAMPAIGN_STATUS_CONFIG[campaign.status as CampaignStatus] ?? CAMPAIGN_STATUS_CONFIG.requested).dot,
           )}
         />
 
@@ -249,103 +211,213 @@ function CampaignRow({ item }: { item: EnrichedCampaign }) {
 function CampaignSortPanel({
   open,
   onClose,
+  activeTab,
+  setActiveTab,
+  statusFilter,
+  setStatusFilter,
+  statusCounts,
   sortMode,
   setSortMode,
 }: {
   open: boolean;
   onClose: () => void;
+  activeTab: "status" | "sort";
+  setActiveTab: (v: "status" | "sort") => void;
+  statusFilter: StatusFilter;
+  setStatusFilter: (v: StatusFilter) => void;
+  statusCounts: Record<StatusFilter, number>;
   sortMode: SortMode;
   setSortMode: (v: SortMode) => void;
 }) {
   const isMobile = useIsMobile();
   const panelRef = useRef<HTMLDivElement>(null);
+  const handleDismiss = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
   useEffect(() => {
-    if (open) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
+    document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [open]);
+  }, [handleDismiss, open]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    if (open && isMobile) {
+      document.body.dataset.mobileDockHidden = "true";
+    } else {
+      delete document.body.dataset.mobileDockHidden;
+    }
+
+    return () => {
+      delete document.body.dataset.mobileDockHidden;
+    };
+  }, [isMobile, open]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) onClose();
+      if (e.key === "Escape" && open) handleDismiss();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [open, onClose]);
+  }, [handleDismiss, open]);
 
   const content = (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       {isMobile && (
         <div className="flex shrink-0 justify-center pb-1 pt-3">
-          <div className="h-1 w-9 rounded-full bg-white/20" />
+          <div className="h-1.5 w-22 rounded-full bg-white/14" />
         </div>
       )}
+
       <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-5 py-4">
         <div className="flex items-center gap-2.5">
-          <SlidersHorizontal className="h-4 w-4 text-white/50" />
+          <SlidersHorizontal className="h-4 w-4 text-white/45" />
           <span className="text-[15px] font-semibold text-white">
             Sort campaigns
           </span>
         </div>
         <button
-          onClick={onClose}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-all hover:bg-white/10 hover:text-white"
+          onClick={handleDismiss}
+          className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white"
         >
-          <X className="h-3.5 w-3.5" />
+          <X className="h-5 w-5" />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-5">
-        <div className="space-y-5">
-          <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.26em] text-white/30">
-              Sort by
-            </p>
-            <div className="space-y-2">
-              {SORT_OPTIONS.map((opt) => (
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5">
+        <div className="space-y-5 pb-6">
+          <div className="grid grid-cols-2 gap-2 rounded-[22px] border border-white/10 bg-white/[0.035] p-1">
+            {[
+              { value: "status" as const, label: "Status" },
+              { value: "sort" as const, label: "Sort" },
+            ].map((tab) => {
+              const active = activeTab === tab.value;
+              return (
                 <button
-                  key={opt.value}
+                  key={tab.value}
                   type="button"
-                  onClick={() => {
-                    setSortMode(opt.value);
-                    onClose();
-                  }}
+                  onClick={() => setActiveTab(tab.value)}
                   className={cn(
-                    "w-full rounded-xl border p-3.5 text-left transition-all duration-200",
-                    sortMode === opt.value
-                      ? "border-white/20 bg-white/10"
-                      : "border-white/8 bg-white/[0.03] hover:bg-white/[0.06]",
+                    "rounded-[18px] px-4 py-2.5 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-white text-black shadow-[0_10px_20px_rgba(0,0,0,0.18)]"
+                      : "text-white/58 hover:text-white",
                   )}
                 >
-                  <p
-                    className={cn(
-                      "text-[13px] font-medium",
-                      sortMode === opt.value ? "text-white" : "text-white/70",
-                    )}
-                  >
-                    {opt.label}
-                  </p>
-                  <p className="mt-0.5 text-[11px] text-white/38">
-                    {opt.description}
-                  </p>
+                  {tab.label}
                 </button>
-              ))}
+              );
+            })}
+          </div>
+
+          {activeTab === "status" ? (
+            <div className="space-y-3">
+              <p className="eyebrow-label text-[10px] text-white/35">
+                Filter by status
+              </p>
+              <div className="space-y-3">
+                {STATUS_FILTERS.map((sf) => {
+                  const active = statusFilter === sf;
+                  const count = statusCounts[sf];
+                  const isUrgent =
+                    sf === "payment_pending" && count > 0 && !active;
+                  return (
+                    <button
+                      key={sf}
+                      type="button"
+                      onClick={() => {
+                        setStatusFilter(sf);
+                        handleDismiss();
+                      }}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-[22px] border px-4 py-3.5 text-left transition-colors",
+                        active
+                          ? "border-white/20 bg-white/[0.1]"
+                          : isUrgent
+                            ? "border-yellow-400/40 bg-yellow-400/10 hover:bg-yellow-400/15"
+                            : "border-white/10 bg-white/[0.035] hover:bg-white/[0.065]",
+                      )}
+                    >
+                      <div className="pr-4">
+                        <p
+                          className={cn(
+                            "text-[15px]",
+                            active
+                              ? "text-white"
+                              : isUrgent
+                                ? "text-yellow-200"
+                                : "text-white",
+                          )}
+                        >
+                          {STATUS_PILL_LABELS[sf]}
+                        </p>
+                        <p className="mt-1 text-[12px] text-white/42">
+                          {count} campaign{count !== 1 ? "s" : ""}
+                        </p>
+                      </div>
+                      <span
+                        className={cn(
+                          "flex min-w-[32px] items-center justify-center rounded-full border px-2 py-1 text-[11px]",
+                          active
+                            ? "border-white bg-white text-black"
+                            : isUrgent
+                              ? "border-yellow-300/30 bg-yellow-300/12 text-yellow-200"
+                              : "border-white/12 text-white/45",
+                        )}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-
-          <Separator className="bg-white/[0.07]" />
-
-          <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.26em] text-white/30">
-              Currently sorting by
-            </p>
-            <p className="text-[13px] text-white/60">
-              {SORT_OPTIONS.find((o) => o.value === sortMode)?.label}
-            </p>
-          </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="eyebrow-label text-[10px] text-white/35">Sort by</p>
+              <div className="space-y-3">
+                {SORT_OPTIONS.map((opt) => {
+                  const active = sortMode === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => {
+                        setSortMode(opt.value);
+                        handleDismiss();
+                      }}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-[22px] border px-4 py-3.5 text-left transition-colors",
+                        active
+                          ? "border-white/20 bg-white/[0.1]"
+                          : "border-white/10 bg-white/[0.035] hover:bg-white/[0.065]",
+                      )}
+                    >
+                      <div className="pr-4">
+                        <p className="text-[15px] text-white">{opt.label}</p>
+                        <p className="mt-1 text-[12px] text-white/42">
+                          {opt.description}
+                        </p>
+                      </div>
+                      <span
+                        className={cn(
+                          "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
+                          active
+                            ? "border-white bg-white text-black"
+                            : "border-white/12 text-transparent",
+                        )}
+                      >
+                        <span className="h-2.5 w-2.5 rounded-full bg-current" />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -357,27 +429,28 @@ function CampaignSortPanel({
         <>
           <m.div
             key="sort-backdrop"
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]"
+            className="fixed inset-0 z-40 bg-black/35 backdrop-blur-[3px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.22 }}
-            onClick={onClose}
+            onClick={handleDismiss}
           />
           {isMobile ? (
             <m.div
               key="sort-sheet-mobile"
               ref={panelRef}
-              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[85dvh] flex-col rounded-t-[28px] border-t border-white/10 bg-[#0b0d12] text-white"
+              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[88dvh] flex-col rounded-t-[32px] border-t border-white/10 bg-[#0b0d12] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)]"
+              style={{ height: "min(88dvh, 760px)" }}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 34 }}
               drag="y"
               dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={0.25}
+              dragElastic={0.18}
               onDragEnd={(_, info) => {
-                if (info.offset.y > 80) onClose();
+                if (info.offset.y > 90) handleDismiss();
               }}
             >
               {content}
@@ -386,17 +459,11 @@ function CampaignSortPanel({
             <m.div
               key="sort-panel-desktop"
               ref={panelRef}
-              className="fixed bottom-0 right-0 top-0 z-50 flex w-[360px] flex-col border-l border-white/10 bg-[#0b0d12] text-white shadow-[-24px_0_80px_rgba(0,0,0,0.45)]"
+              className="fixed bottom-0 right-0 top-0 z-50 flex w-[420px] flex-col border-l border-white/10 bg-[#0b0d12] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 340, damping: 36 }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(_, info) => {
-                if (info.offset.x > 80) onClose();
-              }}
             >
               {content}
             </m.div>
@@ -410,6 +477,7 @@ function CampaignSortPanel({
 // ── Main page ─────────────────────────────────────────────────────────────
 export default function CampaignsList() {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const { data: campaigns = [], isLoading: campaignsLoading } = useCampaigns(
     user?.id,
     "business",
@@ -419,6 +487,7 @@ export default function CampaignsList() {
   const [search, setSearch] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [sortPanelOpen, setSortPanelOpen] = useState(false);
+  const [sortPanelTab, setSortPanelTab] = useState<"status" | "sort">("sort");
 
   // Mark campaign notifications as read
   useEffect(() => {
@@ -483,31 +552,28 @@ export default function CampaignsList() {
     [campaigns, profileMap],
   );
 
-  const statusCounts = useMemo(
-    () => ({
+  const statusCounts = useMemo(() => {
+    const counts: Record<StatusFilter, number> = {
       All: campaigns.length,
-      requested: campaigns.filter((c) =>
-        STATUS_FILTER_GROUPS.requested.includes(c.status),
-      ).length,
-      payment_pending: campaigns.filter((c) =>
-        STATUS_FILTER_GROUPS.payment_pending.includes(c.status),
-      ).length,
-      in_escrow: campaigns.filter((c) =>
-        STATUS_FILTER_GROUPS.in_escrow.includes(c.status),
-      ).length,
-      completed: campaigns.filter((c) =>
-        STATUS_FILTER_GROUPS.completed.includes(c.status),
-      ).length,
-      closed: campaigns.filter((c) =>
-        STATUS_FILTER_GROUPS.closed.includes(c.status),
-      ).length,
-    }),
-    [campaigns],
-  );
+      requested: 0,
+      payment_pending: 0,
+      in_escrow: 0,
+      completed: 0,
+      closed: 0,
+    };
+    for (const c of campaigns) {
+      for (const key of Object.keys(STATUS_FILTER_GROUPS) as StatusFilter[]) {
+        if (key !== "All" && STATUS_FILTER_GROUPS[key].includes(c.status)) {
+          counts[key]++;
+        }
+      }
+    }
+    return counts;
+  }, [campaigns]);
 
-  const filtered = useMemo(() => {
+  const displayItems = useMemo(() => {
     const q = search.trim().toLowerCase();
-    let items = [...enriched];
+    let items = enriched;
 
     if (statusFilter !== "All") {
       items = items.filter((item) =>
@@ -529,7 +595,7 @@ export default function CampaignsList() {
       });
     }
 
-    items.sort((a, b) => {
+    const sorted = items.toSorted((a, b) => {
       if (sortMode === "highest_spend")
         return (
           (b.campaign.price_offered ?? 0) - (a.campaign.price_offered ?? 0)
@@ -546,25 +612,33 @@ export default function CampaignsList() {
       );
     });
 
-    return items;
+    // Highlight "pay now" campaigns at top when on "All" filter
+    if (statusFilter !== "All") return sorted;
+    const payNow: EnrichedCampaign[] = [];
+    const rest: EnrichedCampaign[] = [];
+    for (const item of sorted) {
+      (item.campaign.status === "payment_pending" ? payNow : rest).push(item);
+    }
+    return [...payNow, ...rest];
   }, [enriched, search, sortMode, statusFilter]);
 
-  // Highlight "pay now" campaigns at top when on "All" filter
-  const displayItems = useMemo(() => {
-    if (statusFilter !== "All") return filtered;
-    const payNow = filtered.filter(
-      (i) => i.campaign.status === "payment_pending",
-    );
-    const rest = filtered.filter(
-      (i) => i.campaign.status !== "payment_pending",
-    );
-    return [...payNow, ...rest];
-  }, [filtered, statusFilter]);
+  const mobileViewportHeight = "100dvh";
+  const mobileBottomInset = "calc(104px + env(safe-area-inset-bottom, 0px))";
 
   if (campaignsLoading) {
     return (
-      <div className="relative min-h-[calc(100dvh-4rem)] overflow-hidden">
-        <div className="pointer-events-none absolute inset-0">
+      <div
+        className="relative h-dvh overflow-hidden"
+        style={
+          isMobile
+            ? {
+                height: mobileViewportHeight,
+                minHeight: mobileViewportHeight,
+              }
+            : undefined
+        }
+      >
+        <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
           <AnimatedGradientBackground
             Breathing
             gradientColors={GRADIENT_COLORS}
@@ -576,16 +650,21 @@ export default function CampaignsList() {
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,8,16,0.12),rgba(5,8,16,0.62))]" />
         </div>
-        <div className="relative z-10 container py-6 space-y-4">
+        <div
+          className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6"
+          style={isMobile ? { paddingBottom: mobileBottomInset } : undefined}
+        >
+          <div className="flex h-full flex-col gap-4">
           <div className="h-12 w-48 animate-pulse rounded-2xl bg-white/[0.06]" />
           <div className="h-14 w-full animate-pulse rounded-full bg-white/[0.04]" />
-          <div className="space-y-2">
+          <div className="flex-1 space-y-2 overflow-hidden">
             {[0, 1, 2, 3].map((i) => (
               <div
                 key={i}
                 className="h-[60px] w-full animate-pulse rounded-2xl bg-white/[0.03]"
               />
             ))}
+          </div>
           </div>
         </div>
       </div>
@@ -594,9 +673,19 @@ export default function CampaignsList() {
 
   return (
     <>
-      <div className="relative min-h-[calc(100dvh-4rem)] overflow-hidden">
+      <div
+        className="relative h-dvh overflow-hidden"
+        style={
+          isMobile
+            ? {
+                height: mobileViewportHeight,
+                minHeight: mobileViewportHeight,
+              }
+            : undefined
+        }
+      >
         {/* Background */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
           <AnimatedGradientBackground
             Breathing
             gradientColors={GRADIENT_COLORS}
@@ -609,58 +698,56 @@ export default function CampaignsList() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_34%),linear-gradient(180deg,rgba(5,8,16,0.10),rgba(5,8,16,0.55))]" />
         </div>
 
-        <div className="relative z-10 container space-y-5 py-6">
+        <div
+          className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6"
+          style={isMobile ? { paddingBottom: mobileBottomInset } : undefined}
+        >
           <m.div
             variants={stagger}
             initial="hidden"
             animate="visible"
-            className="space-y-5"
+            className="flex h-full flex-col gap-4 md:h-auto md:gap-5"
           >
             {/* ── Header ───────────────────────────────────────────────── */}
-            <m.div variants={fadeUp} className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                asChild
-                className="h-11 w-11 shrink-0 rounded-full border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10"
-              >
-                <Link href="/dashboard/business">
-                  <ArrowLeft className="h-5 w-5" />
-                </Link>
-              </Button>
-              <div>
-                <p className="eyebrow-label text-[11px] text-white/45">
-                  Brand activity
-                </p>
-                <h1 className="heading-mix text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                  Campaign{" "}
-                  <span className="heading-mix-accent text-white/90">
-                    Ledger
+            <m.div
+              variants={fadeUp}
+              className="shrink-0 flex items-center justify-center gap-3 md:justify-start"
+            >
+              <div className="min-w-0 flex flex-col justify-center text-center md:text-left">
+                <h1 className="heading-mix text-3xl font-semibold tracking-tight text-white sm:text-3xl">
+                  Manage{" "}
+                  <span className="heading-mix-accent text-4xl text-white/90">
+                    Campaigns
                   </span>
                 </h1>
               </div>
             </m.div>
 
             {/* ── Search + Sort bar ────────────────────────────────────── */}
-            <m.div variants={fadeUp} className="space-y-3">
-              <div className="flex items-center gap-3 rounded-[28px] border border-white/10 bg-black/20 p-3 backdrop-blur-xl sm:p-4">
+            <m.div variants={fadeUp} className="shrink-0 space-y-3">
+              <div className="flex items-center gap-3">
                 <div className="relative flex-1">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
                   <Input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search campaigns or creator names"
-                    className="h-12 rounded-full border-white/10 bg-white/[0.05] pl-11 text-white placeholder:text-white/35"
+                    placeholder="Search"
+                    className="h-12 rounded-full border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/35"
                   />
                 </div>
                 <button
                   type="button"
-                  onClick={() => setSortPanelOpen(true)}
+                  onClick={() => {
+                    setSortPanelTab(
+                      statusFilter !== "All" ? "status" : "sort",
+                    );
+                    setSortPanelOpen(true);
+                  }}
                   className={cn(
-                    "relative flex h-12 shrink-0 items-center gap-2 rounded-full border px-5 text-sm font-medium text-white backdrop-blur-md transition-all duration-200",
-                    sortMode !== "newest"
-                      ? "border-white/25 bg-white/12"
-                      : "border-cyan-300/20 bg-[linear-gradient(135deg,#dfe7ff18,#8be9ff14)] hover:bg-white/10",
+                    "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-sm font-medium text-white backdrop-blur-md transition-all duration-200 sm:w-auto sm:gap-2 sm:px-5",
+                    sortMode !== "newest" || statusFilter !== "All"
+                      ? "border-white/25 bg-white/12 shadow-[0_0_20px_rgba(255,255,255,0.06)]"
+                      : "border-cyan-300/20 bg-[linear-gradient(135deg,#dfe7ff18,#8be9ff14)] shadow-[0_12px_32px_rgba(18,24,41,0.35)] hover:bg-white/10",
                   )}
                 >
                   <SlidersHorizontal className="h-4 w-4" />
@@ -668,108 +755,65 @@ export default function CampaignsList() {
                 </button>
               </div>
 
-              {/* Status pills */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                {STATUS_FILTERS.map((sf) => {
-                  const count = statusCounts[sf];
-                  const isActive = statusFilter === sf;
-                  const isUrgent =
-                    sf === "payment_pending" && count > 0 && !isActive;
-                  return (
-                    <button
-                      key={sf}
-                      type="button"
-                      onClick={() => setStatusFilter(sf)}
-                      className={cn(
-                        "flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-200",
-                        isActive
-                          ? "border-white/25 bg-white text-black"
-                          : isUrgent
-                            ? "border-yellow-400/40 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/15"
-                            : "border-white/10 bg-white/[0.04] text-white/55 hover:border-white/16 hover:text-white/80",
-                      )}
-                    >
-                      <span>{STATUS_PILL_LABELS[sf]}</span>
-                      <span
-                        className={cn(
-                          "text-[10px]",
-                          isActive ? "text-black/50" : "text-white/35",
-                        )}
-                      >
-                        {count}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <p className="pl-1 text-xs text-white/38">
-                {displayItems.length} campaign
-                {displayItems.length !== 1 ? "s" : ""}
-                {sortMode !== "newest" && (
-                  <span className="ml-2 text-white/25">
-                    · sorted by{" "}
-                    {SORT_OPTIONS.find(
-                      (o) => o.value === sortMode,
-                    )?.label.toLowerCase()}
-                  </span>
-                )}
-              </p>
             </m.div>
 
             {/* ── Campaign list ──────────────────────────────────────────── */}
             {campaigns.length === 0 ? (
               <m.div
                 variants={fadeUp}
-                className="rounded-[28px] border border-dashed border-white/10 bg-white/[0.025] py-20 text-center"
+                className="flex flex-1 items-center rounded-[28px] border border-dashed border-white/10 bg-white/[0.025] py-20 text-center"
               >
-                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-3xl bg-white/[0.05]">
-                  <Megaphone className="h-6 w-6 text-white/40" />
+                <div className="mx-auto">
+                  <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-3xl bg-white/[0.05]">
+                    <Megaphone className="h-6 w-6 text-white/40" />
+                  </div>
+                  <p className="text-lg font-semibold text-white">
+                    No campaigns yet
+                  </p>
+                  <p className="mt-1.5 text-sm text-white/50">
+                    Book a creator and your campaign activity will appear here.
+                  </p>
+                  <Button
+                    asChild
+                    className="mt-6 h-11 rounded-full bg-white text-black hover:bg-white/90"
+                  >
+                    <Link href="/dashboard/business/discover">
+                      Browse creators
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
-                <p className="text-lg font-semibold text-white">
-                  No campaigns yet
-                </p>
-                <p className="mt-1.5 text-sm text-white/50">
-                  Book a creator and your campaign activity will appear here.
-                </p>
-                <Button
-                  asChild
-                  className="mt-6 h-11 rounded-full bg-white text-black hover:bg-white/90"
-                >
-                  <Link href="/dashboard/business/discover">
-                    Browse creators
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
               </m.div>
             ) : displayItems.length === 0 ? (
               <m.div
                 variants={fadeUp}
-                className="rounded-[28px] border border-dashed border-white/10 bg-white/[0.025] py-16 text-center"
+                className="flex flex-1 items-center rounded-[28px] border border-dashed border-white/10 bg-white/[0.025] py-16 text-center"
               >
-                <p className="text-base font-medium text-white">
-                  No campaigns match this filter
-                </p>
-                <p className="mt-1 text-sm text-white/45">
-                  Try a different status or clear the search.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStatusFilter("All");
-                    setSearch("");
-                  }}
-                  className="mt-4 rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-sm text-white/70 hover:text-white transition-colors"
-                >
-                  Clear filters
-                </button>
+                <div className="mx-auto">
+                  <p className="text-base font-medium text-white">
+                    No campaigns match this filter
+                  </p>
+                  <p className="mt-1 text-sm text-white/45">
+                    Try a different status or clear the search.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStatusFilter("All");
+                      setSearch("");
+                    }}
+                    className="mt-4 rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-sm text-white/70 transition-colors hover:text-white"
+                  >
+                    Clear filters
+                  </button>
+                </div>
               </m.div>
             ) : (
               <m.div
                 variants={stagger}
                 initial="hidden"
                 animate="visible"
-                className="space-y-1.5"
+                className="min-h-0 flex-1 space-y-1.5 overflow-y-auto overscroll-contain pr-1"
               >
                 {displayItems.map((item) => (
                   <m.div key={item.campaign.id} variants={fadeUp}>
@@ -785,6 +829,11 @@ export default function CampaignsList() {
       <CampaignSortPanel
         open={sortPanelOpen}
         onClose={() => setSortPanelOpen(false)}
+        activeTab={sortPanelTab}
+        setActiveTab={setSortPanelTab}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        statusCounts={statusCounts}
         sortMode={sortMode}
         setSortMode={setSortMode}
       />

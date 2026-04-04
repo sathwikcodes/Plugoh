@@ -25,6 +25,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   const isInfluencer = role === "influencer";
   const isBusiness = role === "business";
   const isInboxPage = pathname.includes("/inbox");
+  const isBusinessDiscoverHome = pathname === "/dashboard/business/discover";
+  const isBusinessCampaignsHome = pathname === "/dashboard/business/campaigns";
 
   return (
     <>
@@ -32,6 +34,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         className={cn(
           (isInfluencer || isBusiness) &&
             !isInboxPage &&
+            !isBusinessDiscoverHome &&
+            !isBusinessCampaignsHome &&
             "pb-[calc(88px+env(safe-area-inset-bottom,0px))] md:pb-4",
         )}
       >

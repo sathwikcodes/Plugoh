@@ -1,37 +1,24 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import {
+  CAMPAIGN_STATUS_CONFIG,
+  type CampaignStatus,
+} from "@/lib/constants";
 
 interface SharedChatHeaderProps {
   participantName: string;
+  avatarUrl?: string | null;
   campaignTitle: string;
   status: string;
   onBack: () => void;
 }
 
-const statusStyles: Record<string, { label: string; classes: string }> = {
-  pending: {
-    label: "Pending",
-    classes: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  },
-  accepted: {
-    label: "Active",
-    classes: "bg-green-500/10 text-green-400 border-green-500/20",
-  },
-  completed: {
-    label: "Completed",
-    classes: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-  },
-  rejected: {
-    label: "Declined",
-    classes: "bg-white/[0.04] text-white/40 border-white/[0.08]",
-  },
-};
-
 export function SharedChatHeader({
   participantName,
+  avatarUrl,
   campaignTitle,
   status,
   onBack,
@@ -42,7 +29,10 @@ export function SharedChatHeader({
     .join("")
     .toUpperCase()
     .slice(0, 2);
-  const st = statusStyles[status] || statusStyles.pending;
+  const cfg =
+    CAMPAIGN_STATUS_CONFIG[status as CampaignStatus] ??
+    CAMPAIGN_STATUS_CONFIG.requested;
+  const st = { label: cfg.shortLabel, classes: cfg.badge };
 
   return (
     <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.05] bg-background/60 backdrop-blur-xl shrink-0">
@@ -55,6 +45,7 @@ export function SharedChatHeader({
       </button>
 
       <Avatar className="h-9 w-9 shrink-0 ring-1 ring-white/[0.06]">
+        {avatarUrl ? <AvatarImage src={avatarUrl} alt={participantName} /> : null}
         <AvatarFallback className="bg-gradient-to-br from-pink-500/15 to-purple-500/15 text-xs font-semibold text-foreground/80">
           {initials}
         </AvatarFallback>

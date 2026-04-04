@@ -44,11 +44,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 
-declare global {
-  interface Window {
-    Razorpay: new (options: Record<string, unknown>) => { open: () => void };
-  }
-}
+
 
 const DEFAULT_OBJECTIVE: BookingObjective = "product_launch";
 const DEFAULT_TIMING: BookingTimingMode = "asap";

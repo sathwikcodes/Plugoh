@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { timeAgo } from "@/lib/format";
+import { timeAgo, formatCurrency, formatPackage, getInitials } from "@/lib/format";
 import { BookingTimer } from "@/components/booking-timer";
 import { CAMPAIGN_STATUS_CONFIG } from "@/lib/constants";
 import type { CampaignStatus } from "@/lib/constants";
@@ -39,12 +39,6 @@ type Campaign = Database["public"]["Tables"]["campaigns"]["Row"] & {
   payment_method?: string | null;
   delivery_url?: string | null;
 };
-
-declare global {
-  interface Window {
-    Razorpay: new (options: Record<string, unknown>) => { open(): void };
-  }
-}
 
 // ── Step definitions ──────────────────────────────────────────────────────
 const STATUS_STEPS = [
@@ -71,25 +65,6 @@ const TERMINAL_STATUSES = new Set([
 ]);
 
 // ── Helpers ───────────────────────────────────────────────────────────────
-function formatCurrency(value: number | null): string {
-  if (!value) return "—";
-  return `₹${value.toLocaleString("en-IN")}`;
-}
-
-function formatPackage(pkg: string | null): string {
-  if (!pkg) return "Campaign";
-  return pkg.charAt(0).toUpperCase() + pkg.slice(1);
-}
-
-function getInitials(name: string | null): string {
-  return (name?.trim() || "C")
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
 function daysRemaining(from: string, totalDays: number): number {
   const deadline = new Date(from).getTime() + totalDays * 86_400_000;
   return Math.max(0, Math.ceil((deadline - Date.now()) / 86_400_000));
@@ -359,10 +334,12 @@ export default function BusinessCampaignDetail() {
 
   return (
     <>
-      <Script
-        src="https://checkout.razorpay.com/v1/checkout.js"
-        strategy="lazyOnload"
-      />
+      {campaign.status === "payment_pending" && (
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="lazyOnload"
+        />
+      )}
       <div className="container max-w-5xl space-y-5 py-6">
         {/* ── Back + title header ───────────────────────────────────── */}
         <div className="flex items-center gap-3">

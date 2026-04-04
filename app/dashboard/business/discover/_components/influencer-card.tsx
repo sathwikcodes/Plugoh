@@ -1,35 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeCheck,
-  Instagram,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { compactNumber } from "@/lib/format";
 import { INSTAGRAM_GRADIENT } from "@/lib/animations";
 import type { Database } from "@/lib/supabase/types";
 
-type InfluencerProfile =
+export type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
-
-function getEngagementRate(
-  likes: number | null,
-  followers: number | null,
-): number {
-  if (!likes || !followers || followers <= 0) return 0;
-  return (likes / followers) * 100;
-}
-
-export function getCreatorTier(followers: number | null): string {
-  if (!followers || followers < 10_000) return "Nano";
-  if (followers < 100_000) return "Micro";
-  if (followers < 500_000) return "Mid";
-  return "Macro";
-}
 
 export function getStartsAtPrice(profile: InfluencerProfile): number | null {
   const prices = [
@@ -51,188 +31,246 @@ export function getProfileInitials(name: string | null): string {
     .join("");
 }
 
+function getEngagementRate(
+  likes: number | null,
+  followers: number | null,
+): number {
+  if (!likes || !followers || followers <= 0) return 0;
+  return (likes / followers) * 100;
+}
+
+function getDisplayName(profile: InfluencerProfile) {
+  return profile.display_name?.trim() || "Creator";
+}
+
+function getShortBio(profile: InfluencerProfile) {
+  if (profile.bio?.trim()) return profile.bio.trim();
+  if (profile.category?.trim()) {
+    return `${profile.category.trim()} creator building polished brand stories.`;
+  }
+  return "Creator crafting polished brand-friendly content with a sharp personal style.";
+}
+
+function getFollowerLabel(profile: InfluencerProfile) {
+  return compactNumber(profile.follower_count ?? 0);
+}
+
+function getPriceLabel(profile: InfluencerProfile) {
+  const startsAt = getStartsAtPrice(profile);
+  if (!startsAt) return "On request";
+  const formatted = new Intl.NumberFormat("en-IN").format(startsAt);
+  return `₹${formatted}`;
+}
+
+function getEngagementLabel(profile: InfluencerProfile) {
+  const engagementRate = getEngagementRate(
+    profile.avg_likes_per_reel,
+    profile.follower_count,
+  );
+  return engagementRate > 0 ? `${engagementRate.toFixed(1)}%` : "New";
+}
+
+function getInstagramHandle(profile: InfluencerProfile) {
+  return profile.ig_username?.trim() || profile.instagram_handle?.trim() || "";
+}
+
+interface InfluencerCardArtworkProps {
+  profile: InfluencerProfile;
+  className?: string;
+}
+
+export function InfluencerCardArtwork({
+  profile,
+  className,
+}: InfluencerCardArtworkProps) {
+  const hasPhoto = !!profile.ig_profile_picture_url;
+
+  return (
+    <div
+      className={cn("absolute inset-0 overflow-hidden rounded-[inherit]", className)}
+    >
+      {hasPhoto ? (
+        <Image
+          src={profile.ig_profile_picture_url!}
+          alt={getDisplayName(profile)}
+          fill
+          sizes="(max-width: 768px) 92vw, (max-width: 1280px) 33vw, 26vw"
+          className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+          unoptimized
+        />
+      ) : (
+        <div className="absolute inset-0" style={{ background: INSTAGRAM_GRADIENT }}>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_18%,rgba(255,255,255,0.28),transparent_42%),radial-gradient(circle_at_72%_82%,rgba(255,210,160,0.18),transparent_35%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(255,255,255,0.08),transparent_34%,rgba(9,9,12,0.45)_100%)]" />
+          <div className="flex h-full items-center justify-center">
+            <span className="heading-mix-accent text-7xl text-white/25 sm:text-8xl">
+              {getProfileInitials(profile.display_name)}
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,5,8,0.05)_0%,rgba(3,5,8,0.14)_28%,rgba(3,5,8,0.46)_72%,rgba(3,5,8,0.88)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-[54%] bg-[linear-gradient(180deg,rgba(9,12,17,0)_0%,rgba(9,12,17,0.10)_10%,rgba(9,12,17,0.28)_32%,rgba(9,12,17,0.84)_100%)]" />
+      <div className="absolute inset-x-0 bottom-[30%] h-28 bg-[linear-gradient(180deg,rgba(13,16,21,0)_0%,rgba(13,16,21,0.72)_100%)]" />
+      <div className="absolute inset-0 rounded-[inherit] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-48px_80px_rgba(0,0,0,0.48)]" />
+    </div>
+  );
+}
+
+function VerificationBadge() {
+  return (
+    <div className="ml-2 flex h-9 w-9 shrink-0 items-center justify-center">
+      <Image
+        src="/verified.png"
+        alt="Verified"
+        width={22}
+        height={22}
+        className="h-[22px] w-[22px] object-contain drop-shadow-[0_6px_14px_rgba(255,255,255,0.28)]"
+      />
+    </div>
+  );
+}
+
+interface MetricPillProps {
+  kind: "followers" | "engagement";
+  value: string;
+}
+
+function MetricPill({ kind, value }: MetricPillProps) {
+  const isFollowers = kind === "followers";
+
+  return (
+    <div className="flex min-w-0 items-center gap-2">
+      {isFollowers ? (
+        <Image
+          src="/people_insta.png"
+          alt=""
+          width={18}
+          height={18}
+          className="h-[18px] w-[18px] object-contain"
+        />
+      ) : (
+        <Image
+          src="/premium_target.png"
+          alt=""
+          width={18}
+          height={18}
+          className="h-[18px] w-[18px] object-contain"
+        />
+      )}
+      <p className="truncate text-[14px] font-semibold tracking-[-0.03em] text-white">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+interface PriceButtonProps {
+  profile: InfluencerProfile;
+  className?: string;
+}
+
+function PriceButton({ profile, className }: PriceButtonProps) {
+  return (
+    <Link
+      href={`/dashboard/business/discover/${profile.id}`}
+      className={cn(
+        "group/price inline-flex h-full min-h-[76px] items-center gap-3 rounded-[22px] bg-[#f4f4f1] px-5 py-3 text-[#111316] shadow-[0_18px_30px_rgba(0,0,0,0.22)] transition-transform duration-200 hover:scale-[1.02]",
+        className,
+      )}
+    >
+      <div className="min-w-0">
+        <p className="text-[9px] uppercase tracking-[0.22em] text-[#111316]/45">
+          Starts from
+        </p>
+        <p className="mt-1 truncate text-[17px] font-semibold tracking-[-0.04em] text-[#111316]">
+          {getPriceLabel(profile)}
+        </p>
+      </div>
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#111316] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+        <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/price:translate-x-0.5" />
+      </div>
+    </Link>
+  );
+}
+
+interface InfluencerCardInfoPanelProps {
+  profile: InfluencerProfile;
+  className?: string;
+}
+
+export function InfluencerCardInfoPanel({
+  profile,
+  className,
+}: InfluencerCardInfoPanelProps) {
+  const instagramHandle = getInstagramHandle(profile);
+
+  return (
+    <div
+      className={cn(
+        "absolute inset-x-3 bottom-3 overflow-hidden rounded-[28px] border border-white/15",
+        "bg-[linear-gradient(180deg,rgba(40,44,49,0.22)_0%,rgba(12,14,19,0.92)_100%)]",
+        "shadow-[0_26px_60px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.14)]",
+        "backdrop-blur-[18px]",
+        className,
+      )}
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.02)_26%,rgba(255,255,255,0)_52%)]" />
+      <div className="absolute inset-x-6 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.58),transparent)]" />
+
+      <div className="relative px-4 pb-4 pt-4 sm:px-5">
+        <div className="flex min-w-0 items-center">
+          <p className="truncate text-[22px] font-semibold tracking-[-0.05em] text-white sm:text-[24px]">
+            {getDisplayName(profile)}
+          </p>
+          <VerificationBadge />
+        </div>
+
+        {instagramHandle ? (
+          <p className="mt-1 text-[12px] font-medium tracking-[0.08em] text-white/55">
+            @{instagramHandle}
+          </p>
+        ) : null}
+
+        <p className="mt-2 line-clamp-2 max-w-[92%] text-[12px] leading-[1.45] text-white/62 sm:text-[12.5px]">
+          {getShortBio(profile)}
+        </p>
+
+        <div className="mt-4 flex items-stretch justify-between gap-2.5 sm:gap-3">
+          <div className="grid w-fit shrink-0 grid-cols-2 gap-3">
+            <MetricPill kind="followers" value={getFollowerLabel(profile)} />
+            <MetricPill kind="engagement" value={getEngagementLabel(profile)} />
+          </div>
+          <PriceButton
+            profile={profile}
+            className="w-[clamp(132px,42%,168px)] min-w-[132px] shrink-0 justify-between px-4 sm:px-5"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface InfluencerCardProps {
   profile: InfluencerProfile;
   className?: string;
 }
 
 export function InfluencerCard({ profile, className }: InfluencerCardProps) {
-  const tier = getCreatorTier(profile.follower_count);
-  const startsAt = getStartsAtPrice(profile);
-  const engagementRate = getEngagementRate(
-    profile.avg_likes_per_reel,
-    profile.follower_count,
-  );
-  const hasPhoto = !!profile.ig_profile_picture_url;
-  const handle = profile.instagram_handle || profile.ig_username;
-  const isVerified = !!handle;
-
   return (
-    <Link
-      href={`/dashboard/business/discover/${profile.id}`}
-      className={cn("block", className)}
-    >
-      <div className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[22px] border border-white/[0.08] transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
-        {/* ── Background photo / gradient ─────────────────────── */}
-        {hasPhoto ? (
-          <img
-            src={profile.ig_profile_picture_url!}
-            alt={profile.display_name || "Creator"}
-            className="absolute inset-0 h-full w-full object-cover object-[center_15%] pointer-events-none select-none"
-            draggable={false}
-          />
-        ) : (
-          <div
-            className="absolute inset-0"
-            style={{ background: INSTAGRAM_GRADIENT }}
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_25%,rgba(255,255,255,0.10),transparent_58%)]" />
-            <div className="flex h-full items-end justify-center pb-[44%]">
-              <span className="text-7xl font-black text-white/20 select-none leading-none">
-                {getProfileInitials(profile.display_name)}
-              </span>
-            </div>
-          </div>
+    <div className={cn("group block", className)}>
+      <div
+        className={cn(
+          "relative aspect-[0.68] w-full overflow-hidden rounded-[34px]",
+          "border border-white/[0.14] bg-[#080a0d]",
+          "shadow-[0_28px_80px_rgba(0,0,0,0.46)]",
         )}
-
-        {/* ── Top badges ──────────────────────────────────────── */}
-        <div className="absolute left-3 right-3 top-3 flex items-start justify-between gap-2 pointer-events-none">
-          {profile.category ? (
-            <span className="rounded-full border border-white/[0.12] bg-black/35 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.10em] text-white/80 backdrop-blur-sm">
-              {profile.category}
-            </span>
-          ) : (
-            <span />
-          )}
-          <span
-            className={cn(
-              "rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.10em] backdrop-blur-sm",
-              tier === "Macro"
-                ? "border-amber-400/25 bg-amber-400/12 text-amber-200/90"
-                : tier === "Mid"
-                  ? "border-violet-400/25 bg-violet-400/12 text-violet-200/90"
-                  : tier === "Micro"
-                    ? "border-sky-400/25 bg-sky-400/12 text-sky-200/90"
-                    : "border-white/12 bg-white/8 text-white/60",
-            )}
-          >
-            {tier}
-          </span>
-        </div>
-
-        {/* ── Feathered transition into glass ─────────────────── */}
-        {/* Soft gradient that bleeds from transparent into the panel color */}
-        <div
-          className="absolute inset-x-0 pointer-events-none"
-          style={{
-            bottom: "42%",
-            height: 64,
-            background:
-              "linear-gradient(to bottom, transparent 0%, rgba(8,10,16,0.76) 100%)",
-          }}
-        />
-
-        {/* ── Matte glass panel ───────────────────────────────── */}
-        <div
-          className="absolute inset-x-0 bottom-0 border-t border-white/[0.07]"
-          style={{
-            height: "42%",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
-            backgroundColor: "rgba(8, 10, 16, 0.76)",
-          }}
-        >
-          <div className="flex h-full flex-col justify-between gap-1.5 p-3.5">
-            {/* Row 1 — Name + small avatar circle */}
-            <div className="flex items-center gap-2">
-              <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.05] px-3 py-1.5">
-                <span className="truncate text-[13px] font-semibold leading-tight text-white">
-                  {profile.display_name || "Creator"}
-                </span>
-                {isVerified && (
-                  <BadgeCheck
-                    className="h-3.5 w-3.5 shrink-0 text-sky-300/80"
-                    strokeWidth={2.5}
-                  />
-                )}
-              </div>
-              {/* Avatar circle */}
-              <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full border border-white/[0.12] bg-white/[0.06]">
-                {hasPhoto ? (
-                  <img
-                    src={profile.ig_profile_picture_url!}
-                    alt=""
-                    className="h-full w-full object-cover pointer-events-none"
-                    draggable={false}
-                  />
-                ) : (
-                  <div
-                    className="flex h-full items-center justify-center"
-                    style={{ background: INSTAGRAM_GRADIENT }}
-                  >
-                    <span className="text-[10px] font-bold text-white/80">
-                      {getProfileInitials(profile.display_name)}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Row 2 — Instagram handle */}
-            {handle ? (
-              <div className="flex items-center gap-1 self-start rounded-lg border border-white/[0.07] bg-white/[0.04] px-2.5 py-1">
-                <Instagram className="h-3 w-3 shrink-0 text-pink-300/50" />
-                <span className="text-[11px] text-pink-200/60 truncate max-w-[140px]">
-                  @{handle}
-                </span>
-              </div>
-            ) : null}
-
-            {/* Row 3 — Bio */}
-            <div className="rounded-lg border border-white/[0.07] bg-white/[0.04] px-3 py-2">
-              <p className="line-clamp-2 text-[11px] leading-[1.55] text-white/55">
-                {profile.bio ||
-                  (profile.city ? `Based in ${profile.city}` : "No bio yet")}
-              </p>
-            </div>
-
-            {/* Row 4 — Metrics + Price */}
-            <div className="grid grid-cols-2 gap-1.5">
-              {/* Metrics */}
-              <div className="rounded-lg border border-white/[0.07] bg-white/[0.04] px-3 py-2">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <Users className="h-2.5 w-2.5 text-white/30" />
-                  <span className="text-[9px] uppercase tracking-[0.14em] text-white/30">
-                    Followers
-                  </span>
-                </div>
-                <p className="text-[13px] font-semibold text-white leading-none">
-                  {compactNumber(profile.follower_count ?? 0)}
-                </p>
-                {engagementRate > 0 && (
-                  <p className="mt-0.5 flex items-center gap-0.5 text-[10px] text-emerald-300/70">
-                    <TrendingUp className="h-2.5 w-2.5" />
-                    {engagementRate.toFixed(1)}%
-                  </p>
-                )}
-              </div>
-
-              {/* Price */}
-              <div className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-white/[0.04] px-3 py-2">
-                <div>
-                  <span className="text-[9px] uppercase tracking-[0.14em] text-white/30">
-                    {startsAt ? "from" : "pricing"}
-                  </span>
-                  <p className="text-[13px] font-semibold text-white leading-none">
-                    {startsAt ? `₹${compactNumber(startsAt)}` : "—"}
-                  </p>
-                </div>
-                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-white/25" />
-              </div>
-            </div>
-          </div>
-        </div>
+      >
+        <InfluencerCardArtwork profile={profile} />
+        <InfluencerCardInfoPanel profile={profile} />
+        <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]" />
       </div>
-    </Link>
+    </div>
   );
 }
