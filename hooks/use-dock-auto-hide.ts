@@ -13,6 +13,7 @@ export function useDockAutoHide() {
 
   const isInboxPage = pathname.includes("/inbox");
   const hasChatOpen = searchParams.get("chat") !== null;
+  const [isOverlayHidden, setIsOverlayHidden] = useState(false);
 
   const [isHovered, setIsHovered] = useState(false);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -26,10 +27,31 @@ export function useDockAutoHide() {
 
   // Reset hover state when chat closes or we leave inbox
   useEffect(() => {
-    if (!hasChatOpen) setIsHovered(false);
+    if (!hasChatOpen) {
+      const frame = window.requestAnimationFrame(() => setIsHovered(false));
+      return () => window.cancelAnimationFrame(frame);
+    }
   }, [hasChatOpen]);
 
   useEffect(() => () => clearHideTimer(), [clearHideTimer]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    const syncOverlayState = () => {
+      setIsOverlayHidden(document.body.dataset.mobileDockHidden === "true");
+    };
+
+    syncOverlayState();
+
+    const observer = new MutationObserver(syncOverlayState);
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["data-mobile-dock-hidden"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const onTriggerEnter = useCallback(() => {
     clearHideTimer();
@@ -47,7 +69,7 @@ export function useDockAutoHide() {
   let shouldHideDock = false;
   let showTriggerZone = false;
 
-  if (isInboxPage && hasChatOpen) {
+  if ((isInboxPage && hasChatOpen) || (isMobile && isOverlayHidden)) {
     if (isMobile) {
       // Mobile: hard hide, no way to peek
       shouldHideDock = true;

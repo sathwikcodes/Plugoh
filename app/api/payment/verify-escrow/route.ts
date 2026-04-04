@@ -13,11 +13,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, campaign_id } =
-    await request.json();
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    campaign_id,
+  } = await request.json();
 
-  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !campaign_id) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  if (
+    !razorpay_order_id ||
+    !razorpay_payment_id ||
+    !razorpay_signature ||
+    !campaign_id
+  ) {
+    return NextResponse.json(
+      { error: "Missing required fields" },
+      { status: 400 },
+    );
   }
 
   // HMAC-SHA256 signature verification
@@ -28,7 +40,10 @@ export async function POST(request: NextRequest) {
     .digest("hex");
 
   if (expectedSignature !== razorpay_signature) {
-    return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Payment verification failed" },
+      { status: 400 },
+    );
   }
 
   const db = createServiceClient();
@@ -36,7 +51,9 @@ export async function POST(request: NextRequest) {
   // Idempotency: if already processed, return early
   const { data: campaign, error: fetchError } = await db
     .from("campaigns")
-    .select("id, status, business_id, influencer_id, title, price_offered, platform_fee_amount, total_charged_amount")
+    .select(
+      "id, status, business_id, influencer_id, title, price_offered, platform_fee_amount, total_charged_amount",
+    )
     .eq("id", campaign_id)
     .maybeSingle();
 
@@ -55,7 +72,9 @@ export async function POST(request: NextRequest) {
 
   if (campaign.status !== "payment_pending") {
     return NextResponse.json(
-      { error: `Cannot process payment for campaign in '${campaign.status}' state` },
+      {
+        error: `Cannot process payment for campaign in '${campaign.status}' state`,
+      },
       { status: 400 },
     );
   }

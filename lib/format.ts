@@ -13,6 +13,8 @@ export function formatNumber(n: number | null): string {
  */
 export function statusColor(s: string): string {
   switch (s) {
+    case "pre_authorized":
+      return "bg-amber-500/10 text-amber-300 border-amber-500/20";
     case "requested":
     case "pending":
       return "bg-amber-500/10 text-amber-400 border-amber-500/20";

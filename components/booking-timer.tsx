@@ -21,7 +21,11 @@ function formatTime(ms: number): string {
   return [h, m, s].map((v) => String(v).padStart(2, "0")).join(":");
 }
 
-export function BookingTimer({ expiresAt, onExpire, className }: BookingTimerProps) {
+export function BookingTimer({
+  expiresAt,
+  onExpire,
+  className,
+}: BookingTimerProps) {
   const [timeLeft, setTimeLeft] = useState<number>(() =>
     expiresAt ? getTimeLeft(expiresAt) : 0,
   );

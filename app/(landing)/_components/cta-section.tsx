@@ -45,7 +45,7 @@ export function CTASection() {
             </div>
 
             {/* Headline */}
-            <h2 className="font-serif text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight text-foreground mb-6 sm:mb-8 leading-[1.05]">
+            <h2 className="font-display heading-premium text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-medium text-foreground mb-6 sm:mb-8 leading-[1.05]">
               Your brand, <br />
               <span className="text-foreground/80">amplified by creators.</span>
             </h2>

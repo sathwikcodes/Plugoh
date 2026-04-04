@@ -20,7 +20,9 @@ export async function GET(request: NextRequest) {
   const results = { autoReleased: 0, expired: 0, errors: 0 };
 
   // ── 1. Auto-release: delivery_submitted for > 7 days ────────────────────────
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const sevenDaysAgo = new Date(
+    Date.now() - 7 * 24 * 60 * 60 * 1000,
+  ).toISOString();
 
   const { data: toRelease } = await db
     .from("campaigns")
@@ -29,20 +31,27 @@ export async function GET(request: NextRequest) {
     .lt("delivery_submitted_at", sevenDaysAgo);
 
   for (const campaign of toRelease ?? []) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL ? "" : "http://localhost:3000"}/api/payment/release-escrow`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-cron-secret": process.env.CRON_SECRET!,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL ? "" : "http://localhost:3000"}/api/payment/release-escrow`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-cron-secret": process.env.CRON_SECRET!,
+        },
+        body: JSON.stringify({ campaign_id: campaign.id }),
       },
-      body: JSON.stringify({ campaign_id: campaign.id }),
-    });
+    );
 
     if (res.ok) {
       results.autoReleased++;
     } else {
       results.errors++;
-      console.error("[cron/auto-release] release failed for", campaign.id, await res.text());
+      console.error(
+        "[cron/auto-release] release failed for",
+        campaign.id,
+        await res.text(),
+      );
     }
   }
 
@@ -68,7 +77,9 @@ export async function GET(request: NextRequest) {
   const now = new Date().toISOString();
   const { data: expiredPreAuth } = await db
     .from("campaigns")
-    .select("id, payment_method, razorpay_payment_id, total_charged_amount, business_id, influencer_id, title")
+    .select(
+      "id, payment_method, razorpay_payment_id, total_charged_amount, business_id, influencer_id, title",
+    )
     .eq("status", "pre_authorized")
     .lt("expires_at", now);
 
@@ -76,13 +87,16 @@ export async function GET(request: NextRequest) {
     try {
       // UPI: payment was captured immediately — issue a refund
       if (campaign.payment_method === "upi" && campaign.razorpay_payment_id) {
-        const totalPaise = Math.round((campaign.total_charged_amount ?? 0) * 100);
+        const totalPaise = Math.round(
+          (campaign.total_charged_amount ?? 0) * 100,
+        );
         await razorpay.payments.refund(campaign.razorpay_payment_id, {
           amount: totalPaise,
           notes: { reason: "booking_expired", campaign_id: campaign.id },
         });
       }
-      // Card: pre-auth auto-refunded by Razorpay after 2 days (manual_expiry_period) — nothing to call here
+      // Card: Razorpay holds pre-authorisations for 5 days by default then auto-releases.
+      // Our 24 h acceptance window is well inside that, so no Razorpay call is needed here.
 
       await db
         .from("campaigns")
@@ -104,7 +118,10 @@ export async function GET(request: NextRequest) {
         db.from("notifications").insert({
           user_id: campaign.influencer_id,
           type: "booking_expired",
-          data: { title: campaign.title ?? "Untitled", campaign_id: campaign.id },
+          data: {
+            title: campaign.title ?? "Untitled",
+            campaign_id: campaign.id,
+          },
         }),
         db.from("campaign_messages").insert({
           campaign_id: campaign.id,
@@ -118,7 +135,11 @@ export async function GET(request: NextRequest) {
 
       results.expired++;
     } catch (err) {
-      console.error("[cron/auto-release] pre_auth expiry failed for", campaign.id, err);
+      console.error(
+        "[cron/auto-release] pre_auth expiry failed for",
+        campaign.id,
+        err,
+      );
       results.errors++;
     }
   }

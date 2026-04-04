@@ -78,6 +78,12 @@ export const BUSINESS_TYPES = [
 // Also: requested → declined | expired | cancelled
 //       delivery_submitted → disputed → completed | refunded
 export const CAMPAIGN_STATUS_CONFIG = {
+  pre_authorized: {
+    label: "Offer Expires Soon",
+    badge: "bg-amber-500/15 text-amber-300 border-amber-500/25",
+    border: "border-l-amber-300",
+    cardBg: "from-amber-500/10 to-orange-500/5",
+  },
   // Brand submitted booking request, awaiting influencer response (no payment taken)
   requested: {
     label: "New Offer",

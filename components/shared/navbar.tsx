@@ -55,7 +55,7 @@ export function Navbar() {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <span className="text-sm font-bold text-primary-foreground">R</span>
           </div>
-          <span className="font-display text-xl font-bold text-foreground">
+          <span className="brand-mark text-[1.35rem] font-medium text-foreground">
             Plugoh
           </span>
         </Link>
@@ -172,7 +172,7 @@ export function Navbar() {
               </DrawerTrigger>
               <DrawerContent className="h-full w-[min(300px,85vw)] ml-auto rounded-none">
                 <div className="flex items-center justify-between p-4 border-b">
-                  <span className="font-display font-bold text-lg">Menu</span>
+                  <span className="brand-mark text-lg font-medium">Menu</span>
                   <Button
                     variant="ghost"
                     size="icon"

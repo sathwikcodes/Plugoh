@@ -143,7 +143,9 @@ export function NotificationDrawer() {
       </DrawerTrigger>
       <DrawerContent className="h-full w-[min(380px,90vw)] ml-auto rounded-none">
         <DrawerHeader className="flex flex-row items-center justify-between border-b pb-3">
-          <DrawerTitle className="font-display">Notifications</DrawerTitle>
+          <DrawerTitle className="font-display text-[1.15rem]">
+            Notifications
+          </DrawerTitle>
           {unreadCount > 0 && (
             <Button
               variant="ghost"

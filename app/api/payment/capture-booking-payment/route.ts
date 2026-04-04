@@ -19,14 +19,19 @@ export async function POST(request: NextRequest) {
 
   const { campaign_id } = await request.json();
   if (!campaign_id) {
-    return NextResponse.json({ error: "campaign_id is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "campaign_id is required" },
+      { status: 400 },
+    );
   }
 
   const db = createServiceClient();
 
   const { data: campaign, error: fetchError } = await db
     .from("campaigns")
-    .select("id, status, payment_method, razorpay_payment_id, total_charged_amount, price_offered, platform_fee_amount, influencer_id, business_id, title")
+    .select(
+      "id, status, payment_method, razorpay_payment_id, total_charged_amount, price_offered, platform_fee_amount, influencer_id, business_id, title",
+    )
     .eq("id", campaign_id)
     .maybeSingle();
 
@@ -41,7 +46,9 @@ export async function POST(request: NextRequest) {
 
   if (campaign.status !== "pre_authorized") {
     return NextResponse.json(
-      { error: `Cannot capture payment for campaign in '${campaign.status}' state` },
+      {
+        error: `Cannot capture payment for campaign in '${campaign.status}' state`,
+      },
       { status: 400 },
     );
   }
@@ -53,9 +60,14 @@ export async function POST(request: NextRequest) {
   if (isCard && campaign.razorpay_payment_id) {
     const totalPaise = Math.round((campaign.total_charged_amount ?? 0) * 100);
     try {
-      await razorpay.payments.capture(campaign.razorpay_payment_id, totalPaise, "INR");
+      await razorpay.payments.capture(
+        campaign.razorpay_payment_id,
+        totalPaise,
+        "INR",
+      );
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Razorpay capture failed";
+      const message =
+        err instanceof Error ? err.message : "Razorpay capture failed";
       console.error("[capture-booking-payment] Razorpay capture failed:", err);
       return NextResponse.json({ error: message }, { status: 500 });
     }
@@ -74,7 +86,10 @@ export async function POST(request: NextRequest) {
     .eq("id", campaign_id);
 
   if (updateError) {
-    console.error("[capture-booking-payment] campaign update failed:", updateError);
+    console.error(
+      "[capture-booking-payment] campaign update failed:",
+      updateError,
+    );
     return NextResponse.json({ error: updateError.message }, { status: 500 });
   }
 

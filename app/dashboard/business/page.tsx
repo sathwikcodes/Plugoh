@@ -342,8 +342,11 @@ export default function BusinessDashboard() {
 
           {/* ── Greeting + Smart Subtitle ── */}
           <m.div variants={fadeUp}>
-            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-              Hey, {displayName || "there"}{" "}
+            <h1 className="heading-mix text-2xl font-semibold tracking-tight sm:text-3xl">
+              Hey,{" "}
+              <span className="heading-mix-accent">
+                {displayName || "there"}
+              </span>{" "}
               <span className="inline-block animate-[float_3s_ease-in-out_infinite]">
                 👋
               </span>

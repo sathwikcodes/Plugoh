@@ -65,7 +65,10 @@ function getInitialPackage(
   packageSeed: BookablePackage | null,
   availablePackages: ReturnType<typeof getAvailablePackages>,
 ): BookablePackage {
-  if (packageSeed && availablePackages.some((item) => item.key === packageSeed)) {
+  if (
+    packageSeed &&
+    availablePackages.some((item) => item.key === packageSeed)
+  ) {
     return packageSeed;
   }
   return availablePackages[0]?.key ?? "reel";
@@ -83,17 +86,22 @@ export function BookingDrawer({
   const { toast } = useToast();
   const { profile: businessProfile } = useAuth();
 
-  const availablePackages = useMemo(() => getAvailablePackages(creator), [creator]);
+  const availablePackages = useMemo(
+    () => getAvailablePackages(creator),
+    [creator],
+  );
 
   // Step: 1 = booking form, 2 = payment confirmation
   const [step, setStep] = useState<1 | 2>(1);
   const [isPaying, setIsPaying] = useState(false);
 
-  const [objective, setObjective] = useState<BookingObjective>(DEFAULT_OBJECTIVE);
+  const [objective, setObjective] =
+    useState<BookingObjective>(DEFAULT_OBJECTIVE);
   const [selectedPackage, setSelectedPackage] = useState<BookablePackage>(
     getInitialPackage(initialPackage, availablePackages),
   );
-  const [timingMode, setTimingMode] = useState<BookingTimingMode>(DEFAULT_TIMING);
+  const [timingMode, setTimingMode] =
+    useState<BookingTimingMode>(DEFAULT_TIMING);
   const [dueDate, setDueDate] = useState("");
   const [focusText, setFocusText] = useState("");
   const [eventName, setEventName] = useState("");
@@ -119,10 +127,14 @@ export function BookingDrawer({
   }, [availablePackages, creator.id, initialPackage, open]);
 
   const selectedPackageData =
-    availablePackages.find((item) => item.key === selectedPackage) ?? availablePackages[0] ?? null;
+    availablePackages.find((item) => item.key === selectedPackage) ??
+    availablePackages[0] ??
+    null;
 
-  const contactEmail = businessProfile?.email?.trim() || contactEmailDraft.trim();
-  const contactPhone = businessProfile?.phone?.trim() || contactPhoneDraft.trim();
+  const contactEmail =
+    businessProfile?.email?.trim() || contactEmailDraft.trim();
+  const contactPhone =
+    businessProfile?.phone?.trim() || contactPhoneDraft.trim();
   const requiresContactInput = !businessProfile?.email?.trim();
   const requiresPhoneInput = !businessProfile?.phone?.trim();
 
@@ -131,12 +143,16 @@ export function BookingDrawer({
   const platformFee = selectedPackageData
     ? Math.round(selectedPackageData.price * PLATFORM_FEE_RATE)
     : 0;
-  const totalIfAccepted = selectedPackageData ? selectedPackageData.price + platformFee : 0;
+  const totalIfAccepted = selectedPackageData
+    ? selectedPackageData.price + platformFee
+    : 0;
 
   const timingLabel =
-    BOOKING_TIMING_OPTIONS.find((item) => item.value === timingMode)?.label ?? "Timing";
+    BOOKING_TIMING_OPTIONS.find((item) => item.value === timingMode)?.label ??
+    "Timing";
   const objectiveLabel =
-    BOOKING_OBJECTIVES.find((item) => item.value === objective)?.label ?? "Booking";
+    BOOKING_OBJECTIVES.find((item) => item.value === objective)?.label ??
+    "Booking";
 
   const handleContinueToPayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -169,8 +185,11 @@ export function BookingDrawer({
     setIsPaying(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) throw new Error("Session expired — please sign in again");
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.access_token)
+        throw new Error("Session expired — please sign in again");
 
       // Step 1: Create Razorpay order (pre-auth)
       const orderRes = await fetch("/api/payment/create-booking-order", {
@@ -186,7 +205,8 @@ export function BookingDrawer({
       });
 
       const orderData = await orderRes.json();
-      if (!orderRes.ok) throw new Error(orderData.error ?? "Failed to create order");
+      if (!orderRes.ok)
+        throw new Error(orderData.error ?? "Failed to create order");
 
       // Step 2: Open Razorpay modal
       const rzp = new window.Razorpay({
@@ -246,7 +266,8 @@ export function BookingDrawer({
 
           toast({
             title: "Booking sent!",
-            description: "The creator has 24 hours to accept. You'll only be charged if they do.",
+            description:
+              "The creator has 24 hours to accept. You'll only be charged if they do.",
           });
           onOpenChange(false);
           router.push(`/dashboard/business/campaigns/${verifyData.campaignId}`);
@@ -258,15 +279,23 @@ export function BookingDrawer({
 
       rzp.open();
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Something went wrong";
-      toast({ title: "Could not start payment", description: message, variant: "destructive" });
+      const message =
+        err instanceof Error ? err.message : "Something went wrong";
+      toast({
+        title: "Could not start payment",
+        description: message,
+        variant: "destructive",
+      });
       setIsPaying(false);
     }
   };
 
   return (
     <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="lazyOnload"
+      />
       <Drawer
         direction={isMobile ? "bottom" : "right"}
         open={open}
@@ -314,8 +343,12 @@ export function BookingDrawer({
 
             {/* Step indicator */}
             <div className="mt-3 flex items-center gap-2">
-              <div className={`h-1 flex-1 rounded-full transition-colors ${step >= 1 ? "bg-white/40" : "bg-white/10"}`} />
-              <div className={`h-1 flex-1 rounded-full transition-colors ${step >= 2 ? "bg-white/40" : "bg-white/10"}`} />
+              <div
+                className={`h-1 flex-1 rounded-full transition-colors ${step >= 1 ? "bg-white/40" : "bg-white/10"}`}
+              />
+              <div
+                className={`h-1 flex-1 rounded-full transition-colors ${step >= 2 ? "bg-white/40" : "bg-white/10"}`}
+              />
             </div>
           </DrawerHeader>
 
@@ -332,12 +365,15 @@ export function BookingDrawer({
                           Complete your business profile first
                         </p>
                         <p className="text-sm text-white/65">
-                          We only need your brand details once, then future bookings stay faster.
+                          We only need your brand details once, then future
+                          bookings stay faster.
                         </p>
                       </div>
                     </div>
                     <Button variant="outline" asChild className="w-full">
-                      <Link href="/dashboard/business/profile">Complete business profile</Link>
+                      <Link href="/dashboard/business/profile">
+                        Complete business profile
+                      </Link>
                     </Button>
                   </div>
                 ) : null}
@@ -347,12 +383,18 @@ export function BookingDrawer({
                     <p className="text-sm font-medium text-white">
                       This creator has no bookable package pricing yet.
                     </p>
-                    <p className="text-sm text-white/60">Come back once their pricing is available.</p>
+                    <p className="text-sm text-white/60">
+                      Come back once their pricing is available.
+                    </p>
                   </div>
                 ) : null}
 
                 {canStartBooking ? (
-                  <form id="booking-drawer-form" onSubmit={handleContinueToPayment} className="space-y-5">
+                  <form
+                    id="booking-drawer-form"
+                    onSubmit={handleContinueToPayment}
+                    className="space-y-5"
+                  >
                     <section className="space-y-3">
                       <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
                         Booking type
@@ -372,10 +414,14 @@ export function BookingDrawer({
                               }`}
                             >
                               <div className="flex items-center justify-between gap-2">
-                                <p className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}>
+                                <p
+                                  className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}
+                                >
                                   {item.shortLabel}
                                 </p>
-                                {active ? <Check className="h-4 w-4 text-black" /> : null}
+                                {active ? (
+                                  <Check className="h-4 w-4 text-black" />
+                                ) : null}
                               </div>
                             </button>
                           );
@@ -384,7 +430,9 @@ export function BookingDrawer({
                     </section>
 
                     <section className="space-y-3">
-                      <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">Package</h2>
+                      <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
+                        Package
+                      </h2>
                       <div className="grid gap-2">
                         {availablePackages.map((item) => {
                           const active = selectedPackageData?.key === item.key;
@@ -401,16 +449,24 @@ export function BookingDrawer({
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <div>
-                                  <p className={`font-medium ${active ? "text-black" : "text-white"}`}>
+                                  <p
+                                    className={`font-medium ${active ? "text-black" : "text-white"}`}
+                                  >
                                     {item.label}
                                   </p>
-                                  <p className={`mt-0.5 text-xs ${active ? "text-black/70" : "text-white/50"}`}>
+                                  <p
+                                    className={`mt-0.5 text-xs ${active ? "text-black/70" : "text-white/50"}`}
+                                  >
                                     {item.description}
                                   </p>
                                 </div>
-                                {active ? <Check className="h-4 w-4 text-black" /> : null}
+                                {active ? (
+                                  <Check className="h-4 w-4 text-black" />
+                                ) : null}
                               </div>
-                              <p className={`mt-3 text-xl font-semibold ${active ? "text-black" : "text-white"}`}>
+                              <p
+                                className={`mt-3 text-xl font-semibold ${active ? "text-black" : "text-white"}`}
+                              >
                                 ₹{item.price.toLocaleString()}
                               </p>
                             </button>
@@ -420,7 +476,9 @@ export function BookingDrawer({
                     </section>
 
                     <section className="space-y-3">
-                      <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">Timing</h2>
+                      <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
+                        Timing
+                      </h2>
                       <div className="grid grid-cols-3 gap-2">
                         {BOOKING_TIMING_OPTIONS.map((item) => {
                           const active = timingMode === item.value;
@@ -436,12 +494,18 @@ export function BookingDrawer({
                               }`}
                             >
                               <div className="flex items-center justify-between gap-2">
-                                <p className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}>
+                                <p
+                                  className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}
+                                >
                                   {item.label}
                                 </p>
-                                {active ? <Check className="h-4 w-4 text-black" /> : null}
+                                {active ? (
+                                  <Check className="h-4 w-4 text-black" />
+                                ) : null}
                               </div>
-                              <p className={`mt-1 text-xs ${active ? "text-black/70" : "text-white/45"}`}>
+                              <p
+                                className={`mt-1 text-xs ${active ? "text-black/70" : "text-white/45"}`}
+                              >
                                 {item.description}
                               </p>
                             </button>
@@ -451,7 +515,9 @@ export function BookingDrawer({
 
                       {timingMode === "choose_date" ? (
                         <div className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                          <Label htmlFor="due-date" className="text-white/80">Select date</Label>
+                          <Label htmlFor="due-date" className="text-white/80">
+                            Select date
+                          </Label>
                           <div className="relative">
                             <CalendarDays className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-white/40" />
                             <Input
@@ -467,7 +533,9 @@ export function BookingDrawer({
                     </section>
 
                     <section className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                      <Label htmlFor="focus-text" className="text-white/80">What to feature</Label>
+                      <Label htmlFor="focus-text" className="text-white/80">
+                        What to feature
+                      </Label>
                       <Input
                         id="focus-text"
                         value={focusText}
@@ -479,7 +547,9 @@ export function BookingDrawer({
 
                     {shouldShowEventName(objective) ? (
                       <section className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                        <Label htmlFor="event-name" className="text-white/80">Venue or event name</Label>
+                        <Label htmlFor="event-name" className="text-white/80">
+                          Venue or event name
+                        </Label>
                         <Input
                           id="event-name"
                           value={eventName}
@@ -497,7 +567,9 @@ export function BookingDrawer({
                           onClick={() => setShowNotes((v) => !v)}
                           className="flex w-full items-center justify-between px-4 py-3 text-left"
                         >
-                          <span className="font-medium text-white">Add optional notes</span>
+                          <span className="font-medium text-white">
+                            Add optional notes
+                          </span>
                           <ChevronDown
                             className={`h-4 w-4 text-white/60 transition-transform ${showNotes ? "rotate-180" : ""}`}
                           />
@@ -518,38 +590,52 @@ export function BookingDrawer({
                     {requiresContactInput || requiresPhoneInput ? (
                       <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                         <div>
-                          <h2 className="text-sm font-semibold text-white">Contact for booking</h2>
+                          <h2 className="text-sm font-semibold text-white">
+                            Contact for booking
+                          </h2>
                           <p className="mt-1 text-sm text-white/50">
                             Only shown because we are missing a contact field.
                           </p>
                         </div>
                         <div className="grid gap-3">
                           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                            <Label className="text-xs uppercase tracking-[0.18em] text-white/45">Email</Label>
+                            <Label className="text-xs uppercase tracking-[0.18em] text-white/45">
+                              Email
+                            </Label>
                             {requiresContactInput ? (
                               <Input
                                 type="email"
                                 value={contactEmailDraft}
-                                onChange={(e) => setContactEmailDraft(e.target.value)}
+                                onChange={(e) =>
+                                  setContactEmailDraft(e.target.value)
+                                }
                                 placeholder="you@brand.com"
                                 className="mt-2 h-10"
                                 required
                               />
                             ) : (
-                              <p className="mt-2 font-medium text-white">{contactEmail}</p>
+                              <p className="mt-2 font-medium text-white">
+                                {contactEmail}
+                              </p>
                             )}
                           </div>
                           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                            <Label className="text-xs uppercase tracking-[0.18em] text-white/45">Phone</Label>
+                            <Label className="text-xs uppercase tracking-[0.18em] text-white/45">
+                              Phone
+                            </Label>
                             {requiresPhoneInput ? (
                               <Input
                                 value={contactPhoneDraft}
-                                onChange={(e) => setContactPhoneDraft(e.target.value)}
+                                onChange={(e) =>
+                                  setContactPhoneDraft(e.target.value)
+                                }
                                 placeholder="Optional phone number"
                                 className="mt-2 h-10"
                               />
                             ) : (
-                              <p className="mt-2 font-medium text-white">{contactPhone}</p>
+                              <p className="mt-2 font-medium text-white">
+                                {contactPhone}
+                              </p>
                             )}
                           </div>
                         </div>
@@ -567,9 +653,12 @@ export function BookingDrawer({
                 <div className="rounded-[20px] border border-white/10 bg-white/[0.04] p-5 space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="min-w-0 flex-1">
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-white/40">{objectiveLabel}</p>
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-white/40">
+                        {objectiveLabel}
+                      </p>
                       <p className="mt-1 text-lg font-semibold text-white">
-                        {getPackageLabel(selectedPackageData.key)} · {creator.display_name ?? "Creator"}
+                        {getPackageLabel(selectedPackageData.key)} ·{" "}
+                        {creator.display_name ?? "Creator"}
                       </p>
                       <p className="text-sm text-white/50">
                         {timingMode === "choose_date" && dueDate
@@ -582,7 +671,9 @@ export function BookingDrawer({
                   <div className="space-y-2 rounded-xl border border-white/8 bg-black/20 p-4">
                     <div className="flex justify-between text-sm text-white/60">
                       <span>{getPackageLabel(selectedPackageData.key)}</span>
-                      <span>₹{selectedPackageData.price.toLocaleString("en-IN")}</span>
+                      <span>
+                        ₹{selectedPackageData.price.toLocaleString("en-IN")}
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm text-white/60">
                       <span>Platform fee (12%)</span>
@@ -597,7 +688,9 @@ export function BookingDrawer({
 
                 {/* How it works */}
                 <div className="space-y-3">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">How it works</p>
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">
+                    How it works
+                  </p>
                   <div className="space-y-2">
                     {[
                       {
@@ -622,12 +715,17 @@ export function BookingDrawer({
                         desc: "Only then is the hold converted to an actual charge. Released to creator after you approve the content.",
                       },
                     ].map(({ icon: Icon, color, bg, title, desc }) => (
-                      <div key={title} className={`flex items-start gap-3 rounded-2xl border p-3.5 ${bg}`}>
+                      <div
+                        key={title}
+                        className={`flex items-start gap-3 rounded-2xl border p-3.5 ${bg}`}
+                      >
                         <div className={`mt-0.5 shrink-0 ${color}`}>
                           <Icon className="h-4 w-4" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-white">{title}</p>
+                          <p className="text-sm font-medium text-white">
+                            {title}
+                          </p>
                           <p className="text-xs text-white/50">{desc}</p>
                         </div>
                       </div>
@@ -636,7 +734,9 @@ export function BookingDrawer({
                 </div>
 
                 <p className="text-center text-xs text-white/35">
-                  If the creator declines or doesn&apos;t respond within 24h, the hold is released and the pending charge disappears from your statement.
+                  If the creator declines or doesn&apos;t respond within 24h,
+                  the hold is released and the pending charge disappears from
+                  your statement.
                 </p>
               </div>
             ) : null}
@@ -650,7 +750,9 @@ export function BookingDrawer({
                     <div className="rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3 space-y-1">
                       <div className="flex justify-between text-sm text-white/60">
                         <span>{getPackageLabel(selectedPackageData.key)}</span>
-                        <span>₹{selectedPackageData.price.toLocaleString("en-IN")}</span>
+                        <span>
+                          ₹{selectedPackageData.price.toLocaleString("en-IN")}
+                        </span>
                       </div>
                       <div className="flex justify-between text-sm text-white/60">
                         <span>Platform fee (12%)</span>
@@ -690,7 +792,8 @@ export function BookingDrawer({
                       ) : (
                         <>
                           <Lock className="mr-2 h-4 w-4" />
-                          Pre-authorize ₹{totalIfAccepted.toLocaleString("en-IN")}
+                          Pre-authorize ₹
+                          {totalIfAccepted.toLocaleString("en-IN")}
                         </>
                       )}
                     </Button>
@@ -701,7 +804,11 @@ export function BookingDrawer({
                 )}
               </div>
             ) : (
-              <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full">
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="w-full"
+              >
                 Close
               </Button>
             )}

@@ -26,14 +26,19 @@ export async function POST(request: NextRequest) {
 
   const { campaign_id, approved_by } = await request.json();
   if (!campaign_id) {
-    return NextResponse.json({ error: "campaign_id is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "campaign_id is required" },
+      { status: 400 },
+    );
   }
 
   const db = createServiceClient();
 
   const { data: campaign, error: fetchError } = await db
     .from("campaigns")
-    .select("id, status, business_id, influencer_id, title, price_offered, platform_fee_amount, razorpay_payment_id")
+    .select(
+      "id, status, business_id, influencer_id, title, price_offered, platform_fee_amount, razorpay_payment_id",
+    )
     .eq("id", campaign_id)
     .maybeSingle();
 
@@ -48,7 +53,9 @@ export async function POST(request: NextRequest) {
 
   if (campaign.status !== "delivery_submitted") {
     return NextResponse.json(
-      { error: `Cannot release escrow for campaign in '${campaign.status}' state` },
+      {
+        error: `Cannot release escrow for campaign in '${campaign.status}' state`,
+      },
       { status: 400 },
     );
   }
@@ -64,8 +71,14 @@ export async function POST(request: NextRequest) {
     .eq("id", campaign_id);
 
   if (campaignUpdateError) {
-    console.error("[release-escrow] campaign update failed:", campaignUpdateError);
-    return NextResponse.json({ error: campaignUpdateError.message }, { status: 500 });
+    console.error(
+      "[release-escrow] campaign update failed:",
+      campaignUpdateError,
+    );
+    return NextResponse.json(
+      { error: campaignUpdateError.message },
+      { status: 500 },
+    );
   }
 
   // Record payout obligations and notify in parallel

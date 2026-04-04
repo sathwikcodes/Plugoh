@@ -21,7 +21,10 @@ export async function POST(request: NextRequest) {
 
   const { campaign_id } = await request.json();
   if (!campaign_id) {
-    return NextResponse.json({ error: "campaign_id is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "campaign_id is required" },
+      { status: 400 },
+    );
   }
 
   const db = createServiceClient();
@@ -42,7 +45,9 @@ export async function POST(request: NextRequest) {
 
   if (campaign.status !== "payment_pending") {
     return NextResponse.json(
-      { error: `Campaign is in '${campaign.status}' state, expected 'payment_pending'` },
+      {
+        error: `Campaign is in '${campaign.status}' state, expected 'payment_pending'`,
+      },
       { status: 400 },
     );
   }
@@ -50,7 +55,9 @@ export async function POST(request: NextRequest) {
   // If an order was already created (e.g. brand refreshed the page), re-use it
   if (campaign.razorpay_order_id) {
     // Fetch order details from Razorpay to get amount/currency
-    const existingOrder = await razorpay.orders.fetch(campaign.razorpay_order_id);
+    const existingOrder = await razorpay.orders.fetch(
+      campaign.razorpay_order_id,
+    );
     return NextResponse.json({
       orderId: existingOrder.id,
       amount: existingOrder.amount,
@@ -86,7 +93,8 @@ export async function POST(request: NextRequest) {
       currency: order.currency,
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Failed to create Razorpay order";
+    const message =
+      err instanceof Error ? err.message : "Failed to create Razorpay order";
     console.error("[create-escrow-order]", err);
     return NextResponse.json({ error: message }, { status: 500 });
   }

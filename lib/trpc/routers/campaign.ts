@@ -20,7 +20,13 @@ export const campaignRouter = router({
         influencer_profile_id: z.string(),
         package_type: z.enum(["reel", "post", "story"]),
         price_offered: z.number().positive(),
-        objective: z.enum(["product_launch", "restaurant_visit", "brand_awareness", "ugc", "event_coverage"]),
+        objective: z.enum([
+          "product_launch",
+          "restaurant_visit",
+          "brand_awareness",
+          "ugc",
+          "event_coverage",
+        ]),
         timing_mode: z.enum(["asap", "this_week", "choose_date"]),
         due_date: z.string().optional(),
         focus_text: z.string(),
@@ -33,11 +39,15 @@ export const campaignRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { db, user } = ctx;
 
-      const platformFee = Math.round(input.price_offered * PLATFORM_FEE_RATE * 100) / 100;
-      const totalCharged = Math.round((input.price_offered + platformFee) * 100) / 100;
+      const platformFee =
+        Math.round(input.price_offered * PLATFORM_FEE_RATE * 100) / 100;
+      const totalCharged =
+        Math.round((input.price_offered + platformFee) * 100) / 100;
 
       // expires_at = 48h from now (auto-expire if influencer doesn't respond)
-      const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
+      const expiresAt = new Date(
+        Date.now() + 48 * 60 * 60 * 1000,
+      ).toISOString();
 
       const formState: import("@/lib/booking").BookingFormState = {
         objective: input.objective,
@@ -58,7 +68,11 @@ export const campaignRouter = router({
         .eq("id", input.influencer_profile_id)
         .maybeSingle();
 
-      const title = buildCampaignTitle(formState, profile as import("@/lib/booking").InfluencerProfile ?? ({} as import("@/lib/booking").InfluencerProfile));
+      const title = buildCampaignTitle(
+        formState,
+        (profile as import("@/lib/booking").InfluencerProfile) ??
+          ({} as import("@/lib/booking").InfluencerProfile),
+      );
       const brief = buildCampaignBrief(formState);
 
       const { data: campaign, error } = await db
@@ -133,11 +147,17 @@ export const campaignRouter = router({
         .maybeSingle();
 
       if (fetchError || !campaign) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Campaign not found",
+        });
       }
 
       if (campaign.influencer_id !== user.id) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Only the influencer can accept" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the influencer can accept",
+        });
       }
 
       // ── New pre-auth flow ──────────────────────────────────────────────────
@@ -146,7 +166,8 @@ export const campaignRouter = router({
         if (campaign.expires_at && new Date(campaign.expires_at) < new Date()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "This booking has expired. The brand will need to book again.",
+            message:
+              "This booking has expired. The brand will need to book again.",
           });
         }
 
@@ -155,11 +176,18 @@ export const campaignRouter = router({
 
         // For card: capture the pre-authorized amount
         if (isCard && campaign.razorpay_payment_id) {
-          const totalPaise = Math.round((campaign.total_charged_amount ?? 0) * 100);
+          const totalPaise = Math.round(
+            (campaign.total_charged_amount ?? 0) * 100,
+          );
           try {
-            await razorpay.payments.capture(campaign.razorpay_payment_id, totalPaise, "INR");
+            await razorpay.payments.capture(
+              campaign.razorpay_payment_id,
+              totalPaise,
+              "INR",
+            );
           } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : "Payment capture failed";
+            const message =
+              err instanceof Error ? err.message : "Payment capture failed";
             console.error("[acceptBooking] Razorpay capture failed:", err);
             throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message });
           }
@@ -177,7 +205,10 @@ export const campaignRouter = router({
           .eq("id", input.campaignId);
 
         if (updateError) {
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: updateError.message });
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: updateError.message,
+          });
         }
 
         // For card: mark escrow_lock as success now that capture went through
@@ -189,7 +220,10 @@ export const campaignRouter = router({
             .eq("type", "escrow_lock");
         }
 
-        const notifData = { title: campaign.title ?? "Untitled", campaign_id: campaign.id };
+        const notifData = {
+          title: campaign.title ?? "Untitled",
+          campaign_id: campaign.id,
+        };
 
         await Promise.all([
           db.from("notifications").insert({
@@ -202,7 +236,8 @@ export const campaignRouter = router({
             type: "booking_accepted",
             data: { ...notifData, amount: campaign.price_offered },
           }),
-          db.from("notifications")
+          db
+            .from("notifications")
             .update({ read: true })
             .eq("user_id", user.id)
             .eq("type", "new_booking")
@@ -219,12 +254,17 @@ export const campaignRouter = router({
         return { success: true };
       }
 
-      // ── Legacy flow (requested → payment_pending) ─────────────────────────
-      if (campaign.status !== "requested") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: `Cannot accept a campaign in '${campaign.status}' state` });
+      // ── Legacy flow (requested|pending → payment_pending) ─────────────────
+      if (!["requested", "pending"].includes(campaign.status)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot accept a campaign in '${campaign.status}' state`,
+        });
       }
 
-      const paymentExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      const paymentExpiresAt = new Date(
+        Date.now() + 24 * 60 * 60 * 1000,
+      ).toISOString();
 
       const { error: updateError } = await db
         .from("campaigns")
@@ -236,10 +276,16 @@ export const campaignRouter = router({
         .eq("id", input.campaignId);
 
       if (updateError) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: updateError.message });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: updateError.message,
+        });
       }
 
-      const notifData = { title: campaign.title ?? "Untitled", campaign_id: campaign.id };
+      const notifData = {
+        title: campaign.title ?? "Untitled",
+        campaign_id: campaign.id,
+      };
 
       await Promise.all([
         db.from("notifications").insert({
@@ -247,7 +293,8 @@ export const campaignRouter = router({
           type: "booking_accepted",
           data: notifData,
         }),
-        db.from("notifications")
+        db
+          .from("notifications")
           .update({ read: true })
           .eq("user_id", user.id)
           .eq("type", "new_booking")
@@ -279,15 +326,21 @@ export const campaignRouter = router({
         .maybeSingle();
 
       if (fetchError || !campaign) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Campaign not found",
+        });
       }
 
       if (campaign.influencer_id !== user.id) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Only the influencer can decline" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the influencer can decline",
+        });
       }
 
       const isPreAuth = campaign.status === "pre_authorized";
-      const isRequested = campaign.status === "requested";
+      const isRequested = ["requested", "pending"].includes(campaign.status);
 
       if (!isPreAuth && !isRequested) {
         throw new TRPCError({
@@ -296,7 +349,8 @@ export const campaignRouter = router({
         });
       }
 
-      let refundMessage = "Booking declined by the influencer. No payment was taken.";
+      let refundMessage =
+        "Booking declined by the influencer. No payment was taken.";
 
       // Pre-auth flow: handle payment reversal
       if (isPreAuth && campaign.razorpay_payment_id) {
@@ -304,11 +358,16 @@ export const campaignRouter = router({
 
         if (isUpi) {
           // UPI was captured immediately — issue a refund
-          const totalPaise = Math.round((campaign.total_charged_amount ?? 0) * 100);
+          const totalPaise = Math.round(
+            (campaign.total_charged_amount ?? 0) * 100,
+          );
           try {
             await razorpay.payments.refund(campaign.razorpay_payment_id, {
               amount: totalPaise,
-              notes: { reason: "influencer_declined", campaign_id: campaign.id },
+              notes: {
+                reason: "influencer_declined",
+                campaign_id: campaign.id,
+              },
             });
             refundMessage =
               "Booking declined by the influencer. A full refund has been initiated and will reflect in 5–7 business days.";
@@ -320,7 +379,8 @@ export const campaignRouter = router({
           }
         } else {
           // Card pre-auth: Razorpay auto-voids within 7 days; nothing to call.
-          refundMessage = "Booking declined by the influencer. Your card pre-authorization has been released — no charge was made.";
+          refundMessage =
+            "Booking declined by the influencer. Your card pre-authorization has been released — no charge was made.";
         }
       }
 
@@ -330,10 +390,16 @@ export const campaignRouter = router({
         .eq("id", input.campaignId);
 
       if (updateError) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: updateError.message });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: updateError.message,
+        });
       }
 
-      const notifData = { title: campaign.title ?? "Untitled", campaign_id: campaign.id };
+      const notifData = {
+        title: campaign.title ?? "Untitled",
+        campaign_id: campaign.id,
+      };
 
       await Promise.all([
         db.from("notifications").insert({
@@ -341,7 +407,8 @@ export const campaignRouter = router({
           type: "booking_rejected",
           data: notifData,
         }),
-        db.from("notifications")
+        db
+          .from("notifications")
           .update({ read: true })
           .eq("user_id", user.id)
           .eq("type", "new_booking")
@@ -378,42 +445,61 @@ export const campaignRouter = router({
         .maybeSingle();
 
       if (fetchError || !campaign) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Campaign not found",
+        });
       }
 
       if (campaign.influencer_id !== user.id) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Only the influencer can submit delivery" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the influencer can submit delivery",
+        });
       }
 
       if (campaign.status !== "in_escrow") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign must be in_escrow to submit delivery" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Campaign must be in_escrow to submit delivery",
+        });
       }
 
       const now = new Date().toISOString();
 
       // Insert delivery record and update campaign status in parallel
-      const [{ error: deliveryError }, { error: updateError }] = await Promise.all([
-        db.from("deliveries").insert({
-          campaign_id: input.campaignId,
-          submitted_by: user.id,
-          content_url: input.contentUrl,
-          notes: input.notes ?? null,
-          submitted_at: now,
-        }),
-        db.from("campaigns").update({
-          status: "delivery_submitted",
-          delivery_submitted_at: now,
-        }).eq("id", input.campaignId),
-      ]);
+      const [{ error: deliveryError }, { error: updateError }] =
+        await Promise.all([
+          db.from("deliveries").insert({
+            campaign_id: input.campaignId,
+            submitted_by: user.id,
+            content_url: input.contentUrl,
+            notes: input.notes ?? null,
+            submitted_at: now,
+          }),
+          db
+            .from("campaigns")
+            .update({
+              status: "delivery_submitted",
+              delivery_submitted_at: now,
+            })
+            .eq("id", input.campaignId),
+        ]);
 
       if (deliveryError || updateError) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: deliveryError?.message ?? updateError?.message ?? "Failed to submit delivery",
+          message:
+            deliveryError?.message ??
+            updateError?.message ??
+            "Failed to submit delivery",
         });
       }
 
-      const notifData = { title: campaign.title ?? "Untitled", campaign_id: campaign.id };
+      const notifData = {
+        title: campaign.title ?? "Untitled",
+        campaign_id: campaign.id,
+      };
 
       await Promise.all([
         // Notify brand to review delivery
@@ -448,34 +534,49 @@ export const campaignRouter = router({
         .maybeSingle();
 
       if (fetchError || !campaign) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Campaign not found",
+        });
       }
 
       if (campaign.business_id !== user.id) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Only the brand can approve delivery" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the brand can approve delivery",
+        });
       }
 
       if (campaign.status !== "delivery_submitted") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign is not awaiting delivery review" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Campaign is not awaiting delivery review",
+        });
       }
 
       const now = new Date().toISOString();
 
       // Update delivery approval and campaign status
-      const [{ error: deliveryUpdateError }, { error: campaignUpdateError }] = await Promise.all([
-        db.from("deliveries")
-          .update({ approved_at: now, approved_by: user.id })
-          .eq("campaign_id", input.campaignId)
-          .is("approved_at", null),
-        db.from("campaigns")
-          .update({ status: "completed", completed_at: now })
-          .eq("id", input.campaignId),
-      ]);
+      const [{ error: deliveryUpdateError }, { error: campaignUpdateError }] =
+        await Promise.all([
+          db
+            .from("deliveries")
+            .update({ approved_at: now, approved_by: user.id })
+            .eq("campaign_id", input.campaignId)
+            .is("approved_at", null),
+          db
+            .from("campaigns")
+            .update({ status: "completed", completed_at: now })
+            .eq("id", input.campaignId),
+        ]);
 
       if (deliveryUpdateError || campaignUpdateError) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: deliveryUpdateError?.message ?? campaignUpdateError?.message ?? "Failed to approve delivery",
+          message:
+            deliveryUpdateError?.message ??
+            campaignUpdateError?.message ??
+            "Failed to approve delivery",
         });
       }
 
@@ -538,37 +639,55 @@ export const campaignRouter = router({
         .maybeSingle();
 
       if (fetchError || !campaign) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Campaign not found",
+        });
       }
 
       if (campaign.business_id !== user.id) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Only the brand can dispute delivery" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the brand can dispute delivery",
+        });
       }
 
       if (campaign.status !== "delivery_submitted") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Can only dispute after delivery is submitted" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Can only dispute after delivery is submitted",
+        });
       }
 
       const now = new Date().toISOString();
 
-      const [{ error: deliveryError }, { error: campaignError }] = await Promise.all([
-        db.from("deliveries")
-          .update({ dispute_reason: input.reason, disputed_at: now })
-          .eq("campaign_id", input.campaignId)
-          .is("approved_at", null),
-        db.from("campaigns")
-          .update({ status: "disputed" })
-          .eq("id", input.campaignId),
-      ]);
+      const [{ error: deliveryError }, { error: campaignError }] =
+        await Promise.all([
+          db
+            .from("deliveries")
+            .update({ dispute_reason: input.reason, disputed_at: now })
+            .eq("campaign_id", input.campaignId)
+            .is("approved_at", null),
+          db
+            .from("campaigns")
+            .update({ status: "disputed" })
+            .eq("id", input.campaignId),
+        ]);
 
       if (deliveryError || campaignError) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: deliveryError?.message ?? campaignError?.message ?? "Failed to raise dispute",
+          message:
+            deliveryError?.message ??
+            campaignError?.message ??
+            "Failed to raise dispute",
         });
       }
 
-      const notifData = { title: campaign.title ?? "Untitled", campaign_id: campaign.id };
+      const notifData = {
+        title: campaign.title ?? "Untitled",
+        campaign_id: campaign.id,
+      };
 
       await Promise.all([
         db.from("notifications").insert({
@@ -606,7 +725,10 @@ export const campaignRouter = router({
         .maybeSingle();
 
       if (!campaign || campaign.business_id !== user.id) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Not authorized to edit this campaign" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Not authorized to edit this campaign",
+        });
       }
 
       const { error } = await db
@@ -615,7 +737,10 @@ export const campaignRouter = router({
         .eq("id", input.campaignId);
 
       if (error) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: error.message });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
       }
 
       return { success: true };
@@ -627,7 +752,13 @@ export const campaignRouter = router({
     .input(
       z.object({
         campaignId: z.string(),
-        status: z.enum(["accepted", "rejected", "completed", "in_escrow", "declined"]),
+        status: z.enum([
+          "accepted",
+          "rejected",
+          "completed",
+          "in_escrow",
+          "declined",
+        ]),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -640,11 +771,20 @@ export const campaignRouter = router({
         .maybeSingle();
 
       if (fetchError || !campaign) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Campaign not found",
+        });
       }
 
-      if (campaign.influencer_id !== user.id && campaign.business_id !== user.id) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Not authorized to update this campaign" });
+      if (
+        campaign.influencer_id !== user.id &&
+        campaign.business_id !== user.id
+      ) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Not authorized to update this campaign",
+        });
       }
 
       const { error: updateError } = await db
@@ -653,11 +793,16 @@ export const campaignRouter = router({
         .eq("id", input.campaignId);
 
       if (updateError) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: updateError.message });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: updateError.message,
+        });
       }
 
       const isInfluencer = campaign.influencer_id === user.id;
-      const notifyUserId = isInfluencer ? campaign.business_id : campaign.influencer_id;
+      const notifyUserId = isInfluencer
+        ? campaign.business_id
+        : campaign.influencer_id;
 
       const notifType =
         input.status === "accepted" || input.status === "in_escrow"
@@ -670,7 +815,10 @@ export const campaignRouter = router({
         db.from("notifications").insert({
           user_id: notifyUserId,
           type: notifType,
-          data: { title: campaign.title ?? "Untitled", campaign_id: campaign.id },
+          data: {
+            title: campaign.title ?? "Untitled",
+            campaign_id: campaign.id,
+          },
         }),
         ...(isInfluencer
           ? [

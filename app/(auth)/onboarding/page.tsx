@@ -341,7 +341,7 @@ function OnboardingInner() {
       >
         <m.div variants={fadeUp} className="lg:hidden mb-2 text-center">
           <h2
-            className="text-xl font-bold tracking-tight"
+            className="brand-mark text-2xl font-medium"
             style={{ color: "var(--auth-text)" }}
           >
             Plugoh
@@ -350,7 +350,7 @@ function OnboardingInner() {
 
         <m.div variants={fadeUp} className="space-y-2 text-center">
           <h1
-            className="text-3xl font-semibold tracking-tight"
+            className="heading-premium text-3xl font-semibold tracking-tight"
             style={{ color: "var(--auth-text)" }}
           >
             Welcome to Plugoh

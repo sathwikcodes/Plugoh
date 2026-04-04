@@ -55,7 +55,10 @@ export async function POST(request: NextRequest) {
     !timing_mode ||
     !contact_email
   ) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing required fields" },
+      { status: 400 },
+    );
   }
 
   // HMAC-SHA256 signature verification
@@ -65,7 +68,10 @@ export async function POST(request: NextRequest) {
     .digest("hex");
 
   if (expectedSignature !== razorpay_signature) {
-    return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Payment verification failed" },
+      { status: 400 },
+    );
   }
 
   // Idempotency check — if this payment_id already created a campaign, return it
@@ -87,7 +93,9 @@ export async function POST(request: NextRequest) {
     paymentMethod = (payment.method as string) ?? "other";
   } catch {
     // Non-fatal: we can still proceed, just won't know method
-    console.warn("[verify-booking-payment] Could not fetch payment method from Razorpay");
+    console.warn(
+      "[verify-booking-payment] Could not fetch payment method from Razorpay",
+    );
   }
 
   // Build campaign title + brief from booking form state
@@ -109,7 +117,10 @@ export async function POST(request: NextRequest) {
     contactPhone: contact_phone ?? "",
   };
 
-  const title = buildCampaignTitle(formState, profile ?? ({} as typeof profile));
+  const title = buildCampaignTitle(
+    formState,
+    profile ?? ({} as typeof profile),
+  );
   const brief = buildCampaignBrief(formState);
 
   const price = Number(price_offered);
@@ -150,7 +161,10 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (insertError || !campaign) {
-    console.error("[verify-booking-payment] campaign insert failed:", insertError);
+    console.error(
+      "[verify-booking-payment] campaign insert failed:",
+      insertError,
+    );
     return NextResponse.json(
       { error: insertError?.message ?? "Failed to create campaign" },
       { status: 500 },

@@ -128,6 +128,7 @@ export type Database = {
           // Payment fields
           razorpay_order_id: string | null;
           razorpay_payment_id: string | null;
+          payment_method: string | null;
           payment_status: string | null;
           platform_fee_amount: number | null;
           total_charged_amount: number | null;
@@ -155,6 +156,7 @@ export type Database = {
           updated_at?: string;
           razorpay_order_id?: string | null;
           razorpay_payment_id?: string | null;
+          payment_method?: string | null;
           payment_status?: string | null;
           platform_fee_amount?: number | null;
           total_charged_amount?: number | null;
@@ -181,6 +183,7 @@ export type Database = {
           updated_at?: string;
           razorpay_order_id?: string | null;
           razorpay_payment_id?: string | null;
+          payment_method?: string | null;
           payment_status?: string | null;
           platform_fee_amount?: number | null;
           total_charged_amount?: number | null;

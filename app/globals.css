@@ -157,6 +157,74 @@
   }
 }
 
+@layer utilities {
+  .font-display {
+    font-family: var(--font-serif), Georgia, serif;
+    letter-spacing: -0.03em;
+  }
+
+  .font-display-italic {
+    font-family: var(--font-serif), Georgia, serif;
+    font-style: italic;
+    letter-spacing: -0.03em;
+  }
+
+  .heading-premium {
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .heading-mix {
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .heading-mix-accent {
+    font-family: var(--font-serif), Georgia, serif;
+    font-style: italic;
+    letter-spacing: -0.035em;
+  }
+
+  .eyebrow-label {
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .brand-mark {
+    font-family: var(--font-serif), Georgia, serif;
+    letter-spacing: -0.04em;
+  }
+}
+
+input.range-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  width: 28px;
+  border-radius: 9999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+input.range-thumb::-moz-range-thumb {
+  height: 28px;
+  width: 28px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+input.range-thumb::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+input.range-thumb::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
 /* Container utility */
 .container {
   width: 100%;

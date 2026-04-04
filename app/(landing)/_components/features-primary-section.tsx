@@ -8,8 +8,9 @@ export function Features5() {
         <div className="grid items-center gap-12 md:grid-cols-2 md:gap-12 lg:grid-cols-5 lg:gap-24">
           <div className="lg:col-span-2">
             <div className="md:pr-6 lg:pr-0">
-              <h2 className="text-4xl font-semibold lg:text-5xl">
-                Built for Scaling teams
+              <h2 className="heading-mix text-4xl font-semibold lg:text-5xl">
+                Built for{" "}
+                <span className="heading-mix-accent">scaling teams</span>
               </h2>
               <p className="mt-6">
                 Orrupti aut temporibus assumenda atque ab, accusamus sit,

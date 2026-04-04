@@ -25,7 +25,7 @@ export function Features() {
                     100%
                   </span>
                 </div>
-                <h2 className="mt-6 text-center text-3xl font-semibold">
+                <h2 className="heading-premium mt-6 text-center text-3xl font-semibold">
                   Customizable
                 </h2>
               </CardContent>

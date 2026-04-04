@@ -33,7 +33,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
         />
         <div className="relative z-10 text-center px-12">
           <m.h1
-            className="text-4xl font-bold tracking-tight mb-3"
+            className="brand-mark heading-premium mb-3 text-5xl font-medium"
             style={{ color: "var(--auth-text)", opacity: 0.9 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 0.9, y: 0 }}
@@ -43,7 +43,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
           </m.h1>
           <m.p
             key={theme}
-            className="text-lg max-w-xs mx-auto"
+            className="max-w-xs mx-auto text-lg"
             style={{ color: "var(--auth-text-secondary)" }}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}

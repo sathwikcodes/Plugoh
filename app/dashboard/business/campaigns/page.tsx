@@ -1,47 +1,49 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, m } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
-  AlertCircle,
   ArrowLeft,
   ArrowRight,
-  CheckCircle2,
-  Clock3,
-  CreditCard,
-  Eye,
-  Loader2,
   Megaphone,
   Search,
-  Sparkles,
-  TrendingUp,
-  XCircle,
+  SlidersHorizontal,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
-import { compactNumber, statusColor, timeAgo } from "@/lib/format";
+import { timeAgo } from "@/lib/format";
 import { supabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import {
   GRADIENT_COLORS,
   GRADIENT_STOPS,
   GRADIENT_STYLE,
+  fadeUp,
+  stagger,
 } from "@/lib/animations";
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { CAMPAIGN_STATUS_CONFIG } from "@/lib/constants";
+import type { CampaignStatus } from "@/lib/constants";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
-
 type SortMode = "newest" | "highest_spend" | "recently_updated";
-type StatusFilter = "All" | "requested" | "payment_pending" | "in_escrow" | "completed" | "declined";
-type LaneKey = "requested" | "payment_pending" | "active" | "completed" | "closed";
+type StatusFilter =
+  | "All"
+  | "requested"
+  | "payment_pending"
+  | "in_escrow"
+  | "completed"
+  | "closed";
 
 type EnrichedCampaign = {
   campaign: Campaign;
@@ -55,280 +57,370 @@ type EnrichedCampaign = {
   > | null;
 };
 
+const STATUS_FILTER_GROUPS: Record<StatusFilter, string[]> = {
+  All: [],
+  requested: ["requested", "pending", "pre_authorized"],
+  payment_pending: ["payment_pending"],
+  in_escrow: ["in_escrow", "accepted", "delivery_submitted"],
+  completed: ["completed"],
+  closed: ["declined", "rejected", "expired", "cancelled", "refunded"],
+};
+
+const STATUS_PILL_LABELS: Record<StatusFilter, string> = {
+  All: "All",
+  requested: "Pending",
+  payment_pending: "Pay now",
+  in_escrow: "Active",
+  completed: "Done",
+  closed: "Closed",
+};
+
 const STATUS_FILTERS: StatusFilter[] = [
   "All",
   "requested",
   "payment_pending",
   "in_escrow",
   "completed",
-  "declined",
+  "closed",
 ];
 
-const STATUS_FILTER_LABELS: Record<StatusFilter, string> = {
-  All: "All campaigns",
-  requested: "Awaiting response",
-  payment_pending: "Needs payment",
-  in_escrow: "Active",
-  completed: "Completed",
-  declined: "Closed",
-};
-
-const STATUS_FILTER_GROUPS: Record<StatusFilter, string[]> = {
-  All: [],
-  requested: ["requested", "pending"],
-  payment_pending: ["payment_pending"],
-  in_escrow: ["in_escrow", "accepted", "delivery_submitted"],
-  completed: ["completed"],
-  declined: ["declined", "rejected", "expired", "cancelled", "refunded"],
-};
-
-const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
-  { value: "newest", label: "Newest" },
-  { value: "highest_spend", label: "Highest spend" },
-  { value: "recently_updated", label: "Recently updated" },
-];
-
-const LANE_CONFIG: Record<
-  LaneKey,
+const SORT_OPTIONS: Array<{
+  value: SortMode;
+  label: string;
+  description: string;
+}> = [
   {
-    title: string;
-    description: string;
-    statuses: string[];
-    glow: string;
-    ring: string;
-    icon: typeof Clock3;
-  }
-> = {
-  requested: {
-    title: "Requested",
-    description: "Bookings you sent — waiting for the creator to respond.",
-    statuses: ["requested", "pending"],
-    glow: "from-amber-300/20 via-orange-300/10 to-transparent",
-    ring: "border-amber-300/20 bg-amber-300/6",
-    icon: Clock3,
+    value: "newest",
+    label: "Newest first",
+    description: "Most recently booked campaigns",
   },
-  payment_pending: {
-    title: "Action Required",
-    description: "Creator accepted — complete payment to lock in the deal.",
-    statuses: ["payment_pending"],
-    glow: "from-yellow-300/25 via-amber-300/10 to-transparent",
-    ring: "border-yellow-400/30 bg-yellow-400/6",
-    icon: CreditCard,
+  {
+    value: "recently_updated",
+    label: "Recently updated",
+    description: "Last activity or status change",
   },
-  active: {
-    title: "Active",
-    description: "Campaigns in motion — creator is working on your content.",
-    statuses: ["in_escrow", "accepted", "delivery_submitted"],
-    glow: "from-emerald-300/20 via-cyan-300/10 to-transparent",
-    ring: "border-emerald-300/20 bg-emerald-300/6",
-    icon: TrendingUp,
+  {
+    value: "highest_spend",
+    label: "Highest spend",
+    description: "Highest creator fee at the top",
   },
-  completed: {
-    title: "Completed",
-    description: "Closed loops, delivered work, done campaigns.",
-    statuses: ["completed"],
-    glow: "from-fuchsia-300/20 via-violet-300/10 to-transparent",
-    ring: "border-fuchsia-300/20 bg-fuchsia-300/6",
-    icon: CheckCircle2,
-  },
-  closed: {
-    title: "Closed",
-    description: "Declined, expired, or cancelled requests.",
-    statuses: ["declined", "rejected", "expired", "cancelled", "refunded"],
-    glow: "from-rose-300/20 via-red-300/10 to-transparent",
-    ring: "border-rose-300/20 bg-rose-300/6",
-    icon: XCircle,
-  },
-};
+];
 
-function getInitials(name: string | null, fallback: string) {
-  return (name?.trim() || fallback)
+function getInitials(name: string | null): string {
+  return (name?.trim() || "C")
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
+    .map((p) => p[0]?.toUpperCase() ?? "")
     .join("");
 }
 
-function formatCurrency(value: number | null) {
+function formatCurrency(value: number | null): string {
   if (!value) return "—";
-  return `₹${value.toLocaleString()}`;
+  return `₹${value.toLocaleString("en-IN")}`;
 }
 
-function formatPackage(packageType: string | null) {
-  if (!packageType) return "Campaign";
-  return packageType.charAt(0).toUpperCase() + packageType.slice(1);
+function formatPackage(pkg: string | null): string {
+  if (!pkg) return "Campaign";
+  return pkg.charAt(0).toUpperCase() + pkg.slice(1);
 }
 
-function CampaignMetricCard({
-  label,
-  value,
-  helper,
-  accent,
-}: {
-  label: string;
-  value: string;
-  helper: string;
-  accent: string;
-}) {
+// ── Status badge ──────────────────────────────────────────────────────────
+function StatusBadge({ status }: { status: string }) {
+  const cfg =
+    CAMPAIGN_STATUS_CONFIG[status as CampaignStatus] ??
+    CAMPAIGN_STATUS_CONFIG.requested;
   return (
-    <Card className="overflow-hidden border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02))] backdrop-blur-xl">
-      <CardContent className="relative p-5">
-        <div
-          className={`pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-r ${accent} opacity-90 blur-2xl`}
-        />
-        <div className="relative space-y-2">
-          <p className="text-[11px] uppercase tracking-[0.24em] text-white/45">
-            {label}
-          </p>
-          <p className="text-3xl font-semibold tracking-tight text-white">
-            {value}
-          </p>
-          <p className="text-sm text-white/55">{helper}</p>
-        </div>
-      </CardContent>
-    </Card>
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium leading-none",
+        cfg.badge,
+      )}
+    >
+      {cfg.label}
+    </span>
   );
 }
 
-function CampaignCommandCard({ item }: { item: EnrichedCampaign }) {
+// ── Campaign ledger row ───────────────────────────────────────────────────
+function CampaignRow({ item }: { item: EnrichedCampaign }) {
   const { campaign, influencer } = item;
-  const initials = getInitials(
-    influencer?.display_name ?? null,
-    campaign.title || "Campaign",
-  );
+  const isActionable =
+    campaign.status === "payment_pending" ||
+    campaign.status === "delivery_submitted";
 
   return (
     <Link
       href={`/dashboard/business/campaigns/${campaign.id}`}
       className="group block"
     >
-      <Card className="relative h-full overflow-hidden border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(143,244,255,0.16),transparent_42%),radial-gradient(circle_at_top_right,rgba(255,97,196,0.14),transparent_38%)]" />
-        <CardContent className="relative flex h-full flex-col gap-5 p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 space-y-1">
-              <p className="line-clamp-2 text-lg font-semibold leading-tight text-white">
-                {campaign.title || "Untitled Campaign"}
-              </p>
-              <p className="text-xs uppercase tracking-[0.2em] text-white/38">
-                {formatPackage(campaign.package_type)}
-              </p>
-            </div>
-            <Badge
-              variant="outline"
-              className={`${statusColor(campaign.status)} shrink-0 rounded-full px-2.5 py-1 capitalize`}
-            >
-              {campaign.status}
-            </Badge>
-          </div>
+      <div
+        className={cn(
+          "flex items-center gap-3 rounded-2xl border px-4 py-3.5 transition-all duration-200",
+          "hover:bg-white/[0.045] hover:border-white/[0.12] hover:shadow-[0_4px_24px_rgba(0,0,0,0.25)]",
+          isActionable
+            ? "border-white/[0.10] bg-white/[0.035]"
+            : "border-white/[0.065] bg-white/[0.02]",
+        )}
+      >
+        {/* Status accent dot */}
+        <div
+          className={cn(
+            "h-2 w-2 shrink-0 rounded-full",
+            campaign.status === "payment_pending"
+              ? "bg-yellow-400"
+              : campaign.status === "delivery_submitted"
+                ? "bg-blue-400"
+                : campaign.status === "in_escrow" ||
+                    campaign.status === "accepted"
+                  ? "bg-emerald-400"
+                  : campaign.status === "completed"
+                    ? "bg-violet-400"
+                    : [
+                          "declined",
+                          "rejected",
+                          "expired",
+                          "cancelled",
+                          "refunded",
+                        ].includes(campaign.status)
+                      ? "bg-white/20"
+                      : "bg-amber-400",
+          )}
+        />
 
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 p-3">
-            {influencer?.ig_profile_picture_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={influencer.ig_profile_picture_url}
-                alt={influencer.display_name || "Influencer"}
-                className="h-12 w-12 rounded-full object-cover ring-1 ring-white/12"
-              />
-            ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white/80 ring-1 ring-white/12">
-                {initials}
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="truncate font-medium text-white">
-                {influencer?.display_name || "Influencer"}
-              </p>
-              <p className="truncate text-sm text-white/50">
-                {influencer?.ig_username
-                  ? `@${influencer.ig_username}`
-                  : influencer?.category || "Creator booked"}
-              </p>
+        {/* Creator info */}
+        <div className="flex min-w-0 shrink-0 items-center gap-2.5 sm:w-44 md:w-52">
+          {influencer?.ig_profile_picture_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={influencer.ig_profile_picture_url}
+              alt={influencer.display_name || "Creator"}
+              className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-white/10"
+            />
+          ) : (
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white/70 ring-1 ring-white/8">
+              {getInitials(influencer?.display_name ?? null)}
             </div>
+          )}
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium text-white">
+              {influencer?.display_name || "Creator"}
+            </p>
+            <p className="truncate text-[11px] text-white/38">
+              {influencer?.ig_username
+                ? `@${influencer.ig_username}`
+                : influencer?.category || "—"}
+            </p>
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-white/42">
-                Spend
-              </p>
-              <p className="mt-2 text-xl font-semibold text-white">
-                {formatCurrency(campaign.price_offered)}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-white/42">
-                Initiated
-              </p>
-              <p className="mt-2 text-xl font-semibold text-white">
-                {timeAgo(campaign.created_at)}
-              </p>
-            </div>
-          </div>
+        {/* Campaign title + package — hidden on small screens */}
+        <div className="hidden min-w-0 flex-1 sm:block">
+          <p className="truncate text-[13px] text-white/82">
+            {campaign.title || "Untitled campaign"}
+          </p>
+          <p className="text-[11px] text-white/38">
+            {formatPackage(campaign.package_type)}
+          </p>
+        </div>
 
-          <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-            <div className="min-w-0">
-              <p className="text-xs uppercase tracking-[0.18em] text-white/38">
-                Last updated
-              </p>
-              <p className="truncate text-sm text-white/68">
-                {timeAgo(campaign.updated_at || campaign.created_at)}
-              </p>
-            </div>
-            {campaign.status === "payment_pending" ? (
-              <span className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-semibold text-black transition-transform group-hover:translate-x-1">
-                <CreditCard className="h-3.5 w-3.5" />
-                Pay Now
-                <ArrowRight className="h-4 w-4" />
-              </span>
-            ) : campaign.status === "delivery_submitted" ? (
-              <span className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white transition-transform group-hover:translate-x-1">
-                <Eye className="h-3.5 w-3.5" />
-                Review
-                <ArrowRight className="h-4 w-4" />
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition-transform group-hover:translate-x-1">
-                Open campaign
-                <ArrowRight className="h-4 w-4" />
-              </span>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+        {/* Status badge */}
+        <div className="shrink-0">
+          <StatusBadge status={campaign.status} />
+        </div>
+
+        {/* Amount + date */}
+        <div className="shrink-0 text-right">
+          <p className="text-[13px] font-semibold text-white">
+            {formatCurrency(campaign.price_offered)}
+          </p>
+          <p className="text-[11px] text-white/38">
+            {timeAgo(campaign.created_at)}
+          </p>
+        </div>
+
+        <ArrowRight className="h-3.5 w-3.5 shrink-0 text-white/18 transition-colors group-hover:text-white/45" />
+      </div>
     </Link>
   );
 }
 
-function EmptyLane({
-  title,
-  description,
+// ── Campaign sort panel (discover-style) ──────────────────────────────────
+function CampaignSortPanel({
+  open,
+  onClose,
+  sortMode,
+  setSortMode,
 }: {
-  title: string;
-  description: string;
+  open: boolean;
+  onClose: () => void;
+  sortMode: SortMode;
+  setSortMode: (v: SortMode) => void;
 }) {
-  return (
-    <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.025] p-6 text-center">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.05]">
-        <Megaphone className="h-5 w-5 text-white/40" />
+  const isMobile = useIsMobile();
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (open) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && open) onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [open, onClose]);
+
+  const content = (
+    <div className="flex h-full flex-col">
+      {isMobile && (
+        <div className="flex shrink-0 justify-center pb-1 pt-3">
+          <div className="h-1 w-9 rounded-full bg-white/20" />
+        </div>
+      )}
+      <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-5 py-4">
+        <div className="flex items-center gap-2.5">
+          <SlidersHorizontal className="h-4 w-4 text-white/50" />
+          <span className="text-[15px] font-semibold text-white">
+            Sort campaigns
+          </span>
+        </div>
+        <button
+          onClick={onClose}
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-all hover:bg-white/10 hover:text-white"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
       </div>
-      <p className="font-medium text-white">{title}</p>
-      <p className="mt-1 text-sm text-white/50">{description}</p>
+
+      <div className="flex-1 overflow-y-auto px-5 py-5">
+        <div className="space-y-5">
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.26em] text-white/30">
+              Sort by
+            </p>
+            <div className="space-y-2">
+              {SORT_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    setSortMode(opt.value);
+                    onClose();
+                  }}
+                  className={cn(
+                    "w-full rounded-xl border p-3.5 text-left transition-all duration-200",
+                    sortMode === opt.value
+                      ? "border-white/20 bg-white/10"
+                      : "border-white/8 bg-white/[0.03] hover:bg-white/[0.06]",
+                  )}
+                >
+                  <p
+                    className={cn(
+                      "text-[13px] font-medium",
+                      sortMode === opt.value ? "text-white" : "text-white/70",
+                    )}
+                  >
+                    {opt.label}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-white/38">
+                    {opt.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <Separator className="bg-white/[0.07]" />
+
+          <div className="space-y-2">
+            <p className="text-[10px] uppercase tracking-[0.26em] text-white/30">
+              Currently sorting by
+            </p>
+            <p className="text-[13px] text-white/60">
+              {SORT_OPTIONS.find((o) => o.value === sortMode)?.label}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
+  );
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          <m.div
+            key="sort-backdrop"
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            onClick={onClose}
+          />
+          {isMobile ? (
+            <m.div
+              key="sort-sheet-mobile"
+              ref={panelRef}
+              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[85dvh] flex-col rounded-t-[28px] border-t border-white/10 bg-[#0b0d12] text-white"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 34 }}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0.25}
+              onDragEnd={(_, info) => {
+                if (info.offset.y > 80) onClose();
+              }}
+            >
+              {content}
+            </m.div>
+          ) : (
+            <m.div
+              key="sort-panel-desktop"
+              ref={panelRef}
+              className="fixed bottom-0 right-0 top-0 z-50 flex w-[360px] flex-col border-l border-white/10 bg-[#0b0d12] text-white shadow-[-24px_0_80px_rgba(0,0,0,0.45)]"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 340, damping: 36 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(_, info) => {
+                if (info.offset.x > 80) onClose();
+              }}
+            >
+              {content}
+            </m.div>
+          )}
+        </>
+      )}
+    </AnimatePresence>
   );
 }
 
+// ── Main page ─────────────────────────────────────────────────────────────
 export default function CampaignsList() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const { data: campaigns = [], isLoading: campaignsLoading } = useCampaigns(
     user?.id,
     "business",
   );
+
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [search, setSearch] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
+  const [sortPanelOpen, setSortPanelOpen] = useState(false);
 
+  // Mark campaign notifications as read
   useEffect(() => {
     if (!user?.id) return;
     supabase
@@ -340,49 +432,47 @@ export default function CampaignsList() {
       .then(() => {});
   }, [user?.id]);
 
+  // Batch-fetch influencer profiles for all campaigns
   const influencerProfileIds = useMemo(
     () =>
       [
         ...new Set(
-          campaigns
-            .map((campaign) => campaign.influencer_profile_id)
-            .filter(Boolean),
+          campaigns.map((c) => c.influencer_profile_id).filter(Boolean),
         ),
       ] as string[],
     [campaigns],
   );
 
-  const { data: influencerProfiles = [], isLoading: profilesLoading } =
-    useQuery({
-      queryKey: ["campaign-dashboard-profiles", influencerProfileIds],
-      queryFn: async () => {
-        if (!influencerProfileIds.length) return [];
-        const { data, error } = await supabase
-          .from("influencer_profiles")
-          .select(
-            "id, display_name, ig_profile_picture_url, ig_username, category",
-          )
-          .in("id", influencerProfileIds);
-        if (error) throw error;
-        return data as Pick<
-          InfluencerProfile,
-          | "id"
-          | "display_name"
-          | "ig_profile_picture_url"
-          | "ig_username"
-          | "category"
-        >[];
-      },
-      enabled: influencerProfileIds.length > 0,
-      staleTime: 30_000,
-    });
+  const { data: influencerProfiles = [] } = useQuery({
+    queryKey: ["campaign-profiles", influencerProfileIds],
+    queryFn: async () => {
+      if (!influencerProfileIds.length) return [];
+      const { data, error } = await supabase
+        .from("influencer_profiles")
+        .select(
+          "id, display_name, ig_profile_picture_url, ig_username, category",
+        )
+        .in("id", influencerProfileIds);
+      if (error) throw error;
+      return data as Pick<
+        InfluencerProfile,
+        | "id"
+        | "display_name"
+        | "ig_profile_picture_url"
+        | "ig_username"
+        | "category"
+      >[];
+    },
+    enabled: influencerProfileIds.length > 0,
+    staleTime: 30_000,
+  });
 
   const profileMap = useMemo(
-    () => new Map(influencerProfiles.map((profile) => [profile.id, profile])),
+    () => new Map(influencerProfiles.map((p) => [p.id, p])),
     [influencerProfiles],
   );
 
-  const enrichedCampaigns = useMemo<EnrichedCampaign[]>(
+  const enriched = useMemo<EnrichedCampaign[]>(
     () =>
       campaigns.map((campaign) => ({
         campaign,
@@ -392,91 +482,6 @@ export default function CampaignsList() {
       })),
     [campaigns, profileMap],
   );
-
-  const metrics = useMemo(() => {
-    const totalSpend = campaigns.reduce(
-      (sum, campaign) => sum + (campaign.price_offered || 0),
-      0,
-    );
-
-    return {
-      totalCampaigns: campaigns.length,
-      actionRequired: campaigns.filter(
-        (campaign) => campaign.status === "payment_pending",
-      ).length,
-      activeCampaigns: campaigns.filter((campaign) =>
-        ["in_escrow", "accepted", "delivery_submitted"].includes(campaign.status),
-      ).length,
-      completedCampaigns: campaigns.filter(
-        (campaign) => campaign.status === "completed",
-      ).length,
-      closedCampaigns: campaigns.filter((campaign) =>
-        ["declined", "rejected", "expired", "cancelled"].includes(campaign.status),
-      ).length,
-      totalSpend,
-    };
-  }, [campaigns]);
-
-  const filteredCampaigns = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    let items = [...enrichedCampaigns];
-
-    if (statusFilter !== "All") {
-      items = items.filter((item) =>
-        STATUS_FILTER_GROUPS[statusFilter].includes(item.campaign.status),
-      );
-    }
-
-    if (query) {
-      items = items.filter((item) => {
-        const title = (item.campaign.title || "").toLowerCase();
-        const name = (item.influencer?.display_name || "").toLowerCase();
-        const handle = (item.influencer?.ig_username || "").toLowerCase();
-        return (
-          title.includes(query) ||
-          name.includes(query) ||
-          handle.includes(query)
-        );
-      });
-    }
-
-    items.sort((left, right) => {
-      if (sortMode === "highest_spend") {
-        return (
-          (right.campaign.price_offered || 0) -
-          (left.campaign.price_offered || 0)
-        );
-      }
-
-      if (sortMode === "recently_updated") {
-        return (
-          new Date(
-            right.campaign.updated_at || right.campaign.created_at,
-          ).getTime() -
-          new Date(
-            left.campaign.updated_at || left.campaign.created_at,
-          ).getTime()
-        );
-      }
-
-      return (
-        new Date(right.campaign.created_at).getTime() -
-        new Date(left.campaign.created_at).getTime()
-      );
-    });
-
-    return items;
-  }, [enrichedCampaigns, search, sortMode, statusFilter]);
-
-  const lanes = useMemo(() => {
-    return (Object.keys(LANE_CONFIG) as LaneKey[]).map((laneKey) => ({
-      key: laneKey,
-      ...LANE_CONFIG[laneKey],
-      items: filteredCampaigns.filter((item) =>
-        LANE_CONFIG[laneKey].statuses.includes(item.campaign.status),
-      ),
-    }));
-  }, [filteredCampaigns]);
 
   const statusCounts = useMemo(
     () => ({
@@ -493,258 +498,296 @@ export default function CampaignsList() {
       completed: campaigns.filter((c) =>
         STATUS_FILTER_GROUPS.completed.includes(c.status),
       ).length,
-      declined: campaigns.filter((c) =>
-        STATUS_FILTER_GROUPS.declined.includes(c.status),
+      closed: campaigns.filter((c) =>
+        STATUS_FILTER_GROUPS.closed.includes(c.status),
       ).length,
     }),
     [campaigns],
   );
 
-  if (authLoading || campaignsLoading || profilesLoading) {
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    let items = [...enriched];
+
+    if (statusFilter !== "All") {
+      items = items.filter((item) =>
+        STATUS_FILTER_GROUPS[statusFilter].includes(item.campaign.status),
+      );
+    }
+
+    if (q) {
+      items = items.filter((item) => {
+        const blob = [
+          item.campaign.title,
+          item.influencer?.display_name,
+          item.influencer?.ig_username,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return blob.includes(q);
+      });
+    }
+
+    items.sort((a, b) => {
+      if (sortMode === "highest_spend")
+        return (
+          (b.campaign.price_offered ?? 0) - (a.campaign.price_offered ?? 0)
+        );
+      if (sortMode === "recently_updated") {
+        return (
+          new Date(b.campaign.updated_at || b.campaign.created_at).getTime() -
+          new Date(a.campaign.updated_at || a.campaign.created_at).getTime()
+        );
+      }
+      return (
+        new Date(b.campaign.created_at).getTime() -
+        new Date(a.campaign.created_at).getTime()
+      );
+    });
+
+    return items;
+  }, [enriched, search, sortMode, statusFilter]);
+
+  // Highlight "pay now" campaigns at top when on "All" filter
+  const displayItems = useMemo(() => {
+    if (statusFilter !== "All") return filtered;
+    const payNow = filtered.filter(
+      (i) => i.campaign.status === "payment_pending",
+    );
+    const rest = filtered.filter(
+      (i) => i.campaign.status !== "payment_pending",
+    );
+    return [...payNow, ...rest];
+  }, [filtered, statusFilter]);
+
+  if (campaignsLoading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="relative min-h-[calc(100dvh-4rem)] overflow-hidden">
+        <div className="pointer-events-none absolute inset-0">
+          <AnimatedGradientBackground
+            Breathing
+            gradientColors={GRADIENT_COLORS}
+            gradientStops={GRADIENT_STOPS}
+            startingGap={220}
+            breathingRange={10}
+            animationSpeed={0.014}
+            containerStyle={GRADIENT_STYLE}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,8,16,0.12),rgba(5,8,16,0.62))]" />
+        </div>
+        <div className="relative z-10 container py-6 space-y-4">
+          <div className="h-12 w-48 animate-pulse rounded-2xl bg-white/[0.06]" />
+          <div className="h-14 w-full animate-pulse rounded-full bg-white/[0.04]" />
+          <div className="space-y-2">
+            {[0, 1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-[60px] w-full animate-pulse rounded-2xl bg-white/[0.03]"
+              />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-[calc(100dvh-4rem)] overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={220}
-          breathingRange={10}
-          animationSpeed={0.014}
-          containerStyle={GRADIENT_STYLE}
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_34%),linear-gradient(180deg,rgba(5,8,16,0.12),rgba(5,8,16,0.62))]" />
-      </div>
+    <>
+      <div className="relative min-h-[calc(100dvh-4rem)] overflow-hidden">
+        {/* Background */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <AnimatedGradientBackground
+            Breathing
+            gradientColors={GRADIENT_COLORS}
+            gradientStops={GRADIENT_STOPS}
+            startingGap={220}
+            breathingRange={10}
+            animationSpeed={0.014}
+            containerStyle={GRADIENT_STYLE}
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_34%),linear-gradient(180deg,rgba(5,8,16,0.10),rgba(5,8,16,0.55))]" />
+        </div>
 
-      <div className="relative z-10 container space-y-8 py-6">
-        <div className="flex items-start gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            className="h-11 w-11 shrink-0"
+        <div className="relative z-10 container space-y-5 py-6">
+          <m.div
+            variants={stagger}
+            initial="hidden"
+            animate="visible"
+            className="space-y-5"
           >
-            <Link href="/dashboard/business">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white/55">
-              <Sparkles className="h-3.5 w-3.5" />
-              Campaign command center
-            </div>
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                Campaigns
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-white/58 sm:text-base">
-                Track who you hired, what you launched, and what still needs
-                your attention, all from one brand-side control room.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-          <CampaignMetricCard
-            label="Initiated"
-            value={compactNumber(metrics.totalCampaigns)}
-            helper="Total campaigns kicked off"
-            accent="from-cyan-300/25 via-sky-300/10 to-transparent"
-          />
-          <CampaignMetricCard
-            label="Needs payment"
-            value={compactNumber(metrics.actionRequired)}
-            helper="Creator accepted — pay to start"
-            accent="from-yellow-300/30 via-amber-300/10 to-transparent"
-          />
-          <CampaignMetricCard
-            label="Active"
-            value={compactNumber(metrics.activeCampaigns)}
-            helper="Creators currently in motion"
-            accent="from-emerald-300/25 via-green-300/10 to-transparent"
-          />
-          <CampaignMetricCard
-            label="Completed"
-            value={compactNumber(metrics.completedCampaigns)}
-            helper="Closed loops and delivered work"
-            accent="from-violet-300/25 via-fuchsia-300/10 to-transparent"
-          />
-          <CampaignMetricCard
-            label="Committed spend"
-            value={formatCurrency(metrics.totalSpend)}
-            helper="Booked value across all campaigns"
-            accent="from-amber-300/25 via-orange-300/10 to-transparent"
-          />
-        </div>
-
-        <Card className="overflow-hidden border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03))] backdrop-blur-2xl">
-          <CardContent className="space-y-5 p-5 sm:p-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="relative max-w-xl flex-1">
-                <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-white/36" />
-                <Input
-                  placeholder="Search campaigns, influencer names, or handles"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="h-12 rounded-full border-white/10 bg-black/20 pl-11 text-white placeholder:text-white/35"
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                {SORT_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setSortMode(option.value)}
-                    className={`rounded-full px-4 py-2 text-sm transition ${
-                      sortMode === option.value
-                        ? "bg-white text-black"
-                        : "bg-white/[0.05] text-white/60 hover:bg-white/[0.08] hover:text-white"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {STATUS_FILTERS.map((status) => (
-                <button
-                  key={status}
-                  type="button"
-                  onClick={() => setStatusFilter(status)}
-                  className={`rounded-full border px-4 py-2 text-sm transition ${
-                    statusFilter === status
-                      ? "border-white/30 bg-white text-black"
-                      : status === "payment_pending" && statusCounts.payment_pending > 0
-                        ? "border-yellow-400/40 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/15 hover:text-yellow-200"
-                        : "border-white/10 bg-white/[0.03] text-white/58 hover:border-white/16 hover:text-white"
-                  }`}
-                >
-                  <span>{STATUS_FILTER_LABELS[status]}</span>
-                  <span className="ml-2 text-xs opacity-70">
-                    {statusCounts[status]}
+            {/* ── Header ───────────────────────────────────────────────── */}
+            <m.div variants={fadeUp} className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="h-11 w-11 shrink-0 rounded-full border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10"
+              >
+                <Link href="/dashboard/business">
+                  <ArrowLeft className="h-5 w-5" />
+                </Link>
+              </Button>
+              <div>
+                <p className="eyebrow-label text-[11px] text-white/45">
+                  Brand activity
+                </p>
+                <h1 className="heading-mix text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                  Campaign{" "}
+                  <span className="heading-mix-accent text-white/90">
+                    Ledger
                   </span>
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                </h1>
+              </div>
+            </m.div>
 
-        {filteredCampaigns.length === 0 ? (
-          <Card className="overflow-hidden border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] backdrop-blur-xl">
-            <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/[0.05]">
-                <Megaphone className="h-7 w-7 text-white/55" />
+            {/* ── Search + Sort bar ────────────────────────────────────── */}
+            <m.div variants={fadeUp} className="space-y-3">
+              <div className="flex items-center gap-3 rounded-[28px] border border-white/10 bg-black/20 p-3 backdrop-blur-xl sm:p-4">
+                <div className="relative flex-1">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
+                  <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search campaigns or creator names"
+                    className="h-12 rounded-full border-white/10 bg-white/[0.05] pl-11 text-white placeholder:text-white/35"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSortPanelOpen(true)}
+                  className={cn(
+                    "relative flex h-12 shrink-0 items-center gap-2 rounded-full border px-5 text-sm font-medium text-white backdrop-blur-md transition-all duration-200",
+                    sortMode !== "newest"
+                      ? "border-white/25 bg-white/12"
+                      : "border-cyan-300/20 bg-[linear-gradient(135deg,#dfe7ff18,#8be9ff14)] hover:bg-white/10",
+                  )}
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                  <span className="hidden sm:inline">Sort</span>
+                </button>
               </div>
-              <div className="space-y-1">
-                <p className="text-xl font-semibold text-white">
-                  {campaigns.length === 0
-                    ? "No campaigns yet"
-                    : "No campaigns match this view"}
-                </p>
-                <p className="max-w-md text-sm text-white/55">
-                  {campaigns.length === 0
-                    ? "Start by booking an influencer and your campaign dashboard will come alive here."
-                    : "Try a different status filter, search term, or sort mode."}
-                </p>
+
+              {/* Status pills */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                {STATUS_FILTERS.map((sf) => {
+                  const count = statusCounts[sf];
+                  const isActive = statusFilter === sf;
+                  const isUrgent =
+                    sf === "payment_pending" && count > 0 && !isActive;
+                  return (
+                    <button
+                      key={sf}
+                      type="button"
+                      onClick={() => setStatusFilter(sf)}
+                      className={cn(
+                        "flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-200",
+                        isActive
+                          ? "border-white/25 bg-white text-black"
+                          : isUrgent
+                            ? "border-yellow-400/40 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/15"
+                            : "border-white/10 bg-white/[0.04] text-white/55 hover:border-white/16 hover:text-white/80",
+                      )}
+                    >
+                      <span>{STATUS_PILL_LABELS[sf]}</span>
+                      <span
+                        className={cn(
+                          "text-[10px]",
+                          isActive ? "text-black/50" : "text-white/35",
+                        )}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
-              {campaigns.length === 0 ? (
-                <Button asChild size="lg" className="h-12 rounded-full">
+
+              <p className="pl-1 text-xs text-white/38">
+                {displayItems.length} campaign
+                {displayItems.length !== 1 ? "s" : ""}
+                {sortMode !== "newest" && (
+                  <span className="ml-2 text-white/25">
+                    · sorted by{" "}
+                    {SORT_OPTIONS.find(
+                      (o) => o.value === sortMode,
+                    )?.label.toLowerCase()}
+                  </span>
+                )}
+              </p>
+            </m.div>
+
+            {/* ── Campaign list ──────────────────────────────────────────── */}
+            {campaigns.length === 0 ? (
+              <m.div
+                variants={fadeUp}
+                className="rounded-[28px] border border-dashed border-white/10 bg-white/[0.025] py-20 text-center"
+              >
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-3xl bg-white/[0.05]">
+                  <Megaphone className="h-6 w-6 text-white/40" />
+                </div>
+                <p className="text-lg font-semibold text-white">
+                  No campaigns yet
+                </p>
+                <p className="mt-1.5 text-sm text-white/50">
+                  Book a creator and your campaign activity will appear here.
+                </p>
+                <Button
+                  asChild
+                  className="mt-6 h-11 rounded-full bg-white text-black hover:bg-white/90"
+                >
                   <Link href="/dashboard/business/discover">
-                    Browse Influencers
+                    Browse creators
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-              ) : (
-                <Button
-                  variant="outline"
+              </m.div>
+            ) : displayItems.length === 0 ? (
+              <m.div
+                variants={fadeUp}
+                className="rounded-[28px] border border-dashed border-white/10 bg-white/[0.025] py-16 text-center"
+              >
+                <p className="text-base font-medium text-white">
+                  No campaigns match this filter
+                </p>
+                <p className="mt-1 text-sm text-white/45">
+                  Try a different status or clear the search.
+                </p>
+                <button
+                  type="button"
                   onClick={() => {
                     setStatusFilter("All");
                     setSearch("");
-                    setSortMode("newest");
                   }}
-                  className="rounded-full"
+                  className="mt-4 rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Reset view
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-5">
-            <AnimatePresence initial={false}>
-              {lanes.map((lane, index) => {
-                const Icon = lane.icon;
-
-                return (
-                  <m.section
-                    key={lane.key}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.28, delay: index * 0.05 }}
-                    className={`overflow-hidden rounded-[28px] border ${lane.ring} backdrop-blur-xl`}
-                  >
-                    <div
-                      className={`pointer-events-none h-24 bg-gradient-to-r ${lane.glow}`}
-                    />
-                    <div className="-mt-16 space-y-5 px-5 pb-5 sm:px-6 sm:pb-6">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                        <div className="flex items-start gap-3">
-                          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-black/30">
-                            <Icon className="h-5 w-5 text-white/75" />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h2 className="text-xl font-semibold text-white">
-                                {lane.title}
-                              </h2>
-                              <Badge
-                                variant="outline"
-                                className="rounded-full border-white/10 bg-white/[0.04] text-white/65"
-                              >
-                                {lane.items.length}
-                              </Badge>
-                            </div>
-                            <p className="mt-1 text-sm text-white/50">
-                              {lane.description}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {lane.items.length === 0 ? (
-                        <EmptyLane
-                          title={`Nothing in ${lane.title.toLowerCase()} right now`}
-                          description="This lane will populate automatically as your campaign lifecycle changes."
-                        />
-                      ) : (
-                        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                          {lane.items.map((item) => (
-                            <CampaignCommandCard
-                              key={item.campaign.id}
-                              item={item}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </m.section>
-                );
-              })}
-            </AnimatePresence>
-          </div>
-        )}
+                  Clear filters
+                </button>
+              </m.div>
+            ) : (
+              <m.div
+                variants={stagger}
+                initial="hidden"
+                animate="visible"
+                className="space-y-1.5"
+              >
+                {displayItems.map((item) => (
+                  <m.div key={item.campaign.id} variants={fadeUp}>
+                    <CampaignRow item={item} />
+                  </m.div>
+                ))}
+              </m.div>
+            )}
+          </m.div>
+        </div>
       </div>
-    </div>
+
+      <CampaignSortPanel
+        open={sortPanelOpen}
+        onClose={() => setSortPanelOpen(false)}
+        sortMode={sortMode}
+        setSortMode={setSortMode}
+      />
+    </>
   );
 }
