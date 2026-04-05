@@ -9,10 +9,17 @@ import {
   Briefcase,
   CheckCircle,
   X,
+  Repeat2,
 } from "lucide-react";
 import { formatFileSize } from "@/lib/file-upload";
 import { m } from "framer-motion";
 import type { Json } from "@/lib/supabase/types";
+import {
+  getContentStyleLabel,
+  getObjectiveMeta,
+  BOOKING_TIMING_OPTIONS,
+  type ContentStyle,
+} from "@/lib/booking";
 
 interface MessageBubbleProps {
   content: string | null;
@@ -143,6 +150,15 @@ interface BookingCardMeta {
   price_offered?: number;
   brief?: string;
   business_name?: string;
+  objective?: string;
+  timing_mode?: string;
+  due_date?: string | null;
+  focus_text?: string;
+  event_name?: string;
+  content_styles?: string[];
+  usage_rights?: boolean;
+  hashtags_mentions?: string;
+  cta_message?: string;
 }
 
 interface BookingCardMessageProps {
@@ -217,9 +233,6 @@ export function BookingCardMessage({
 }: BookingCardMessageProps) {
   const meta = (metadata || {}) as BookingCardMeta;
   const pkg = getPackageIcon(meta.package_type);
-  const brief = meta.brief || "";
-  const truncatedBrief =
-    brief.length > 150 ? brief.slice(0, 150) + "..." : brief;
   const status = statusConfig[campaignStatus || ""] || statusConfig.pending;
   const isPending = campaignStatus === "pending";
   const isRejected = campaignStatus === "rejected";
@@ -310,6 +323,16 @@ export function BookingCardMessage({
               </div>
             )}
 
+            {/* Objective */}
+            {meta.objective && (
+              <div className="flex items-center justify-between px-4 py-3">
+                <span className="text-xs text-muted-foreground">Objective</span>
+                <span className="text-xs font-semibold">
+                  {getObjectiveMeta(meta.objective as Parameters<typeof getObjectiveMeta>[0])?.label ?? meta.objective}
+                </span>
+              </div>
+            )}
+
             {/* Budget */}
             <div className="flex items-center justify-between px-4 py-3">
               <span className="text-xs text-muted-foreground">Budget</span>
@@ -325,6 +348,35 @@ export function BookingCardMessage({
                 </span>
               </span>
             </div>
+
+            {/* Timeline */}
+            {meta.timing_mode && (
+              <div className="flex items-center justify-between px-4 py-3">
+                <span className="text-xs text-muted-foreground">Timeline</span>
+                <span className="text-xs font-semibold">
+                  {meta.timing_mode === "choose_date" && meta.due_date
+                    ? `By ${meta.due_date}`
+                    : BOOKING_TIMING_OPTIONS.find((t) => t.value === meta.timing_mode)?.label ?? meta.timing_mode}
+                </span>
+              </div>
+            )}
+
+            {/* Usage rights */}
+            {meta.usage_rights !== undefined && (
+              <div className="flex items-center justify-between px-4 py-3">
+                <span className="text-xs text-muted-foreground">Repost rights</span>
+                <span className="inline-flex items-center gap-1.5">
+                  {meta.usage_rights ? (
+                    <>
+                      <Repeat2 className="h-3.5 w-3.5 text-emerald-400" />
+                      <span className="text-xs font-semibold text-emerald-400">Brand can repost</span>
+                    </>
+                  ) : (
+                    <span className="text-xs font-semibold text-muted-foreground">Creator-only</span>
+                  )}
+                </span>
+              </div>
+            )}
 
             {/* Status */}
             {campaignStatus && (
@@ -342,17 +394,79 @@ export function BookingCardMessage({
             )}
           </m.div>
 
-          {/* Brief */}
-          {truncatedBrief && (
+          {/* What to feature */}
+          {meta.focus_text && (
+            <m.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="relative pl-3 border-l-2 border-white/[0.08]"
+            >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/60 mb-1">
+                What to feature
+              </p>
+              <p className="text-xs text-foreground/80 leading-relaxed">
+                {meta.focus_text}
+              </p>
+            </m.div>
+          )}
+
+          {/* Venue */}
+          {meta.event_name && (
+            <m.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.32 }}
+              className="relative pl-3 border-l-2 border-white/[0.08]"
+            >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/60 mb-1">
+                Venue / Event
+              </p>
+              <p className="text-xs text-foreground/80 leading-relaxed">
+                {meta.event_name}
+              </p>
+            </m.div>
+          )}
+
+          {/* Content style chips */}
+          {meta.content_styles && meta.content_styles.length > 0 && (
             <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.35 }}
-              className="relative pl-3 border-l-2 border-white/[0.08]"
+              className="flex flex-wrap gap-1.5"
             >
-              <p className="text-xs text-muted-foreground/80 leading-relaxed italic">
-                &ldquo;{truncatedBrief}&rdquo;
-              </p>
+              {meta.content_styles.map((style) => (
+                <span
+                  key={style}
+                  className="rounded-full bg-white/[0.06] border border-white/[0.08] px-2.5 py-1 text-[10px] font-medium text-muted-foreground"
+                >
+                  {getContentStyleLabel(style as ContentStyle)}
+                </span>
+              ))}
+            </m.div>
+          )}
+
+          {/* CTA & Tags */}
+          {(meta.cta_message || meta.hashtags_mentions) && (
+            <m.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.38 }}
+              className="space-y-1.5"
+            >
+              {meta.cta_message && (
+                <p className="text-xs text-muted-foreground/80">
+                  <span className="font-semibold text-foreground/60">CTA:</span>{" "}
+                  {meta.cta_message}
+                </p>
+              )}
+              {meta.hashtags_mentions && (
+                <p className="text-xs text-muted-foreground/80">
+                  <span className="font-semibold text-foreground/60">Tags:</span>{" "}
+                  {meta.hashtags_mentions}
+                </p>
+              )}
             </m.div>
           )}
 

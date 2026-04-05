@@ -22,12 +22,15 @@ import { PLATFORM_FEE_RATE } from "@/lib/constants";
 import {
   BOOKING_OBJECTIVES,
   BOOKING_TIMING_OPTIONS,
+  CONTENT_STYLES,
+  OBJECTIVE_PLACEHOLDERS,
   getAvailablePackages,
   getPackageLabel,
   shouldShowEventName,
   type BookingObjective,
   type BookingTimingMode,
   type BookablePackage,
+  type ContentStyle,
   type InfluencerProfile,
 } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
@@ -41,13 +44,22 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Workspaces,
+  WorkspaceTrigger,
+  WorkspaceContent,
+  type Workspace,
+} from "@/components/ui/workspaces";
 import Link from "next/link";
 
 
 
 const DEFAULT_OBJECTIVE: BookingObjective = "product_launch";
 const DEFAULT_TIMING: BookingTimingMode = "asap";
+
+interface BookingWorkspace extends Workspace {
+  description?: string;
+}
 
 interface BookingDrawerProps {
   creator: InfluencerProfile;
@@ -101,8 +113,13 @@ export function BookingDrawer({
   const [dueDate, setDueDate] = useState("");
   const [focusText, setFocusText] = useState("");
   const [eventName, setEventName] = useState("");
-  const [notes, setNotes] = useState("");
-  const [showNotes, setShowNotes] = useState(false);
+  const [contentStyles, setContentStyles] = useState<ContentStyle[]>([
+    "honest_review",
+  ]);
+  const [usageRights, setUsageRights] = useState(false);
+  const [hashtagsMentions, setHashtagsMentions] = useState("");
+  const [ctaMessage, setCtaMessage] = useState("");
+  const [showDetails, setShowDetails] = useState(false);
   const [contactEmailDraft, setContactEmailDraft] = useState("");
   const [contactPhoneDraft, setContactPhoneDraft] = useState("");
 
@@ -116,8 +133,11 @@ export function BookingDrawer({
     setDueDate("");
     setFocusText("");
     setEventName("");
-    setNotes("");
-    setShowNotes(false);
+    setContentStyles(["honest_review"]);
+    setUsageRights(false);
+    setHashtagsMentions("");
+    setCtaMessage("");
+    setShowDetails(false);
     setContactEmailDraft("");
     setContactPhoneDraft("");
   }, [availablePackages, creator.id, initialPackage, open]);
@@ -146,15 +166,99 @@ export function BookingDrawer({
   const timingLabel =
     BOOKING_TIMING_OPTIONS.find((item) => item.value === timingMode)?.label ??
     "Timing";
+  const objectiveOptions = useMemo(
+    () => BOOKING_OBJECTIVES.filter((item) => item.value !== "ugc"),
+    [],
+  );
+  const objectiveItems = useMemo<BookingWorkspace[]>(
+    () =>
+      objectiveOptions.map((item) => ({
+        id: item.value,
+        name: item.label,
+        description: item.description,
+      })),
+    [objectiveOptions],
+  );
+  const contentStyleItems = useMemo<BookingWorkspace[]>(
+    () =>
+      CONTENT_STYLES.map((style) => ({
+        id: style.value,
+        name: style.label,
+      })),
+    [],
+  );
+  const timingItems = useMemo<BookingWorkspace[]>(
+    () =>
+      BOOKING_TIMING_OPTIONS.map((item) => ({
+        id: item.value,
+        name: item.label,
+        description: item.description,
+      })),
+    [],
+  );
   const objectiveLabel =
     BOOKING_OBJECTIVES.find((item) => item.value === objective)?.label ??
     "Booking";
+
+  const renderDropdownTrigger =
+    (label: string) => (workspace: Workspace, isOpen: boolean) => (
+      <div className="flex w-full items-center justify-between gap-3">
+        <div className="min-w-0 text-left">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-white/45">
+            {label}
+          </p>
+          <p className="mt-1 truncate text-sm font-medium text-white">
+            {workspace.name}
+          </p>
+        </div>
+        <ChevronDown
+          className={`h-4 w-4 text-white/55 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </div>
+    );
+
+  const renderWorkspaceRow = (
+    workspace: BookingWorkspace,
+    isSelected: boolean,
+  ) => (
+    <div className="flex min-w-0 flex-1 items-center gap-3">
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm text-white">{workspace.name}</p>
+        {workspace.description ? (
+          <p className="mt-1 text-xs text-white/50">
+            {workspace.description}
+          </p>
+        ) : null}
+      </div>
+      {isSelected ? <Check className="h-4 w-4 text-white" /> : null}
+    </div>
+  );
 
   const handleContinueToPayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedPackageData) return;
 
+    if (!focusText.trim()) {
+      toast({
+        title: "What should they feature?",
+        description:
+          "Tell the creator what to highlight — even a few words helps.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (shouldShowEventName(objective) && !eventName.trim()) {
+      toast({
+        title: "Where should they go?",
+        description: "Add the venue or event name so the creator can prepare.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (timingMode === "choose_date" && !dueDate) {
       toast({
         title: "Choose a delivery date",
@@ -243,7 +347,10 @@ export function BookingDrawer({
               due_date: dueDate || undefined,
               focus_text: focusText,
               event_name: eventName || undefined,
-              notes: notes || undefined,
+              content_styles: contentStyles,
+              usage_rights: usageRights,
+              hashtags_mentions: hashtagsMentions || undefined,
+              cta_message: ctaMessage || undefined,
               contact_email: contactEmail,
               contact_phone: contactPhone,
             }),
@@ -300,8 +407,8 @@ export function BookingDrawer({
           onOpenChange(nextOpen);
         }}
       >
-        <DrawerContent className="ml-auto flex h-[92vh] max-h-[92vh] min-h-0 flex-col overflow-hidden rounded-t-[28px] border-white/10 bg-[linear-gradient(180deg,rgba(10,14,26,0.985),rgba(6,9,18,0.97))] text-white shadow-2xl md:h-dvh md:max-h-dvh md:w-[min(440px,92vw)] md:max-w-none md:rounded-none">
-          <DrawerHeader className="shrink-0 border-b border-white/10 bg-black/30 px-5 py-4 md:px-6">
+        <DrawerContent className="ml-auto flex h-[88dvh] max-h-[88dvh] min-h-0 flex-col overflow-hidden rounded-t-[32px] border-t border-white/10 bg-[#0b0d12] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)] md:h-dvh md:max-h-dvh md:w-[420px] md:max-w-none md:rounded-none md:border-t-0 md:border-l md:border-white/10 md:shadow-[-28px_0_90px_rgba(0,0,0,0.5)]">
+          <DrawerHeader className="shrink-0 border-b border-white/8 px-5 py-4 md:px-6">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 {step === 2 ? (
@@ -391,45 +498,12 @@ export function BookingDrawer({
                     onSubmit={handleContinueToPayment}
                     className="space-y-5"
                   >
+                    {/* ── Package ──────────────────────────────────── */}
                     <section className="space-y-3">
                       <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
-                        Booking type
+                        What you need
                       </h2>
-                      <div className="grid grid-cols-2 gap-2">
-                        {BOOKING_OBJECTIVES.map((item) => {
-                          const active = objective === item.value;
-                          return (
-                            <button
-                              key={item.value}
-                              type="button"
-                              onClick={() => setObjective(item.value)}
-                              className={`rounded-2xl border px-4 py-3 text-left transition ${
-                                active
-                                  ? "border-white/30 bg-white text-black"
-                                  : "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
-                              }`}
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <p
-                                  className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}
-                                >
-                                  {item.shortLabel}
-                                </p>
-                                {active ? (
-                                  <Check className="h-4 w-4 text-black" />
-                                ) : null}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </section>
-
-                    <section className="space-y-3">
-                      <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
-                        Package
-                      </h2>
-                      <div className="grid gap-2">
+                      <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(availablePackages.length, 3)}, 1fr)` }}>
                         {availablePackages.map((item) => {
                           const active = selectedPackageData?.key === item.key;
                           return (
@@ -437,33 +511,17 @@ export function BookingDrawer({
                               key={item.key}
                               type="button"
                               onClick={() => setSelectedPackage(item.key)}
-                              className={`rounded-2xl border px-4 py-3 text-left transition ${
+                              className={`rounded-2xl border px-3 py-3 text-center transition ${
                                 active
                                   ? "border-white/30 bg-white text-black"
                                   : "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
                               }`}
                             >
-                              <div className="flex items-center justify-between gap-2">
-                                <div>
-                                  <p
-                                    className={`font-medium ${active ? "text-black" : "text-white"}`}
-                                  >
-                                    {item.label}
-                                  </p>
-                                  <p
-                                    className={`mt-0.5 text-xs ${active ? "text-black/70" : "text-white/50"}`}
-                                  >
-                                    {item.description}
-                                  </p>
-                                </div>
-                                {active ? (
-                                  <Check className="h-4 w-4 text-black" />
-                                ) : null}
-                              </div>
-                              <p
-                                className={`mt-3 text-xl font-semibold ${active ? "text-black" : "text-white"}`}
-                              >
-                                ₹{item.price.toLocaleString()}
+                              <p className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}>
+                                {item.label}
+                              </p>
+                              <p className={`mt-1 text-lg font-semibold ${active ? "text-black" : "text-white"}`}>
+                                ₹{item.price.toLocaleString("en-IN")}
                               </p>
                             </button>
                           );
@@ -471,43 +529,113 @@ export function BookingDrawer({
                       </div>
                     </section>
 
+                    {/* ── Objective (horizontal pills) ────────────── */}
                     <section className="space-y-3">
                       <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
-                        Timing
+                        What&apos;s this for?
                       </h2>
-                      <div className="grid grid-cols-3 gap-2">
-                        {BOOKING_TIMING_OPTIONS.map((item) => {
-                          const active = timingMode === item.value;
-                          return (
-                            <button
-                              key={item.value}
-                              type="button"
-                              onClick={() => setTimingMode(item.value)}
-                              className={`rounded-2xl border px-3 py-3 text-left transition ${
-                                active
-                                  ? "border-white/30 bg-white text-black"
-                                  : "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
-                              }`}
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <p
-                                  className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}
-                                >
-                                  {item.label}
-                                </p>
-                                {active ? (
-                                  <Check className="h-4 w-4 text-black" />
-                                ) : null}
-                              </div>
-                              <p
-                                className={`mt-1 text-xs ${active ? "text-black/70" : "text-white/45"}`}
-                              >
-                                {item.description}
-                              </p>
-                            </button>
-                          );
-                        })}
-                      </div>
+                      <Workspaces
+                        workspaces={objectiveItems}
+                        selectedWorkspaceId={objective}
+                        onWorkspaceChange={(workspace) =>
+                          setObjective(workspace.id as BookingObjective)
+                        }
+                      >
+                        <WorkspaceTrigger
+                          className="w-full rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-3 text-left shadow-[0_16px_32px_rgba(0,0,0,0.18)] transition-colors hover:bg-white/[0.065]"
+                          renderTrigger={renderDropdownTrigger("Objective")}
+                        />
+                        <WorkspaceContent
+                          title="Objective"
+                          className="border-white/10 bg-[#0b0d12] text-white"
+                          renderWorkspace={renderWorkspaceRow}
+                        />
+                      </Workspaces>
+                    </section>
+
+                    {/* ── What to feature (required) ───────────────── */}
+                    <section className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                      <Label htmlFor="focus-text" className="text-white/80">
+                        What should they show?
+                      </Label>
+                      <Input
+                        id="focus-text"
+                        value={focusText}
+                        onChange={(e) =>
+                          setFocusText(e.target.value.slice(0, 120))
+                        }
+                        placeholder={OBJECTIVE_PLACEHOLDERS[objective]}
+                        className="h-10"
+                        required
+                      />
+                      <p className="text-right text-xs text-white/30">
+                        {focusText.length}/120
+                      </p>
+                    </section>
+
+                    {/* ── Venue (conditional) ──────────────────────── */}
+                    {shouldShowEventName(objective) ? (
+                      <section className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                        <Label htmlFor="event-name" className="text-white/80">
+                          Where?
+                        </Label>
+                        <Input
+                          id="event-name"
+                          value={eventName}
+                          onChange={(e) => setEventName(e.target.value)}
+                          placeholder="e.g. Cafe Drifter, Indiranagar"
+                          className="h-10"
+                          required
+                        />
+                      </section>
+                    ) : null}
+
+                    {/* ── Content style (multi-select pills) ──────── */}
+                    <section className="space-y-3">
+                      <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
+                        Content style
+                      </h2>
+                      <Workspaces
+                        workspaces={contentStyleItems}
+                        selectedWorkspaceId={contentStyles[0]}
+                        onWorkspaceChange={(workspace) =>
+                          setContentStyles([workspace.id as ContentStyle])
+                        }
+                      >
+                        <WorkspaceTrigger
+                          className="w-full rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-3 text-left shadow-[0_16px_32px_rgba(0,0,0,0.18)] transition-colors hover:bg-white/[0.065]"
+                          renderTrigger={renderDropdownTrigger("Content style")}
+                        />
+                        <WorkspaceContent
+                          title="Content style"
+                          className="border-white/10 bg-[#0b0d12] text-white"
+                          renderWorkspace={renderWorkspaceRow}
+                        />
+                      </Workspaces>
+                    </section>
+
+                    {/* ── Timing (horizontal pills) ────────────────── */}
+                    <section className="space-y-3">
+                      <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
+                        When do you need it?
+                      </h2>
+                      <Workspaces
+                        workspaces={timingItems}
+                        selectedWorkspaceId={timingMode}
+                        onWorkspaceChange={(workspace) =>
+                          setTimingMode(workspace.id as BookingTimingMode)
+                        }
+                      >
+                        <WorkspaceTrigger
+                          className="w-full rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-3 text-left shadow-[0_16px_32px_rgba(0,0,0,0.18)] transition-colors hover:bg-white/[0.065]"
+                          renderTrigger={renderDropdownTrigger("Timing")}
+                        />
+                        <WorkspaceContent
+                          title="Timing"
+                          className="border-white/10 bg-[#0b0d12] text-white"
+                          renderWorkspace={renderWorkspaceRow}
+                        />
+                      </Workspaces>
 
                       {timingMode === "choose_date" ? (
                         <div className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -528,61 +656,93 @@ export function BookingDrawer({
                       ) : null}
                     </section>
 
-                    <section className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                      <Label htmlFor="focus-text" className="text-white/80">
-                        What to feature
-                      </Label>
-                      <Input
-                        id="focus-text"
-                        value={focusText}
-                        onChange={(e) => setFocusText(e.target.value)}
-                        placeholder="e.g. our new biryani, summer collection..."
-                        className="h-10"
-                      />
+                    {/* ── Usage rights toggle ──────────────────────── */}
+                    <section className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-white">
+                          Brand can repost?
+                        </p>
+                        <p className="text-xs text-white/40">
+                          {usageRights
+                            ? "Creator grants repost rights"
+                            : "Creator-only — no brand repost"}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={usageRights}
+                        onClick={() => setUsageRights((v) => !v)}
+                        className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+                          usageRights ? "bg-white" : "bg-white/20"
+                        }`}
+                      >
+                        <span
+                          className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full transition-transform ${
+                            usageRights
+                              ? "translate-x-5 bg-black"
+                              : "translate-x-0 bg-white/60"
+                          }`}
+                        />
+                      </button>
                     </section>
 
-                    {shouldShowEventName(objective) ? (
-                      <section className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                        <Label htmlFor="event-name" className="text-white/80">
-                          Venue or event name
-                        </Label>
-                        <Input
-                          id="event-name"
-                          value={eventName}
-                          onChange={(e) => setEventName(e.target.value)}
-                          placeholder="Optional, if it helps the creator prepare"
-                          className="h-10"
-                        />
-                      </section>
-                    ) : null}
-
+                    {/* ── Add details (expandable) ─────────────────── */}
                     <section className="space-y-3">
                       <div className="rounded-2xl border border-white/10 bg-white/[0.03]">
                         <button
                           type="button"
-                          onClick={() => setShowNotes((v) => !v)}
+                          onClick={() => setShowDetails((v) => !v)}
                           className="flex w-full items-center justify-between px-4 py-3 text-left"
                         >
-                          <span className="font-medium text-white">
-                            Add optional notes
+                          <span className="text-sm font-medium text-white">
+                            + Add details
                           </span>
                           <ChevronDown
-                            className={`h-4 w-4 text-white/60 transition-transform ${showNotes ? "rotate-180" : ""}`}
+                            className={`h-4 w-4 text-white/60 transition-transform ${showDetails ? "rotate-180" : ""}`}
                           />
                         </button>
-                        {showNotes ? (
-                          <div className="border-t border-white/10 p-4">
-                            <Textarea
-                              value={notes}
-                              onChange={(e) => setNotes(e.target.value)}
-                              placeholder="Anything quick the creator should know"
-                              rows={3}
-                            />
+                        {showDetails ? (
+                          <div className="space-y-4 border-t border-white/10 p-4">
+                            <div className="space-y-2">
+                              <Label
+                                htmlFor="hashtags"
+                                className="text-white/80"
+                              >
+                                Tags & mentions
+                              </Label>
+                              <Input
+                                id="hashtags"
+                                value={hashtagsMentions}
+                                onChange={(e) =>
+                                  setHashtagsMentions(e.target.value)
+                                }
+                                placeholder="#SummerVibes @yourbrand"
+                                className="h-10"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="cta" className="text-white/80">
+                                Key message or CTA
+                              </Label>
+                              <Input
+                                id="cta"
+                                value={ctaMessage}
+                                onChange={(e) =>
+                                  setCtaMessage(
+                                    e.target.value.slice(0, 100),
+                                  )
+                                }
+                                placeholder="e.g. Use code SUMMER20, Link in bio..."
+                                className="h-10"
+                              />
+                            </div>
                           </div>
                         ) : null}
                       </div>
                     </section>
 
+                    {/* ── Contact (conditional) ────────────────────── */}
                     {requiresContactInput || requiresPhoneInput ? (
                       <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                         <div>
@@ -664,6 +824,50 @@ export function BookingDrawer({
                     </div>
                   </div>
 
+                  <div className="rounded-xl border border-white/8 bg-black/20 p-4 space-y-2">
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-white/40">
+                      Your selections
+                    </p>
+                    <div className="space-y-2 text-sm text-white/65">
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="text-white/45">Package</span>
+                        <span className="text-right">
+                          {getPackageLabel(selectedPackageData.key)}
+                        </span>
+                      </div>
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="text-white/45">What to feature</span>
+                        <span className="text-right">
+                          {focusText || "—"}
+                        </span>
+                      </div>
+                      {shouldShowEventName(objective) ? (
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="text-white/45">Event/Venue</span>
+                          <span className="text-right">{eventName || "—"}</span>
+                        </div>
+                      ) : null}
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="text-white/45">Content style</span>
+                        <span className="text-right">
+                          {contentStyles[0]
+                            ? CONTENT_STYLES.find(
+                                (style) => style.value === contentStyles[0],
+                              )?.label ?? "—"
+                            : "—"}
+                        </span>
+                      </div>
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="text-white/45">Timing</span>
+                        <span className="text-right">
+                          {timingMode === "choose_date" && dueDate
+                            ? `${timingLabel} · ${dueDate}`
+                            : timingLabel}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="space-y-2 rounded-xl border border-white/8 bg-black/20 p-4">
                     <div className="flex justify-between text-sm text-white/60">
                       <span>{getPackageLabel(selectedPackageData.key)}</span>
@@ -738,38 +942,19 @@ export function BookingDrawer({
             ) : null}
           </div>
 
-          <DrawerFooter className="shrink-0 border-t border-white/10 bg-black/75 px-5 py-4 backdrop-blur-xl md:px-6">
+          <DrawerFooter className="shrink-0 border-t border-white/8 bg-[#0b0d12]/96 px-5 py-4 backdrop-blur-xl md:px-6">
             {canStartBooking && selectedPackageData ? (
               <div className="space-y-3">
                 {step === 1 ? (
                   <>
-                    <div className="rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3 space-y-1">
-                      <div className="flex justify-between text-sm text-white/60">
-                        <span>{getPackageLabel(selectedPackageData.key)}</span>
-                        <span>
-                          ₹{selectedPackageData.price.toLocaleString("en-IN")}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm text-white/60">
-                        <span>Platform fee (12%)</span>
-                        <span>₹{platformFee.toLocaleString("en-IN")}</span>
-                      </div>
-                      <div className="flex justify-between border-t border-white/10 pt-1 text-sm font-medium text-white/80">
-                        <span>Total if accepted</span>
-                        <span>₹{totalIfAccepted.toLocaleString("en-IN")}</span>
-                      </div>
-                    </div>
                     <Button
                       type="submit"
                       form="booking-drawer-form"
                       size="lg"
                       className="h-12 w-full rounded-full bg-white text-black hover:bg-white/90"
                     >
-                      Continue to Payment →
+                      Continue
                     </Button>
-                    <p className="text-center text-xs text-white/35">
-                      No charge until the creator accepts
-                    </p>
                   </>
                 ) : (
                   <>

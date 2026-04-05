@@ -21,6 +21,25 @@ export function useInstagramMedia(userId: string | undefined) {
   });
 }
 
+export function useTopMedia(userId: string | undefined, limit = 6) {
+  return useQuery({
+    queryKey: ["top-media", userId, limit],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("instagram_media")
+        .select("*")
+        .eq("user_id", userId!)
+        .not("permalink", "is", null)
+        .order("like_count", { ascending: false, nullsFirst: false })
+        .limit(limit);
+      if (error) throw error;
+      return data as InstagramMedia[];
+    },
+    enabled: !!userId,
+    staleTime: 60_000,
+  });
+}
+
 export function usePortfolioMedia(
   userId: string | undefined,
   mediaIds: string[] | null | undefined,

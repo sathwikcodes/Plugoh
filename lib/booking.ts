@@ -14,6 +14,14 @@ export type BookingTimingMode = "asap" | "this_week" | "choose_date";
 
 export type BookablePackage = "reel" | "post" | "story";
 
+export type ContentStyle =
+  | "honest_review"
+  | "aesthetic"
+  | "fun_quirky"
+  | "tutorial"
+  | "day_in_life"
+  | "unboxing";
+
 export interface BookingFormState {
   objective: BookingObjective;
   packageType: BookablePackage;
@@ -21,7 +29,10 @@ export interface BookingFormState {
   dueDate: string;
   focusText: string;
   eventName: string;
-  notes: string;
+  contentStyles: ContentStyle[];
+  usageRights: boolean;
+  hashtagsMentions: string;
+  ctaMessage: string;
   contactEmail: string;
   contactPhone: string;
 }
@@ -70,6 +81,30 @@ export const BOOKING_OBJECTIVES: Array<{
       "Capture a launch, meetup, or special activation in real time.",
   },
 ];
+
+export const CONTENT_STYLES: Array<{
+  value: ContentStyle;
+  label: string;
+}> = [
+  { value: "honest_review", label: "Honest review" },
+  { value: "aesthetic", label: "Aesthetic" },
+  { value: "fun_quirky", label: "Fun & quirky" },
+  { value: "tutorial", label: "Tutorial-style" },
+  { value: "day_in_life", label: "Day-in-life" },
+  { value: "unboxing", label: "Unboxing" },
+];
+
+export const OBJECTIVE_PLACEHOLDERS: Record<BookingObjective, string> = {
+  product_launch: "e.g. our new protein bars, summer collection...",
+  restaurant_visit: "e.g. butter chicken, new weekend brunch menu...",
+  brand_awareness: "e.g. brand logo, tagline mention, key USP...",
+  ugc: "e.g. skincare routine with our serum, outfit styling...",
+  event_coverage: "e.g. grand opening, launch party, meetup...",
+};
+
+export function getContentStyleLabel(style: ContentStyle): string {
+  return CONTENT_STYLES.find((s) => s.value === style)?.label ?? style;
+}
 
 export const BOOKING_TIMING_OPTIONS: Array<{
   value: BookingTimingMode;
@@ -200,12 +235,13 @@ export function buildCampaignBrief(formState: BookingFormState) {
   const lines = [
     `Objective: ${objectiveLabel}`,
     `Package: ${getPackageLabel(formState.packageType)}`,
-    `Timeline: ${
-      formState.timingMode === "choose_date" && formState.dueDate
-        ? `${timingLabel} (${formState.dueDate})`
-        : timingLabel
-    }`,
   ];
+
+  if (formState.contentStyles.length > 0) {
+    lines.push(
+      `Style: ${formState.contentStyles.map(getContentStyleLabel).join(", ")}`,
+    );
+  }
 
   if (formState.focusText.trim()) {
     lines.push(`What to feature: ${formState.focusText.trim()}`);
@@ -215,8 +251,24 @@ export function buildCampaignBrief(formState: BookingFormState) {
     lines.push(`Event/Venue: ${formState.eventName.trim()}`);
   }
 
-  if (formState.notes.trim()) {
-    lines.push(`Extra notes: ${formState.notes.trim()}`);
+  lines.push(
+    `Timeline: ${
+      formState.timingMode === "choose_date" && formState.dueDate
+        ? `${timingLabel} (${formState.dueDate})`
+        : timingLabel
+    }`,
+  );
+
+  lines.push(
+    `Usage rights: ${formState.usageRights ? "Brand can repost" : "Creator-only"}`,
+  );
+
+  if (formState.hashtagsMentions.trim()) {
+    lines.push(`Tags & mentions: ${formState.hashtagsMentions.trim()}`);
+  }
+
+  if (formState.ctaMessage.trim()) {
+    lines.push(`CTA: ${formState.ctaMessage.trim()}`);
   }
 
   return lines.join("\n");
