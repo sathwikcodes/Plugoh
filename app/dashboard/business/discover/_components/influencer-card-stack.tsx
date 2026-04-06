@@ -133,7 +133,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
   return (
     <div
       className={cn(
-        "flex h-full min-h-0 flex-col items-center gap-3 px-1 pb-1 pt-1 sm:gap-4 sm:pb-2",
+        "flex min-h-0 flex-col items-center gap-2 px-1 pb-1 pt-1 sm:gap-3 sm:pb-2",
         className,
       )}
     >

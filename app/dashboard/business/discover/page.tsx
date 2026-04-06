@@ -272,8 +272,8 @@ export default function InfluencerDiscovery() {
     setFilterPanelOpen(true);
   };
 
-  const mobileViewportHeight = "calc(100dvh - 4rem)";
-  const mobileBottomInset = "calc(104px + env(safe-area-inset-bottom, 0px))";
+  const mobileViewportHeight = "100dvh";
+  const mobileBottomInset = "calc(96px + env(safe-area-inset-bottom, 0px))";
 
   return (
     <>
@@ -311,7 +311,7 @@ export default function InfluencerDiscovery() {
             variants={stagger}
             initial="hidden"
             animate="visible"
-            className="flex h-full flex-col gap-4 md:h-auto md:gap-6"
+            className="flex h-full flex-col gap-3 md:h-auto md:gap-6"
           >
             {/* Header */}
             <m.div
@@ -430,11 +430,11 @@ export default function InfluencerDiscovery() {
                 {/* Mobile: card stack */}
                 <m.div
                   variants={fadeUp}
-                  className="flex min-h-0 flex-1 md:hidden"
+                  className="flex flex-col min-h-0 flex-1 md:hidden"
                 >
                   <InfluencerCardStack
                     profiles={filtered}
-                    className="w-full"
+                    className="w-full flex-1"
                   />
                 </m.div>
               </>
