@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import * as React from "react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
@@ -159,8 +159,9 @@ function WorkspaceTrigger({
 }
 
 // Content component
-interface WorkspaceContentProps
-  extends React.ComponentProps<typeof PopoverContent> {
+interface WorkspaceContentProps extends React.ComponentProps<
+  typeof PopoverContent
+> {
   renderWorkspace?: (
     workspace: Workspace,
     isSelected: boolean,

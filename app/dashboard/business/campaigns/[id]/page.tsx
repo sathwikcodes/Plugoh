@@ -23,13 +23,15 @@ import { useTRPC } from "@/lib/trpc/client";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { timeAgo, formatCurrency, formatPackage, getInitials } from "@/lib/format";
-import { BookingTimer } from "@/components/booking-timer";
-import { CAMPAIGN_STATUS_CONFIG } from "@/lib/constants";
-import type { CampaignStatus } from "@/lib/constants";
+import {
+  timeAgo,
+  formatCurrency,
+  formatPackage,
+  getInitials,
+} from "@/lib/format";
+import FlipClock from "@/components/ui/flip-clock";
 import type { Database } from "@/lib/supabase/types";
 import { INSTAGRAM_GRADIENT } from "@/lib/animations";
 import { cn } from "@/lib/utils";
@@ -107,7 +109,7 @@ function StatusTimeline({ status }: { status: string }) {
             <div className="flex flex-col items-center gap-1.5">
               <div
                 className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full border transition-colors",
+                  "flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8",
                   reached
                     ? "border-emerald-300/30 bg-emerald-300/15"
                     : "border-white/10 bg-white/[0.04]",
@@ -115,7 +117,7 @@ function StatusTimeline({ status }: { status: string }) {
               >
                 <CircleDot
                   className={cn(
-                    "h-3.5 w-3.5",
+                    "h-3 w-3 sm:h-3.5 sm:w-3.5",
                     current
                       ? "text-emerald-200"
                       : reached
@@ -126,7 +128,7 @@ function StatusTimeline({ status }: { status: string }) {
               </div>
               <span
                 className={cn(
-                  "text-[10px] font-medium uppercase tracking-[0.14em]",
+                  "text-[9px] font-medium uppercase tracking-[0.14em] sm:text-[10px]",
                   reached ? "text-white/80" : "text-white/35",
                 )}
               >
@@ -136,7 +138,7 @@ function StatusTimeline({ status }: { status: string }) {
             {index < steps.length - 1 && (
               <div
                 className={cn(
-                  "mx-2 mb-4 h-px w-8 sm:w-14",
+                  "mx-2 mb-4 h-px w-6 sm:w-14",
                   index < currentIndex ? "bg-emerald-300/45" : "bg-white/10",
                 )}
               />
@@ -319,9 +321,6 @@ export default function BusinessCampaignDetail() {
     );
   }
 
-  const cfg =
-    CAMPAIGN_STATUS_CONFIG[campaign.status as CampaignStatus] ??
-    CAMPAIGN_STATUS_CONFIG.requested;
   const platformFee =
     campaign.platform_fee_amount ?? (campaign.price_offered ?? 0) * 0.12;
   const totalCharged =
@@ -353,35 +352,16 @@ export default function BusinessCampaignDetail() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="truncate text-xl font-semibold text-white sm:text-2xl">
-                {campaign.title || "Untitled Campaign"}
-              </h1>
-              <Badge
-                variant="outline"
-                className={cn(
-                  "shrink-0 rounded-full px-2.5 py-0.5 text-xs",
-                  cfg.badge,
-                )}
-              >
-                {cfg.label}
-              </Badge>
-            </div>
-            <p className="mt-0.5 text-xs text-white/40">
-              Booked {timeAgo(campaign.created_at)}
-              {influencerProfile?.display_name
-                ? ` · ${influencerProfile.display_name}`
-                : ""}
-            </p>
-          </div>
+          <h1 className="min-w-0 flex-1 truncate text-3xl font-display text-white sm:text-3xl">
+            {campaign.title || "Untitled Campaign"}
+          </h1>
         </div>
 
         {/* ── Contextual action banners (one at a time) ─────────────── */}
 
         {campaign.status === "pre_authorized" && (
           <div className="rounded-2xl border border-amber-500/25 bg-amber-500/[0.08] p-4 sm:p-5">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300/80" />
                 <div>
@@ -390,18 +370,18 @@ export default function BusinessCampaignDetail() {
                       ? "Payment held — waiting for creator"
                       : "Card pre-authorized — waiting for creator"}
                   </p>
-                  <p className="mt-0.5 text-xs text-white/55">
+                  <p className="mt-0.5 text-[11px] text-white/55 sm:text-xs">
                     {campaign.payment_method === "upi"
                       ? "Full refund if they don't accept within the window."
                       : "No charge yet. Only captured if the creator accepts."}
                   </p>
                 </div>
               </div>
-              <div className="shrink-0 text-right">
-                <p className="text-[10px] uppercase tracking-wide text-white/35">
-                  expires
-                </p>
-                <BookingTimer expiresAt={campaign.expires_at} />
+              <div className="flex w-full justify-center sm:w-auto sm:justify-end">
+                <FlipClock
+                  className="justify-center"
+                  expiresAt={campaign.expires_at}
+                />
               </div>
             </div>
           </div>
@@ -415,7 +395,7 @@ export default function BusinessCampaignDetail() {
                 <p className="text-sm font-semibold text-white">
                   Creator accepted — pay to start
                 </p>
-                <p className="mt-0.5 text-xs text-white/55">
+                <p className="mt-0.5 text-[11px] text-white/55 sm:text-xs">
                   Funds go into escrow. Released only when you approve the
                   delivery.
                 </p>
@@ -454,32 +434,32 @@ export default function BusinessCampaignDetail() {
 
         {campaign.status === "delivery_submitted" && (
           <div className="rounded-2xl border border-blue-500/25 bg-blue-500/[0.08] p-4 sm:p-5 space-y-4">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-3">
                 <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-300/80" />
                 <div>
                   <p className="text-sm font-semibold text-white">
                     Content delivered — your move
                   </p>
-                  <p className="mt-0.5 text-xs text-white/55">
+                  <p className="mt-0.5 text-[11px] text-white/55 sm:text-xs">
                     Review the content, then approve to release payment.
                   </p>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/50">
+              <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-white/50 sm:text-xs sm:self-auto">
                 <Timer className="h-3 w-3" />
                 {autoReleaseDays}d auto-release
               </div>
             </div>
 
             {!showDisputeForm ? (
-              <div className="flex gap-2.5">
+              <div className="flex flex-col gap-2.5 sm:flex-row">
                 <Button
                   onClick={() =>
                     approveDelivery.mutate({ campaignId: campaign.id })
                   }
                   disabled={approveDelivery.isPending}
-                  className="h-10 flex-1 rounded-full bg-white text-black hover:bg-white/90 text-sm"
+                  className="h-10 w-full rounded-full bg-white text-black hover:bg-white/90 text-sm sm:flex-1"
                 >
                   {approveDelivery.isPending ? (
                     <>
@@ -493,7 +473,7 @@ export default function BusinessCampaignDetail() {
                 <Button
                   variant="outline"
                   onClick={() => setShowDisputeForm(true)}
-                  className="h-10 rounded-full border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-sm px-4"
+                  className="h-10 w-full rounded-full border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-sm px-4 sm:w-auto"
                 >
                   <AlertTriangle className="mr-1.5 h-3.5 w-3.5" />
                   Dispute
@@ -511,7 +491,7 @@ export default function BusinessCampaignDetail() {
                   rows={3}
                   className="resize-none text-sm"
                 />
-                <div className="flex gap-2.5">
+                <div className="flex flex-col gap-2.5 sm:flex-row">
                   <Button
                     onClick={() =>
                       disputeDelivery.mutate({
@@ -522,7 +502,7 @@ export default function BusinessCampaignDetail() {
                     disabled={
                       disputeDelivery.isPending || disputeReason.length < 10
                     }
-                    className="h-10 flex-1 rounded-full bg-rose-500 text-white hover:bg-rose-600"
+                    className="h-10 w-full rounded-full bg-rose-500 text-white hover:bg-rose-600 sm:flex-1"
                   >
                     {disputeDelivery.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -536,7 +516,7 @@ export default function BusinessCampaignDetail() {
                       setShowDisputeForm(false);
                       setDisputeReason("");
                     }}
-                    className="h-10 rounded-full text-sm"
+                    className="h-10 w-full rounded-full text-sm sm:w-auto"
                   >
                     Cancel
                   </Button>
@@ -547,7 +527,7 @@ export default function BusinessCampaignDetail() {
         )}
 
         {campaign.status === "completed" && (
-          <div className="flex items-center gap-3 rounded-2xl border border-violet-500/20 bg-violet-500/[0.07] px-4 py-3">
+          <div className="flex flex-col gap-3 rounded-2xl border border-violet-500/20 bg-violet-500/[0.07] px-4 py-3 sm:flex-row sm:items-center">
             <CheckCircle className="h-4 w-4 shrink-0 text-violet-300/80" />
             <div>
               <p className="text-sm font-semibold text-white">
@@ -566,7 +546,7 @@ export default function BusinessCampaignDetail() {
           {/* ── Left: Timeline + Brief ──────────────────────────────── */}
           <div className="space-y-4">
             {/* Timeline */}
-            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] px-5 py-4">
+            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-4 sm:px-5">
               <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
                 Progress
               </p>
@@ -574,16 +554,16 @@ export default function BusinessCampaignDetail() {
             </div>
 
             {/* Campaign brief */}
-            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] px-5 py-4">
+            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-4 sm:px-5">
               <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
                 Campaign brief
               </p>
               {campaign.brief ? (
-                <p className="whitespace-pre-wrap text-[13px] leading-[1.75] text-white/70">
+                <p className="whitespace-pre-wrap text-[12.5px] leading-[1.75] text-white/70 sm:text-[13px]">
                   {campaign.brief}
                 </p>
               ) : (
-                <p className="text-[13px] text-white/35 italic">
+                <p className="text-[12.5px] text-white/35 italic sm:text-[13px]">
                   No brief provided.
                 </p>
               )}
@@ -662,21 +642,21 @@ export default function BusinessCampaignDetail() {
                 Payment
               </p>
               <div className="space-y-2 text-[13px]">
-                <div className="flex justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-white/50">Creator fee</span>
-                  <span className="font-medium text-white">
+                  <span className="font-medium text-white text-right">
                     {formatCurrency(campaign.price_offered)}
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-white/50">Platform (12%)</span>
-                  <span className="font-medium text-white">
+                  <span className="font-medium text-white text-right">
                     {formatCurrency(platformFee)}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-white/8 pt-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/8 pt-2">
                   <span className="text-white/70 font-medium">Total</span>
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-white text-right">
                     {formatCurrency(totalCharged)}
                   </span>
                 </div>
@@ -689,15 +669,15 @@ export default function BusinessCampaignDetail() {
                 Details
               </p>
               <div className="space-y-2 text-[13px]">
-                <div className="flex justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-white/50">Package</span>
-                  <span className="text-white">
+                  <span className="text-white text-right">
                     {formatPackage(campaign.package_type)}
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-white/50">Booked</span>
-                  <span className="text-white">
+                  <span className="text-white text-right">
                     {new Date(campaign.created_at).toLocaleDateString("en-IN", {
                       day: "numeric",
                       month: "short",
@@ -706,9 +686,9 @@ export default function BusinessCampaignDetail() {
                   </span>
                 </div>
                 {campaign.updated_at && (
-                  <div className="flex justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-white/50">Updated</span>
-                    <span className="text-white">
+                    <span className="text-white text-right">
                       {timeAgo(campaign.updated_at)}
                     </span>
                   </div>

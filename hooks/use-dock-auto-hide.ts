@@ -86,8 +86,12 @@ export function useDockAutoHide() {
       }
     };
 
-    document.addEventListener("scroll", handleScroll, { capture: true, passive: true });
-    return () => document.removeEventListener("scroll", handleScroll, { capture: true });
+    document.addEventListener("scroll", handleScroll, {
+      capture: true,
+      passive: true,
+    });
+    return () =>
+      document.removeEventListener("scroll", handleScroll, { capture: true });
   }, [clearScrollTimer, isInboxPage]);
 
   const onTriggerEnter = useCallback(() => {

@@ -44,7 +44,9 @@ export default function InboxPage() {
     <div
       className="h-dvh flex overflow-hidden bg-background"
       style={
-        isMobile && !showMobileChat ? { paddingBottom: mobileDockInset } : undefined
+        isMobile && !showMobileChat
+          ? { paddingBottom: mobileDockInset }
+          : undefined
       }
     >
       {/* Desktop: always show both panels */}

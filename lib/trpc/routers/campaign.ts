@@ -59,7 +59,8 @@ export const campaignRouter = router({
         dueDate: input.due_date ?? "",
         focusText: input.focus_text,
         eventName: input.event_name ?? "",
-        contentStyles: (input.content_styles ?? []) as import("@/lib/booking").ContentStyle[],
+        contentStyles: (input.content_styles ??
+          []) as import("@/lib/booking").ContentStyle[],
         usageRights: input.usage_rights ?? false,
         hashtagsMentions: input.hashtags_mentions ?? "",
         ctaMessage: input.cta_message ?? "",

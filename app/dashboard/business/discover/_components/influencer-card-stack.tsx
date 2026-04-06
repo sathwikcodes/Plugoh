@@ -149,80 +149,86 @@ export function InfluencerCardStack({ profiles, className }: Props) {
           }}
         >
           <ul className="m-0 h-full w-full list-none p-0">
-          <AnimatePresence>
-            {visibleCards.map((profile, i) => {
-              const isFront = i === 0;
-              const brightness = Math.max(0.5, 1 - i * DIM_STEP);
-              const offsetDirection = i % 2 === 0 ? -1 : 1;
+            <AnimatePresence>
+              {visibleCards.map((profile, i) => {
+                const isFront = i === 0;
+                const brightness = Math.max(0.5, 1 - i * DIM_STEP);
+                const offsetDirection = i % 2 === 0 ? -1 : 1;
 
-              return (
-                <m.li
-                  key={profile.id}
-                  className={cn(
-                    "absolute inset-0 list-none overflow-hidden rounded-[34px]",
-                    "border border-white/12 bg-[#080a0d]",
-                  )}
-                  style={{
-                    cursor: isFront ? "grab" : "auto",
-                    touchAction: "none",
-                    rotateY: isFront ? rotateY : 0,
-                    transformPerspective: 900,
-                    transformOrigin: "center center",
-                    boxShadow: isFront
-                      ? "0 30px 80px rgba(0,0,0,0.54)"
-                      : "0 18px 42px rgba(0,0,0,0.32)",
-                  }}
-                  animate={{
-                    x: isFront ? 0 : offsetDirection * i * OFFSET_X,
-                    y: i * OFFSET_Y,
-                    scale: 1 - i * SCALE_STEP,
-                    filter: `brightness(${brightness}) saturate(${1 - i * 0.08})`,
-                    zIndex: VISIBLE_COUNT - i,
-                    opacity: dragDir && isFront ? 0 : 1 - i * 0.08,
-                  }}
-                  exit={{
-                    opacity: 0,
-                    scale: 0.88,
-                    y: 30,
-                    transition: { duration: 0.2 },
-                  }}
-                  transition={SPRING}
-                  drag={isFront ? "x" : false}
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.45}
-                  onDrag={(_, info) => {
-                    if (isFront) dragX.set(info.offset.x);
-                  }}
-                  onDragEnd={handleDragEnd}
-                  whileDrag={
-                    isFront
-                      ? {
-                          cursor: "grabbing",
-                          scale: 1.02,
-                          zIndex: VISIBLE_COUNT + 1,
-                        }
-                      : {}
-                  }
-                >
-                  {isFront ? (
-                    <div className="group block h-full w-full">
-                      <InfluencerCardArtwork profile={profile} />
-                      <m.div style={{ opacity: overlayOpacity }} className="absolute inset-0">
-                        <InfluencerCardInfoPanel profile={profile} />
-                      </m.div>
-                      <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]" />
-                    </div>
-                  ) : (
-                    <>
-                      <InfluencerCardArtwork profile={profile} className="opacity-[0.92]" />
-                      <div className="absolute inset-x-6 bottom-6 h-20 rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(18,20,24,0.22)_0%,rgba(9,10,14,0.74)_100%)] opacity-70 backdrop-blur-[16px]" />
-                      <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]" />
-                    </>
-                  )}
-                </m.li>
-              );
-            })}
-          </AnimatePresence>
+                return (
+                  <m.li
+                    key={profile.id}
+                    className={cn(
+                      "absolute inset-0 list-none overflow-hidden rounded-[34px]",
+                      "border border-white/12 bg-[#080a0d]",
+                    )}
+                    style={{
+                      cursor: isFront ? "grab" : "auto",
+                      touchAction: "none",
+                      rotateY: isFront ? rotateY : 0,
+                      transformPerspective: 900,
+                      transformOrigin: "center center",
+                      boxShadow: isFront
+                        ? "0 30px 80px rgba(0,0,0,0.54)"
+                        : "0 18px 42px rgba(0,0,0,0.32)",
+                    }}
+                    animate={{
+                      x: isFront ? 0 : offsetDirection * i * OFFSET_X,
+                      y: i * OFFSET_Y,
+                      scale: 1 - i * SCALE_STEP,
+                      filter: `brightness(${brightness}) saturate(${1 - i * 0.08})`,
+                      zIndex: VISIBLE_COUNT - i,
+                      opacity: dragDir && isFront ? 0 : 1 - i * 0.08,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      scale: 0.88,
+                      y: 30,
+                      transition: { duration: 0.2 },
+                    }}
+                    transition={SPRING}
+                    drag={isFront ? "x" : false}
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.45}
+                    onDrag={(_, info) => {
+                      if (isFront) dragX.set(info.offset.x);
+                    }}
+                    onDragEnd={handleDragEnd}
+                    whileDrag={
+                      isFront
+                        ? {
+                            cursor: "grabbing",
+                            scale: 1.02,
+                            zIndex: VISIBLE_COUNT + 1,
+                          }
+                        : {}
+                    }
+                  >
+                    {isFront ? (
+                      <div className="group block h-full w-full">
+                        <InfluencerCardArtwork profile={profile} />
+                        <m.div
+                          style={{ opacity: overlayOpacity }}
+                          className="absolute inset-0"
+                        >
+                          <InfluencerCardInfoPanel profile={profile} />
+                        </m.div>
+                        <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]" />
+                      </div>
+                    ) : (
+                      <>
+                        <InfluencerCardArtwork
+                          profile={profile}
+                          className="opacity-[0.92]"
+                        />
+                        <div className="absolute inset-x-6 bottom-6 h-20 rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(18,20,24,0.22)_0%,rgba(9,10,14,0.74)_100%)] opacity-70 backdrop-blur-[16px]" />
+                        <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]" />
+                      </>
+                    )}
+                  </m.li>
+                );
+              })}
+            </AnimatePresence>
           </ul>
         </div>
       </div>

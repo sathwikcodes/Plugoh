@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
-import { timeAgo, formatCurrency, formatPackage, getInitials } from "@/lib/format";
 import { supabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
 import { Button } from "@/components/ui/button";
@@ -28,8 +27,10 @@ import {
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { CAMPAIGN_STATUS_CONFIG } from "@/lib/constants";
-import type { CampaignStatus } from "@/lib/constants";
+import {
+  CampaignCardStack,
+  CampaignCardTile,
+} from "./_components/campaign-card-stack";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type InfluencerProfile =
@@ -103,109 +104,6 @@ const SORT_OPTIONS: Array<{
     description: "Highest creator fee at the top",
   },
 ];
-
-// ── Status badge ──────────────────────────────────────────────────────────
-function StatusBadge({ status }: { status: string }) {
-  const cfg =
-    CAMPAIGN_STATUS_CONFIG[status as CampaignStatus] ??
-    CAMPAIGN_STATUS_CONFIG.requested;
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium leading-none",
-        cfg.badge,
-      )}
-    >
-      {cfg.label}
-    </span>
-  );
-}
-
-// ── Campaign ledger row ───────────────────────────────────────────────────
-function CampaignRow({ item }: { item: EnrichedCampaign }) {
-  const { campaign, influencer } = item;
-  const isActionable =
-    campaign.status === "payment_pending" ||
-    campaign.status === "delivery_submitted";
-
-  return (
-    <Link
-      href={`/dashboard/business/campaigns/${campaign.id}`}
-      className="group block"
-    >
-      <div
-        className={cn(
-          "flex items-center gap-3 rounded-2xl border px-4 py-3.5 transition-all duration-200",
-          "hover:bg-white/[0.045] hover:border-white/[0.12] hover:shadow-[0_4px_24px_rgba(0,0,0,0.25)]",
-          isActionable
-            ? "border-white/[0.10] bg-white/[0.035]"
-            : "border-white/[0.065] bg-white/[0.02]",
-        )}
-      >
-        {/* Status accent dot */}
-        <div
-          className={cn(
-            "h-2 w-2 shrink-0 rounded-full",
-            (CAMPAIGN_STATUS_CONFIG[campaign.status as CampaignStatus] ?? CAMPAIGN_STATUS_CONFIG.requested).dot,
-          )}
-        />
-
-        {/* Creator info */}
-        <div className="flex min-w-0 shrink-0 items-center gap-2.5 sm:w-44 md:w-52">
-          {influencer?.ig_profile_picture_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={influencer.ig_profile_picture_url}
-              alt={influencer.display_name || "Creator"}
-              className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-white/10"
-            />
-          ) : (
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white/70 ring-1 ring-white/8">
-              {getInitials(influencer?.display_name ?? null)}
-            </div>
-          )}
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-white">
-              {influencer?.display_name || "Creator"}
-            </p>
-            <p className="truncate text-[11px] text-white/38">
-              {influencer?.ig_username
-                ? `@${influencer.ig_username}`
-                : influencer?.category || "—"}
-            </p>
-          </div>
-        </div>
-
-        {/* Campaign title + package — hidden on small screens */}
-        <div className="hidden min-w-0 flex-1 sm:block">
-          <p className="truncate text-[13px] text-white/82">
-            {campaign.title || "Untitled campaign"}
-          </p>
-          <p className="text-[11px] text-white/38">
-            {formatPackage(campaign.package_type)}
-          </p>
-        </div>
-
-        {/* Status badge */}
-        <div className="shrink-0">
-          <StatusBadge status={campaign.status} />
-        </div>
-
-        {/* Amount + date */}
-        <div className="shrink-0 text-right">
-          <p className="text-[13px] font-semibold text-white">
-            {formatCurrency(campaign.price_offered)}
-          </p>
-          <p className="text-[11px] text-white/38">
-            {timeAgo(campaign.created_at)}
-          </p>
-        </div>
-
-        <ArrowRight className="h-3.5 w-3.5 shrink-0 text-white/18 transition-colors group-hover:text-white/45" />
-      </div>
-    </Link>
-  );
-}
 
 // ── Campaign sort panel (discover-style) ──────────────────────────────────
 function CampaignSortPanel({
@@ -623,7 +521,7 @@ export default function CampaignsList() {
   }, [enriched, search, sortMode, statusFilter]);
 
   const mobileViewportHeight = "100dvh";
-  const mobileBottomInset = "calc(104px + env(safe-area-inset-bottom, 0px))";
+  const mobileBottomInset = "calc(96px + env(safe-area-inset-bottom, 0px))";
 
   if (campaignsLoading) {
     return (
@@ -655,16 +553,16 @@ export default function CampaignsList() {
           style={isMobile ? { paddingBottom: mobileBottomInset } : undefined}
         >
           <div className="flex h-full flex-col gap-4">
-          <div className="h-12 w-48 animate-pulse rounded-2xl bg-white/[0.06]" />
-          <div className="h-14 w-full animate-pulse rounded-full bg-white/[0.04]" />
-          <div className="flex-1 space-y-2 overflow-hidden">
-            {[0, 1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-[60px] w-full animate-pulse rounded-2xl bg-white/[0.03]"
-              />
-            ))}
-          </div>
+            <div className="h-12 w-48 animate-pulse rounded-2xl bg-white/[0.06]" />
+            <div className="h-14 w-full animate-pulse rounded-full bg-white/[0.04]" />
+            <div className="flex-1 space-y-2 overflow-hidden">
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-[60px] w-full animate-pulse rounded-2xl bg-white/[0.03]"
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -738,9 +636,7 @@ export default function CampaignsList() {
                 <button
                   type="button"
                   onClick={() => {
-                    setSortPanelTab(
-                      statusFilter !== "All" ? "status" : "sort",
-                    );
+                    setSortPanelTab(statusFilter !== "All" ? "status" : "sort");
                     setSortPanelOpen(true);
                   }}
                   className={cn(
@@ -754,7 +650,6 @@ export default function CampaignsList() {
                   <span className="hidden sm:inline">Sort</span>
                 </button>
               </div>
-
             </m.div>
 
             {/* ── Campaign list ──────────────────────────────────────────── */}
@@ -809,18 +704,56 @@ export default function CampaignsList() {
                 </div>
               </m.div>
             ) : (
-              <m.div
-                variants={stagger}
-                initial="hidden"
-                animate="visible"
-                className="min-h-0 flex-1 space-y-1.5 overflow-y-auto overscroll-contain pr-1"
-              >
-                {displayItems.map((item) => (
-                  <m.div key={item.campaign.id} variants={fadeUp}>
-                    <CampaignRow item={item} />
-                  </m.div>
-                ))}
-              </m.div>
+              <>
+                {/* Mobile: swipeable card stack */}
+                <m.div
+                  variants={fadeUp}
+                  className="flex flex-col min-h-0 flex-1 md:hidden"
+                >
+                  <CampaignCardStack
+                    campaigns={displayItems.map(({ campaign, influencer }) => ({
+                      id: campaign.id,
+                      title: campaign.title,
+                      status: campaign.status,
+                      package_type: campaign.package_type,
+                      price_offered: campaign.price_offered,
+                      expires_at: campaign.expires_at,
+                      created_at: campaign.created_at,
+                      influencerName: influencer?.display_name || "Creator",
+                      influencerHandle: influencer?.ig_username || null,
+                      influencerAvatarUrl:
+                        influencer?.ig_profile_picture_url || null,
+                    }))}
+                    className="w-full flex-1"
+                  />
+                </m.div>
+
+                {/* Desktop: grid of campaign cards */}
+                <m.div
+                  variants={fadeUp}
+                  className="hidden md:grid min-h-0 flex-1 grid-cols-2 gap-5 overflow-y-auto overscroll-contain pr-1 xl:grid-cols-3"
+                >
+                  {displayItems.map(({ campaign, influencer }) => (
+                    <CampaignCardTile
+                      key={campaign.id}
+                      card={{
+                        id: campaign.id,
+                        title: campaign.title,
+                        status: campaign.status,
+                        package_type: campaign.package_type,
+                        price_offered: campaign.price_offered,
+                        expires_at: campaign.expires_at,
+                        created_at: campaign.created_at,
+                        influencerName: influencer?.display_name || "Creator",
+                        influencerHandle: influencer?.ig_username || null,
+                        influencerAvatarUrl:
+                          influencer?.ig_profile_picture_url || null,
+                      }}
+                      className="aspect-[0.74]"
+                    />
+                  ))}
+                </m.div>
+              </>
             )}
           </m.div>
         </div>

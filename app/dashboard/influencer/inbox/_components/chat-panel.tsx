@@ -14,7 +14,7 @@ import {
 } from "@/components/campaign/message-bubble";
 import { MessageInput } from "@/components/campaign/message-input";
 import { ChatHeader } from "./chat-header";
-import { Loader2, MessageSquare } from "lucide-react";
+import { Loader2, Lock, MessageSquare } from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -61,8 +61,13 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
 
   const brandName = getBusinessDisplayName(businessProfile);
   const influencerName = myProfile?.full_name || "Influencer";
-  const isPending = campaign.status === "pending";
-  const disabled = campaign.status === "completed" || isPending;
+  const chatLocked = ![
+    "in_escrow",
+    "delivery_submitted",
+    "completed",
+    "disputed",
+  ].includes(campaign.status);
+  const disabled = campaign.status === "completed";
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -188,14 +193,25 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         )}
       </div>
 
-      {/* Message input */}
-      <MessageInput
-        onSendMessage={handleSendMessage}
-        onSendFile={handleSendFile}
-        campaignId={campaign.id}
-        userId={user.id}
-        disabled={disabled}
-      />
+      {/* Message input / locked banner */}
+      {chatLocked ? (
+        <div className="shrink-0 border-t border-white/8 px-4 py-3">
+          <div className="flex items-center gap-2.5 rounded-full border border-white/8 bg-white/[0.03] px-4 py-2.5">
+            <Lock className="h-4 w-4 shrink-0 text-white/30" />
+            <p className="text-sm text-white/40">
+              Chat unlocks once you accept this booking
+            </p>
+          </div>
+        </div>
+      ) : (
+        <MessageInput
+          onSendMessage={handleSendMessage}
+          onSendFile={handleSendFile}
+          campaignId={campaign.id}
+          userId={user.id}
+          disabled={disabled}
+        />
+      )}
     </div>
   );
 }

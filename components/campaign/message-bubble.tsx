@@ -328,7 +328,9 @@ export function BookingCardMessage({
               <div className="flex items-center justify-between px-4 py-3">
                 <span className="text-xs text-muted-foreground">Objective</span>
                 <span className="text-xs font-semibold">
-                  {getObjectiveMeta(meta.objective as Parameters<typeof getObjectiveMeta>[0])?.label ?? meta.objective}
+                  {getObjectiveMeta(
+                    meta.objective as Parameters<typeof getObjectiveMeta>[0],
+                  )?.label ?? meta.objective}
                 </span>
               </div>
             )}
@@ -356,7 +358,9 @@ export function BookingCardMessage({
                 <span className="text-xs font-semibold">
                   {meta.timing_mode === "choose_date" && meta.due_date
                     ? `By ${meta.due_date}`
-                    : BOOKING_TIMING_OPTIONS.find((t) => t.value === meta.timing_mode)?.label ?? meta.timing_mode}
+                    : (BOOKING_TIMING_OPTIONS.find(
+                        (t) => t.value === meta.timing_mode,
+                      )?.label ?? meta.timing_mode)}
                 </span>
               </div>
             )}
@@ -364,15 +368,21 @@ export function BookingCardMessage({
             {/* Usage rights */}
             {meta.usage_rights !== undefined && (
               <div className="flex items-center justify-between px-4 py-3">
-                <span className="text-xs text-muted-foreground">Repost rights</span>
+                <span className="text-xs text-muted-foreground">
+                  Repost rights
+                </span>
                 <span className="inline-flex items-center gap-1.5">
                   {meta.usage_rights ? (
                     <>
                       <Repeat2 className="h-3.5 w-3.5 text-emerald-400" />
-                      <span className="text-xs font-semibold text-emerald-400">Brand can repost</span>
+                      <span className="text-xs font-semibold text-emerald-400">
+                        Brand can repost
+                      </span>
                     </>
                   ) : (
-                    <span className="text-xs font-semibold text-muted-foreground">Creator-only</span>
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      Creator-only
+                    </span>
                   )}
                 </span>
               </div>
@@ -463,7 +473,9 @@ export function BookingCardMessage({
               )}
               {meta.hashtags_mentions && (
                 <p className="text-xs text-muted-foreground/80">
-                  <span className="font-semibold text-foreground/60">Tags:</span>{" "}
+                  <span className="font-semibold text-foreground/60">
+                    Tags:
+                  </span>{" "}
                   {meta.hashtags_mentions}
                 </p>
               )}

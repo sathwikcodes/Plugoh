@@ -72,9 +72,7 @@ export function InstagramEmbed({ permalink, className }: InstagramEmbedProps) {
           className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center"
         >
           <Instagram className="h-8 w-8 text-slate-400" />
-          <p className="text-sm font-medium text-slate-600">
-            Post unavailable
-          </p>
+          <p className="text-sm font-medium text-slate-600">Post unavailable</p>
         </a>
       </div>
     );

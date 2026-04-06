@@ -2,10 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import {
-  CAMPAIGN_STATUS_CONFIG,
-  type CampaignStatus,
-} from "@/lib/constants";
+import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
 export { formatConversationTime } from "@/lib/format";
 
 interface SharedConversationItemProps {

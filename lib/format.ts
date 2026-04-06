@@ -1,7 +1,4 @@
-import {
-  CAMPAIGN_STATUS_CONFIG,
-  type CampaignStatus,
-} from "@/lib/constants";
+import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
 
 /**
  * Returns status badge classes from the canonical CAMPAIGN_STATUS_CONFIG.

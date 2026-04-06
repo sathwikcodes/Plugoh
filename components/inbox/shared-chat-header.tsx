@@ -3,10 +3,7 @@
 import { ArrowLeft } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import {
-  CAMPAIGN_STATUS_CONFIG,
-  type CampaignStatus,
-} from "@/lib/constants";
+import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
 
 interface SharedChatHeaderProps {
   participantName: string;
@@ -45,7 +42,9 @@ export function SharedChatHeader({
       </button>
 
       <Avatar className="h-9 w-9 shrink-0 ring-1 ring-white/[0.06]">
-        {avatarUrl ? <AvatarImage src={avatarUrl} alt={participantName} /> : null}
+        {avatarUrl ? (
+          <AvatarImage src={avatarUrl} alt={participantName} />
+        ) : null}
         <AvatarFallback className="bg-gradient-to-br from-pink-500/15 to-purple-500/15 text-xs font-semibold text-foreground/80">
           {initials}
         </AvatarFallback>

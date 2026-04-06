@@ -13,7 +13,7 @@ import {
 } from "./message-bubble";
 import { MessageInput } from "./message-input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, Loader2 } from "lucide-react";
+import { Lock, MessageSquare, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 
 interface CampaignChatProps {
@@ -23,6 +23,8 @@ interface CampaignChatProps {
   businessName?: string;
   influencerName?: string;
   disabled?: boolean;
+  chatLocked?: boolean;
+  chatLockedMessage?: string;
 }
 
 export function CampaignChat({
@@ -32,6 +34,8 @@ export function CampaignChat({
   businessName = "Business",
   influencerName = "Influencer",
   disabled,
+  chatLocked,
+  chatLockedMessage = "Chat unlocks once both parties are committed",
 }: CampaignChatProps) {
   const { user } = useAuth();
   const { data: messages, isLoading } = useCampaignMessages(campaignId);
@@ -142,13 +146,22 @@ export function CampaignChat({
             </div>
           )}
         </div>
-        <MessageInput
-          onSendMessage={handleSendMessage}
-          onSendFile={handleSendFile}
-          campaignId={campaignId}
-          userId={user.id}
-          disabled={disabled}
-        />
+        {chatLocked ? (
+          <div className="shrink-0 border-t border-white/8 px-4 py-3">
+            <div className="flex items-center gap-2.5 rounded-full border border-white/8 bg-white/[0.03] px-4 py-2.5">
+              <Lock className="h-4 w-4 shrink-0 text-white/30" />
+              <p className="text-sm text-white/38">{chatLockedMessage}</p>
+            </div>
+          </div>
+        ) : (
+          <MessageInput
+            onSendMessage={handleSendMessage}
+            onSendFile={handleSendFile}
+            campaignId={campaignId}
+            userId={user.id}
+            disabled={disabled}
+          />
+        )}
       </CardContent>
     </Card>
   );

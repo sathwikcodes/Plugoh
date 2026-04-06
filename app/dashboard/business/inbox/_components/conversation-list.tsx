@@ -30,7 +30,9 @@ export function ConversationList({
   const rows = useMemo(
     () =>
       conversations.map((convo) => {
-        const influencerName = getInfluencerDisplayName(convo.influencerProfile);
+        const influencerName = getInfluencerDisplayName(
+          convo.influencerProfile,
+        );
         const influencerHandle = getInfluencerHandle(convo.influencerProfile);
         return {
           id: convo.campaign.id,
@@ -51,7 +53,9 @@ export function ConversationList({
   const filteredRows = useMemo(() => {
     const normalized = searchQuery.trim().toLowerCase();
     if (!normalized) return rows;
-    return rows.filter((row) => row.searchText.toLowerCase().includes(normalized));
+    return rows.filter((row) =>
+      row.searchText.toLowerCase().includes(normalized),
+    );
   }, [rows, searchQuery]);
 
   return (

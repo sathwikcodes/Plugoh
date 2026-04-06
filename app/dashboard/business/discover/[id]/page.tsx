@@ -285,7 +285,7 @@ export default function InfluencerProfileView() {
                   </p>
                 ) : null}
 
-                {(profile.content_types?.length || profile.languages?.length) ? (
+                {profile.content_types?.length || profile.languages?.length ? (
                   <div className="flex flex-wrap gap-1.5">
                     {profile.content_types?.map((type) => (
                       <Badge
@@ -359,7 +359,6 @@ export default function InfluencerProfileView() {
                   </Button>
                 </div>
               </div>
-
             </div>
           </div>
         </section>
@@ -533,14 +532,16 @@ export default function InfluencerProfileView() {
 
               {topMedia && topMedia.length > 0 ? (
                 <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
-                  {topMedia.slice(0, 3).map((item) =>
-                    item.permalink ? (
-                      <InstagramEmbed
-                        key={item.ig_media_id}
-                        permalink={item.permalink}
-                      />
-                    ) : null,
-                  )}
+                  {topMedia
+                    .slice(0, 3)
+                    .map((item) =>
+                      item.permalink ? (
+                        <InstagramEmbed
+                          key={item.ig_media_id}
+                          permalink={item.permalink}
+                        />
+                      ) : null,
+                    )}
                 </div>
               ) : portfolioMedia?.length ? (
                 <div className="hidden grid-cols-2 gap-3 sm:grid sm:grid-cols-3 lg:grid-cols-3">
@@ -605,16 +606,51 @@ export default function InfluencerProfileView() {
                         </p>
                         <div className="flex items-center gap-4 text-xs text-slate-500">
                           <span className="flex items-center gap-1">
-                            <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
+                            <svg
+                              className="h-3.5 w-3.5"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
                             {item.likes}
                           </span>
                           <span className="flex items-center gap-1">
-                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                            <svg
+                              className="h-3.5 w-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                              />
+                            </svg>
                             {item.comments}
                           </span>
                           {item.views ? (
                             <span className="flex items-center gap-1">
-                              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                              <svg
+                                className="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                />
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
                               {item.views}
                             </span>
                           ) : null}
@@ -737,7 +773,6 @@ export default function InfluencerProfileView() {
                   <ImageIcon className="h-6 w-6 text-slate-400" />
                 </div>
               )}
-
             </div>
             <div className="space-y-4">
               <div>
@@ -783,7 +818,10 @@ export default function InfluencerProfileView() {
                 </div>
               </div>
               {activeMedia?.permalink ? (
-                <Button asChild className="w-full rounded-full bg-slate-900 text-white hover:bg-slate-800">
+                <Button
+                  asChild
+                  className="w-full rounded-full bg-slate-900 text-white hover:bg-slate-800"
+                >
                   <a
                     href={activeMedia.permalink}
                     target="_blank"

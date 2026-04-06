@@ -207,6 +207,12 @@ export default function InfluencerCampaignDetail() {
     "cancelled",
   ]);
   const showChat = !terminalStatuses.has(campaign.status);
+  const CHAT_OPEN_STATUSES = new Set([
+    "in_escrow",
+    "delivery_submitted",
+    "disputed",
+  ]);
+  const chatLocked = showChat && !CHAT_OPEN_STATUSES.has(campaign.status);
 
   return (
     <div className="container max-w-5xl py-6 space-y-6 animate-fade-in">
@@ -710,6 +716,8 @@ export default function InfluencerCampaignDetail() {
           businessName={businessName}
           influencerName={myProfile?.full_name || "Influencer"}
           disabled={campaign.status === "completed"}
+          chatLocked={chatLocked}
+          chatLockedMessage="Accept the booking to start messaging the brand"
         />
       ) : null}
     </div>

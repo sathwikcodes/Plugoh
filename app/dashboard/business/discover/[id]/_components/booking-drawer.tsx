@@ -52,8 +52,6 @@ import {
 } from "@/components/ui/workspaces";
 import Link from "next/link";
 
-
-
 const DEFAULT_OBJECTIVE: BookingObjective = "product_launch";
 const DEFAULT_TIMING: BookingTimingMode = "asap";
 
@@ -227,9 +225,7 @@ export function BookingDrawer({
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm text-white">{workspace.name}</p>
         {workspace.description ? (
-          <p className="mt-1 text-xs text-white/50">
-            {workspace.description}
-          </p>
+          <p className="mt-1 text-xs text-white/50">{workspace.description}</p>
         ) : null}
       </div>
       {isSelected ? <Check className="h-4 w-4 text-white" /> : null}
@@ -503,7 +499,12 @@ export function BookingDrawer({
                       <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
                         What you need
                       </h2>
-                      <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(availablePackages.length, 3)}, 1fr)` }}>
+                      <div
+                        className="grid gap-2"
+                        style={{
+                          gridTemplateColumns: `repeat(${Math.min(availablePackages.length, 3)}, 1fr)`,
+                        }}
+                      >
                         {availablePackages.map((item) => {
                           const active = selectedPackageData?.key === item.key;
                           return (
@@ -517,10 +518,14 @@ export function BookingDrawer({
                                   : "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
                               }`}
                             >
-                              <p className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}>
+                              <p
+                                className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}
+                              >
                                 {item.label}
                               </p>
-                              <p className={`mt-1 text-lg font-semibold ${active ? "text-black" : "text-white"}`}>
+                              <p
+                                className={`mt-1 text-lg font-semibold ${active ? "text-black" : "text-white"}`}
+                              >
                                 ₹{item.price.toLocaleString("en-IN")}
                               </p>
                             </button>
@@ -729,9 +734,7 @@ export function BookingDrawer({
                                 id="cta"
                                 value={ctaMessage}
                                 onChange={(e) =>
-                                  setCtaMessage(
-                                    e.target.value.slice(0, 100),
-                                  )
+                                  setCtaMessage(e.target.value.slice(0, 100))
                                 }
                                 placeholder="e.g. Use code SUMMER20, Link in bio..."
                                 className="h-10"
@@ -837,9 +840,7 @@ export function BookingDrawer({
                       </div>
                       <div className="flex items-start justify-between gap-3">
                         <span className="text-white/45">What to feature</span>
-                        <span className="text-right">
-                          {focusText || "—"}
-                        </span>
+                        <span className="text-right">{focusText || "—"}</span>
                       </div>
                       {shouldShowEventName(objective) ? (
                         <div className="flex items-start justify-between gap-3">
@@ -851,9 +852,9 @@ export function BookingDrawer({
                         <span className="text-white/45">Content style</span>
                         <span className="text-right">
                           {contentStyles[0]
-                            ? CONTENT_STYLES.find(
+                            ? (CONTENT_STYLES.find(
                                 (style) => style.value === contentStyles[0],
-                              )?.label ?? "—"
+                              )?.label ?? "—")
                             : "—"}
                         </span>
                       </div>

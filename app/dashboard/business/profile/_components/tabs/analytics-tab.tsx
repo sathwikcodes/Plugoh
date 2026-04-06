@@ -11,7 +11,14 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import { Users, IndianRupee, Film, ImageIcon, Mic, BarChart3 } from "lucide-react";
+import {
+  Users,
+  IndianRupee,
+  Film,
+  ImageIcon,
+  Mic,
+  BarChart3,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { compactNumber } from "@/lib/format";
 import type { Database } from "@/lib/supabase/types";

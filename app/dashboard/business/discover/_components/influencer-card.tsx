@@ -87,7 +87,10 @@ export function InfluencerCardArtwork({
 
   return (
     <div
-      className={cn("absolute inset-0 overflow-hidden rounded-[inherit]", className)}
+      className={cn(
+        "absolute inset-0 overflow-hidden rounded-[inherit]",
+        className,
+      )}
     >
       {hasPhoto ? (
         <Image
@@ -99,7 +102,10 @@ export function InfluencerCardArtwork({
           unoptimized
         />
       ) : (
-        <div className="absolute inset-0" style={{ background: INSTAGRAM_GRADIENT }}>
+        <div
+          className="absolute inset-0"
+          style={{ background: INSTAGRAM_GRADIENT }}
+        >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_18%,rgba(255,255,255,0.28),transparent_42%),radial-gradient(circle_at_72%_82%,rgba(255,210,160,0.18),transparent_35%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(255,255,255,0.08),transparent_34%,rgba(9,9,12,0.45)_100%)]" />
           <div className="flex h-full items-center justify-center">
