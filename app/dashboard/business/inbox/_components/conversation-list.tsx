@@ -67,20 +67,20 @@ export function ConversationList({
           </div>
         ) : filteredRows.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center px-6 text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/4">
               <Search className="h-5 w-5 text-white/35" />
             </div>
             <p className="text-sm font-medium text-white/78">
               {searchQuery ? "No results found" : "No conversations yet"}
             </p>
-            <p className="mt-1.5 max-w-[240px] text-xs leading-5 text-white/40">
+            <p className="mt-1.5 max-w-60 text-xs leading-5 text-white/40">
               {searchQuery
                 ? "Try a different creator name or campaign title."
                 : "Your creator conversations will appear here once a campaign starts moving."}
             </p>
           </div>
         ) : (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {filteredRows.map((row, index) => (
               <m.div
                 key={row.id}

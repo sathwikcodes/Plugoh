@@ -137,7 +137,7 @@ export default function BusinessInboxPage() {
                 }
               >
                 <div className="flex h-full min-h-0 flex-col gap-4 md:flex-row">
-                  <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.035] shadow-[0_18px_60px_rgba(0,0,0,0.26)] backdrop-blur-2xl md:w-[280px] md:shrink-0 md:flex-none">
+                  <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] border border-white/14 bg-[linear-gradient(160deg,rgba(5,8,12,0.96)_0%,rgba(10,14,21,0.94)_46%,rgba(14,19,28,0.92)_100%)] shadow-[0_24px_70px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl md:w-70 md:shrink-0 md:flex-none">
                     <div className="min-h-0 flex-1 px-4 py-4">
                       <ConversationList
                         conversations={conversations}

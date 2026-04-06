@@ -51,38 +51,40 @@ export function SharedConversationList({
   }, [rows, search]);
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="px-5 pt-5 pb-1 shrink-0">
+    <div className="flex h-full flex-col bg-transparent">
+      <div className="shrink-0 px-5 pt-5 pb-1">
         <div className="flex items-center gap-2.5">
-          <h2 className="text-lg font-bold tracking-tight">Messages</h2>
+          <h2 className="text-lg font-bold tracking-tight text-white/92">
+            Messages
+          </h2>
           {totalCount > 0 && (
-            <span className="text-[11px] font-medium text-muted-foreground/50 bg-white/[0.04] px-2 py-0.5 rounded-full tabular-nums">
+            <span className="rounded-full border border-white/12 bg-white/8 px-2 py-0.5 text-[11px] font-medium tabular-nums text-white/70">
               {totalCount}
             </span>
           )}
         </div>
       </div>
 
-      <div className="px-4 py-3 shrink-0">
+      <div className="shrink-0 px-4 py-3">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/45" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search conversations..."
             className={cn(
-              "w-full h-10 pl-10 pr-4 rounded-xl text-sm",
-              "bg-white/[0.03] border border-white/[0.06]",
-              "placeholder:text-muted-foreground/30",
-              "focus:outline-none focus:border-white/[0.12] focus:bg-white/[0.05]",
+              "h-10 w-full rounded-xl border pl-10 pr-4 text-sm",
+              "border-white/14 bg-[linear-gradient(145deg,rgba(8,11,16,0.94),rgba(14,18,25,0.9))] text-white/88",
+              "placeholder:text-white/38",
+              "focus:border-white/24 focus:bg-[linear-gradient(145deg,rgba(12,16,23,0.96),rgba(18,24,34,0.92))] focus:outline-none",
               "transition-all duration-200",
             )}
           />
         </div>
       </div>
 
-      <div className="mx-4 h-px bg-white/[0.04] shrink-0" />
+      <div className="mx-4 h-px shrink-0 bg-white/12" />
 
       <div className="flex-1 overflow-y-auto min-h-0 py-1.5">
         {isLoading ? (
@@ -91,21 +93,21 @@ export function SharedConversationList({
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full px-6 text-center">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/[0.03] border border-white/[0.06] mb-3">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/6 bg-white/3">
               <Search className="h-5 w-5 text-muted-foreground/30" />
             </div>
             <p className="text-sm font-medium text-muted-foreground/70">
               {search ? emptySearchLabel : emptyIdleLabel}
             </p>
             {!search && (
-              <p className="text-xs text-muted-foreground/40 mt-1.5 max-w-[200px]">
+              <p className="mt-1.5 max-w-50 text-xs text-muted-foreground/40">
                 {emptyIdleHint}
               </p>
             )}
           </div>
         ) : (
           <m.div
-            className="px-2 space-y-0.5"
+            className="space-y-2 px-2.5 py-1"
             variants={listStagger}
             initial="hidden"
             animate="visible"

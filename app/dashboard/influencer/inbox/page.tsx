@@ -56,17 +56,19 @@ export default function InboxPage() {
       <div
         className={
           selectedId
-            ? "hidden md:flex md:flex-col w-full md:w-[280px] md:shrink-0 md:flex-none md:border-r md:border-white/[0.04] h-full"
-            : "flex flex-col w-full md:w-[280px] md:shrink-0 md:flex-none md:border-r md:border-white/[0.04] h-full"
+            ? "hidden h-full w-full flex-col p-3 md:flex md:w-70 md:shrink-0 md:flex-none md:border-r md:border-white/4 md:p-0"
+            : "flex h-full w-full flex-col p-3 md:w-70 md:shrink-0 md:flex-none md:border-r md:border-white/4 md:p-0"
         }
       >
-        <ConversationList
-          conversations={conversations}
-          selectedId={selectedId}
-          currentUserId={user?.id || ""}
-          isLoading={isLoading}
-          onSelect={handleSelect}
-        />
+        <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[26px] border border-white/14 bg-[linear-gradient(160deg,rgba(5,8,12,0.96)_0%,rgba(10,14,21,0.94)_46%,rgba(14,19,28,0.92)_100%)] shadow-[0_24px_70px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl md:rounded-none md:border-0 md:bg-transparent md:shadow-none md:backdrop-blur-0">
+          <ConversationList
+            conversations={conversations}
+            selectedId={selectedId}
+            currentUserId={user?.id || ""}
+            isLoading={isLoading}
+            onSelect={handleSelect}
+          />
+        </div>
       </div>
 
       {/* Right panel — chat or empty state */}

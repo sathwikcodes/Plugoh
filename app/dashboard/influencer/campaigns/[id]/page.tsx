@@ -440,9 +440,9 @@ export default function InfluencerCampaignDetail() {
               ) : null}
 
               {campaign.status === "in_escrow" ? (
-                <section className="rounded-[28px] border border-green-500/25 bg-green-500/[0.06] p-5">
+                <section className="rounded-[28px] border border-yellow-500/25 bg-yellow-500/[0.06] p-5">
                   <div className="flex items-start gap-3">
-                    <Lock className="mt-0.5 h-5 w-5 shrink-0 text-green-300" />
+                    <Lock className="mt-0.5 h-5 w-5 shrink-0 text-yellow-300" />
                     <div>
                       <p className="font-semibold text-white">
                         Funds are locked in escrow
@@ -457,9 +457,9 @@ export default function InfluencerCampaignDetail() {
               ) : null}
 
               {campaign.status === "delivery_submitted" ? (
-                <section className="rounded-[28px] border border-blue-500/25 bg-blue-500/[0.06] p-5">
+                <section className="rounded-[28px] border border-yellow-500/25 bg-yellow-500/[0.06] p-5">
                   <div className="flex items-start gap-3">
-                    <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-blue-300" />
+                    <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-yellow-300" />
                     <div>
                       <p className="font-semibold text-white">
                         Delivery submitted
@@ -476,9 +476,9 @@ export default function InfluencerCampaignDetail() {
               ) : null}
 
               {campaign.status === "completed" ? (
-                <section className="rounded-[28px] border border-violet-500/25 bg-violet-500/[0.06] p-5">
+                <section className="rounded-[28px] border border-green-500/25 bg-green-500/[0.06] p-5">
                   <div className="flex items-start gap-3">
-                    <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-violet-300" />
+                    <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-green-300" />
                     <div>
                       <p className="font-semibold text-white">
                         Campaign completed

@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, X } from "lucide-react";
 import Link from "next/link";
 import type { Database } from "@/lib/supabase/types";
+import { statusColor } from "@/lib/format";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 
@@ -16,21 +17,6 @@ interface CampaignCardsProps {
   onReject?: (id: string) => void;
   role: "business" | "influencer";
 }
-
-const statusColor = (s: string) => {
-  switch (s) {
-    case "accepted":
-      return "bg-success/10 text-success border-success/20";
-    case "pending":
-      return "bg-warning/10 text-warning border-warning/20";
-    case "rejected":
-      return "bg-destructive/10 text-destructive border-destructive/20";
-    case "completed":
-      return "bg-primary/10 text-primary border-primary/20";
-    default:
-      return "bg-muted text-muted-foreground";
-  }
-};
 
 export function CampaignCards({
   items,

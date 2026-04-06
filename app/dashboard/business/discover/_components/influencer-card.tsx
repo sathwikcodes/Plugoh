@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { compactNumber } from "@/lib/format";
 import { INSTAGRAM_GRADIENT } from "@/lib/animations";
@@ -126,13 +126,13 @@ export function InfluencerCardArtwork({
 
 function VerificationBadge() {
   return (
-    <div className="ml-2 flex h-9 w-9 shrink-0 items-center justify-center">
+    <div className="ml-0.5 mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
       <Image
         src="/verified.png"
         alt="Verified"
-        width={22}
-        height={22}
-        className="h-[22px] w-[22px] object-contain drop-shadow-[0_6px_14px_rgba(255,255,255,0.28)]"
+        width={28}
+        height={28}
+        className="h-7 w-7 object-contain drop-shadow-[0_6px_14px_rgba(255,255,255,0.28)]"
       />
     </div>
   );
@@ -211,6 +211,7 @@ export function InfluencerCardInfoPanel({
   className,
 }: InfluencerCardInfoPanelProps) {
   const instagramHandle = getInstagramHandle(profile);
+  const locationLabel = profile.city?.trim() || "";
 
   return (
     <div
@@ -234,23 +235,33 @@ export function InfluencerCardInfoPanel({
         </div>
 
         {instagramHandle ? (
-          <p className="mt-1 text-[12px] font-medium tracking-[0.08em] text-white/55">
-            @{instagramHandle}
-          </p>
+          <div className="mt-1 flex min-w-0 items-center gap-2">
+            <p className="truncate text-[12px] font-medium tracking-[0.08em] text-white/55">
+              @{instagramHandle}
+            </p>
+            {locationLabel ? (
+              <div className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-white/70">
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-white/60" />
+                <span className="max-w-23 truncate sm:max-w-33">
+                  {locationLabel}
+                </span>
+              </div>
+            ) : null}
+          </div>
         ) : null}
 
         <p className="mt-2 line-clamp-2 max-w-[92%] text-[12px] leading-[1.45] text-white/62 sm:text-[12.5px]">
           {getShortBio(profile)}
         </p>
 
-        <div className="mt-4 flex items-stretch justify-between gap-2.5 sm:gap-3">
-          <div className="grid w-fit shrink-0 grid-cols-2 gap-3">
+        <div className="mt-4 flex items-center justify-between gap-2.5 sm:gap-3">
+          <div className="flex w-fit shrink-0 flex-col justify-center gap-2.5 sm:grid sm:grid-cols-2 sm:gap-3">
             <MetricPill kind="followers" value={getFollowerLabel(profile)} />
             <MetricPill kind="engagement" value={getEngagementLabel(profile)} />
           </div>
           <PriceButton
             profile={profile}
-            className="w-[clamp(132px,42%,168px)] min-w-[132px] shrink-0 justify-between px-4 sm:px-5"
+            className="min-w-0 flex-1 justify-between gap-2 rounded-[20px] px-3.5 py-2.5 sm:w-[clamp(132px,42%,168px)] sm:min-w-33 sm:flex-none sm:rounded-[22px] sm:px-5 sm:py-3"
           />
         </div>
       </div>

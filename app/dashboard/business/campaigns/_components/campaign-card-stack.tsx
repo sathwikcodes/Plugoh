@@ -10,7 +10,7 @@ import {
   AnimatePresence,
   type MotionValue,
 } from "framer-motion";
-import { ArrowRight, BarChart3, MessageCircle } from "lucide-react";
+import { ArrowRight, BarChart3, Lock, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import {
@@ -45,11 +45,16 @@ const STATUS_GLOW: Record<string, string> = {
   requested: "rgba(245,158,11,0.20)",
   pending: "rgba(245,158,11,0.20)",
   payment_pending: "rgba(234,179,8,0.22)",
-  in_escrow: "rgba(34,197,94,0.15)",
+  in_escrow: "rgba(234,179,8,0.18)",
   accepted: "rgba(34,197,94,0.15)",
-  delivery_submitted: "rgba(59,130,246,0.18)",
-  completed: "rgba(139,92,246,0.15)",
+  delivery_submitted: "rgba(234,179,8,0.18)",
+  completed: "rgba(34,197,94,0.15)",
   disputed: "rgba(239,68,68,0.18)",
+  declined: "rgba(239,68,68,0.18)",
+  rejected: "rgba(239,68,68,0.18)",
+  cancelled: "rgba(239,68,68,0.18)",
+  expired: "rgba(239,68,68,0.18)",
+  refunded: "rgba(239,68,68,0.18)",
 };
 
 const STATUS_ACCENT: Record<string, string> = {
@@ -57,11 +62,16 @@ const STATUS_ACCENT: Record<string, string> = {
   requested: "#f59e0b",
   pending: "#f59e0b",
   payment_pending: "#eab308",
-  in_escrow: "#22c55e",
+  in_escrow: "#eab308",
   accepted: "#22c55e",
-  delivery_submitted: "#3b82f6",
-  completed: "#8b5cf6",
+  delivery_submitted: "#eab308",
+  completed: "#22c55e",
   disputed: "#ef4444",
+  declined: "#ef4444",
+  rejected: "#ef4444",
+  cancelled: "#ef4444",
+  expired: "#ef4444",
+  refunded: "#ef4444",
 };
 
 // ── Data interface ────────────────────────────────────────────────────────
@@ -118,25 +128,19 @@ function CampaignCardFront({
       {/* Subtle inner border shimmer */}
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]" />
 
-      {/* Coloured accent bar at top */}
-      <div
-        className="absolute inset-x-0 top-0 h-[3px] rounded-t-[34px]"
-        style={{ background: accent, opacity: 0.75 }}
-      />
-
       {/* Content */}
       <div className="relative flex h-full flex-col px-5 pb-5 pt-6">
         {/* ── Row 1: status badge + package ── */}
         <div className="flex shrink-0 items-center justify-between gap-2">
           <span
             className={cn(
-              "inline-flex items-center rounded-full border px-2.5 py-[3px] text-[10px] font-semibold uppercase tracking-[0.18em] leading-none",
+              "inline-flex items-center rounded-full border px-2.5 py-0.75 text-[10px] font-semibold uppercase tracking-[0.18em] leading-none",
               cfg.badge,
             )}
           >
             {cfg.label}
           </span>
-          <span className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-[3px] text-[10px] font-medium uppercase tracking-[0.16em] leading-none text-white/50">
+          <span className="rounded-full border border-white/10 bg-white/6 px-2.5 py-0.75 text-[10px] font-medium uppercase tracking-[0.16em] leading-none text-white/50">
             {formatPackage(card.package_type)}
           </span>
         </div>
@@ -146,43 +150,44 @@ function CampaignCardFront({
           <h2 className="line-clamp-4 text-[26px] font-semibold leading-[1.22] tracking-[-0.04em] text-white">
             {card.title || "Untitled Campaign"}
           </h2>
+
+          {/* ── Creator card ── */}
+          <div className="mb-3 mt-3 flex items-center gap-3 rounded-[16px] border border-white/10 bg-white/4 px-3 py-2">
+            {card.influencerAvatarUrl ? (
+              <Image
+                src={card.influencerAvatarUrl}
+                alt={card.influencerName}
+                width={36}
+                height={36}
+                className="h-9 w-9 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/12 text-[10px] font-bold text-white/70">
+                {getInitials(card.influencerName)}
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-white">
+                {card.influencerName}
+              </p>
+              <p className="truncate text-[11px] text-white/45">
+                {card.influencerHandle ? `@${card.influencerHandle}` : "—"}
+                {" · "}
+                {timeAgo(card.created_at)}
+              </p>
+            </div>
+          </div>
+
           {card.brief?.trim() && (
-            <p className="mt-2 line-clamp-2 text-[13px] leading-[1.55] text-white/42">
+            <p className="line-clamp-2 text-[13px] leading-[1.55] text-white/42">
               {card.brief.trim()}
             </p>
           )}
         </div>
 
-        {/* ── Creator card ── */}
-        <div className="mb-4 flex items-center gap-3 rounded-[16px] border border-white/10 bg-white/[0.04] px-3 py-2">
-          {card.influencerAvatarUrl ? (
-            <Image
-              src={card.influencerAvatarUrl}
-              alt={card.influencerName}
-              width={36}
-              height={36}
-              className="h-9 w-9 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/12 text-[10px] font-bold text-white/70">
-              {getInitials(card.influencerName)}
-            </div>
-          )}
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-white">
-              {card.influencerName}
-            </p>
-            <p className="truncate text-[11px] text-white/45">
-              {card.influencerHandle ? `@${card.influencerHandle}` : "—"}
-              {" · "}
-              {timeAgo(card.created_at)}
-            </p>
-          </div>
-        </div>
-
         {/* ── Timer (pre-auth / requested only) ── */}
         {showTimer && (
-          <div className="mb-4 shrink-0 rounded-[16px] border border-amber-500/22 bg-amber-500/[0.08] px-4 py-3">
+          <div className="mb-4 shrink-0 rounded-[16px] border border-amber-500/22 bg-amber-500/8 px-4 py-3">
             <p className="mb-2 text-[9px] uppercase tracking-[0.22em] text-amber-300/55">
               Offer expires in
             </p>
@@ -191,7 +196,7 @@ function CampaignCardFront({
         )}
 
         {/* ── Divider ── */}
-        <div className="shrink-0 h-px bg-white/[0.08]" />
+        <div className="shrink-0 h-px bg-white/8" />
 
         {/* ── Footer ── */}
         <div className="shrink-0 flex items-center justify-between gap-3 pt-4">
@@ -199,6 +204,9 @@ function CampaignCardFront({
           <div className="min-w-0">
             <p className="text-[30px] font-bold leading-none tracking-[-0.05em] text-white">
               {formatCurrency(card.price_offered)}
+              <span className="ml-2 text-[14px] font-medium tracking-[0.01em] text-white/55">
+                spent
+              </span>
             </p>
           </div>
 
@@ -209,9 +217,12 @@ function CampaignCardFront({
                 type="button"
                 disabled
                 aria-disabled="true"
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white/45 shadow-[0_8px_24px_rgba(0,0,0,0.2)]"
+                className="relative flex h-12 w-12 items-center justify-center rounded-full border border-white/16 bg-white/6 text-white/45 shadow-[0_8px_24px_rgba(0,0,0,0.2)]"
               >
-                <MessageCircle className="h-5 w-5" />
+                <MessageCircle className="h-5 w-5 opacity-70" />
+                <span className="absolute -right-0.5 -top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-white/20 bg-[#11151c]">
+                  <Lock className="h-2.5 w-2.5 text-white/75" />
+                </span>
               </button>
             ) : (
               <Link
@@ -269,12 +280,8 @@ function CampaignCardBack({ card }: { card: CampaignCardData }) {
           background: `radial-gradient(ellipse 80% 55% at 50% -10%, ${glow}, transparent)`,
         }}
       />
-      <div
-        className="absolute inset-x-0 top-0 h-[3px] rounded-t-[34px]"
-        style={{ background: accent, opacity: 0.6 }}
-      />
       {/* Blurred title peek at bottom */}
-      <div className="absolute inset-x-5 bottom-5 rounded-[20px] border border-white/8 bg-white/[0.04] px-4 py-3 backdrop-blur-[10px]">
+      <div className="absolute inset-x-5 bottom-5 rounded-[20px] border border-white/8 bg-white/4 px-4 py-3 backdrop-blur-[10px]">
         <p className="truncate text-[14px] font-semibold text-white/50">
           {card.title || "Untitled Campaign"}
         </p>
@@ -470,7 +477,7 @@ export function CampaignCardStack({ campaigns, className }: Props) {
       >
         <ShinyButton
           onClick={moveToStart}
-          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/[0.05] px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
         >
           <Image
             src="/back.png"
@@ -481,7 +488,7 @@ export function CampaignCardStack({ campaigns, className }: Props) {
           />
         </ShinyButton>
 
-        <div className="min-w-[76px] text-center">
+        <div className="min-w-19 text-center">
           <span className="text-sm font-medium tabular-nums text-white/78">
             {currentIndex + 1}
           </span>
@@ -491,7 +498,7 @@ export function CampaignCardStack({ campaigns, className }: Props) {
 
         <ShinyButton
           onClick={moveToEnd}
-          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/[0.05] px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
         >
           <Image
             src="/next.png"

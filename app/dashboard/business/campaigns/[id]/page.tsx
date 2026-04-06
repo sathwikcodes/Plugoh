@@ -98,6 +98,7 @@ function StatusTimeline({ status }: { status: string }) {
   const isLegacy = status === "requested" || status === "payment_pending";
   const steps = isLegacy ? LEGACY_STEPS : STATUS_STEPS;
   const currentIndex = steps.findIndex((s) => s.key === status);
+  const reachedTone = status === "completed" ? "success" : "active";
 
   return (
     <div className="flex items-center overflow-x-auto">
@@ -111,7 +112,9 @@ function StatusTimeline({ status }: { status: string }) {
                 className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8",
                   reached
-                    ? "border-emerald-300/30 bg-emerald-300/15"
+                    ? reachedTone === "success"
+                      ? "border-green-300/30 bg-green-300/15"
+                      : "border-yellow-300/30 bg-yellow-300/15"
                     : "border-white/10 bg-white/[0.04]",
                 )}
               >
@@ -119,9 +122,13 @@ function StatusTimeline({ status }: { status: string }) {
                   className={cn(
                     "h-3 w-3 sm:h-3.5 sm:w-3.5",
                     current
-                      ? "text-emerald-200"
+                      ? reachedTone === "success"
+                        ? "text-green-200"
+                        : "text-yellow-200"
                       : reached
-                        ? "text-emerald-200/60"
+                        ? reachedTone === "success"
+                          ? "text-green-200/60"
+                          : "text-yellow-200/60"
                         : "text-white/30",
                   )}
                 />
@@ -139,7 +146,11 @@ function StatusTimeline({ status }: { status: string }) {
               <div
                 className={cn(
                   "mx-2 mb-4 h-px w-6 sm:w-14",
-                  index < currentIndex ? "bg-emerald-300/45" : "bg-white/10",
+                  index < currentIndex
+                    ? reachedTone === "success"
+                      ? "bg-green-300/45"
+                      : "bg-yellow-300/45"
+                    : "bg-white/10",
                 )}
               />
             )}
@@ -433,10 +444,10 @@ export default function BusinessCampaignDetail() {
         )}
 
         {campaign.status === "delivery_submitted" && (
-          <div className="rounded-2xl border border-blue-500/25 bg-blue-500/[0.08] p-4 sm:p-5 space-y-4">
+          <div className="rounded-2xl border border-yellow-500/25 bg-yellow-500/[0.08] p-4 sm:p-5 space-y-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-3">
-                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-300/80" />
+                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-300/80" />
                 <div>
                   <p className="text-sm font-semibold text-white">
                     Content delivered — your move
@@ -527,8 +538,8 @@ export default function BusinessCampaignDetail() {
         )}
 
         {campaign.status === "completed" && (
-          <div className="flex flex-col gap-3 rounded-2xl border border-violet-500/20 bg-violet-500/[0.07] px-4 py-3 sm:flex-row sm:items-center">
-            <CheckCircle className="h-4 w-4 shrink-0 text-violet-300/80" />
+          <div className="flex flex-col gap-3 rounded-2xl border border-green-500/20 bg-green-500/[0.07] px-4 py-3 sm:flex-row sm:items-center">
+            <CheckCircle className="h-4 w-4 shrink-0 text-green-300/80" />
             <div>
               <p className="text-sm font-semibold text-white">
                 Campaign completed
