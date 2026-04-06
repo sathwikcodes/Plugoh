@@ -35,7 +35,7 @@ interface Props {
   className?: string;
 }
 
-const CARD_ASPECT_RATIO = 0.68;
+const CARD_ASPECT_RATIO = 0.74;
 const MAX_CARD_WIDTH = 368;
 
 export function InfluencerCardStack({ profiles, className }: Props) {
@@ -133,7 +133,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
   return (
     <div
       className={cn(
-        "flex min-h-0 flex-col items-center gap-2 px-1 pb-1 pt-1 sm:gap-3 sm:pb-2",
+        "flex min-h-0 flex-col items-center gap-2 pb-1 pt-1 sm:gap-3 sm:pb-2",
         className,
       )}
     >
