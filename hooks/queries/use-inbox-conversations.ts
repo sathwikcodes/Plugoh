@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
+import { trpcClient } from "@/lib/trpc/client";
 import type { Database } from "@/lib/supabase/types";
 import type { BusinessIdentity } from "@/lib/business-profile";
 
@@ -29,20 +30,16 @@ async function fetchConversations(userId: string): Promise<Conversation[]> {
   const businessIds = [...new Set(campaigns.map((c) => c.business_id))];
   const campaignIds = campaigns.map((c) => c.id);
 
-  const [
-    { data: profiles },
-    { data: businessProfiles },
-    { data: allMessages },
-  ] = await Promise.all([
-    supabase.from("profiles").select("*").in("id", businessIds),
-    supabase.from("business_profiles").select("*").in("user_id", businessIds),
-    supabase
-      .from("campaign_messages")
-      .select("*")
-      .in("campaign_id", campaignIds)
-      .neq("message_type", "system")
-      .order("created_at", { ascending: false }),
-  ]);
+  const [{ profiles, businessProfiles }, { data: allMessages }] =
+    await Promise.all([
+      trpcClient.profile.getBusinessProfiles.query({ businessIds }),
+      supabase
+        .from("campaign_messages")
+        .select("*")
+        .in("campaign_id", campaignIds)
+        .neq("message_type", "system")
+        .order("created_at", { ascending: false }),
+    ]);
 
   const profileMap = new Map((profiles || []).map((p) => [p.id, p as Profile]));
   const businessMap = new Map(

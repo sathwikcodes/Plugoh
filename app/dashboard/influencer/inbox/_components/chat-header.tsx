@@ -4,6 +4,7 @@ import { SharedChatHeader } from "@/components/inbox/shared-chat-header";
 
 interface ChatHeaderProps {
   brandName: string;
+  avatarUrl?: string | null;
   campaignTitle: string;
   status: string;
   onBack: () => void;
@@ -11,6 +12,7 @@ interface ChatHeaderProps {
 
 export function ChatHeader({
   brandName,
+  avatarUrl,
   campaignTitle,
   status,
   onBack,
@@ -18,6 +20,7 @@ export function ChatHeader({
   return (
     <SharedChatHeader
       participantName={brandName}
+      avatarUrl={avatarUrl}
       campaignTitle={campaignTitle}
       status={status}
       onBack={onBack}

@@ -30,7 +30,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import {
   CampaignCardStack,
   CampaignCardTile,
-} from "./_components/campaign-card-stack";
+} from "@/components/campaign/campaign-card-stack";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type InfluencerProfile =

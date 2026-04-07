@@ -3,6 +3,24 @@ import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../init";
 
 export const profileRouter = router({
+  getBusinessProfiles: protectedProcedure
+    .input(z.object({ businessIds: z.array(z.string().uuid()) }))
+    .query(async ({ ctx, input }) => {
+      const { db } = ctx;
+      const [{ data: profiles }, { data: businessProfiles }] =
+        await Promise.all([
+          db.from("profiles").select("*").in("id", input.businessIds),
+          db
+            .from("business_profiles")
+            .select("*")
+            .in("user_id", input.businessIds),
+        ]);
+      return {
+        profiles: profiles ?? [],
+        businessProfiles: businessProfiles ?? [],
+      };
+    }),
+
   upsertBusinessProfile: protectedProcedure
     .input(
       z.object({

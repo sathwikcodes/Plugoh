@@ -19,7 +19,7 @@ import { useTRPC } from "@/lib/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { Conversation } from "@/hooks/queries/use-inbox-conversations";
-import { getBusinessDisplayName } from "@/lib/business-profile";
+import { getBrandAvatarUrl, getBrandDisplayName } from "./profile-display";
 
 interface ChatPanelProps {
   conversation: Conversation;
@@ -59,7 +59,8 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   );
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const brandName = getBusinessDisplayName(businessProfile);
+  const brandName = getBrandDisplayName(businessProfile);
+  const brandAvatarUrl = getBrandAvatarUrl(businessProfile);
   const influencerName = myProfile?.full_name || "Influencer";
   const chatLocked = ![
     "in_escrow",
@@ -130,6 +131,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     <div className="flex flex-col h-full">
       <ChatHeader
         brandName={brandName}
+        avatarUrl={brandAvatarUrl}
         campaignTitle={campaign.title || "Untitled Campaign"}
         status={campaign.status}
         onBack={onBack}
@@ -196,7 +198,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
       {/* Message input / locked banner */}
       {chatLocked ? (
         <div className="shrink-0 border-t border-white/8 px-4 py-3">
-          <div className="flex items-center gap-2.5 rounded-full border border-white/8 bg-white/[0.03] px-4 py-2.5">
+          <div className="flex items-center gap-2.5 rounded-full border border-white/8 bg-white/3 px-4 py-2.5">
             <Lock className="h-4 w-4 shrink-0 text-white/30" />
             <p className="text-sm text-white/40">
               Chat unlocks once you accept this booking

@@ -96,11 +96,17 @@ export default function EarningsPage() {
         className="space-y-4"
       >
         {/* ── Header ── */}
-        <m.div variants={fadeUp}>
-          <h1 className="text-2xl font-extrabold tracking-tight">Earnings</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Your creator journey, tracked.
-          </p>
+        <m.div
+          variants={fadeUp}
+          className="flex shrink-0 items-center justify-center"
+        >
+          <div className="min-w-0 text-center">
+            <h1 className="heading-mix text-3xl font-semibold tracking-tight text-white sm:text-3xl">
+              <span className="heading-mix-accent text-4xl text-white/90">
+                Earnings
+              </span>
+            </h1>
+          </div>
         </m.div>
 
         <TierHeroCard

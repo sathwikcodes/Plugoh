@@ -1,12 +1,12 @@
 "use client";
 
 import type { Conversation } from "@/hooks/queries/use-inbox-conversations";
-import { getBusinessDisplayName } from "@/lib/business-profile";
 import {
   SharedConversationItem,
   buildConversationPreview,
   formatConversationTime,
 } from "@/components/inbox/shared-conversation-item";
+import { getBrandAvatarUrl, getBrandDisplayName } from "./profile-display";
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -23,7 +23,8 @@ export function ConversationItem({
 }: ConversationItemProps) {
   const { campaign, businessProfile, lastMessage } = conversation;
 
-  const brandName = getBusinessDisplayName(businessProfile);
+  const brandName = getBrandDisplayName(businessProfile);
+  const brandAvatarUrl = getBrandAvatarUrl(businessProfile);
   const msgPreview = lastMessage
     ? buildConversationPreview(lastMessage.content, lastMessage.message_type)
     : "No messages yet";
@@ -33,6 +34,7 @@ export function ConversationItem({
   return (
     <SharedConversationItem
       name={brandName}
+      avatarUrl={brandAvatarUrl}
       campaignTitle={campaign.title || "Untitled Campaign"}
       preview={msgPreview}
       timeLabel={formatConversationTime(msgTime)}

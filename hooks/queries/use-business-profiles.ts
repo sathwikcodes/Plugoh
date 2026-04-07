@@ -1,5 +1,6 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase/client";
+import { trpcClient } from "@/lib/trpc/client";
 import type { Database } from "@/lib/supabase/types";
 import type { BusinessIdentity } from "@/lib/business-profile";
 
@@ -12,19 +13,8 @@ export function useBusinessProfiles(businessIds: string[]) {
     queryFn: async () => {
       if (businessIds.length === 0) return new Map<string, BusinessIdentity>();
 
-      const [
-        { data: profiles, error: profileError },
-        { data: businessProfiles, error: businessError },
-      ] = await Promise.all([
-        supabase.from("profiles").select("*").in("id", businessIds),
-        supabase
-          .from("business_profiles")
-          .select("*")
-          .in("user_id", businessIds),
-      ]);
-
-      if (profileError) throw profileError;
-      if (businessError) throw businessError;
+      const { profiles, businessProfiles } =
+        await trpcClient.profile.getBusinessProfiles.query({ businessIds });
 
       const profileMap = new Map(
         (profiles || []).map((p) => [p.id, p as Profile]),
