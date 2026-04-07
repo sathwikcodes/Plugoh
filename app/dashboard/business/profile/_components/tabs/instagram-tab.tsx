@@ -57,7 +57,7 @@ export default function BusinessInstagramTab({
                   href={businessProfile.instagram_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-pink-400/80 hover:text-pink-300"
+                  className="text-primary/80 hover:text-primary"
                 >
                   <ExternalLink className="h-4 w-4" />
                 </a>

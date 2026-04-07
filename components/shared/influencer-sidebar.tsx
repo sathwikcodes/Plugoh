@@ -24,7 +24,7 @@ export function InfluencerSidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
                 active
-                  ? "bg-pink-500/10 text-pink-500 border-l-2 border-pink-500 -ml-px"
+                  ? "bg-primary/10 text-primary border-l-2 border-primary -ml-px"
                   : "text-muted-foreground hover:text-foreground hover:bg-white/5",
               )}
             >

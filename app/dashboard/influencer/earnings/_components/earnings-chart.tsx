@@ -58,7 +58,7 @@ export function EarningsChart({
                     m.amount > 0
                       ? isPeak
                         ? "bg-gradient-to-t from-amber-500/80 to-yellow-400/60"
-                        : "bg-gradient-to-t from-pink-500/80 to-purple-500/60"
+                        : "bg-gradient-to-t from-primary/80 to-primary/40"
                       : "bg-white/5",
                   )}
                   style={{

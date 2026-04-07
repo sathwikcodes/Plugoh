@@ -204,8 +204,8 @@ export function useBadges(
         desc: "Work with 5+ unique brands",
         emoji: "🤝",
         earned: uniqueBrands >= 5,
-        earnedGradient: "from-pink-500/20 to-rose-500/20",
-        earnedBorder: "border-pink-500/30",
+        earnedGradient: "from-[#FF7A59]/20 to-[#FF7A59]/10",
+        earnedBorder: "border-[#FF7A59]/30",
       },
       {
         id: "high_roller",

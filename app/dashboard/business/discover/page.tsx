@@ -299,8 +299,8 @@ export default function InfluencerDiscovery() {
             animationSpeed={0.015}
             containerStyle={GRADIENT_STYLE}
           />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff14,transparent_38%),linear-gradient(180deg,#06070a_0%,#090a0f_42%,#0c1017_100%)]" />
-          <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#9fb8ff14_0%,transparent_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
+          <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
         </div>
 
         <div
@@ -348,7 +348,7 @@ export default function InfluencerDiscovery() {
                     "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-sm font-medium text-white backdrop-blur-md transition-all duration-200 sm:w-auto sm:gap-2 sm:px-5",
                     activeFilterCount > 0
                       ? "border-white/25 bg-white/12 shadow-[0_0_20px_rgba(255,255,255,0.06)]"
-                      : "border-cyan-300/20 bg-[linear-gradient(135deg,#dfe7ff18,#8be9ff14)] shadow-[0_12px_32px_rgba(18,24,41,0.35)] hover:bg-white/10",
+                      : "border-primary/20 bg-primary/[0.07] shadow-[0_12px_32px_rgba(15,17,21,0.35)] hover:bg-primary/10",
                   )}
                 >
                   <SlidersHorizontal className="h-4 w-4" />

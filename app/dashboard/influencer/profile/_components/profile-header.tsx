@@ -114,7 +114,7 @@ export default function ProfileHeader({
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-pink-400 hover:text-pink-300 transition-colors"
+                    className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
                   >
                     <Instagram className="h-3.5 w-3.5" /> @
                     {profile.instagram_handle}

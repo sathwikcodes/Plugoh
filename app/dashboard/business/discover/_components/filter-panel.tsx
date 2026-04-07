@@ -551,7 +551,7 @@ export function FilterPanel({
       </div>
 
       <div
-        className="shrink-0 border-t border-white/8 bg-[#0b0d12]/96 px-5 py-4 backdrop-blur-xl"
+        className="shrink-0 border-t border-white/8 bg-[#151922]/96 px-5 py-4 backdrop-blur-xl"
         style={{
           paddingBottom: isMobile
             ? "calc(env(safe-area-inset-bottom, 0px) + 28px)"
@@ -601,7 +601,7 @@ export function FilterPanel({
             <m.div
               key="filter-sheet-mobile"
               ref={panelRef}
-              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[88dvh] flex-col rounded-t-[32px] border-t border-white/10 bg-[#0b0d12] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)]"
+              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[88dvh] flex-col rounded-t-[32px] border-t border-white/10 bg-[#151922] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)]"
               style={{ height: "min(88dvh, 760px)" }}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
@@ -620,7 +620,7 @@ export function FilterPanel({
             <m.div
               key="filter-panel-desktop"
               ref={panelRef}
-              className="fixed bottom-0 right-0 top-0 z-50 flex w-[420px] flex-col border-l border-white/10 bg-[#0b0d12] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
+              className="fixed bottom-0 right-0 top-0 z-50 flex w-[420px] flex-col border-l border-white/10 bg-[#151922] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}

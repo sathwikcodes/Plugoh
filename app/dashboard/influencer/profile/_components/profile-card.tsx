@@ -129,7 +129,7 @@ export default function ProfileCard({
                   href={instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-pink-400/80 hover:text-pink-300 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-sm text-primary/80 hover:text-primary transition-colors"
                 >
                   <Instagram className="h-3.5 w-3.5 shrink-0" />
                   <span className="font-medium">@{handle}</span>

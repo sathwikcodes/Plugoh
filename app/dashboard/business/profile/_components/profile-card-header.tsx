@@ -135,7 +135,7 @@ export default function BusinessProfileCardHeader({
                     href={businessProfile.instagram_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-pink-400/80 hover:text-pink-300 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-sm text-primary/80 hover:text-primary transition-colors"
                   >
                     @{businessProfile.ig_username}
                   </a>

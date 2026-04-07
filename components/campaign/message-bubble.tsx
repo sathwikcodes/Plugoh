@@ -193,8 +193,8 @@ function getPackageIcon(type: string | null | undefined) {
       label: "Story",
       icon: BookOpen,
       img: null as string | null,
-      color: "text-pink-400",
-      bg: "from-pink-500/20 to-rose-500/20",
+      color: "text-[#FF7A59]",
+      bg: "from-[#FF7A59]/20 to-[#FF7A59]/10",
     };
   return {
     label: type || "Package",
@@ -261,9 +261,9 @@ export function BookingCardMessage({
                 stiffness: 260,
                 damping: 20,
               }}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-white/[0.06]"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-white/[0.06]"
             >
-              <Briefcase className="h-5 w-5 text-pink-400" />
+              <Briefcase className="h-5 w-5 text-primary" />
             </m.div>
             <div className="min-w-0 flex-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">

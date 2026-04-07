@@ -52,14 +52,14 @@ export function InfluencerTabBar() {
               )}
             >
               <Icon
-                className={cn("h-[22px] w-[22px]", active && "text-pink-500")}
+                className={cn("h-[22px] w-[22px]", active && "text-primary")}
                 strokeWidth={active ? 2.5 : 1.5}
               />
               <span
                 className={cn(
                   "text-[9px] leading-none",
                   active
-                    ? "font-semibold text-pink-500"
+                    ? "font-semibold text-primary"
                     : "font-medium text-muted-foreground",
                 )}
               >

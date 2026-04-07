@@ -45,7 +45,7 @@ export function SharedChatHeader({
         {avatarUrl ? (
           <AvatarImage src={avatarUrl} alt={participantName} />
         ) : null}
-        <AvatarFallback className="bg-gradient-to-br from-pink-500/15 to-purple-500/15 text-xs font-semibold text-foreground/80">
+        <AvatarFallback className="bg-gradient-to-br from-primary/15 to-primary/5 text-xs font-semibold text-foreground/80">
           {initials}
         </AvatarFallback>
       </Avatar>

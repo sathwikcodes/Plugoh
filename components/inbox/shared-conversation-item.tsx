@@ -61,12 +61,12 @@ export function SharedConversationItem({
       )}
     >
       {isSelected && (
-        <div className="absolute left-1.5 top-1/2 h-8 w-0.75 -translate-y-1/2 rounded-full bg-linear-to-b from-pink-500 to-purple-500" />
+        <div className="absolute left-1.5 top-1/2 h-8 w-0.75 -translate-y-1/2 rounded-full bg-linear-to-b from-primary to-primary/60" />
       )}
 
       <Avatar className="h-10 w-10 shrink-0 ring-1 ring-white/12">
         {avatarUrl ? <AvatarImage src={avatarUrl} alt={name} /> : null}
-        <AvatarFallback className="bg-linear-to-br from-pink-500/15 to-purple-500/15 text-xs font-semibold text-foreground/80">
+        <AvatarFallback className="bg-linear-to-br from-primary/15 to-primary/5 text-xs font-semibold text-foreground/80">
           {initials}
         </AvatarFallback>
       </Avatar>

@@ -403,7 +403,7 @@ export function BookingDrawer({
           onOpenChange(nextOpen);
         }}
       >
-        <DrawerContent className="ml-auto flex h-[88dvh] max-h-[88dvh] min-h-0 flex-col overflow-hidden rounded-t-[32px] border-t border-white/10 bg-[#0b0d12] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)] md:h-dvh md:max-h-dvh md:w-[420px] md:max-w-none md:rounded-none md:border-t-0 md:border-l md:border-white/10 md:shadow-[-28px_0_90px_rgba(0,0,0,0.5)]">
+        <DrawerContent className="ml-auto flex h-[88dvh] max-h-[88dvh] min-h-0 flex-col overflow-hidden rounded-t-[32px] border-t border-white/10 bg-[#151922] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)] md:h-dvh md:max-h-dvh md:w-[420px] md:max-w-none md:rounded-none md:border-t-0 md:border-l md:border-white/10 md:shadow-[-28px_0_90px_rgba(0,0,0,0.5)]">
           <DrawerHeader className="shrink-0 border-b border-white/8 px-5 py-4 md:px-6">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
@@ -552,7 +552,7 @@ export function BookingDrawer({
                         />
                         <WorkspaceContent
                           title="Objective"
-                          className="border-white/10 bg-[#0b0d12] text-white"
+                          className="border-white/10 bg-[#151922] text-white"
                           renderWorkspace={renderWorkspaceRow}
                         />
                       </Workspaces>
@@ -613,7 +613,7 @@ export function BookingDrawer({
                         />
                         <WorkspaceContent
                           title="Content style"
-                          className="border-white/10 bg-[#0b0d12] text-white"
+                          className="border-white/10 bg-[#151922] text-white"
                           renderWorkspace={renderWorkspaceRow}
                         />
                       </Workspaces>
@@ -637,7 +637,7 @@ export function BookingDrawer({
                         />
                         <WorkspaceContent
                           title="Timing"
-                          className="border-white/10 bg-[#0b0d12] text-white"
+                          className="border-white/10 bg-[#151922] text-white"
                           renderWorkspace={renderWorkspaceRow}
                         />
                       </Workspaces>
@@ -896,8 +896,8 @@ export function BookingDrawer({
                     {[
                       {
                         icon: Lock,
-                        color: "text-cyan-300",
-                        bg: "bg-cyan-300/10 border-cyan-300/15",
+                        color: "text-primary",
+                        bg: "bg-primary/10 border-primary/15",
                         title: "Your bank places a temporary hold",
                         desc: "No money is deducted. You'll see it as 'pending' in your banking app — not a charge.",
                       },
@@ -943,7 +943,7 @@ export function BookingDrawer({
             ) : null}
           </div>
 
-          <DrawerFooter className="shrink-0 border-t border-white/8 bg-[#0b0d12]/96 px-5 py-4 backdrop-blur-xl md:px-6">
+          <DrawerFooter className="shrink-0 border-t border-white/8 bg-[#151922]/96 px-5 py-4 backdrop-blur-xl md:px-6">
             {canStartBooking && selectedPackageData ? (
               <div className="space-y-3">
                 {step === 1 ? (

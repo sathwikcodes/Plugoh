@@ -71,7 +71,7 @@ export default function BusinessDashboard() {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            className="w-full max-w-3xl rounded-[28px] border border-white/12 bg-[linear-gradient(155deg,rgba(6,9,14,0.88)_0%,rgba(10,14,22,0.84)_100%)] px-6 py-8 text-center shadow-[0_20px_56px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:px-8"
+            className="w-full max-w-3xl rounded-[28px] border border-white/12 bg-[linear-gradient(155deg,rgba(21,25,34,0.88)_0%,rgba(27,34,48,0.84)_100%)] px-6 py-8 text-center shadow-[0_20px_56px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:px-8"
           >
             <p className="mx-auto max-w-2xl text-base leading-8 text-white/82 sm:text-lg">
               Hey guys, this is{" "}

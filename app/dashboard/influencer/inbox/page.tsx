@@ -74,8 +74,8 @@ export default function InboxPage() {
           animationSpeed={0.015}
           containerStyle={GRADIENT_STYLE}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff14,transparent_38%),linear-gradient(180deg,#06070a_0%,#090a0f_42%,#0c1017_100%)]" />
-        <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#9fb8ff14_0%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
+        <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
       </div>
 
       <div className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6">
@@ -87,7 +87,7 @@ export default function InboxPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 12 }}
               transition={{ duration: 0.18 }}
-              className="flex h-full flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0d12]/75 shadow-[0_24px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl"
+              className="flex h-full flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#151922]/75 shadow-[0_24px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl"
             >
               <ChatPanel
                 conversation={selectedConversation}
@@ -137,7 +137,7 @@ export default function InboxPage() {
                 }
               >
                 <div className="flex h-full min-h-0 flex-col gap-4 md:flex-row">
-                  <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] border border-white/14 bg-[linear-gradient(160deg,rgba(5,8,12,0.96)_0%,rgba(10,14,21,0.94)_46%,rgba(14,19,28,0.92)_100%)] shadow-[0_24px_70px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl md:w-70 md:shrink-0 md:flex-none">
+                  <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] border border-white/14 bg-[linear-gradient(160deg,rgba(21,25,34,0.96)_0%,rgba(21,25,34,0.94)_46%,rgba(27,34,48,0.92)_100%)] shadow-[0_24px_70px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl md:w-70 md:shrink-0 md:flex-none">
                     <div className="min-h-0 flex-1 px-4 py-4">
                       <ConversationList
                         conversations={conversations}
@@ -150,7 +150,7 @@ export default function InboxPage() {
                     </div>
                   </div>
 
-                  <div className="hidden min-h-0 flex-1 overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0d12]/75 shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-2xl md:flex md:min-w-0">
+                  <div className="hidden min-h-0 flex-1 overflow-hidden rounded-[28px] border border-white/10 bg-[#151922]/75 shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-2xl md:flex md:min-w-0">
                     <AnimatePresence mode="wait">
                       {selectedConversation ? (
                         <m.div

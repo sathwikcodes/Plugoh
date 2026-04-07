@@ -60,8 +60,8 @@ export default function InstagramTab({ profile, media }: InstagramTabProps) {
       value: profile.ig_followers_count
         ? formatCompact(profile.ig_followers_count)
         : null,
-      gradient: "from-pink-500/20 to-rose-500/20",
-      iconColor: "text-pink-400",
+      gradient: "from-primary/20 to-primary/5",
+      iconColor: "text-primary",
     },
     {
       icon: BarChart2,
@@ -128,8 +128,8 @@ export default function InstagramTab({ profile, media }: InstagramTabProps) {
                     />
                   </div>
                 ) : (
-                  <div className="h-16 w-16 rounded-full flex items-center justify-center bg-gradient-to-br from-pink-500/20 to-purple-500/20">
-                    <Instagram className="h-7 w-7 text-pink-400" />
+                  <div className="h-16 w-16 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                    <Instagram className="h-7 w-7 text-primary" />
                   </div>
                 )}
                 <span className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-green-500 border-2 border-background" />

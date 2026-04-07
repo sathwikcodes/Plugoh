@@ -321,7 +321,7 @@ function CampaignSortPanel({
             <m.div
               key="sort-sheet-mobile"
               ref={panelRef}
-              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[88dvh] flex-col rounded-t-[32px] border-t border-white/10 bg-[#0b0d12] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)]"
+              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[88dvh] flex-col rounded-t-[32px] border-t border-white/10 bg-[#151922] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)]"
               style={{ height: "min(88dvh, 760px)" }}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
@@ -340,7 +340,7 @@ function CampaignSortPanel({
             <m.div
               key="sort-panel-desktop"
               ref={panelRef}
-              className="fixed bottom-0 right-0 top-0 z-50 flex w-[420px] flex-col border-l border-white/10 bg-[#0b0d12] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
+              className="fixed bottom-0 right-0 top-0 z-50 flex w-[420px] flex-col border-l border-white/10 bg-[#151922] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -476,12 +476,13 @@ export default function InfluencerCampaignsList() {
             Breathing
             gradientColors={GRADIENT_COLORS}
             gradientStops={GRADIENT_STOPS}
-            startingGap={220}
-            breathingRange={10}
-            animationSpeed={0.014}
+            startingGap={180}
+            breathingRange={8}
+            animationSpeed={0.015}
             containerStyle={GRADIENT_STYLE}
           />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,8,16,0.12),rgba(5,8,16,0.62))]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
+          <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
         </div>
         <div
           className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6"
@@ -523,12 +524,13 @@ export default function InfluencerCampaignsList() {
             Breathing
             gradientColors={GRADIENT_COLORS}
             gradientStops={GRADIENT_STOPS}
-            startingGap={220}
-            breathingRange={10}
-            animationSpeed={0.014}
+            startingGap={180}
+            breathingRange={8}
+            animationSpeed={0.015}
             containerStyle={GRADIENT_STYLE}
           />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_34%),linear-gradient(180deg,rgba(5,8,16,0.10),rgba(5,8,16,0.55))]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
+          <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
         </div>
 
         <div
@@ -578,7 +580,7 @@ export default function InfluencerCampaignsList() {
                     "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-sm font-medium text-white backdrop-blur-md transition-all duration-200 sm:w-auto sm:gap-2 sm:px-5",
                     sortMode !== "newest" || statusFilter !== "All"
                       ? "border-white/25 bg-white/12 shadow-[0_0_20px_rgba(255,255,255,0.06)]"
-                      : "border-cyan-300/20 bg-[linear-gradient(135deg,#dfe7ff18,#8be9ff14)] shadow-[0_12px_32px_rgba(18,24,41,0.35)] hover:bg-white/10",
+                      : "border-primary/20 bg-primary/[0.07] shadow-[0_12px_32px_rgba(15,17,21,0.35)] hover:bg-primary/10",
                   )}
                 >
                   <SlidersHorizontal className="h-4 w-4" />

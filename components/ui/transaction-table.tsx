@@ -50,7 +50,7 @@ function getPackageConfig(type: string | null) {
       label: "Story",
       icon: BookOpen,
       img: null as string | null,
-      color: "bg-pink-500/10 text-pink-400 border-pink-500/20",
+      color: "bg-primary/10 text-primary border-primary/20",
     };
   return {
     label: type || "Other",

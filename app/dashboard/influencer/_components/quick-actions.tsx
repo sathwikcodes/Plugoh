@@ -26,7 +26,7 @@ export function QuickActions({ actions }: QuickActionsProps) {
           className={cn(
             "rounded-xl",
             action.highlight
-              ? "bg-gradient-to-r from-pink-500 to-purple-600 hover:brightness-110 border-0"
+              ? "bg-gradient-to-r from-primary to-[#169A8D] hover:brightness-110 border-0"
               : "border-white/10",
           )}
           asChild

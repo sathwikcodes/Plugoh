@@ -1,16 +1,16 @@
 export const GRADIENT_COLORS = [
-  "#0A0A0A",
-  "#dd2a7b",
-  "#8134af",
-  "#f58529",
-  "#515bd4",
-  "#dd2a7b",
-  "#0A0A0A",
+  "#0F1115",
+  "#20B8A8",
+  "#169A8D",
+  "#FF7A59",
+  "#20B8A8",
+  "#169A8D",
+  "#0F1115",
 ];
 
 export const GRADIENT_STOPS = [20, 40, 55, 65, 75, 85, 100];
 
-export const GRADIENT_STYLE = { opacity: 0.08 } as const;
+export const GRADIENT_STYLE = { opacity: 0.07 } as const;
 
 export const INSTAGRAM_GRADIENT =
   "linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4)";
