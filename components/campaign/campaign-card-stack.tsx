@@ -57,23 +57,6 @@ const STATUS_GLOW: Record<string, string> = {
   refunded: "rgba(239,68,68,0.18)",
 };
 
-const STATUS_ACCENT: Record<string, string> = {
-  pre_authorized: "#f59e0b",
-  requested: "#f59e0b",
-  pending: "#f59e0b",
-  payment_pending: "#eab308",
-  in_escrow: "#eab308",
-  accepted: "#22c55e",
-  delivery_submitted: "#eab308",
-  completed: "#22c55e",
-  disputed: "#ef4444",
-  declined: "#ef4444",
-  rejected: "#ef4444",
-  cancelled: "#ef4444",
-  expired: "#ef4444",
-  refunded: "#ef4444",
-};
-
 // ── Data interface ────────────────────────────────────────────────────────
 export interface CampaignCardData {
   id: string;
@@ -320,6 +303,7 @@ export function CampaignCardStack({ campaigns, className }: Props) {
 
   // Reset to card 1 whenever campaigns list changes (filter/sort)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCards(campaigns);
     setCurrentIndex(0);
   }, [campaigns]);
@@ -365,6 +349,7 @@ export function CampaignCardStack({ campaigns, className }: Props) {
   ) => {
     const { x: offsetX } = info.offset;
     const { x: velX } = info.velocity;
+
     if (Math.abs(offsetX) > SWIPE_THRESHOLD || Math.abs(velX) > 500) {
       if (offsetX < 0 || velX < -300) {
         setDragDir("left");
@@ -379,7 +364,9 @@ export function CampaignCardStack({ campaigns, className }: Props) {
           setDragDir(null);
         }, 120);
       }
+      return;
     }
+
     dragX.set(0);
   };
 

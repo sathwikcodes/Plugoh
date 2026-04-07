@@ -122,7 +122,9 @@ export function InfluencerCardStack({ profiles, className }: Props) {
           setDragDir(null);
         }, 120);
       }
+      return;
     }
+
     dragX.set(0);
   };
 
