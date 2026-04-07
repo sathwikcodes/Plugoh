@@ -6,7 +6,7 @@ import { DockAutoHideWrapper } from "@/components/shared/dock-auto-hide-wrapper"
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 
 // Icon path data from lucide-react v0.577.0
-const HOME_ICON = "/flash.png";
+const HOME_ICON = "/heart.png";
 
 const SEARCH_ICON = "/megaphone.png";
 
