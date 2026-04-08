@@ -105,6 +105,8 @@ const SORT_OPTIONS: Array<{
   },
 ];
 
+import CampaignsLoading from "./loading";
+
 // ── Campaign sort panel (discover-style) ──────────────────────────────────
 function CampaignSortPanel({
   open,
@@ -524,48 +526,7 @@ export default function CampaignsList() {
   const mobileBottomInset = "calc(96px + env(safe-area-inset-bottom, 0px))";
 
   if (campaignsLoading) {
-    return (
-      <div
-        className="relative h-dvh overflow-hidden"
-        style={
-          isMobile
-            ? {
-                height: mobileViewportHeight,
-                minHeight: mobileViewportHeight,
-              }
-            : undefined
-        }
-      >
-        <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-          <AnimatedGradientBackground
-            Breathing
-            gradientColors={GRADIENT_COLORS}
-            gradientStops={GRADIENT_STOPS}
-            startingGap={125}
-            breathingRange={2.2}
-            animationSpeed={0.008}
-            containerStyle={GRADIENT_STYLE}
-          />
-        </div>
-        <div
-          className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6"
-          style={isMobile ? { paddingBottom: mobileBottomInset } : undefined}
-        >
-          <div className="flex h-full flex-col gap-4">
-            <div className="h-12 w-48 animate-pulse rounded-2xl bg-white/[0.06]" />
-            <div className="h-14 w-full animate-pulse rounded-full bg-white/[0.04]" />
-            <div className="flex-1 space-y-2 overflow-hidden">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-[60px] w-full animate-pulse rounded-2xl bg-white/[0.03]"
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <CampaignsLoading />;
   }
 
   return (

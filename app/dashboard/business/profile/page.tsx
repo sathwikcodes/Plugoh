@@ -34,6 +34,7 @@ import {
   ProfileTabSkeleton,
 } from "@/app/dashboard/influencer/profile/_components/profile-page-skeleton";
 import { BusinessTabBar } from "./_components/business-tab-bar";
+import BusinessProfileLoading from "./loading";
 
 type TabValue =
   | "instagram"
@@ -104,11 +105,7 @@ function BusinessProfilePageInner() {
   }, [isOnboarding, queryClient, user?.id]);
 
   if (loading) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <BusinessProfileLoading />;
   }
 
   if (!user || !profile || !identity) return null;

@@ -1,44 +1,90 @@
+"use client";
+
 import { Skeleton } from "@/components/ui/skeleton";
+import { m } from "framer-motion";
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import {
+  fadeUp,
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+  stagger,
+} from "@/lib/animations";
 
 export default function BusinessProfileLoading() {
   return (
-    <div className="relative min-h-[calc(100dvh-4rem)] bg-[#0F1115]">
-      <div className="pointer-events-none fixed inset-0 bg-gradient-to-br from-[#1A2A2A]/40 via-[#0F1115] to-[#0F1115]" />
+    <div className="relative min-h-[calc(100dvh-4rem)]">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <AnimatedGradientBackground
+          Breathing
+          gradientColors={GRADIENT_COLORS}
+          gradientStops={GRADIENT_STOPS}
+          startingGap={125}
+          breathingRange={2.2}
+          animationSpeed={0.008}
+          containerStyle={GRADIENT_STYLE}
+        />
+      </div>
 
-      <div className="relative z-10 container max-w-2xl py-6 space-y-4">
-        {/* Profile header card */}
-        <div className="rounded-[20px] border border-white/8 bg-card p-5 space-y-4">
-          <div className="flex items-start gap-4">
-            <Skeleton className="h-16 w-16 rounded-full shrink-0" />
-            <div className="flex-1 space-y-2 pt-1">
-              <Skeleton className="h-5 w-40" />
-              <Skeleton className="h-3.5 w-28" />
-            </div>
-            <Skeleton className="h-8 w-8 rounded-full" />
-          </div>
-          {/* Stats row */}
-          <div className="grid grid-cols-3 gap-3 pt-1">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="space-y-1.5 text-center">
-                <Skeleton className="h-5 w-12 mx-auto" />
-                <Skeleton className="h-3 w-16 mx-auto" />
+      <div className="relative z-10 container max-w-2xl py-6">
+        <m.div 
+          initial="hidden"
+          animate="visible"
+          variants={stagger}
+          className="space-y-4"
+        >
+          {/* Profile header card */}
+        <m.div variants={fadeUp} className="rounded-[34px] border border-white/8 bg-white/5 p-6 backdrop-blur-xl relative overflow-hidden">
+          {/* Subtle glow behind the avatar */}
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 h-64 w-64 rounded-full bg-primary/10 blur-[80px]" />
+          
+          <div className="relative z-10 space-y-6">
+            <div className="flex items-start gap-5">
+              <Skeleton className="h-20 w-20 rounded-full shrink-0 bg-white/20" />
+              <div className="flex-1 space-y-2 pt-2">
+                <Skeleton className="h-7 w-48 bg-white/20" />
+                <Skeleton className="h-4 w-32 bg-white/20" />
               </div>
-            ))}
+              <Skeleton className="h-10 w-10 rounded-full bg-white/20" />
+            </div>
+            
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-4 pt-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/5 border border-white/5 space-y-2">
+                  <Skeleton className="h-6 w-16 bg-white/20" />
+                  <Skeleton className="h-3 w-20 bg-white/20" />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        </m.div>
 
         {/* Tab bar */}
-        <div className="flex flex-wrap gap-2 justify-center py-1">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-9 w-24 rounded-full" />
+        <m.div variants={fadeUp} className="flex flex-wrap gap-2 justify-center py-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-10 w-[100px] rounded-full bg-white/10" />
           ))}
-        </div>
+        </m.div>
+
+        {/* Missing Banner Placeholder */}
+        <m.div variants={fadeUp}>
+           <Skeleton className="h-14 w-full rounded-2xl bg-white/10" />
+        </m.div>
 
         {/* Content cards */}
-        <div className="space-y-3">
-          <Skeleton className="h-32 w-full rounded-[20px]" />
-          <Skeleton className="h-48 w-full rounded-[20px]" />
-        </div>
+        <m.div variants={stagger} className="space-y-4 pt-2">
+          <m.div variants={fadeUp}>
+             <Skeleton className="h-40 w-full rounded-[34px] bg-white/5 border border-white/5" />
+          </m.div>
+          <m.div variants={fadeUp}>
+             <Skeleton className="h-56 w-full rounded-[34px] bg-white/5 border border-white/5" />
+          </m.div>
+          <m.div variants={fadeUp}>
+             <Skeleton className="h-64 w-full rounded-[34px] bg-white/5 border border-white/5" />
+          </m.div>
+        </m.div>
+        </m.div>
       </div>
     </div>
   );

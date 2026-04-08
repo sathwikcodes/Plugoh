@@ -19,6 +19,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ConversationList } from "./_components/conversation-list";
 import { ChatPanel } from "./_components/chat-panel";
 import { InboxEmptyState } from "./_components/inbox-empty-state";
+import InboxLoading from "./loading";
 
 export default function BusinessInboxPage() {
   const { user } = useAuth();
@@ -51,6 +52,10 @@ export default function BusinessInboxPage() {
   const mobileViewportHeight = "100dvh";
   const mobileDockInset = "calc(104px + env(safe-area-inset-bottom, 0px))";
   const showMobileChat = isMobile && !!selectedConversation;
+
+  if (isLoading) {
+    return <InboxLoading />;
+  }
 
   return (
     <div
@@ -142,7 +147,6 @@ export default function BusinessInboxPage() {
                         searchQuery={search}
                         selectedId={selectedId}
                         currentUserId={user?.id || ""}
-                        isLoading={isLoading}
                         onSelect={handleSelect}
                       />
                     </div>

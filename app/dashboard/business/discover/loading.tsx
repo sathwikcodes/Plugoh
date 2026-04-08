@@ -1,43 +1,104 @@
-import { Skeleton } from "@/components/ui/skeleton";
+"use client";
 
-function InfluencerCardSkeleton() {
+import { Skeleton } from "@/components/ui/skeleton";
+import { m } from "framer-motion";
+import { Search, SlidersHorizontal } from "lucide-react";
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import {
+  fadeUp,
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+  stagger,
+} from "@/lib/animations";
+
+export function InfluencerCardSkeleton() {
   return (
-    <div className="relative aspect-[3/4] rounded-[20px] overflow-hidden bg-card border border-white/8">
+    <m.div variants={fadeUp} className="relative aspect-[0.68] rounded-[34px] overflow-hidden bg-card border border-white/8">
       {/* Card image area */}
       <Skeleton className="absolute inset-0 rounded-none" />
       {/* Bottom info panel */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 space-y-2 bg-gradient-to-t from-black/60 to-transparent">
+      <div className="absolute bottom-0 left-0 right-0 p-3 space-y-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
         <div className="flex items-end gap-2">
-          <Skeleton className="h-8 w-8 rounded-full shrink-0 bg-white/20" />
-          <div className="flex-1 space-y-1.5">
-            <Skeleton className="h-3.5 w-28 bg-white/20" />
-            <Skeleton className="h-3 w-20 bg-white/20" />
+          <Skeleton className="h-10 w-10 rounded-full shrink-0 bg-white/20" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-32 bg-white/20" />
+            <Skeleton className="h-3 w-24 bg-white/20" />
           </div>
-          <Skeleton className="h-7 w-16 rounded-full bg-white/20" />
+          <Skeleton className="h-7 w-16 mb-1 rounded-[10px] bg-white/20" />
         </div>
       </div>
-    </div>
+    </m.div>
   );
 }
 
 export default function DiscoverLoading() {
   return (
-    <div className="relative min-h-dvh bg-[#0F1115]">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#1A2A3D]/40 via-[#0F1115] to-[#0F1115]" />
+    <div className="relative overflow-hidden min-h-dvh bg-[#0F1115]">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
+        <AnimatedGradientBackground
+          Breathing
+          gradientColors={GRADIENT_COLORS}
+          gradientStops={GRADIENT_STOPS}
+          startingGap={125}
+          breathingRange={2.2}
+          animationSpeed={0.008}
+          containerStyle={GRADIENT_STYLE}
+        />
+      </div>
 
-      <div className="relative z-10 container py-4 space-y-4">
-        {/* Search + filter row */}
-        <div className="flex gap-2">
-          <Skeleton className="h-10 flex-1 rounded-full" />
-          <Skeleton className="h-10 w-24 rounded-full" />
-        </div>
+      <div className="relative z-10 container h-full py-4 md:h-auto md:py-6">
+        <m.div
+          initial="hidden"
+          animate="visible"
+          variants={stagger}
+          className="flex h-full flex-col gap-3 md:h-auto md:gap-6"
+        >
+          {/* Header */}
+          <m.div
+            variants={fadeUp}
+            className="shrink-0 flex items-center justify-center gap-3 md:justify-start"
+          >
+            <div className="min-w-0 flex flex-col justify-center text-center md:text-left">
+              <h1 className="heading-mix text-3xl font-semibold tracking-tight text-white sm:text-3xl">
+                Discover{" "}
+                <span className="heading-mix-accent text-4xl text-white/90">
+                  Influencers
+                </span>
+              </h1>
+            </div>
+          </m.div>
 
-        {/* Influencer grid */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <InfluencerCardSkeleton key={i} />
-          ))}
-        </div>
+          {/* Search + filter row */}
+          <m.div variants={fadeUp} className="shrink-0 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground/50">
+                  <Search className="h-4 w-4 left-4 absolute text-white/35" />
+                </div>
+                <Skeleton className="h-12 w-full rounded-full bg-white/5 border border-white/10" />
+              </div>
+              <Skeleton className="relative flex h-12 w-12 shrink-0 rounded-full border border-primary/20 bg-primary/[0.07] sm:w-[100px]" />
+            </div>
+          </m.div>
+
+          {/* Influencer grid placeholder */}
+          <m.div variants={fadeUp} className="hidden md:grid md:grid-cols-3 gap-5 lg:gap-6">
+            {[0, 1, 2].map((_, i) => (
+              <InfluencerCardSkeleton key={i} />
+            ))}
+          </m.div>
+
+          {/* Mobile skeleton */}
+          <m.div
+            variants={fadeUp}
+            className="flex min-h-0 flex-1 md:hidden pb-[100px] items-center justify-center"
+          >
+            <div className="w-full max-w-[min(85vw,21rem)]">
+              <InfluencerCardSkeleton />
+            </div>
+          </m.div>
+        </m.div>
       </div>
     </div>
   );

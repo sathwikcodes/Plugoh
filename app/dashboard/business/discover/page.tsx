@@ -22,6 +22,7 @@ import { InfluencerCard } from "./_components/influencer-card";
 import { InfluencerCardStack } from "./_components/influencer-card-stack";
 import { FilterPanel, type DiscoverFilters } from "./_components/filter-panel";
 import { getStartsAtPrice } from "./_components/influencer-card";
+import { InfluencerCardSkeleton } from "./loading";
 
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
@@ -142,13 +143,7 @@ function applyFilters(
     });
 }
 
-// Skeleton card for loading state
-function SkeletonCard() {
-  return (
-    <div className="aspect-3/4 w-full animate-pulse rounded-[24px] border border-white/8 bg-white/4" />
-  );
-}
-
+// Skeleton card for loading state (Imported from loading.tsx)
 export default function InfluencerDiscovery() {
   const { data: profiles = [], isLoading: loading } = useInfluencerProfiles();
   const isMobile = useIsMobile();
@@ -286,7 +281,7 @@ export default function InfluencerDiscovery() {
   return (
     <>
       <div
-        className="relative overflow-hidden md:min-h-[calc(100dvh-4rem)]"
+        className="relative overflow-hidden min-h-dvh"
         style={
           isMobile
             ? {
@@ -375,16 +370,16 @@ export default function InfluencerDiscovery() {
                   className="hidden md:grid md:grid-cols-3 gap-5 lg:gap-6"
                 >
                   {[0, 1, 2].map((i) => (
-                    <SkeletonCard key={i} />
+                    <InfluencerCardSkeleton key={i} />
                   ))}
                 </m.div>
                 {/* Mobile skeleton */}
                 <m.div
                   variants={fadeUp}
-                  className="flex flex-1 items-center justify-center md:hidden"
+                  className="flex min-h-0 flex-1 md:hidden pb-[100px] items-center justify-center"
                 >
                   <div className="w-full max-w-[min(85vw,21rem)]">
-                    <SkeletonCard />
+                    <InfluencerCardSkeleton />
                   </div>
                 </m.div>
               </>
