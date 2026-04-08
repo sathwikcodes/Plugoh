@@ -53,7 +53,6 @@ export default function BusinessProfileCardHeader({
             "radial-gradient(120% 120% at 30% 10%, #1e1e1e 0%, #111112 55%, #0c0c0d 100%)",
         }}
       >
-        {/* ── STATUS BAR ── */}
         <button
           onClick={onNavigateToSettings}
           className="w-full flex items-center justify-between group"
@@ -90,9 +89,7 @@ export default function BusinessProfileCardHeader({
           )}
         </button>
 
-        {/* ── IDENTITY ROW ── */}
         <div className="flex items-center gap-5">
-          {/* Avatar */}
           <div className="shrink-0">
             <div
               className="rounded-full p-[3px] shadow-lg"
@@ -119,7 +116,6 @@ export default function BusinessProfileCardHeader({
             </div>
           </div>
 
-          {/* Name + meta */}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className="text-2xl font-bold tracking-tight text-white truncate">
@@ -162,7 +158,6 @@ export default function BusinessProfileCardHeader({
           </div>
         </div>
 
-        {/* ── CAMPAIGN SUMMARY ── */}
         <div className="flex items-center gap-4 px-1">
           <div className="text-center">
             <p className="text-lg font-extrabold">{totalCampaigns}</p>

@@ -1,5 +1,3 @@
-"use client";
-
 import type { Database } from "@/lib/supabase/types";
 
 type Profile = Database["public"]["Tables"]["influencer_profiles"]["Row"];

@@ -18,9 +18,9 @@ interface QuickActionsProps {
 export function QuickActions({ actions }: QuickActionsProps) {
   return (
     <div className="flex flex-wrap gap-2">
-      {actions.map((action, i) => (
+      {actions.map((action) => (
         <Button
-          key={i}
+          key={action.href}
           variant={action.highlight ? "default" : "outline"}
           size="sm"
           className={cn(

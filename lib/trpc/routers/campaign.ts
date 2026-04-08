@@ -11,8 +11,85 @@ const razorpay = new Razorpay({
 });
 
 export const campaignRouter = router({
-  // ─── Submit Booking Request (brand) ────────────────────────────────────────
-  // Creates the campaign with status "requested" — no payment taken.
+  getCampaigns: protectedProcedure
+    .input(
+      z.object({
+        role: z.enum(["business", "influencer"]),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const column =
+        input.role === "business" ? "business_id" : "influencer_id";
+      const { data, error } = await ctx.db
+        .from("campaigns")
+        .select("*")
+        .eq(column, ctx.user.id)
+        .order("created_at", { ascending: false });
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      return data ?? [];
+    }),
+
+  getCampaign: protectedProcedure
+    .input(
+      z.object({ id: z.string(), filterBusinessId: z.boolean().optional() }),
+    )
+    .query(async ({ ctx, input }) => {
+      let query = ctx.db.from("campaigns").select("*").eq("id", input.id);
+      if (input.filterBusinessId) {
+        query = query.eq("business_id", ctx.user.id);
+      }
+      const { data, error } = await query.maybeSingle();
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      return data;
+    }),
+
+  getCampaignMessages: protectedProcedure
+    .input(z.object({ campaignId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { data, error } = await ctx.db
+        .from("campaign_messages")
+        .select("*")
+        .eq("campaign_id", input.campaignId)
+        .order("created_at", { ascending: true });
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      return data ?? [];
+    }),
+
+  markNotificationsRead: protectedProcedure
+    .input(
+      z.object({
+        campaignId: z.string(),
+        notificationType: z.string().default("new_message"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { error } = await ctx.db
+        .from("notifications")
+        .update({ read: true })
+        .eq("user_id", ctx.user.id)
+        .eq("type", input.notificationType)
+        .eq("read", false)
+        .contains("data", { campaign_id: input.campaignId });
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      return { success: true };
+    }),
+
   submitBookingRequest: protectedProcedure
     .input(
       z.object({
@@ -68,7 +145,6 @@ export const campaignRouter = router({
         contactPhone: input.contact_phone,
       };
 
-      // Fetch influencer profile for title generation
       const { data: profile } = await db
         .from("influencer_profiles")
         .select("*")
@@ -107,14 +183,12 @@ export const campaignRouter = router({
         });
       }
 
-      // Notify influencer of new booking request
       await db.from("notifications").insert({
         user_id: input.influencer_id,
         type: "new_booking",
         data: { title: campaign.title ?? "Untitled", campaign_id: campaign.id },
       });
 
-      // Insert booking card message so chat starts with deal details
       await db.from("campaign_messages").insert({
         campaign_id: campaign.id,
         sender_id: user.id,
@@ -135,9 +209,6 @@ export const campaignRouter = router({
       return { success: true, campaignId: campaign.id };
     }),
 
-  // ─── Accept Booking (influencer) ───────────────────────────────────────────
-  // Pre-auth flow: captures the pre-authorized payment and transitions pre_authorized → in_escrow.
-  // Legacy flow: transitions requested → payment_pending (kept for backward compat).
   acceptBooking: protectedProcedure
     .input(z.object({ campaignId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -163,9 +234,7 @@ export const campaignRouter = router({
         });
       }
 
-      // ── New pre-auth flow ──────────────────────────────────────────────────
       if (campaign.status === "pre_authorized") {
-        // Check 24h timer hasn't expired
         if (campaign.expires_at && new Date(campaign.expires_at) < new Date()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -177,7 +246,6 @@ export const campaignRouter = router({
         const now = new Date().toISOString();
         const isCard = campaign.payment_method === "card";
 
-        // For card: capture the pre-authorized amount
         if (isCard && campaign.razorpay_payment_id) {
           const totalPaise = Math.round(
             (campaign.total_charged_amount ?? 0) * 100,
@@ -196,7 +264,6 @@ export const campaignRouter = router({
           }
         }
 
-        // Transition to in_escrow
         const { error: updateError } = await db
           .from("campaigns")
           .update({
@@ -214,7 +281,6 @@ export const campaignRouter = router({
           });
         }
 
-        // For card: mark escrow_lock as success now that capture went through
         if (isCard) {
           await db
             .from("escrow_transactions")
@@ -257,7 +323,6 @@ export const campaignRouter = router({
         return { success: true };
       }
 
-      // ── Legacy flow (requested|pending → payment_pending) ─────────────────
       if (!["requested", "pending"].includes(campaign.status)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -314,9 +379,6 @@ export const campaignRouter = router({
       return { success: true };
     }),
 
-  // ─── Decline Booking (influencer) ──────────────────────────────────────────
-  // Pre-auth flow: voids pre-auth (card) or initiates refund (UPI) then marks declined.
-  // Legacy flow: transitions requested → declined.
   declineBooking: protectedProcedure
     .input(z.object({ campaignId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -355,7 +417,6 @@ export const campaignRouter = router({
       let refundMessage =
         "Booking declined by the influencer. No payment was taken.";
 
-      // Pre-auth flow: handle payment reversal
       if (isPreAuth && campaign.razorpay_payment_id) {
         const isUpi = campaign.payment_method === "upi";
 
@@ -428,8 +489,6 @@ export const campaignRouter = router({
       return { success: true };
     }),
 
-  // ─── Submit Delivery (influencer) ──────────────────────────────────────────
-  // Transitions in_escrow → delivery_submitted. Starts 7-day auto-release clock.
   submitDelivery: protectedProcedure
     .input(
       z.object({
@@ -470,7 +529,6 @@ export const campaignRouter = router({
 
       const now = new Date().toISOString();
 
-      // Insert delivery record and update campaign status in parallel
       const [{ error: deliveryError }, { error: updateError }] =
         await Promise.all([
           db.from("deliveries").insert({
@@ -505,13 +563,11 @@ export const campaignRouter = router({
       };
 
       await Promise.all([
-        // Notify brand to review delivery
         db.from("notifications").insert({
           user_id: campaign.business_id,
           type: "delivery_submitted",
           data: notifData,
         }),
-        // System message in chat
         db.from("campaign_messages").insert({
           campaign_id: input.campaignId,
           sender_id: user.id,
@@ -523,8 +579,6 @@ export const campaignRouter = router({
       return { success: true };
     }),
 
-  // ─── Approve Delivery (brand) ───────────────────────────────────────────────
-  // Transitions delivery_submitted → completed. Triggers payout via API route.
   approveDelivery: protectedProcedure
     .input(z.object({ campaignId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -559,7 +613,6 @@ export const campaignRouter = router({
 
       const now = new Date().toISOString();
 
-      // Update delivery approval and campaign status
       const [{ error: deliveryUpdateError }, { error: campaignUpdateError }] =
         await Promise.all([
           db
@@ -624,7 +677,6 @@ export const campaignRouter = router({
       return { success: true };
     }),
 
-  // ─── Dispute Delivery (brand) ───────────────────────────────────────────────
   disputeDelivery: protectedProcedure
     .input(
       z.object({
@@ -709,7 +761,6 @@ export const campaignRouter = router({
       return { success: true };
     }),
 
-  // ─── Edit Campaign (brand) ─────────────────────────────────────────────────
   editCampaign: protectedProcedure
     .input(
       z.object({
@@ -749,8 +800,7 @@ export const campaignRouter = router({
       return { success: true };
     }),
 
-  // ─── Legacy updateStatus (kept for backward compat, soft-deprecated) ───────
-  // Use acceptBooking/declineBooking/approveDelivery instead.
+  // Soft-deprecated; prefer acceptBooking / declineBooking / approveDelivery.
   updateStatus: protectedProcedure
     .input(
       z.object({

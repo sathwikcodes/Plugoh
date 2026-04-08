@@ -4,17 +4,23 @@ import { useMemo, useState } from "react";
 import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { IndianRupee, Clock, TrendingUp, Wallet } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { compactNumber } from "@/lib/format";
-import { CAMPAIGN_STATUS_CONFIG } from "@/lib/constants";
 import type { Database } from "@/lib/supabase/types";
+import { SpendingTransactionRow } from "./spending-transaction-row";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
 type FilterValue = "all" | "completed" | "pending" | "accepted";
+
+const FILTERS: { value: FilterValue; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "completed", label: "Paid" },
+  { value: "accepted", label: "Active" },
+  { value: "pending", label: "Pending" },
+];
 
 interface SpendingTabProps {
   campaigns: Campaign[];
@@ -32,7 +38,6 @@ export default function SpendingTab({
     [influencerProfiles],
   );
 
-  // Summary stats
   const summary = useMemo(() => {
     const paidCampaigns = campaigns.filter((c) => c.status === "completed");
     const pendingCampaigns = campaigns.filter(
@@ -53,7 +58,6 @@ export default function SpendingTab({
     return { totalPaid, totalPending, avgPerCampaign };
   }, [campaigns]);
 
-  // Filtered + sorted transactions
   const transactions = useMemo(() => {
     return campaigns
       .filter((c) => {
@@ -67,13 +71,6 @@ export default function SpendingTab({
       );
   }, [campaigns, filter]);
 
-  const FILTERS: { value: FilterValue; label: string }[] = [
-    { value: "all", label: "All" },
-    { value: "completed", label: "Paid" },
-    { value: "accepted", label: "Active" },
-    { value: "pending", label: "Pending" },
-  ];
-
   return (
     <m.div
       variants={stagger}
@@ -81,7 +78,6 @@ export default function SpendingTab({
       animate="visible"
       className="space-y-4 pt-4"
     >
-      {/* Summary strip */}
       <m.div variants={fadeUp}>
         <div className="grid grid-cols-3 gap-3">
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4">
@@ -124,7 +120,6 @@ export default function SpendingTab({
         </div>
       </m.div>
 
-      {/* Filter pills */}
       <m.div variants={fadeUp}>
         <div className="flex gap-2 flex-wrap">
           {FILTERS.map((f) => (
@@ -144,7 +139,6 @@ export default function SpendingTab({
         </div>
       </m.div>
 
-      {/* Transaction list */}
       <m.div variants={fadeUp}>
         {transactions.length === 0 ? (
           <div className="rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-10 text-center space-y-2">
@@ -156,7 +150,6 @@ export default function SpendingTab({
           </div>
         ) : (
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md overflow-hidden">
-            {/* Desktop header */}
             <div className="hidden sm:grid grid-cols-[1fr_auto_auto_auto] gap-4 px-4 py-2.5 border-b border-white/5">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Influencer
@@ -171,87 +164,18 @@ export default function SpendingTab({
                 Status
               </p>
             </div>
-
-            {/* Rows */}
             <div className="divide-y divide-white/5">
-              {transactions.map((c) => {
-                const ip = c.influencer_profile_id
-                  ? ipMap.get(c.influencer_profile_id)
-                  : null;
-                const statusCfg =
-                  CAMPAIGN_STATUS_CONFIG[
-                    c.status as keyof typeof CAMPAIGN_STATUS_CONFIG
-                  ];
-                const date = new Date(c.created_at).toLocaleDateString(
-                  "en-IN",
-                  { day: "numeric", month: "short", year: "2-digit" },
-                );
-
-                return (
-                  <div
-                    key={c.id}
-                    className="px-4 py-3 hover:bg-white/[0.02] transition-colors"
-                  >
-                    {/* Mobile layout */}
-                    <div className="sm:hidden flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {ip?.display_name ?? c.title ?? "Campaign"}
-                        </p>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-[11px] text-muted-foreground capitalize">
-                            {c.package_type ?? "—"}
-                          </span>
-                          <span className="text-[11px] text-muted-foreground">
-                            {date}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0 space-y-1">
-                        <p className="text-sm font-semibold">
-                          ₹{(c.price_offered || 0).toLocaleString()}
-                        </p>
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "text-[10px] px-2 py-0.5",
-                            statusCfg?.badge,
-                          )}
-                        >
-                          {statusCfg?.label ?? c.status}
-                        </Badge>
-                      </div>
-                    </div>
-
-                    {/* Desktop layout */}
-                    <div className="hidden sm:grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center">
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {ip?.display_name ?? "—"}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground truncate">
-                          {c.title ?? date}
-                        </p>
-                      </div>
-                      <p className="text-sm capitalize text-muted-foreground">
-                        {c.package_type ?? "—"}
-                      </p>
-                      <p className="text-sm font-semibold text-right">
-                        ₹{(c.price_offered || 0).toLocaleString()}
-                      </p>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "text-[10px] px-2 py-0.5",
-                          statusCfg?.badge,
-                        )}
-                      >
-                        {statusCfg?.label ?? c.status}
-                      </Badge>
-                    </div>
-                  </div>
-                );
-              })}
+              {transactions.map((c) => (
+                <SpendingTransactionRow
+                  key={c.id}
+                  campaign={c}
+                  influencerProfile={
+                    c.influencer_profile_id
+                      ? (ipMap.get(c.influencer_profile_id) ?? null)
+                      : null
+                  }
+                />
+              ))}
             </div>
           </div>
         )}

@@ -1,29 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
+import { useTRPC } from "@/lib/trpc/client";
 import type { Database, Json } from "@/lib/supabase/types";
 
 export type CampaignMessage =
   Database["public"]["Tables"]["campaign_messages"]["Row"];
 
 export function useCampaignMessages(campaignId: string | undefined) {
+  const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const query = useQuery({
-    queryKey: ["campaign-messages", campaignId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("campaign_messages")
-        .select("*")
-        .eq("campaign_id", campaignId!)
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      return data as CampaignMessage[];
-    },
-    enabled: !!campaignId,
+  const queryOpts = trpc.campaign.getCampaignMessages.queryOptions({
+    campaignId: campaignId!,
   });
 
-  // Realtime subscription
+  const queryKey = queryOpts.queryKey;
+
+  const query = useQuery({
+    ...queryOpts,
+    enabled: !!campaignId,
+    refetchOnMount: true,
+  });
+
   useEffect(() => {
     if (!campaignId) return;
 
@@ -39,11 +38,30 @@ export function useCampaignMessages(campaignId: string | undefined) {
         },
         (payload) => {
           queryClient.setQueryData(
-            ["campaign-messages", campaignId],
+            queryKey,
             (old: CampaignMessage[] | undefined) =>
               old
                 ? [...old, payload.new as CampaignMessage]
                 : [payload.new as CampaignMessage],
+          );
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "campaign_messages",
+          filter: `campaign_id=eq.${campaignId}`,
+        },
+        (payload) => {
+          queryClient.setQueryData(
+            queryKey,
+            (old: CampaignMessage[] | undefined) => {
+              if (!old) return old;
+              const updated = payload.new as CampaignMessage;
+              return old.map((msg) => (msg.id === updated.id ? updated : msg));
+            },
           );
         },
       )
@@ -52,6 +70,8 @@ export function useCampaignMessages(campaignId: string | undefined) {
     return () => {
       supabase.removeChannel(channel);
     };
+    // queryKey is stable for the same campaignId via tRPC's internal memoization
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaignId, queryClient]);
 
   return query;
@@ -87,7 +107,6 @@ export function useSendMessage() {
         .single();
       if (error) throw error;
 
-      // Fire-and-forget: notify the recipient
       supabase
         .from("notifications")
         .insert({
@@ -102,7 +121,6 @@ export function useSendMessage() {
 
       return data as CampaignMessage;
     },
-    // No onSuccess invalidation — realtime subscription is the source of truth
   });
 }
 

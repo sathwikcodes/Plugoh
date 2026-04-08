@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   LayoutDashboard,
   BarChart3,
@@ -17,6 +18,19 @@ const SPRING = {
   mass: 1.2,
 };
 
+const BASE_TABS = [
+  { id: "overview", label: "Overview", Icon: LayoutDashboard },
+  { id: "analytics", label: "Analytics", Icon: BarChart3 },
+  { id: "spending", label: "Spending", Icon: Wallet },
+  { id: "settings", label: "Settings", Icon: Settings2 },
+] as const;
+
+const INSTAGRAM_TAB = {
+  id: "instagram",
+  label: "Instagram",
+  Icon: Instagram,
+} as const;
+
 export function BusinessTabBar({
   hasInstagram,
   activeTab,
@@ -26,19 +40,14 @@ export function BusinessTabBar({
   activeTab: string;
   onTabChange: (tab: string) => void;
 }) {
-  const TABS = [
-    ...(hasInstagram
-      ? [{ id: "instagram", label: "Instagram", Icon: Instagram }]
-      : []),
-    { id: "overview", label: "Overview", Icon: LayoutDashboard },
-    { id: "analytics", label: "Analytics", Icon: BarChart3 },
-    { id: "spending", label: "Spending", Icon: Wallet },
-    { id: "settings", label: "Settings", Icon: Settings2 },
-  ];
+  const tabs = useMemo(
+    () => (hasInstagram ? [INSTAGRAM_TAB, ...BASE_TABS] : [...BASE_TABS]),
+    [hasInstagram],
+  );
 
   return (
     <div className="flex flex-wrap gap-2 items-center justify-center">
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
           <m.div

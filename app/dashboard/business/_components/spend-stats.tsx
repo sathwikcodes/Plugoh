@@ -21,7 +21,6 @@ interface SpendStatsProps {
 export function SpendStats({ stats, hasCampaigns }: SpendStatsProps) {
   return (
     <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
-      {/* Total Spent */}
       <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 mb-3">
           <IndianRupee className="h-4 w-4 text-green-400" />
@@ -34,7 +33,6 @@ export function SpendStats({ stats, hasCampaigns }: SpendStatsProps) {
         <p className="text-[11px] text-muted-foreground mt-0.5">Total Spent</p>
       </div>
 
-      {/* Active Campaigns */}
       <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 mb-3">
           <Briefcase className="h-4 w-4 text-blue-400" />
@@ -47,7 +45,6 @@ export function SpendStats({ stats, hasCampaigns }: SpendStatsProps) {
         </p>
       </div>
 
-      {/* Acceptance Rate */}
       <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
         <div
           className={cn(
@@ -85,7 +82,6 @@ export function SpendStats({ stats, hasCampaigns }: SpendStatsProps) {
         )}
       </div>
 
-      {/* Avg Campaign Value */}
       <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 mb-3">
           <TrendingUp className="h-4 w-4 text-violet-400" />

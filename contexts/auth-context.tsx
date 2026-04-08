@@ -6,9 +6,10 @@ import {
   useEffect,
   useState,
   useCallback,
-  ReactNode,
+  useMemo,
+  type ReactNode,
 } from "react";
-import { User, Session } from "@supabase/supabase-js";
+import type { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
 import { isBusinessProfileComplete } from "@/lib/business-profile";
@@ -21,6 +22,7 @@ interface AuthContextType {
   role: AppRole | null;
   profile: Database["public"]["Tables"]["profiles"]["Row"] | null;
   loading: boolean;
+  error: string | null;
   needsOnboarding: boolean;
   isProfileComplete: boolean;
   signInWithOtp: (email: string) => Promise<void>;
@@ -39,11 +41,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     Database["public"]["Tables"]["profiles"]["Row"] | null
   >(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [isProfileComplete, setIsProfileComplete] = useState(false);
 
   const fetchUserData = useCallback(async (userId: string) => {
     try {
+      setError(null);
       const [roleRes, profileRes] = await Promise.all([
         supabase
           .from("user_roles")
@@ -60,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               .eq("user_id", userId)
               .maybeSingle()
           : { data: null, error: null };
+
       if (roleRes.data) {
         setRole(roleRes.data.role);
         setNeedsOnboarding(false);
@@ -67,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(null);
         setNeedsOnboarding(true);
       }
+
       if (profileRes.data) {
         setProfile(profileRes.data);
         const r = roleRes.data?.role;
@@ -78,9 +84,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               })
             : true,
         );
+      } else {
+        setProfile(null);
+        setIsProfileComplete(false);
       }
     } catch (err) {
-      console.error("Failed to fetch user data:", err);
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch user data";
+      setError(message);
     }
   }, []);
 
@@ -92,34 +103,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let mounted = true;
     let initialized = false;
 
-    // Use getSession() for initial load (fires synchronously from cache),
-    // then let onAuthStateChange handle all subsequent updates.
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       if (!mounted) return;
       initialized = true;
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchUserData(session.user.id);
+      setSession(s);
+      setUser(s?.user ?? null);
+      if (s?.user) {
+        await fetchUserData(s.user.id);
       }
       if (mounted) setLoading(false);
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!mounted) return;
-      // Skip the initial INITIAL_SESSION event — already handled by getSession above
-      if (!initialized) return;
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchUserData(session.user.id);
+    } = supabase.auth.onAuthStateChange(async (_event, s) => {
+      if (!mounted || !initialized) return;
+      setSession(s);
+      setUser(s?.user ?? null);
+      if (s?.user) {
+        await fetchUserData(s.user.id);
       } else {
         setRole(null);
         setProfile(null);
         setNeedsOnboarding(false);
         setIsProfileComplete(false);
+        setError(null);
       }
       if (mounted) setLoading(false);
     });
@@ -130,23 +138,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [fetchUserData]);
 
-  const signInWithOtp = async (email: string) => {
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-    });
-    if (error) throw error;
-  };
+  const signInWithOtp = useCallback(async (email: string) => {
+    const { error: e } = await supabase.auth.signInWithOtp({ email });
+    if (e) throw e;
+  }, []);
 
-  const verifyOtp = async (email: string, token: string) => {
-    const { error } = await supabase.auth.verifyOtp({
+  const verifyOtp = useCallback(async (email: string, token: string) => {
+    const { error: e } = await supabase.auth.verifyOtp({
       email,
       token,
       type: "email",
     });
-    if (error) throw error;
-  };
+    if (e) throw e;
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
@@ -154,27 +160,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
     setNeedsOnboarding(false);
     setIsProfileComplete(false);
-  };
+    setError(null);
+  }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        session,
-        role,
-        profile,
-        loading,
-        needsOnboarding,
-        isProfileComplete,
-        signInWithOtp,
-        verifyOtp,
-        signOut,
-        refreshUserData,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      session,
+      role,
+      profile,
+      loading,
+      error,
+      needsOnboarding,
+      isProfileComplete,
+      signInWithOtp,
+      verifyOtp,
+      signOut,
+      refreshUserData,
+    }),
+    [
+      user,
+      session,
+      role,
+      profile,
+      loading,
+      error,
+      needsOnboarding,
+      isProfileComplete,
+      signInWithOtp,
+      verifyOtp,
+      signOut,
+      refreshUserData,
+    ],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

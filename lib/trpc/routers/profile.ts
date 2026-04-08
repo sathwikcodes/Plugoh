@@ -3,6 +3,89 @@ import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../init";
 
 export const profileRouter = router({
+  getMyProfile: protectedProcedure.query(async ({ ctx }) => {
+    const { data, error } = await ctx.db
+      .from("profiles")
+      .select("*")
+      .eq("id", ctx.user.id)
+      .maybeSingle();
+    if (error)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: error.message,
+      });
+    return data;
+  }),
+
+  getMyBusinessProfile: protectedProcedure.query(async ({ ctx }) => {
+    const [
+      { data: basicProfile, error: pErr },
+      { data: businessProfile, error: bErr },
+    ] = await Promise.all([
+      ctx.db.from("profiles").select("*").eq("id", ctx.user.id).maybeSingle(),
+      ctx.db
+        .from("business_profiles")
+        .select("*")
+        .eq("user_id", ctx.user.id)
+        .maybeSingle(),
+    ]);
+    if (pErr)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: pErr.message,
+      });
+    if (bErr)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: bErr.message,
+      });
+    return { basicProfile, businessProfile };
+  }),
+
+  getInfluencerProfiles: protectedProcedure.query(async ({ ctx }) => {
+    const { data, error } = await ctx.db
+      .from("influencer_profiles")
+      .select("*")
+      .eq("is_active", true)
+      .order("follower_count", { ascending: false });
+    if (error)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: error.message,
+      });
+    return data ?? [];
+  }),
+
+  getInfluencerProfile: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { data, error } = await ctx.db
+        .from("influencer_profiles")
+        .select("*")
+        .eq("id", input.id)
+        .maybeSingle();
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      return data;
+    }),
+
+  getMyInfluencerProfile: protectedProcedure.query(async ({ ctx }) => {
+    const { data, error } = await ctx.db
+      .from("influencer_profiles")
+      .select("*")
+      .eq("user_id", ctx.user.id)
+      .maybeSingle();
+    if (error)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: error.message,
+      });
+    return data;
+  }),
+
   getBusinessProfiles: protectedProcedure
     .input(z.object({ businessIds: z.array(z.string().uuid()) }))
     .query(async ({ ctx, input }) => {
@@ -89,7 +172,6 @@ export const profileRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { db, user } = ctx;
 
-      // Build update object, only including provided fields
       const updateData: Record<string, unknown> = {};
       if (input.displayName !== undefined)
         updateData.display_name = input.displayName;

@@ -1,40 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase/client";
+import { useTRPC, trpcClient } from "@/lib/trpc/client";
 import type { Database } from "@/lib/supabase/types";
 
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
 export function useInfluencerProfiles() {
-  return useQuery({
-    queryKey: ["influencer-profiles"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("influencer_profiles")
-        .select("*")
-        .eq("is_active", true)
-        .order("follower_count", { ascending: false });
-      if (error) throw error;
-      return data as InfluencerProfile[];
-    },
-    staleTime: 30_000,
-  });
+  const trpc = useTRPC();
+  return useQuery(trpc.profile.getInfluencerProfiles.queryOptions());
 }
 
 export function useInfluencerProfile(id: string | undefined) {
+  const trpc = useTRPC();
   return useQuery({
-    queryKey: ["influencer-profile", id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("influencer_profiles")
-        .select("*")
-        .eq("id", id!)
-        .maybeSingle();
-      if (error) throw error;
-      return data as InfluencerProfile | null;
-    },
+    ...trpc.profile.getInfluencerProfile.queryOptions({ id: id! }),
     enabled: !!id,
-    staleTime: 30_000,
   });
 }
 
@@ -42,29 +22,20 @@ export function useMyInfluencerProfile(
   userId: string | undefined,
   options?: { refetchInterval?: number | false },
 ) {
+  const trpc = useTRPC();
   return useQuery({
-    queryKey: ["my-influencer-profile", userId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("influencer_profiles")
-        .select("*")
-        .eq("user_id", userId!)
-        .maybeSingle();
-      if (error) throw error;
-      return data as InfluencerProfile | null;
-    },
+    ...trpc.profile.getMyInfluencerProfile.queryOptions(),
     enabled: !!userId,
-    staleTime: 30_000,
     refetchInterval: options?.refetchInterval,
   });
 }
 
 export function useUpdateInfluencerProfile() {
+  const trpc = useTRPC();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({
-      userId,
       data,
     }: {
       userId: string;
@@ -72,39 +43,59 @@ export function useUpdateInfluencerProfile() {
         Database["public"]["Tables"]["influencer_profiles"]["Update"]
       >;
     }) => {
-      const { data: rows, error } = await supabase
-        .from("influencer_profiles")
-        .update(data)
-        .eq("user_id", userId)
-        .select("id");
-      if (error) throw error;
-      if (!rows?.length) throw new Error("Update failed — no matching record");
-    },
-    onMutate: async ({ userId, data }) => {
-      await queryClient.cancelQueries({
-        queryKey: ["my-influencer-profile", userId],
-      });
-      const prev = queryClient.getQueryData(["my-influencer-profile", userId]);
-      queryClient.setQueryData(
-        ["my-influencer-profile", userId],
-        (old: InfluencerProfile | null) => (old ? { ...old, ...data } : old),
+      const updateData: Record<string, unknown> = {};
+      if (data.display_name !== undefined)
+        updateData.displayName = data.display_name;
+      if (data.bio !== undefined) updateData.bio = data.bio;
+      if (data.category !== undefined) updateData.category = data.category;
+      if (data.city !== undefined) updateData.city = data.city;
+      if (data.languages !== undefined) updateData.languages = data.languages;
+      if (data.price_per_reel !== undefined)
+        updateData.pricePerReel = data.price_per_reel;
+      if (data.price_per_post !== undefined)
+        updateData.pricePerPost = data.price_per_post;
+      if (data.price_per_story !== undefined)
+        updateData.pricePerStory = data.price_per_story;
+      if (data.content_types !== undefined)
+        updateData.contentTypes = data.content_types;
+      if (data.turnaround_time !== undefined)
+        updateData.turnaroundTime = data.turnaround_time;
+      if (data.portfolio_media_ids !== undefined)
+        updateData.portfolioMediaIds = data.portfolio_media_ids;
+      if (data.previous_brands !== undefined)
+        updateData.previousBrands = data.previous_brands;
+      if (data.is_active !== undefined) updateData.isActive = data.is_active;
+      await trpcClient.profile.updateInfluencerProfile.mutate(
+        updateData as Parameters<
+          typeof trpcClient.profile.updateInfluencerProfile.mutate
+        >[0],
       );
-      return { prev, userId };
+    },
+    onMutate: async ({ data }) => {
+      const qk = trpc.profile.getMyInfluencerProfile.queryKey();
+      await queryClient.cancelQueries({ queryKey: qk });
+      const prev = queryClient.getQueryData<InfluencerProfile | null>(qk);
+      queryClient.setQueryData<InfluencerProfile | null | undefined>(
+        qk,
+        (old) => (old ? { ...old, ...data } : old),
+      );
+      return { prev };
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.prev !== undefined) {
-        queryClient.setQueryData(
-          ["my-influencer-profile", ctx.userId],
+        queryClient.setQueryData<InfluencerProfile | null | undefined>(
+          trpc.profile.getMyInfluencerProfile.queryKey(),
           ctx.prev,
         );
       }
     },
-    onSettled: (_data, _err, { userId }) => {
+    onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ["my-influencer-profile", userId],
+        queryKey: trpc.profile.getMyInfluencerProfile.queryKey(),
       });
-      queryClient.invalidateQueries({ queryKey: ["influencer-profile"] });
-      queryClient.invalidateQueries({ queryKey: ["influencer-profiles"] });
+      queryClient.invalidateQueries({
+        queryKey: trpc.profile.getInfluencerProfiles.queryKey(),
+      });
     },
   });
 }

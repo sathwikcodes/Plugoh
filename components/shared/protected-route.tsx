@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { Loader2 } from "lucide-react";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading, needsOnboarding } = useAuth();
@@ -18,14 +17,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     }
   }, [loading, user, needsOnboarding, pathname, router]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  if (!loading && (!user || needsOnboarding)) return null;
 
-  if (!user || needsOnboarding) return null;
   return <>{children}</>;
 }

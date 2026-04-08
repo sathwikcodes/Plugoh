@@ -41,10 +41,14 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const statusMutation = useMutation(
     trpc.campaign.updateStatus.mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
-        queryClient.invalidateQueries({ queryKey: ["inbox-conversations"] });
         queryClient.invalidateQueries({
-          queryKey: ["business-inbox-conversations"],
+          queryKey: trpc.campaign.getCampaigns.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.inbox.getInboxConversations.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.inbox.getBusinessInboxConversations.queryKey(),
         });
         toast({ title: "Campaign updated" });
       },

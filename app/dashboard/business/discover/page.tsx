@@ -1,149 +1,25 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { Search, SearchX, SlidersHorizontal } from "lucide-react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { m } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
 import {
-  fadeUp,
   GRADIENT_COLORS,
   GRADIENT_STOPS,
   GRADIENT_STYLE,
   stagger,
 } from "@/lib/animations";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import { cn } from "@/lib/utils";
+import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { Database } from "@/lib/supabase/types";
-import { InfluencerCard } from "./_components/influencer-card";
-import { InfluencerCardStack } from "./_components/influencer-card-stack";
 import { FilterPanel, type DiscoverFilters } from "./_components/filter-panel";
-import { getStartsAtPrice } from "./_components/influencer-card";
-import { InfluencerCardSkeleton } from "./loading";
+import { DiscoverHeader } from "./_components/discover-header";
+import { InfluencerGrid } from "./_components/influencer-grid";
+import {
+  applyFilters,
+  createDefaultFilters,
+  getDefaultPriceBounds,
+} from "./_components/discover-utils";
 
-type InfluencerProfile =
-  Database["public"]["Tables"]["influencer_profiles"]["Row"];
-
-function getEngagementRate(
-  likes: number | null,
-  followers: number | null,
-): number {
-  if (!likes || !followers || followers <= 0) return 0;
-  return (likes / followers) * 100;
-}
-
-function getSortValue(
-  profile: InfluencerProfile,
-  sortField: DiscoverFilters["sortField"],
-): number {
-  if (sortField === "price") return getStartsAtPrice(profile) ?? 0;
-  if (sortField === "engagement")
-    return getEngagementRate(
-      profile.avg_likes_per_reel,
-      profile.follower_count,
-    );
-  return profile.follower_count ?? 0;
-}
-
-function getDefaultPriceBounds(
-  profiles: InfluencerProfile[],
-): [number, number] {
-  const prices = profiles
-    .map((profile) => getStartsAtPrice(profile))
-    .filter((price): price is number => typeof price === "number" && price > 0)
-    .sort((a, b) => a - b);
-
-  if (prices.length === 0) return [500, 50000];
-
-  const min = Math.max(500, Math.floor(prices[0] / 500) * 500);
-  const rawMax = prices[prices.length - 1];
-  const paddedMax = rawMax < 10000 ? rawMax + 2000 : rawMax * 1.1;
-  const max = Math.ceil(paddedMax / 500) * 500;
-
-  return [min, Math.max(min + 500, max)];
-}
-
-function createDefaultFilters(priceBounds: [number, number]): DiscoverFilters {
-  return {
-    place: "All",
-    category: "All",
-    contentType: "All",
-    priceRange: priceBounds,
-    sortField: "followers",
-    sortDirection: "desc",
-  };
-}
-
-function applyFilters(
-  profiles: InfluencerProfile[],
-  search: string,
-  filters: DiscoverFilters,
-  priceBounds: [number, number],
-) {
-  const normalizedSearch = search.trim().toLowerCase();
-
-  return profiles
-    .filter((profile) => {
-      if (normalizedSearch) {
-        const haystack = [
-          profile.display_name,
-          profile.instagram_handle,
-          profile.ig_username,
-          profile.bio,
-          profile.category,
-          profile.city,
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-        if (!haystack.includes(normalizedSearch)) return false;
-      }
-
-      if (filters.category !== "All" && profile.category !== filters.category) {
-        return false;
-      }
-
-      if (filters.place !== "All" && profile.city !== filters.place) {
-        return false;
-      }
-
-      const startsAt = getStartsAtPrice(profile);
-      const isBudgetDefault =
-        filters.priceRange[0] === priceBounds[0] &&
-        filters.priceRange[1] === priceBounds[1];
-      if (startsAt != null) {
-        if (
-          startsAt < filters.priceRange[0] ||
-          startsAt > filters.priceRange[1]
-        ) {
-          return false;
-        }
-      } else if (!isBudgetDefault) {
-        return false;
-      }
-
-      if (
-        filters.contentType !== "All" &&
-        !(profile.content_types as string[] | null)?.includes(
-          filters.contentType,
-        )
-      ) {
-        return false;
-      }
-
-      return true;
-    })
-    .sort((a, b) => {
-      const delta =
-        getSortValue(a, filters.sortField) - getSortValue(b, filters.sortField);
-      return filters.sortDirection === "asc" ? delta : -delta;
-    });
-}
-
-// Skeleton card for loading state (Imported from loading.tsx)
 export default function InfluencerDiscovery() {
   const { data: profiles = [], isLoading: loading } = useInfluencerProfiles();
   const isMobile = useIsMobile();
@@ -161,23 +37,20 @@ export default function InfluencerDiscovery() {
   const [draftFilters, setDraftFilters] = useState<DiscoverFilters>(() =>
     createDefaultFilters(priceBounds),
   );
-  const previousBoundsRef = useRef(priceBounds);
+
+  const [prevBoundsMin, setPrevBoundsMin] = useState(priceBounds[0]);
+  const [prevBoundsMax, setPrevBoundsMax] = useState(priceBounds[1]);
   const [boundsMin, boundsMax] = priceBounds;
 
-  useEffect(() => {
-    const previousBounds = previousBoundsRef.current;
-
-    // Values unchanged (same primitives) — skip to avoid infinite loop caused
-    // by priceBounds array getting a new reference on every React Query render.
-    if (previousBounds[0] === boundsMin && previousBounds[1] === boundsMax) {
-      return;
-    }
-
-    previousBoundsRef.current = [boundsMin, boundsMax];
-
-    const previousDefaults = createDefaultFilters(previousBounds);
+  if (prevBoundsMin !== boundsMin || prevBoundsMax !== boundsMax) {
+    const previousDefaults = createDefaultFilters([
+      prevBoundsMin,
+      prevBoundsMax,
+    ]);
     const nextDefaults = createDefaultFilters([boundsMin, boundsMax]);
 
+    setPrevBoundsMin(boundsMin);
+    setPrevBoundsMax(boundsMax);
     setActiveFilters((prev) => {
       const priceWasDefault =
         prev.priceRange[0] === previousDefaults.priceRange[0] &&
@@ -193,18 +66,16 @@ export default function InfluencerDiscovery() {
       if (priceWasDefault) {
         return { ...prev, priceRange: nextDefaults.priceRange };
       }
-
-      const activePrice = prev.priceRange;
       if (
-        activePrice[0] < boundsMin ||
-        activePrice[1] > boundsMax ||
-        activePrice[0] >= activePrice[1]
+        prev.priceRange[0] < boundsMin ||
+        prev.priceRange[1] > boundsMax ||
+        prev.priceRange[0] >= prev.priceRange[1]
       ) {
         return { ...prev, priceRange: nextDefaults.priceRange };
       }
       return prev;
     });
-  }, [boundsMin, boundsMax]);
+  }
 
   const placeOptions = useMemo(
     () =>
@@ -291,7 +162,6 @@ export default function InfluencerDiscovery() {
             : undefined
         }
       >
-        {/* Background */}
         <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
           <AnimatedGradientBackground
             Breathing
@@ -314,137 +184,21 @@ export default function InfluencerDiscovery() {
             animate="visible"
             className="flex h-full flex-col gap-3 md:h-auto md:gap-6"
           >
-            {/* Header */}
-            <m.div
-              variants={fadeUp}
-              className="shrink-0 flex items-center justify-center gap-3 md:justify-start"
-            >
-              <div className="min-w-0 flex flex-col justify-center text-center md:text-left">
-                <h1 className="heading-mix text-3xl font-semibold tracking-tight text-white sm:text-3xl">
-                  Discover{" "}
-                  <span className="heading-mix-accent text-4xl text-white/90">
-                    Influencers
-                  </span>
-                </h1>
-              </div>
-            </m.div>
-
-            {/* Search + Filter bar */}
-            <m.section variants={fadeUp} className="shrink-0 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="relative flex-1">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
-                  <Input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search"
-                    className="h-12 rounded-full border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/35"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={openFilterPanel}
-                  className={cn(
-                    "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-sm font-medium text-white backdrop-blur-md transition-all duration-200 sm:w-auto sm:gap-2 sm:px-5",
-                    activeFilterCount > 0
-                      ? "border-white/25 bg-white/12 shadow-[0_0_20px_rgba(255,255,255,0.06)]"
-                      : "border-primary/20 bg-primary/[0.07] shadow-[0_12px_32px_rgba(15,17,21,0.35)] hover:bg-primary/10",
-                  )}
-                >
-                  <SlidersHorizontal className="h-4 w-4" />
-                  <span className="hidden sm:inline">
-                    Filter
-                    {activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-                  </span>
-                </button>
-              </div>
-            </m.section>
-
-            {/* Results */}
-            {loading ? (
-              <>
-                {/* Desktop skeleton */}
-                <m.div
-                  variants={fadeUp}
-                  className="hidden md:grid md:grid-cols-3 gap-5 lg:gap-6"
-                >
-                  {[0, 1, 2].map((i) => (
-                    <InfluencerCardSkeleton key={i} />
-                  ))}
-                </m.div>
-                {/* Mobile skeleton */}
-                <m.div
-                  variants={fadeUp}
-                  className="flex min-h-0 flex-1 md:hidden pb-[100px] items-center justify-center"
-                >
-                  <div className="w-full max-w-[min(85vw,21rem)]">
-                    <InfluencerCardSkeleton />
-                  </div>
-                </m.div>
-              </>
-            ) : filtered.length === 0 ? (
-              <m.div
-                variants={fadeUp}
-                className="flex flex-1 items-center md:block"
-              >
-                <Card className="border-white/10 bg-white/4 backdrop-blur-2xl">
-                  <CardContent className="flex flex-col items-center gap-5 py-16 text-center">
-                    <div className="flex h-18 w-18 items-center justify-center rounded-full border border-white/10 bg-white/6">
-                      <SearchX className="h-8 w-8 text-white/42" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-2xl font-semibold text-white">
-                        No creators match this cut
-                      </p>
-                      <p className="max-w-md text-sm leading-6 text-white/58">
-                        Reset the filters, widen the price range, or try a
-                        broader niche to bring more creators back into the
-                        shortlist.
-                      </p>
-                    </div>
-                    <Button
-                      onClick={clearFilters}
-                      className="h-11 rounded-full bg-white text-black hover:bg-white/90"
-                    >
-                      Clear filters
-                    </Button>
-                  </CardContent>
-                </Card>
-              </m.div>
-            ) : (
-              <>
-                {/* Desktop: 3-column grid */}
-                <m.div
-                  variants={stagger}
-                  initial="hidden"
-                  animate="visible"
-                  className="hidden md:grid md:grid-cols-3 gap-5 lg:gap-6"
-                >
-                  {filtered.map((profile) => (
-                    <m.div key={profile.id} variants={fadeUp}>
-                      <InfluencerCard profile={profile} />
-                    </m.div>
-                  ))}
-                </m.div>
-
-                {/* Mobile: card stack */}
-                <m.div
-                  variants={fadeUp}
-                  className="flex min-h-0 flex-1 md:hidden"
-                >
-                  <InfluencerCardStack
-                    profiles={filtered}
-                    className="h-full w-full"
-                  />
-                </m.div>
-              </>
-            )}
+            <DiscoverHeader
+              search={search}
+              onSearchChange={setSearch}
+              onOpenFilters={openFilterPanel}
+              activeFilterCount={activeFilterCount}
+            />
+            <InfluencerGrid
+              loading={loading}
+              filtered={filtered}
+              onClearFilters={clearFilters}
+            />
           </m.div>
         </div>
       </div>
 
-      {/* Filter panel (portal-like, outside the scrollable container) */}
       <FilterPanel
         open={filterPanelOpen}
         onClose={() => setFilterPanelOpen(false)}

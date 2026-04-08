@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useMyBusinessProfile } from "@/hooks/queries/use-business-profiles";
 import {
@@ -16,6 +16,7 @@ import {
 import { MessageInput } from "@/components/campaign/message-input";
 import { ChatHeader } from "./chat-header";
 import {
+  AlertTriangle,
   ArrowRight,
   CreditCard,
   Loader2,
@@ -27,6 +28,7 @@ import { useMutation } from "@tanstack/react-query";
 import type { BusinessConversation } from "@/hooks/queries/use-business-inbox-conversations";
 import { getBusinessDisplayName } from "@/lib/business-profile";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   getInfluencerAvatarUrl,
   getInfluencerDisplayName,
@@ -42,9 +44,15 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const { data: myIdentity } = useMyBusinessProfile(user?.id);
   const trpc = useTRPC();
   const { campaign, influencerProfile } = conversation;
-  const { data: messages, isLoading } = useCampaignMessages(campaign.id);
+  const {
+    data: messages,
+    isLoading,
+    isError,
+    refetch,
+  } = useCampaignMessages(campaign.id);
   const sendMessage = useSendMessage();
-  const markRead = useMarkNotificationsReadForCampaign();
+  const { mutate: markNotificationsRead } =
+    useMarkNotificationsReadForCampaign();
   const insertFile = useMutation(
     trpc.campaignFile.insertCampaignFile.mutationOptions(),
   );
@@ -65,53 +73,59 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages?.length]);
 
-  // Mark new_message notifications as read when this conversation is opened
   useEffect(() => {
     if (!user?.id || !campaign.id) return;
-    markRead.mutate({ campaignId: campaign.id, userId: user.id });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [campaign.id, user?.id]);
+    markNotificationsRead({ campaignId: campaign.id, userId: user.id });
+  }, [campaign.id, user?.id, markNotificationsRead]);
 
-  const handleSendMessage = (content: string) => {
-    if (!user) return;
-    sendMessage.mutate({
-      campaignId: campaign.id,
-      senderId: user.id,
-      recipientId: campaign.influencer_id,
-      content,
-    });
-  };
+  const handleSendMessage = useCallback(
+    (content: string) => {
+      if (!user) return;
+      sendMessage.mutate({
+        campaignId: campaign.id,
+        senderId: user.id,
+        recipientId: campaign.influencer_id,
+        content,
+      });
+    },
+    [user, sendMessage, campaign.id, campaign.influencer_id],
+  );
 
-  const handleSendFile = (file: File, url: string) => {
-    if (!user) return;
-    sendMessage.mutate({
-      campaignId: campaign.id,
-      senderId: user.id,
-      recipientId: campaign.influencer_id,
-      content: file.name,
-      messageType: "file",
-      metadata: {
-        url,
-        filename: file.name,
-        size: file.size,
-        mime_type: file.type,
-      },
-    });
+  const handleSendFile = useCallback(
+    (file: File, url: string) => {
+      if (!user) return;
+      sendMessage.mutate({
+        campaignId: campaign.id,
+        senderId: user.id,
+        recipientId: campaign.influencer_id,
+        content: file.name,
+        messageType: "file",
+        metadata: {
+          url,
+          filename: file.name,
+          size: file.size,
+          mime_type: file.type,
+        },
+      });
+      insertFile.mutate({
+        campaignId: campaign.id,
+        fileName: file.name,
+        fileUrl: url,
+        fileSize: file.size,
+        mimeType: file.type,
+      });
+    },
+    [user, sendMessage, insertFile, campaign.id, campaign.influencer_id],
+  );
 
-    insertFile.mutate({
-      campaignId: campaign.id,
-      fileName: file.name,
-      fileUrl: url,
-      fileSize: file.size,
-      mimeType: file.type,
-    });
-  };
-
-  const getSenderName = (senderId: string) => {
-    if (senderId === campaign.business_id) return brandName;
-    if (senderId === campaign.influencer_id) return influencerName;
-    return "System";
-  };
+  const getSenderName = useCallback(
+    (senderId: string) => {
+      if (senderId === campaign.business_id) return brandName;
+      if (senderId === campaign.influencer_id) return influencerName;
+      return "System";
+    },
+    [campaign.business_id, campaign.influencer_id, brandName, influencerName],
+  );
 
   if (!user) return null;
 
@@ -125,7 +139,6 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         onBack={onBack}
       />
 
-      {/* Payment required banner */}
       {campaign.status === "payment_pending" && (
         <Link
           href={`/dashboard/business/campaigns/${campaign.id}`}
@@ -151,9 +164,23 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         </Link>
       )}
 
-      {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 min-h-0">
-        {isLoading ? (
+        {isError ? (
+          <div className="flex flex-col items-center justify-center h-full text-center gap-3">
+            <AlertTriangle className="h-7 w-7 text-red-400/60" />
+            <p className="text-sm font-medium text-muted-foreground/60">
+              Failed to load messages
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              className="rounded-full"
+            >
+              Retry
+            </Button>
+          </div>
+        ) : isLoading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/40" />
           </div>
@@ -196,10 +223,9 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         )}
       </div>
 
-      {/* Message input / locked banner */}
       {chatLocked ? (
         <div className="shrink-0 border-t border-white/8 px-4 py-3">
-          <div className="flex items-center gap-2.5 rounded-full border border-white/8 bg-white/[0.03] px-4 py-2.5">
+          <div className="flex items-center gap-2.5 rounded-full border border-white/8 bg-white/3 px-4 py-2.5">
             <Lock className="h-4 w-4 shrink-0 text-white/30" />
             <p className="text-sm text-white/40">
               Chat unlocks once the creator accepts this booking

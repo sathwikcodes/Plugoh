@@ -8,7 +8,7 @@ import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
 import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { useTRPC } from "@/lib/trpc/client";
 import dynamic from "next/dynamic";
 import { m } from "framer-motion";
 import {
@@ -46,6 +46,7 @@ type TabValue =
 function BusinessProfilePageInner() {
   const { user, profile, loading: authLoading, signOut } = useAuth();
   const searchParams = useSearchParams();
+  const trpc = useTRPC();
   const queryClient = useQueryClient();
   const isOnboarding =
     searchParams.get("source") === "onboarding" ||
@@ -91,9 +92,11 @@ function BusinessProfilePageInner() {
         setAiStatus("done");
         sessionStorage.removeItem("plugoh_business_ai_pending");
         queryClient.invalidateQueries({
-          queryKey: ["my-business-profile", user.id],
+          queryKey: trpc.profile.getMyBusinessProfile.queryKey(),
         });
-        queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+        queryClient.invalidateQueries({
+          queryKey: trpc.profile.getMyProfile.queryKey(),
+        });
       })
       .catch(() => {
         setAiStatus("failed");
@@ -150,7 +153,6 @@ function BusinessProfilePageInner() {
 
           <AIStatusBanner visible={aiStatus === "running"} />
 
-          {/* Discrete pill tab navigation */}
           <div className="flex justify-center py-1">
             <BusinessTabBar
               hasInstagram={!!identity.businessProfile?.ig_username}
@@ -159,7 +161,6 @@ function BusinessProfilePageInner() {
             />
           </div>
 
-          {/* Tab content */}
           <div>
             {aiStatus === "running" && resolvedActiveTab !== "settings" ? (
               <ProfileTabSkeleton

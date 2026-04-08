@@ -21,9 +21,9 @@ export function BrandInsights({ insights }: BrandInsightsProps) {
     <div className="space-y-3">
       <h2 className="text-sm font-semibold">Brand Insights</h2>
       <div className="grid gap-3">
-        {insights.map((insight, i) => (
+        {insights.map((insight) => (
           <div
-            key={i}
+            key={insight.title}
             className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 flex items-start gap-4"
           >
             <div

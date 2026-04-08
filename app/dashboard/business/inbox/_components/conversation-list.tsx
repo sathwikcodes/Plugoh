@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Loader2, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { m } from "framer-motion";
 import { ConversationItem } from "./conversation-item";
 import type { BusinessConversation } from "@/hooks/queries/use-business-inbox-conversations";

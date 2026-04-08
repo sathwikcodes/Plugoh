@@ -7,6 +7,7 @@ import { useMyInfluencerProfile } from "@/hooks/queries/use-influencer-profiles"
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTRPC } from "@/lib/trpc/client";
 import { Loader2 } from "lucide-react";
 import { m, AnimatePresence } from "framer-motion";
 import { stagger } from "@/lib/animations";
@@ -27,6 +28,7 @@ type TabValue = "instagram" | "pricing" | "career" | "settings";
 function InfluencerProfilePageInner() {
   const { user, profile, loading: authLoading, signOut } = useAuth();
   const searchParams = useSearchParams();
+  const trpc = useTRPC();
   const queryClient = useQueryClient();
 
   // Detect first-load from onboarding (survives refresh via sessionStorage)
@@ -72,7 +74,7 @@ function InfluencerProfilePageInner() {
         setAiStatus("done");
         sessionStorage.removeItem("plugoh_ai_pending");
         queryClient.invalidateQueries({
-          queryKey: ["my-influencer-profile", user.id],
+          queryKey: trpc.profile.getMyInfluencerProfile.queryKey(),
         });
       })
       .catch(() => {

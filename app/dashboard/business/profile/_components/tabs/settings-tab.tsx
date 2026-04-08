@@ -59,9 +59,11 @@ export default function BusinessSettingsTab({
       onSuccess: async () => {
         await refreshUserData();
         queryClient.invalidateQueries({
-          queryKey: ["my-business-profile", userId],
+          queryKey: trpc.profile.getMyBusinessProfile.queryKey(),
         });
-        queryClient.invalidateQueries({ queryKey: ["profile", userId] });
+        queryClient.invalidateQueries({
+          queryKey: trpc.profile.getMyProfile.queryKey(),
+        });
         toast.success("Profile updated successfully");
       },
       onError: (err) => {

@@ -7,8 +7,8 @@ import { getBusinessDisplayName } from "@/lib/business-profile";
 import { fadeUp } from "@/lib/animations";
 import { parseLocation } from "@/lib/location-time";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import { PageLoadingSpinner } from "@/components/ui/loading-spinner";
 import { LocationTag } from "@/components/ui/location-tag";
+import BusinessDashboardLoading from "./loading";
 
 const PROMPT_TRIAL_GRADIENT_COLORS = [
   "#0C0A0E",
@@ -35,7 +35,7 @@ export default function BusinessDashboard() {
   );
 
   if (authLoading || identityLoading) {
-    return <PageLoadingSpinner />;
+    return <BusinessDashboardLoading />;
   }
 
   const displayName = getBusinessDisplayName(

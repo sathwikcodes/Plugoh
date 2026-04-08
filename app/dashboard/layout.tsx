@@ -22,8 +22,12 @@ export default function DashboardLayout({
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const { role } = useAuth();
   const pathname = usePathname();
-  const isInfluencer = role === "influencer";
-  const isBusiness = role === "business";
+  const isInfluencer =
+    role === "influencer" ||
+    (!role && pathname.startsWith("/dashboard/influencer"));
+  const isBusiness =
+    role === "business" ||
+    (!role && pathname.startsWith("/dashboard/business"));
   const isInboxPage = pathname.includes("/inbox");
   const isBusinessDiscoverHome = pathname === "/dashboard/business/discover";
   const isBusinessCampaignsHome = pathname === "/dashboard/business/campaigns";
