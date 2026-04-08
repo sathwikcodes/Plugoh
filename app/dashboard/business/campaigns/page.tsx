@@ -706,7 +706,7 @@ export default function CampaignsList() {
                 {/* Mobile: swipeable card stack */}
                 <m.div
                   variants={fadeUp}
-                  className="flex flex-col min-h-0 flex-1 md:hidden"
+                  className="flex min-h-0 flex-1 md:hidden"
                 >
                   <CampaignCardStack
                     campaigns={displayItems.map(({ campaign, influencer }) => ({
@@ -722,7 +722,7 @@ export default function CampaignsList() {
                       influencerAvatarUrl:
                         influencer?.ig_profile_picture_url || null,
                     }))}
-                    className="w-full flex-1"
+                    className="h-full w-full"
                   />
                 </m.div>
 
