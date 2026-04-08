@@ -10,7 +10,8 @@ import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { m } from "framer-motion";
-import { stagger } from "@/lib/animations";
+import { stagger, GRADIENT_COLORS, GRADIENT_STOPS, GRADIENT_STYLE } from "@/lib/animations";
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import { toast } from "sonner";
 import BusinessProfileCardHeader from "./_components/profile-card-header";
 import OverviewTab from "./_components/tabs/overview-tab";
@@ -114,6 +115,17 @@ function BusinessProfilePageInner() {
 
   return (
     <div className="relative min-h-[calc(100dvh-4rem)]">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <AnimatedGradientBackground
+          Breathing
+          gradientColors={GRADIENT_COLORS}
+          gradientStops={GRADIENT_STOPS}
+          startingGap={125}
+          breathingRange={2.2}
+          animationSpeed={0.008}
+          containerStyle={GRADIENT_STYLE}
+        />
+      </div>
       <div className="relative z-10 container max-w-2xl py-6">
         <m.div
           variants={stagger}

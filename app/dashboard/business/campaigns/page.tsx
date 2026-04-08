@@ -541,13 +541,11 @@ export default function CampaignsList() {
             Breathing
             gradientColors={GRADIENT_COLORS}
             gradientStops={GRADIENT_STOPS}
-            startingGap={180}
-            breathingRange={8}
-            animationSpeed={0.015}
+            startingGap={125}
+            breathingRange={2.2}
+            animationSpeed={0.008}
             containerStyle={GRADIENT_STYLE}
           />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
-          <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
         </div>
         <div
           className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6"
@@ -589,13 +587,11 @@ export default function CampaignsList() {
             Breathing
             gradientColors={GRADIENT_COLORS}
             gradientStops={GRADIENT_STOPS}
-            startingGap={180}
-            breathingRange={8}
-            animationSpeed={0.015}
+            startingGap={125}
+            breathingRange={2.2}
+            animationSpeed={0.008}
             containerStyle={GRADIENT_STYLE}
           />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
-          <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
         </div>
 
         <div

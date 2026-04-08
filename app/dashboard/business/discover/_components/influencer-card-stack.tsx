@@ -17,11 +17,10 @@ import {
 } from "./influencer-card";
 
 // How many cards are visible in the stack
-const VISIBLE_COUNT = 4;
-const OFFSET_X = 8;
+const VISIBLE_COUNT = 3;
 const OFFSET_Y = 16;
-const SCALE_STEP = 0.05;
-const DIM_STEP = 0.12;
+const SCALE_STEP = 0.04;
+const DIM_STEP = 0.18;
 const SWIPE_THRESHOLD = 60;
 
 const SPRING = {
@@ -36,17 +35,13 @@ interface Props {
 }
 
 const CARD_ASPECT_RATIO = 0.74;
-const MAX_CARD_WIDTH = 368;
 
 export function InfluencerCardStack({ profiles, className }: Props) {
   const [cards, setCards] = useState<InfluencerProfile[]>(profiles);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dragDir, setDragDir] = useState<"left" | "right" | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const [cardViewport, setCardViewport] = useState({
-    width: MAX_CARD_WIDTH,
-    height: MAX_CARD_WIDTH / CARD_ASPECT_RATIO,
-  });
+  const [cardViewport, setCardViewport] = useState({ width: 320, height: 432 });
   const total = profiles.length;
 
   const dragX = useMotionValue(0);
@@ -72,33 +67,30 @@ export function InfluencerCardStack({ profiles, className }: Props) {
     if (!node) return;
 
     const updateViewport = () => {
-      const { width: availableWidth, height: availableHeight } =
-        node.getBoundingClientRect();
+      const { width: w, height: h } = node.getBoundingClientRect();
+      if (w <= 0 || h <= 0) return;
 
-      if (availableWidth <= 0 || availableHeight <= 0) return;
+      // Card fills full available width; height follows aspect ratio,
+      // but is capped so peeking back-cards don't overflow the stage area.
+      const peekOverhead = (VISIBLE_COUNT - 1) * OFFSET_Y;
+      let cardW = w;
+      let cardH = cardW / CARD_ASPECT_RATIO;
 
-      let nextWidth = Math.min(availableWidth, MAX_CARD_WIDTH);
-      let nextHeight = nextWidth / CARD_ASPECT_RATIO;
-
-      if (nextHeight > availableHeight) {
-        nextHeight = availableHeight;
-        nextWidth = nextHeight * CARD_ASPECT_RATIO;
+      if (cardH + peekOverhead > h) {
+        cardH = h - peekOverhead;
+        cardW = cardH * CARD_ASPECT_RATIO;
       }
 
       setCardViewport({
-        width: Math.max(nextWidth, 0),
-        height: Math.max(nextHeight, 0),
+        width: Math.max(cardW, 0),
+        height: Math.max(cardH, 0),
       });
     };
 
     updateViewport();
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateViewport();
-    });
-
-    resizeObserver.observe(node);
-    return () => resizeObserver.disconnect();
+    const ro = new ResizeObserver(updateViewport);
+    ro.observe(node);
+    return () => ro.disconnect();
   }, []);
 
   const handleDragEnd = (
@@ -133,29 +125,27 @@ export function InfluencerCardStack({ profiles, className }: Props) {
   const visibleCards = cards.slice(0, VISIBLE_COUNT);
 
   return (
-    <div
-      className={cn(
-        "flex min-h-0 flex-col items-center gap-2 pb-1 pt-1 sm:gap-3 sm:pb-2",
-        className,
-      )}
-    >
+    <div className={cn("flex flex-col", className)}>
+      {/* Stage — flex-1 so it fills all available vertical space */}
       <div
         ref={stageRef}
-        className="flex min-h-0 w-full flex-1 items-center justify-center"
+        className="min-h-0 flex-1 w-full flex justify-center items-start"
       >
         <div
           className="relative shrink-0"
           style={{
             width: cardViewport.width,
-            height: cardViewport.height,
+            height: cardViewport.height + (VISIBLE_COUNT - 1) * OFFSET_Y,
           }}
         >
-          <ul className="m-0 h-full w-full list-none p-0">
+          <ul
+            className="relative m-0 w-full list-none p-0 overflow-visible"
+            style={{ height: cardViewport.height }}
+          >
             <AnimatePresence>
               {visibleCards.map((profile, i) => {
                 const isFront = i === 0;
                 const brightness = Math.max(0.5, 1 - i * DIM_STEP);
-                const offsetDirection = i % 2 === 0 ? -1 : 1;
 
                 return (
                   <m.li
@@ -175,7 +165,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
                         : "0 18px 42px rgba(0,0,0,0.32)",
                     }}
                     animate={{
-                      x: isFront ? 0 : offsetDirection * i * OFFSET_X,
+                      x: 0,
                       y: i * OFFSET_Y,
                       scale: 1 - i * SCALE_STEP,
                       filter: `brightness(${brightness}) saturate(${1 - i * 0.08})`,
@@ -235,10 +225,8 @@ export function InfluencerCardStack({ profiles, className }: Props) {
         </div>
       </div>
 
-      <div
-        className="flex w-full shrink-0 items-center justify-center gap-3 pb-0"
-        style={{ maxWidth: cardViewport.width || MAX_CARD_WIDTH }}
-      >
+      {/* Nav buttons — shrink-0, always visible above dock */}
+      <div className="flex w-full shrink-0 items-center justify-center gap-3 pt-3 pb-1">
         <ShinyButton
           onClick={moveToStart}
           className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/[0.05] px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"

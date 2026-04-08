@@ -4,16 +4,29 @@ import { m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
 import { useMyBusinessProfile } from "@/hooks/queries/use-business-profiles";
 import { getBusinessDisplayName } from "@/lib/business-profile";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-  fadeUp,
-} from "@/lib/animations";
+import { fadeUp } from "@/lib/animations";
 import { parseLocation } from "@/lib/location-time";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import { PageLoadingSpinner } from "@/components/ui/loading-spinner";
 import { LocationTag } from "@/components/ui/location-tag";
+
+const PROMPT_TRIAL_GRADIENT_COLORS = [
+  "#0C0A0E",
+  "#3D1830",
+  "#C94B8A",
+  "#B5602A",
+  "#C49510",
+  "#5C3808",
+  "#1A0E05",
+  "#0A0808",
+];
+
+const PROMPT_TRIAL_GRADIENT_STOPS = [20, 34, 48, 58, 68, 78, 88, 100];
+
+const TOP_BRIGHT_STYLE = {
+  opacity: 0.72,
+  filter: "blur(70px) saturate(130%)",
+} as const;
 
 export default function BusinessDashboard() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -41,12 +54,13 @@ export default function BusinessDashboard() {
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <AnimatedGradientBackground
           Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={180}
-          breathingRange={8}
-          animationSpeed={0.015}
-          containerStyle={GRADIENT_STYLE}
+          gradientColors={PROMPT_TRIAL_GRADIENT_COLORS}
+          gradientStops={PROMPT_TRIAL_GRADIENT_STOPS}
+          startingGap={125}
+          breathingRange={2.2}
+          animationSpeed={0.008}
+          topOffset={0}
+          containerStyle={TOP_BRIGHT_STYLE}
         />
       </div>
 

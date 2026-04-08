@@ -294,13 +294,11 @@ export default function InfluencerDiscovery() {
             Breathing
             gradientColors={GRADIENT_COLORS}
             gradientStops={GRADIENT_STOPS}
-            startingGap={180}
-            breathingRange={8}
-            animationSpeed={0.015}
+            startingGap={125}
+            breathingRange={2.2}
+            animationSpeed={0.008}
             containerStyle={GRADIENT_STYLE}
           />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
-          <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
         </div>
 
         <div
@@ -430,11 +428,11 @@ export default function InfluencerDiscovery() {
                 {/* Mobile: card stack */}
                 <m.div
                   variants={fadeUp}
-                  className="flex flex-col min-h-0 flex-1 md:hidden"
+                  className="flex min-h-0 flex-1 md:hidden"
                 >
                   <InfluencerCardStack
                     profiles={filtered}
-                    className="w-full flex-1"
+                    className="h-full w-full"
                   />
                 </m.div>
               </>
