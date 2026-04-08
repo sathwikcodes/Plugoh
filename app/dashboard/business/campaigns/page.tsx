@@ -138,7 +138,7 @@ function CampaignSortPanel({
     return () => {
       document.body.style.overflow = "";
     };
-  }, [handleDismiss, open]);
+  }, [open]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;

@@ -167,13 +167,21 @@ export default function InfluencerDiscovery() {
     createDefaultFilters(priceBounds),
   );
   const previousBoundsRef = useRef(priceBounds);
+  const [boundsMin, boundsMax] = priceBounds;
 
   useEffect(() => {
     const previousBounds = previousBoundsRef.current;
-    previousBoundsRef.current = priceBounds;
+
+    // Values unchanged (same primitives) — skip to avoid infinite loop caused
+    // by priceBounds array getting a new reference on every React Query render.
+    if (previousBounds[0] === boundsMin && previousBounds[1] === boundsMax) {
+      return;
+    }
+
+    previousBoundsRef.current = [boundsMin, boundsMax];
 
     const previousDefaults = createDefaultFilters(previousBounds);
-    const nextDefaults = createDefaultFilters(priceBounds);
+    const nextDefaults = createDefaultFilters([boundsMin, boundsMax]);
 
     setActiveFilters((prev) => {
       const priceWasDefault =
@@ -193,15 +201,15 @@ export default function InfluencerDiscovery() {
 
       const activePrice = prev.priceRange;
       if (
-        activePrice[0] < priceBounds[0] ||
-        activePrice[1] > priceBounds[1] ||
+        activePrice[0] < boundsMin ||
+        activePrice[1] > boundsMax ||
         activePrice[0] >= activePrice[1]
       ) {
         return { ...prev, priceRange: nextDefaults.priceRange };
       }
       return prev;
     });
-  }, [priceBounds]);
+  }, [boundsMin, boundsMax]);
 
   const placeOptions = useMemo(
     () =>

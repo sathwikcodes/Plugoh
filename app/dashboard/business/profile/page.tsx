@@ -9,10 +9,20 @@ import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
 import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { m } from "framer-motion";
-import { stagger, GRADIENT_COLORS, GRADIENT_STOPS, GRADIENT_STYLE } from "@/lib/animations";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import {
+  stagger,
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+} from "@/lib/animations";
 import { toast } from "sonner";
+
+const AnimatedGradientBackground = dynamic(
+  () => import("@/components/ui/animated-gradient-background"),
+  { ssr: false },
+);
 import BusinessProfileCardHeader from "./_components/profile-card-header";
 import OverviewTab from "./_components/tabs/overview-tab";
 import BusinessInstagramTab from "./_components/tabs/instagram-tab";
@@ -23,6 +33,7 @@ import {
   AIStatusBanner,
   ProfileTabSkeleton,
 } from "@/app/dashboard/influencer/profile/_components/profile-page-skeleton";
+import { BusinessTabBar } from "./_components/business-tab-bar";
 
 type TabValue =
   | "instagram"
@@ -203,95 +214,5 @@ export default function BusinessProfilePage() {
     <Suspense>
       <BusinessProfilePageInner />
     </Suspense>
-  );
-}
-
-// ── Custom tab bar for business (4 tabs with different icons) ─────────────────
-import {
-  LayoutDashboard,
-  BarChart3,
-  Wallet,
-  Settings2,
-  Instagram,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { m as motion } from "framer-motion";
-
-const SPRING = {
-  type: "spring" as const,
-  damping: 20,
-  stiffness: 230,
-  mass: 1.2,
-};
-
-function BusinessTabBar({
-  hasInstagram,
-  activeTab,
-  onTabChange,
-}: {
-  hasInstagram: boolean;
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-}) {
-  const TABS = [
-    ...(hasInstagram
-      ? [{ id: "instagram", label: "Instagram", Icon: Instagram }]
-      : []),
-    { id: "overview", label: "Overview", Icon: LayoutDashboard },
-    { id: "analytics", label: "Analytics", Icon: BarChart3 },
-    { id: "spending", label: "Spending", Icon: Wallet },
-    { id: "settings", label: "Settings", Icon: Settings2 },
-  ];
-
-  return (
-    <div className="flex flex-wrap gap-2 items-center justify-center">
-      {TABS.map((tab) => {
-        const isActive = activeTab === tab.id;
-        return (
-          <motion.div
-            key={tab.id}
-            layoutId={"biz-tab-" + tab.id}
-            transition={{ layout: SPRING }}
-            onClick={() => onTabChange(tab.id)}
-            className="w-fit h-fit flex cursor-pointer"
-            style={{ willChange: "transform" }}
-          >
-            <motion.div
-              layout
-              transition={{ layout: SPRING }}
-              className={cn(
-                "flex items-center gap-1.5 bg-secondary shadow-md",
-                "outline-2 outline outline-background overflow-hidden",
-                "transition-colors duration-75 ease-out select-none",
-                isActive
-                  ? "px-4 py-2.5 text-foreground"
-                  : "px-3 py-2.5 text-muted-foreground hover:text-foreground/70",
-              )}
-              style={{ borderRadius: "25px" }}
-            >
-              <motion.div
-                layoutId={"biz-tab-icon-" + tab.id}
-                className="shrink-0"
-                style={{ willChange: "transform" }}
-              >
-                <tab.Icon size={18} strokeWidth={isActive ? 2.2 : 1.8} />
-              </motion.div>
-              {isActive && (
-                <motion.span
-                  layoutId={"biz-tab-label-" + tab.id}
-                  initial={{ opacity: 0, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 0.18, ease: [0.86, 0, 0.07, 1] }}
-                  className="text-xs font-semibold uppercase tracking-wide whitespace-nowrap"
-                  style={{ willChange: "transform" }}
-                >
-                  {tab.label}
-                </motion.span>
-              )}
-            </motion.div>
-          </motion.div>
-        );
-      })}
-    </div>
   );
 }
