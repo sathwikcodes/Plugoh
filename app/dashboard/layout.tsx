@@ -33,6 +33,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   const isBusinessCampaignsHome = pathname === "/dashboard/business/campaigns";
   const isBusinessDashboardHome = pathname === "/dashboard/business";
   const isInfluencerDashboardHome = pathname === "/dashboard/influencer";
+  const isInfluencerCampaignsHome = pathname === "/dashboard/influencer/campaigns";
 
   return (
     <>
@@ -44,6 +45,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             !isBusinessCampaignsHome &&
             !isBusinessDashboardHome &&
             !isInfluencerDashboardHome &&
+            !isInfluencerCampaignsHome &&
             "pb-[calc(88px+env(safe-area-inset-bottom,0px))] md:pb-4",
         )}
       >

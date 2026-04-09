@@ -7,14 +7,7 @@ import { AnimatePresence, m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
 import { useInboxConversations } from "@/hooks/queries/use-inbox-conversations";
 import { Input } from "@/components/ui/input";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-  fadeUp,
-  stagger,
-} from "@/lib/animations";
+import { fadeUp, stagger } from "@/lib/animations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ConversationList } from "./_components/conversation-list";
 import { ChatPanel } from "./_components/chat-panel";
@@ -64,20 +57,6 @@ export default function InboxPage() {
           : undefined
       }
     >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={180}
-          breathingRange={8}
-          animationSpeed={0.015}
-          containerStyle={GRADIENT_STYLE}
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
-        <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
-      </div>
-
       <div className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6">
         <AnimatePresence mode="wait">
           {showMobileChat ? (

@@ -3,33 +3,24 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
-import {
-  ArrowRight,
-  Megaphone,
-  Search,
-  SlidersHorizontal,
-  X,
-} from "lucide-react";
+import { ArrowRight, Megaphone, Search, SlidersHorizontal, X } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useInfluencerCampaigns } from "@/hooks/queries/use-influencer-campaigns";
 import { supabase } from "@/lib/supabase/client";
-import { getBusinessDisplayName } from "@/lib/business-profile";
+import {
+  getBusinessDisplayName,
+  getBusinessLocation,
+} from "@/lib/business-profile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-  fadeUp,
-  stagger,
-} from "@/lib/animations";
+import { fadeUp, stagger } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  CampaignCardStack,
-  CampaignCardTile,
-} from "@/components/campaign/campaign-card-stack";
+  InfluencerCampaignCardStack,
+  InfluencerCampaignCardTile,
+} from "./_components/influencer-campaign-card-stack";
+import { useCampaignCardActions } from "./_hooks/use-campaign-card-actions";
 
 type SortMode = "newest" | "highest_offer" | "recently_updated";
 type StatusFilter =
@@ -361,6 +352,12 @@ export default function InfluencerCampaignsList() {
   const isMobile = useIsMobile();
   const { data: campaignRecords = [], isLoading: campaignsLoading } =
     useInfluencerCampaigns(user?.id);
+  const {
+    acceptCampaign,
+    declineCampaign,
+    acceptingId,
+    decliningId,
+  } = useCampaignCardActions();
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [search, setSearch] = useState("");
@@ -457,6 +454,43 @@ export default function InfluencerCampaignsList() {
 
   const mobileViewportHeight = "100dvh";
   const mobileBottomInset = "calc(96px + env(safe-area-inset-bottom, 0px))";
+  const activeSelectionCount =
+    Number(statusFilter !== "All") + Number(sortMode !== "newest");
+
+  const mapCard = useCallback(
+    ({
+      campaign,
+      business,
+    }: (typeof campaignRecords)[number]) => ({
+      id: campaign.id,
+      title: campaign.title,
+      status: campaign.status,
+      package_type: campaign.package_type,
+      price_offered: campaign.price_offered,
+      expires_at: campaign.expires_at,
+      created_at: campaign.created_at,
+      brandName: getBusinessDisplayName(business) || "Brand",
+      businessType:
+        business?.businessProfile?.brand_type?.trim() ||
+        business?.basicProfile?.business_type?.trim() ||
+        null,
+      location: getBusinessLocation(business),
+      brandAvatarUrl:
+        business?.businessProfile?.ig_profile_picture_url?.trim() || null,
+      avatarFallbackLabel:
+        business?.businessProfile?.brand_name?.trim() ||
+        business?.basicProfile?.full_name?.trim() ||
+        business?.basicProfile?.email?.trim() ||
+        "Brand",
+      detailHref: `/dashboard/influencer/campaigns/${campaign.id}`,
+      chatHref: `/dashboard/influencer/inbox?chat=${campaign.id}`,
+      onAccept: () => acceptCampaign(campaign.id),
+      onDecline: () => declineCampaign(campaign.id),
+      isAccepting: acceptingId === campaign.id,
+      isDeclining: decliningId === campaign.id,
+    }),
+    [acceptCampaign, acceptingId, declineCampaign, decliningId],
+  );
 
   if (campaignsLoading) {
     return (
@@ -471,19 +505,6 @@ export default function InfluencerCampaignsList() {
             : undefined
         }
       >
-        <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-          <AnimatedGradientBackground
-            Breathing
-            gradientColors={GRADIENT_COLORS}
-            gradientStops={GRADIENT_STOPS}
-            startingGap={180}
-            breathingRange={8}
-            animationSpeed={0.015}
-            containerStyle={GRADIENT_STYLE}
-          />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
-          <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
-        </div>
         <div
           className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6"
           style={isMobile ? { paddingBottom: mobileBottomInset } : undefined}
@@ -518,21 +539,6 @@ export default function InfluencerCampaignsList() {
             : undefined
         }
       >
-        {/* Background */}
-        <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-          <AnimatedGradientBackground
-            Breathing
-            gradientColors={GRADIENT_COLORS}
-            gradientStops={GRADIENT_STOPS}
-            startingGap={180}
-            breathingRange={8}
-            animationSpeed={0.015}
-            containerStyle={GRADIENT_STYLE}
-          />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff0a,transparent_38%),linear-gradient(180deg,#0F1115_0%,#0F1115_42%,#0F1115_100%)]" />
-          <div className="absolute inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,#20B8A814_0%,transparent_100%)]" />
-        </div>
-
         <div
           className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6"
           style={isMobile ? { paddingBottom: mobileBottomInset } : undefined}
@@ -577,7 +583,7 @@ export default function InfluencerCampaignsList() {
                     setSortPanelOpen(true);
                   }}
                   className={cn(
-                    "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-sm font-medium text-white backdrop-blur-md transition-all duration-200 sm:w-auto sm:gap-2 sm:px-5",
+                    "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-sm font-medium text-white backdrop-blur-md transition-all duration-200 overflow-visible sm:w-auto sm:gap-2 sm:px-5",
                     sortMode !== "newest" || statusFilter !== "All"
                       ? "border-white/25 bg-white/12 shadow-[0_0_20px_rgba(255,255,255,0.06)]"
                       : "border-primary/20 bg-primary/[0.07] shadow-[0_12px_32px_rgba(15,17,21,0.35)] hover:bg-primary/10",
@@ -585,6 +591,11 @@ export default function InfluencerCampaignsList() {
                 >
                   <SlidersHorizontal className="h-4 w-4" />
                   <span className="hidden sm:inline">Sort</span>
+                  {isMobile && activeSelectionCount > 0 ? (
+                    <span className="absolute right-0 top-0 flex h-5 min-w-5 translate-x-[28%] -translate-y-[28%] items-center justify-center rounded-full border border-[#0F1115]/70 bg-white px-1 text-[9px] font-semibold leading-none text-black shadow-[0_8px_20px_rgba(0,0,0,0.28)] ring-2 ring-[#151922]">
+                      {activeSelectionCount}
+                    </span>
+                  ) : null}
                 </button>
               </div>
             </m.div>
@@ -645,23 +656,10 @@ export default function InfluencerCampaignsList() {
                 {/* Mobile: swipeable card stack */}
                 <m.div
                   variants={fadeUp}
-                  className="flex flex-col min-h-0 flex-1 md:hidden"
+                  className="flex min-h-0 flex-1 flex-col md:hidden"
                 >
-                  <CampaignCardStack
-                    campaigns={displayItems.map(({ campaign, business }) => ({
-                      id: campaign.id,
-                      title: campaign.title,
-                      status: campaign.status,
-                      package_type: campaign.package_type,
-                      price_offered: campaign.price_offered,
-                      expires_at: campaign.expires_at,
-                      created_at: campaign.created_at,
-                      influencerName:
-                        getBusinessDisplayName(business) || "Brand",
-                      influencerHandle: null,
-                      influencerAvatarUrl: null,
-                      href: `/dashboard/influencer/campaigns/${campaign.id}`,
-                    }))}
+                  <InfluencerCampaignCardStack
+                    campaigns={displayItems.map(mapCard)}
                     className="w-full flex-1"
                   />
                 </m.div>
@@ -671,23 +669,10 @@ export default function InfluencerCampaignsList() {
                   variants={fadeUp}
                   className="hidden md:grid min-h-0 flex-1 grid-cols-2 gap-5 overflow-y-auto overscroll-contain pr-1 xl:grid-cols-3"
                 >
-                  {displayItems.map(({ campaign, business }) => (
-                    <CampaignCardTile
-                      key={campaign.id}
-                      card={{
-                        id: campaign.id,
-                        title: campaign.title,
-                        status: campaign.status,
-                        package_type: campaign.package_type,
-                        price_offered: campaign.price_offered,
-                        expires_at: campaign.expires_at,
-                        created_at: campaign.created_at,
-                        influencerName:
-                          getBusinessDisplayName(business) || "Brand",
-                        influencerHandle: null,
-                        influencerAvatarUrl: null,
-                        href: `/dashboard/influencer/campaigns/${campaign.id}`,
-                      }}
+                  {displayItems.map((record) => (
+                    <InfluencerCampaignCardTile
+                      key={record.campaign.id}
+                      card={mapCard(record)}
                       className="aspect-[0.74]"
                     />
                   ))}
