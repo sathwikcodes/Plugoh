@@ -131,10 +131,7 @@ export function CampaignsList({
 
   return (
     <>
-      <m.div
-        variants={fadeUp}
-        className="flex min-h-0 flex-1 overflow-hidden md:hidden"
-      >
+      <m.div variants={fadeUp} className="flex min-h-0 flex-1 md:hidden">
         <CampaignCardStack
           campaigns={displayItems.map((item) => mapCardProps(item, actions))}
           className="h-full w-full"

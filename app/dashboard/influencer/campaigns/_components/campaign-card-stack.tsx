@@ -119,10 +119,10 @@ export function CampaignCardStack({ campaigns, className }: Props) {
   );
 
   return (
-    <div className={cn("flex h-full min-h-0 flex-col overflow-hidden", className)}>
+    <div className={cn("flex flex-col", className)}>
       <div
         ref={stageRef}
-        className="flex min-h-0 flex-1 items-start justify-center overflow-hidden"
+        className="flex min-h-0 flex-1 w-full justify-center items-start"
       >
         <div
           className="relative shrink-0"
@@ -133,7 +133,7 @@ export function CampaignCardStack({ campaigns, className }: Props) {
           }}
         >
           <ul
-            className="relative m-0 h-full w-full list-none overflow-visible p-0"
+            className="relative m-0 w-full list-none overflow-visible p-0"
             style={{ height: cardViewport.height }}
           >
             <AnimatePresence>
