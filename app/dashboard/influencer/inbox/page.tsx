@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { AnimatePresence, m } from "framer-motion";
@@ -13,7 +13,7 @@ import { ConversationList } from "./_components/conversation-list";
 import { ChatPanel } from "./_components/chat-panel";
 import { InboxEmptyState } from "./_components/inbox-empty-state";
 
-export default function InboxPage() {
+function InboxPageInner() {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -164,5 +164,13 @@ export default function InboxPage() {
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+export default function InboxPage() {
+  return (
+    <Suspense fallback={null}>
+      <InboxPageInner />
+    </Suspense>
   );
 }
