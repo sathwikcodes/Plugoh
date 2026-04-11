@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Mail, MessageSquare, Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { formatCurrency, formatPackage, timeAgo } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 import type { Campaign } from "./campaign-types";
 
 interface CampaignSidebarProps {
@@ -9,59 +8,90 @@ interface CampaignSidebarProps {
   showContactInfo: boolean;
 }
 
+const EARNINGS_CONFIG: Record<
+  string,
+  { label: string; note: string; color: string }
+> = {
+  pre_authorized:     { label: "Offer Value",     note: "Accept to lock this deal",                        color: "text-amber-300" },
+  requested:          { label: "Offer Value",     note: "Accept to lock this deal",                        color: "text-amber-300" },
+  pending:            { label: "Offer Value",     note: "Accept to lock this deal",                        color: "text-amber-300" },
+  payment_pending:    { label: "Accepted",        note: "Waiting for brand to pay",                        color: "text-white" },
+  in_escrow:          { label: "In Escrow",       note: "Released on brand approval",                      color: "text-emerald-300" },
+  accepted:           { label: "In Escrow",       note: "Released on brand approval",                      color: "text-emerald-300" },
+  delivery_submitted: { label: "Pending Payout",  note: "Auto-releases in 7 days if brand doesn't act",   color: "text-yellow-300" },
+  completed:          { label: "Earned",          note: "Paid out to your account",                        color: "text-emerald-300" },
+};
+
+const DEFAULT_EARNINGS = {
+  label: "Amount",
+  note: "Campaign did not proceed",
+  color: "text-white/40",
+};
+
+const OFFER_STATUSES = new Set(["pre_authorized", "requested", "pending"]);
+
 export function CampaignSidebar({
   campaign,
   showContactInfo,
 }: CampaignSidebarProps) {
+  const earnings = EARNINGS_CONFIG[campaign.status] ?? DEFAULT_EARNINGS;
+  const isOffer = OFFER_STATUSES.has(campaign.status);
+
+  const formattedReceived = new Date(campaign.created_at).toLocaleDateString(
+    "en-IN",
+    { day: "numeric", month: "short", year: "numeric" },
+  );
+
+  const formattedExpiry =
+    campaign.expires_at
+      ? new Date(campaign.expires_at).toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : null;
+
   return (
     <div className="space-y-3">
-      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
-        <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
-          Your Earnings
+      {/* Earnings */}
+      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
+        <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-white/35">
+          {earnings.label}
         </p>
-        <p className="num text-[30px] font-bold leading-none tracking-[-0.04em] text-white">
+        <p
+          className={`mt-1.5 text-[34px] font-bold leading-none tracking-[-0.04em] ${earnings.color}`}
+        >
           {formatCurrency(campaign.price_offered)}
         </p>
-        <p className="mt-1.5 text-xs text-white/40">
-          Released on brand approval or 7-day auto-release
-        </p>
+        <p className="mt-1.5 text-[11px] text-white/40">{earnings.note}</p>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
+      {/* Details */}
+      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
         <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
           Details
         </p>
         <div className="space-y-2 text-[13px]">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-white/50">Package</span>
-            <span className="text-right text-white">
-              {formatPackage(campaign.package_type)}
-            </span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-white/45">Received</span>
+            <span className="text-right text-white">{formattedReceived}</span>
           </div>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-white/50">Received</span>
-            <span className="text-right text-white">
-              {new Date(campaign.created_at).toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
-            </span>
-          </div>
-          {campaign.updated_at ? (
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-white/50">Updated</span>
-              <span className="text-right text-white">
-                {timeAgo(campaign.updated_at)}
+          {formattedExpiry && isOffer && (
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-white/45">Expires</span>
+              <span className="text-right text-amber-300/80">
+                {formattedExpiry}
               </span>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
 
+      {/* Brand contact */}
       {showContactInfo &&
       (campaign.business_contact_email || campaign.business_contact_phone) ? (
-        <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
+        <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
           <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
             Brand contact
           </p>
@@ -86,16 +116,14 @@ export function CampaignSidebar({
         </div>
       ) : null}
 
-      <Button
-        variant="outline"
-        asChild
-        className="h-10 w-full rounded-full border-white/12 text-sm hover:bg-white/8"
+      {/* Chat button */}
+      <Link
+        href={`/dashboard/influencer/inbox?chat=${campaign.id}`}
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white text-[13px] font-semibold text-black shadow-[0_6px_20px_rgba(0,0,0,0.28)] transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
       >
-        <Link href={`/dashboard/influencer/inbox?chat=${campaign.id}`}>
-          <MessageSquare className="mr-2 h-3.5 w-3.5" />
-          Open in inbox
-        </Link>
-      </Button>
+        <MessageSquare className="h-[15px] w-[15px]" />
+        Open in inbox
+      </Link>
     </div>
   );
 }

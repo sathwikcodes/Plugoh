@@ -43,7 +43,7 @@ export default function CampaignsPage() {
   const [search, setSearch] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [sortPanelOpen, setSortPanelOpen] = useState(false);
-  const [sortPanelTab, setSortPanelTab] = useState<"status" | "sort">("sort");
+  const [sortPanelTab, setSortPanelTab] = useState<"status" | "sort">("status");
 
   useEffect(() => {
     if (!campaigns.length) return;
@@ -75,7 +75,6 @@ export default function CampaignsPage() {
     const counts: Record<StatusFilter, number> = {
       All: campaigns.length,
       requested: 0,
-      payment_pending: 0,
       in_escrow: 0,
       completed: 0,
       closed: 0,
@@ -184,7 +183,7 @@ export default function CampaignsPage() {
               hasActiveFilters={sortMode !== "newest" || statusFilter !== "All"}
               activeSelectionCount={activeSelectionCount}
               onOpenSort={() => {
-                setSortPanelTab(statusFilter !== "All" ? "status" : "sort");
+                setSortPanelTab("status");
                 setSortPanelOpen(true);
               }}
             />

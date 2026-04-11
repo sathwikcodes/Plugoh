@@ -8,7 +8,6 @@ export type SortMode = "newest" | "highest_offer" | "recently_updated";
 export type StatusFilter =
   | "All"
   | "requested"
-  | "payment_pending"
   | "in_escrow"
   | "completed"
   | "closed";
@@ -21,7 +20,6 @@ export type EnrichedCampaign = {
 export const STATUS_FILTER_GROUPS: Record<StatusFilter, string[]> = {
   All: [],
   requested: ["requested", "pending", "pre_authorized"],
-  payment_pending: ["payment_pending"],
   in_escrow: ["in_escrow", "accepted", "delivery_submitted"],
   completed: ["completed"],
   closed: ["declined", "rejected", "expired", "cancelled", "refunded"],
@@ -29,8 +27,7 @@ export const STATUS_FILTER_GROUPS: Record<StatusFilter, string[]> = {
 
 export const STATUS_PILL_LABELS: Record<StatusFilter, string> = {
   All: "All",
-  requested: "Offers",
-  payment_pending: "Awaiting pay",
+  requested: "New Offers",
   in_escrow: "Active",
   completed: "Done",
   closed: "Closed",
@@ -39,7 +36,6 @@ export const STATUS_PILL_LABELS: Record<StatusFilter, string> = {
 export const STATUS_FILTERS: StatusFilter[] = [
   "All",
   "requested",
-  "payment_pending",
   "in_escrow",
   "completed",
   "closed",

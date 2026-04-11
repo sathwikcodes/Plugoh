@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 
-const Digit = ({ value }: { value: number }) => {
+const Digit = ({ value, compact }: { value: number; compact?: boolean }) => {
   return (
-    <div className="relative h-14 w-10 overflow-hidden rounded-md bg-zinc-900 font-mono text-3xl font-bold text-white flex items-center justify-center">
+    <div className={`relative overflow-hidden rounded-md bg-zinc-900 font-mono font-bold text-white flex items-center justify-center ${compact ? "h-10 w-7 text-xl" : "h-14 w-10 text-3xl"}`}>
       <AnimatePresence mode="popLayout">
         <m.span
           key={value}
@@ -26,6 +26,7 @@ interface FlipClockProps {
   expiresAt?: string | null;
   onExpire?: () => void;
   className?: string;
+  compact?: boolean;
 }
 
 function getTimeLeft(expiresAt: string): number {
@@ -44,6 +45,7 @@ export default function FlipClock({
   expiresAt,
   onExpire,
   className,
+  compact,
 }: FlipClockProps) {
   const [timeLeft, setTimeLeft] = useState<number>(() =>
     expiresAt ? getTimeLeft(expiresAt) : 0,
@@ -70,15 +72,15 @@ export default function FlipClock({
   return (
     <div className={`flex items-center gap-1 ${className ?? ""}`.trim()}>
       {hours.split("").map((digit, i) => (
-        <Digit key={`h-${i}`} value={parseInt(digit)} />
+        <Digit key={`h-${i}`} value={parseInt(digit)} compact={compact} />
       ))}
-      <span className="text-3xl font-bold text-white/40">:</span>
+      <span className={`font-bold text-white/40 ${compact ? "text-xl" : "text-3xl"}`}>:</span>
       {minutes.split("").map((digit, i) => (
-        <Digit key={`m-${i}`} value={parseInt(digit)} />
+        <Digit key={`m-${i}`} value={parseInt(digit)} compact={compact} />
       ))}
-      <span className="text-3xl font-bold text-white/40">:</span>
+      <span className={`font-bold text-white/40 ${compact ? "text-xl" : "text-3xl"}`}>:</span>
       {seconds.split("").map((digit, i) => (
-        <Digit key={`s-${i}`} value={parseInt(digit)} />
+        <Digit key={`s-${i}`} value={parseInt(digit)} compact={compact} />
       ))}
     </div>
   );
