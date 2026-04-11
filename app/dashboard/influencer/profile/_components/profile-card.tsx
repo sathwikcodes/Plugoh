@@ -45,43 +45,6 @@ export default function ProfileCard({
             "radial-gradient(120% 120% at 30% 10%, #1e1e1e 0%, #111112 55%, #0c0c0d 100%)",
         }}
       >
-        {/* ── STATUS BAR ── */}
-        <button
-          onClick={onNavigateToSettings}
-          className="w-full flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-2">
-            <span className={cn("relative flex h-2.5 w-2.5")}>
-              {/* Pulsing ring */}
-              <span
-                className={cn(
-                  "animate-ping absolute inline-flex h-full w-full rounded-full opacity-50",
-                  profile.is_active ? "bg-green-400" : "bg-amber-400",
-                )}
-              />
-              <span
-                className={cn(
-                  "relative inline-flex rounded-full h-2.5 w-2.5",
-                  profile.is_active ? "bg-green-500" : "bg-amber-500",
-                )}
-              />
-            </span>
-            <span
-              className={cn(
-                "text-sm font-medium tracking-wide",
-                profile.is_active ? "text-green-400" : "text-amber-400",
-              )}
-            >
-              {profile.is_active ? "Visible to brands" : "Hidden from brands"}
-            </span>
-          </div>
-
-          {profile.category && (
-            <span className="text-xs text-white/50 bg-white/[0.07] border border-white/[0.08] px-3 py-1 rounded-full group-hover:bg-white/[0.10] transition-colors">
-              {profile.category}
-            </span>
-          )}
-        </button>
 
         {/* ── IDENTITY ROW ── */}
         <div className="flex items-center gap-5">
@@ -89,10 +52,6 @@ export default function ProfileCard({
           <div className="shrink-0">
             <div
               className="rounded-full p-[3px] shadow-lg"
-              style={{
-                background:
-                  "linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4)",
-              }}
             >
               {profile.ig_profile_picture_url ? (
                 <Image
@@ -115,11 +74,26 @@ export default function ProfileCard({
           {/* Name + meta */}
           <div className="min-w-0 flex-1">
             {/* Name row with inline verified badge */}
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <h1 className="text-2xl font-bold tracking-tight text-white truncate">
+            <div className="flex min-w-0 items-center gap-2">
+              <h1 className="min-w-0 flex-1 truncate text-2xl font-bold tracking-tight text-white">
                 {profile.display_name || basicProfile?.full_name || "Creator"}
               </h1>
-              {hasPhone && <RealReachVerifiedBadge />}
+              {hasPhone && (
+                <>
+                  <span className="inline-flex shrink-0 items-center justify-center md:hidden">
+                    <Image
+                      src="/verified.png"
+                      alt="Verified"
+                      width={30}
+                      height={30}
+                      className="h-[30px] w-[30px] object-contain"
+                    />
+                  </span>
+                  <span className="hidden md:block">
+                    <RealReachVerifiedBadge />
+                  </span>
+                </>
+              )}
             </div>
 
             {/* Instagram + Location row */}

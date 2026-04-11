@@ -16,14 +16,13 @@ import { toast } from "sonner";
 import ProfileCard from "./_components/profile-card";
 import InstagramTab from "./_components/tabs/instagram-tab";
 import PricingTab from "./_components/tabs/pricing-tab";
-import CareerTab from "./_components/tabs/career-tab";
 import SettingsTab from "./_components/tabs/settings-tab";
 import {
   AIStatusBanner,
   ProfileTabSkeleton,
 } from "./_components/profile-page-skeleton";
 
-type TabValue = "instagram" | "pricing" | "career" | "settings";
+type TabValue = "pricing" | "instagram" | "settings";
 
 function InfluencerProfilePageInner() {
   const { user, profile, loading: authLoading, signOut } = useAuth();
@@ -37,7 +36,7 @@ function InfluencerProfilePageInner() {
     (typeof window !== "undefined" &&
       sessionStorage.getItem("plugoh_ai_pending") === user?.id);
 
-  const [activeTab, setActiveTab] = useState<TabValue>("instagram");
+  const [activeTab, setActiveTab] = useState<TabValue>("pricing");
   const [aiStatus, setAiStatus] = useState<
     "idle" | "running" | "done" | "failed"
   >(isOnboarding ? "running" : "idle");
@@ -129,13 +128,7 @@ function InfluencerProfilePageInner() {
             {showSkeleton && activeTab !== "settings" ? (
               <ProfileTabSkeleton
                 key="skeleton"
-                tab={
-                  activeTab === "career"
-                    ? "career"
-                    : activeTab === "pricing"
-                      ? "pricing"
-                      : "instagram"
-                }
+                tab={activeTab === "pricing" ? "pricing" : "instagram"}
               />
             ) : (
               <m.div
@@ -149,9 +142,6 @@ function InfluencerProfilePageInner() {
                 )}
                 {activeTab === "pricing" && (
                   <PricingTab profile={ip} userId={user.id} />
-                )}
-                {activeTab === "career" && (
-                  <CareerTab campaigns={campaigns ?? []} />
                 )}
                 {activeTab === "settings" && (
                   <SettingsTab

@@ -4,26 +4,17 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Diamond,
   Pencil,
   X,
-  Clock,
   Loader2,
   Check,
-  ChevronDown,
-  Sparkles,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { cn } from "@/lib/utils";
-import {
-  CONTENT_TYPES,
-  TURNAROUND_OPTIONS,
-  TURNAROUND_LABELS,
-} from "@/lib/constants";
 import { useUpdateInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import { toast } from "sonner";
 import type { Database } from "@/lib/supabase/types";
@@ -220,7 +211,7 @@ function HistogramSlider({
             <div
               key={i}
               className={cn(
-                "flex-1 rounded-t-[2px] transition-colors duration-75",
+                "flex-1 rounded-t-xs transition-colors duration-75",
                 isActive ? "bg-primary opacity-90" : "bg-white/15",
               )}
               style={{ height: `${height * 100}%` }}
@@ -582,14 +573,6 @@ export default function PricingTab({
     "reel" | "post" | "story" | null
   >(null);
 
-  // Meta section (content types + turnaround)
-  const [metaOpen, setMetaOpen] = useState(false);
-  const [editingMeta, setEditingMeta] = useState(false);
-  const [metaForm, setMetaForm] = useState({
-    content_types: profile.content_types || [],
-    turnaround_time: profile.turnaround_time || "",
-  });
-
   const updateProfile = useUpdateInfluencerProfile();
 
   if (showSkeleton) return <PricingSkeletonCards />;
@@ -615,34 +598,6 @@ export default function PricingTab({
     } finally {
       setSavingCard(null);
     }
-  };
-
-  const handleSaveMeta = async () => {
-    try {
-      await updateProfile.mutateAsync({
-        userId,
-        data: {
-          price_per_reel: profile.price_per_reel,
-          price_per_post: profile.price_per_post,
-          price_per_story: profile.price_per_story,
-          content_types: metaForm.content_types,
-          turnaround_time: metaForm.turnaround_time || null,
-        },
-      });
-      toast.success("Settings updated");
-      setEditingMeta(false);
-    } catch {
-      toast.error("Failed to save. Please try again.");
-    }
-  };
-
-  const toggleContentType = (ct: string) => {
-    setMetaForm((prev) => ({
-      ...prev,
-      content_types: prev.content_types.includes(ct)
-        ? prev.content_types.filter((c) => c !== ct)
-        : [...prev.content_types, ct],
-    }));
   };
 
   return (
@@ -687,184 +642,6 @@ export default function PricingTab({
           );
         })}
       </div>
-
-      {/* AI suggestion note */}
-      {profile.price_per_reel && (
-        <m.p
-          variants={fadeUp}
-          className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground"
-        >
-          <Sparkles className="h-3 w-3 text-purple-400" />
-          Suggested by Plugoh AI based on your engagement — edit anytime
-        </m.p>
-      )}
-
-      {/* Content types + turnaround — collapsible */}
-      <m.div variants={fadeUp}>
-        <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md overflow-hidden">
-          {/* Toggle header */}
-          <button
-            className="flex w-full items-center justify-between p-4 text-left"
-            onClick={() => setMetaOpen((o) => !o)}
-          >
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Content Types & Turnaround
-            </p>
-            <m.div
-              animate={{ rotate: metaOpen ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            </m.div>
-          </button>
-
-          <AnimatePresence initial={false}>
-            {metaOpen && (
-              <m.div
-                key="meta-content"
-                initial={{ height: 0 }}
-                animate={{ height: "auto" }}
-                exit={{ height: 0 }}
-                transition={{ duration: 0.22, ease: "easeInOut" }}
-                className="overflow-hidden"
-              >
-                <div className="px-4 pb-4 space-y-4 border-t border-white/10 pt-4">
-                  {/* Edit toggle */}
-                  <div className="flex justify-end">
-                    {editingMeta ? (
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 text-xs text-muted-foreground"
-                          onClick={() => {
-                            setMetaForm({
-                              content_types: profile.content_types || [],
-                              turnaround_time: profile.turnaround_time || "",
-                            });
-                            setEditingMeta(false);
-                          }}
-                          disabled={updateProfile.isPending}
-                        >
-                          <X className="mr-1 h-3 w-3" /> Cancel
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="h-7 text-xs"
-                          onClick={handleSaveMeta}
-                          disabled={updateProfile.isPending}
-                        >
-                          {updateProfile.isPending ? (
-                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                          ) : (
-                            <Check className="mr-1 h-3 w-3" />
-                          )}
-                          Save
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs text-muted-foreground"
-                        onClick={() => setEditingMeta(true)}
-                      >
-                        <Pencil className="mr-1 h-3 w-3" /> Edit
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Content types */}
-                  <div className="space-y-2">
-                    <p className="text-xs text-muted-foreground">
-                      Content Types
-                    </p>
-                    {editingMeta ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {CONTENT_TYPES.map((ct) => (
-                          <button
-                            key={ct}
-                            onClick={() => toggleContentType(ct)}
-                            className={cn(
-                              "rounded-full px-3 py-1 text-xs font-medium border transition-all",
-                              metaForm.content_types.includes(ct)
-                                ? "border-primary bg-primary/10 text-foreground"
-                                : "border-white/10 bg-white/5 text-muted-foreground hover:border-white/20",
-                            )}
-                          >
-                            {ct}
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-1.5">
-                        {(profile.content_types || []).length > 0 ? (
-                          (profile.content_types || []).map((ct) => (
-                            <Badge
-                              key={ct}
-                              variant="outline"
-                              className="rounded-full border-white/10 bg-white/5 text-xs"
-                            >
-                              {ct}
-                            </Badge>
-                          ))
-                        ) : (
-                          <p className="text-xs text-muted-foreground">
-                            None set
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Turnaround time */}
-                  <div className="space-y-2">
-                    <p className="text-xs text-muted-foreground">
-                      Turnaround Time
-                    </p>
-                    {editingMeta ? (
-                      <div className="flex flex-wrap gap-2">
-                        {TURNAROUND_OPTIONS.map((opt) => (
-                          <button
-                            key={opt}
-                            onClick={() =>
-                              setMetaForm((prev) => ({
-                                ...prev,
-                                turnaround_time: opt,
-                              }))
-                            }
-                            className={cn(
-                              "rounded-full px-3 py-1.5 text-xs font-medium border transition-all",
-                              metaForm.turnaround_time === opt
-                                ? "border-primary bg-primary/10 text-foreground"
-                                : "border-white/10 bg-white/5 text-muted-foreground hover:border-white/20",
-                            )}
-                          >
-                            {TURNAROUND_LABELS[opt]}
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        {profile.turnaround_time ? (
-                          <span>
-                            Delivers in{" "}
-                            {TURNAROUND_LABELS[profile.turnaround_time] ||
-                              profile.turnaround_time.replace(/_/g, " ")}
-                          </span>
-                        ) : (
-                          <span className="text-xs">Not set</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </m.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </m.div>
     </m.div>
   );
 }

@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import { m } from "framer-motion";
 import {
-  Instagram,
   Banknote,
-  TrendingUp,
+  Instagram,
   Settings2,
   type LucideIcon,
 } from "lucide-react";
@@ -19,9 +18,8 @@ const SPRING = {
 };
 
 const PROFILE_TABS = [
-  { id: "instagram", label: "Instagram", Icon: Instagram },
   { id: "pricing", label: "Pricing", Icon: Banknote },
-  { id: "career", label: "Career", Icon: TrendingUp },
+  { id: "instagram", label: "Instagram", Icon: Instagram },
   { id: "settings", label: "Settings", Icon: Settings2 },
 ] as const;
 
