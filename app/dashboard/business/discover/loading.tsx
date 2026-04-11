@@ -29,7 +29,7 @@ export function InfluencerCardSkeleton() {
 
 export default function DiscoverLoading() {
   return (
-    <div className="relative overflow-hidden min-h-dvh bg-[#0F1115]">
+    <div className="relative overflow-hidden min-h-dvh bg-background">
       <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
         <AnimatedGradientBackground
           Breathing

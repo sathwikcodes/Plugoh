@@ -120,14 +120,14 @@ interface CampaignBriefSectionProps {
 export function CampaignBriefSection({ campaign }: CampaignBriefSectionProps) {
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-4 sm:px-5">
+      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] px-4 py-4 sm:px-5">
         <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
           Progress
         </p>
         <StatusTimeline status={campaign.status} />
       </div>
 
-      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-4 sm:px-5">
+      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] px-4 py-4 sm:px-5">
         <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
           Campaign brief
         </p>
@@ -143,7 +143,7 @@ export function CampaignBriefSection({ campaign }: CampaignBriefSectionProps) {
       </div>
 
       {campaign.delivery_url && (
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] px-5 py-4">
+        <div className="rounded-2xl border border-[#3ecf8e]/20 bg-[#3ecf8e]/[0.06] px-5 py-4">
           <p className="mb-2 text-[10px] uppercase tracking-[0.22em] text-white/35">
             Delivered content
           </p>
@@ -151,7 +151,7 @@ export function CampaignBriefSection({ campaign }: CampaignBriefSectionProps) {
             href={campaign.delivery_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-emerald-300 hover:text-emerald-200 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[#3ecf8e] hover:text-[#3ecf8e]/80 transition-colors"
           >
             <ExternalLink className="h-3.5 w-3.5" />
             View delivery

@@ -55,7 +55,7 @@ export function ActiveCampaignsOverview({
 
       {items.length === 0 ? (
         <div className="rounded-2xl border border-white/5 bg-card/40 backdrop-blur-sm p-10 text-center">
-          <div className="flex h-14 w-14 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 mb-4">
+          <div className="flex h-14 w-14 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-[#b02aaa]/10 mb-4">
             <Briefcase className="h-7 w-7 text-muted-foreground" />
           </div>
           <p className="font-semibold">No active campaigns</p>

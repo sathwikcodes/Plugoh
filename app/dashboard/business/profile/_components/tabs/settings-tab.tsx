@@ -198,7 +198,7 @@ export default function BusinessSettingsTab({
           <Button
             onClick={handleSave}
             disabled={saving || !businessName.trim()}
-            className="w-full h-11 bg-gradient-to-r from-blue-500 to-violet-600 hover:brightness-110 border-0"
+            className="w-full h-11 bg-gradient-to-r from-[#e0348c] to-[#b02aaa] hover:brightness-110 border-0"
           >
             {saving ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

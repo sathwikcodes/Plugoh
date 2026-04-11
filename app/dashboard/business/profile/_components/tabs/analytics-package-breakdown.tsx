@@ -48,7 +48,7 @@ export function AnalyticsPackageBreakdown({
               </div>
               <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-700"
+                  className="h-full rounded-full bg-gradient-to-r from-[#e0348c] to-[#b02aaa] transition-all duration-700"
                   style={{ width: `${pct}%` }}
                 />
               </div>

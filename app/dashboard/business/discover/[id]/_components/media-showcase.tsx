@@ -51,7 +51,7 @@ export function MediaShowcase({
 
   return (
     <div className="sm:hidden space-y-4">
-      <div className="relative aspect-[0.8] w-full overflow-hidden rounded-[28px] border border-white/12 bg-[#080a0d] shadow-[0_28px_80px_rgba(0,0,0,0.46)]">
+      <div className="relative aspect-[0.8] w-full overflow-hidden rounded-[28px] border border-white/12 bg-[#080609] shadow-[0_28px_80px_rgba(0,0,0,0.46)]">
         {hasMedia ? (
           <ShowcaseMediaImage
             src={activeMedia?.thumbnail_url || activeMedia?.media_url || null}

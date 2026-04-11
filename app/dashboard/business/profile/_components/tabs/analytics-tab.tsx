@@ -139,7 +139,7 @@ export default function AnalyticsTab({
   if (completed.length === 0) {
     return (
       <div className="pt-8 text-center space-y-3">
-        <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/10 to-violet-500/10">
+        <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-[#b02aaa]/10">
           <BarChart3 className="h-8 w-8 text-muted-foreground" />
         </div>
         <p className="font-semibold">No analytics yet</p>

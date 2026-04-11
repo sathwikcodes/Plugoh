@@ -208,7 +208,7 @@ export function InfluencerCard({ profile, className }: InfluencerCardProps) {
       <div
         className={cn(
           "relative aspect-[0.68] w-full overflow-hidden rounded-[34px]",
-          "border border-white/[0.14] bg-[#080a0d]",
+          "border border-white/[0.14] bg-[#080609]",
           "shadow-[0_28px_80px_rgba(0,0,0,0.46)]",
         )}
       >

@@ -91,7 +91,7 @@ export function BookingDropdown({
         />
         <WorkspaceContent
           title={label}
-          className="border-white/10 bg-[#151922] text-white"
+          className="border-white/10 bg-[#241e30] text-white"
           renderWorkspace={(ws, isSelected) => (
             <WorkspaceRow workspace={ws} isSelected={isSelected} />
           )}

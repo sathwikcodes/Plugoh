@@ -10,7 +10,7 @@ import {
 
 export default function BusinessDashboardLoading() {
   return (
-    <div className="relative h-[calc(100dvh-4rem)] md:h-dvh overflow-hidden bg-[#0F1115]">
+    <div className="relative h-[calc(100dvh-4rem)] md:h-dvh overflow-hidden bg-background">
       <AnimatedGradientBackground
         Breathing
         gradientColors={GRADIENT_COLORS}

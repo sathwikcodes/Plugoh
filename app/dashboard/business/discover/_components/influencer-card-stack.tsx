@@ -120,7 +120,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
                     key={profile.id}
                     className={cn(
                       "absolute inset-0 list-none overflow-hidden rounded-[34px]",
-                      "border border-white/12 bg-[#080a0d]",
+                      "border border-white/12 bg-[#080609]",
                     )}
                     style={{
                       cursor: isFront ? "grab" : "auto",
