@@ -18,6 +18,15 @@ const TIER_BADGE_MAP: Record<string, { type: AwardBadgeType; place?: number }> =
     "Top Creator": { type: "golden-kitty" },
   };
 
+// Maps tier name → its brand color hex for the shimmer gradient
+const TIER_SHIMMER_COLOR: Record<string, string> = {
+  "Rising Star": "#34d399",   // emerald-400
+  Creator: "#60a5fa",          // blue-400
+  "Pro Creator": "#fbbf24",    // amber-400
+  "Elite Creator": "#a78bfa",  // violet-400
+  "Top Creator": "#facc15",    // yellow-400
+};
+
 interface TierHeroCardProps {
   tier: Tier;
   nextTier: Tier | null;
@@ -33,6 +42,8 @@ export function TierHeroCard({
   tierProgress,
   tierGap,
 }: TierHeroCardProps) {
+  const shimmerColor = TIER_SHIMMER_COLOR[tier.name] ?? "#ffffff";
+
   return (
     <m.div variants={fadeUp}>
       <div
@@ -59,16 +70,26 @@ export function TierHeroCard({
           />
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2">
-              <AwardBadge
-                type={TIER_BADGE_MAP[tier.name].type}
-                place={TIER_BADGE_MAP[tier.name].place}
-              />
+            <div className="flex items-center justify-between gap-6">
+              <div className="max-w-[150px] sm:max-w-[240px]">
+                <AwardBadge
+                  type={TIER_BADGE_MAP[tier.name].type}
+                  place={TIER_BADGE_MAP[tier.name].place}
+                />
+              </div>
               <div className="text-right shrink-0">
-                <p className="text-[10px] text-muted-foreground">
-                  Total Earned
-                </p>
-                <p className="text-2xl font-extrabold tracking-tight">
+                <p className="text-[10px] text-muted-foreground">Total Earned</p>
+                <p
+                  className="text-3xl font-black tracking-tight"
+                  style={{
+                    background: `linear-gradient(90deg, ${shimmerColor} 20%, #ffffff 50%, ${shimmerColor} 80%)`,
+                    backgroundSize: "200% auto",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                    animation: "shimmer 2.4s ease-in-out infinite",
+                  }}
+                >
                   ₹<AnimatedNumber value={totalEarned} />
                 </p>
               </div>
@@ -76,11 +97,7 @@ export function TierHeroCard({
 
             {nextTier ? (
               <div className="mt-3 space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                  <span>Progress to {nextTier.name}</span>
-                  <span>{Math.round(tierProgress)}%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                <div className="h-2.5 w-full rounded-full bg-white/10 overflow-hidden">
                   <m.div
                     className={cn(
                       "h-full rounded-full bg-gradient-to-r",

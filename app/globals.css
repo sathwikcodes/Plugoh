@@ -423,3 +423,12 @@ input.range-thumb::-moz-range-track {
     opacity: 0.6;
   }
 }
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}

@@ -230,12 +230,12 @@ export function TransactionTable({
   return (
     <div className={cn("w-full", className)}>
       <div className="overflow-x-auto rounded-xl">
-        <div className="min-w-[720px]">
+        <div>
           {/* Column headers */}
-          <div className="grid grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_1fr] gap-3 px-4 py-2.5 mb-1">
+          <div className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_1fr] gap-3 px-4 py-2.5 mb-1">
             <PlainHeader label="Campaign" />
-            <PlainHeader label="Type" />
-            <PlainHeader label="Brand" />
+            <PlainHeader label="Type" className="hidden sm:flex" />
+            <PlainHeader label="Brand" className="hidden sm:flex" />
             <SortHeader
               label="Amount"
               col="amount"
@@ -249,6 +249,7 @@ export function TransactionTable({
               active={sortCol}
               dir={sortDir}
               onSort={handleSort}
+              className="hidden sm:flex"
             />
             <SortHeader
               label="Status"
@@ -295,7 +296,7 @@ export function TransactionTable({
                       )}
                     />
 
-                    <div className="relative grid grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_1fr] gap-3 items-center px-4 py-3.5">
+                    <div className="relative grid grid-cols-[1fr_auto_auto] sm:grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_1fr] gap-3 items-center px-4 py-3.5">
                       {/* Campaign — Wallet icon (no background) + title/brand */}
                       <div className="flex items-center gap-3 min-w-0">
                         <img
@@ -314,7 +315,7 @@ export function TransactionTable({
                       </div>
 
                       {/* Type */}
-                      <div>
+                      <div className="hidden sm:block">
                         <span
                           className={cn(
                             "inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium border",
@@ -339,7 +340,7 @@ export function TransactionTable({
                       </div>
 
                       {/* Brand */}
-                      <p className="text-sm text-muted-foreground truncate">
+                      <p className="hidden sm:block text-sm text-muted-foreground truncate">
                         {tx.brandName}
                       </p>
 
@@ -361,7 +362,7 @@ export function TransactionTable({
                       </div>
 
                       {/* Date */}
-                      <p className="text-sm text-muted-foreground tabular-nums">
+                      <p className="hidden sm:block text-sm text-muted-foreground tabular-nums">
                         {formatDate(tx.date)}
                       </p>
 

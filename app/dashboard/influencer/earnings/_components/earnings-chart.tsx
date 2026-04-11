@@ -30,40 +30,49 @@ export function EarningsChart({
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Last 6 Months
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="hidden sm:block text-xs text-muted-foreground">
             Avg ₹{avgPerCampaign.toLocaleString("en-IN")}/campaign
           </p>
         </div>
 
         <div className="flex items-end justify-between gap-2 h-32">
-          {monthlyData.map((m, i) => {
-            const isPeak = i === peakMonthIdx && m.amount > 0;
+          {monthlyData.map((pt, i) => {
+            const isPeak = i === peakMonthIdx && pt.amount > 0;
+            const barH = Math.max(
+              Math.round((pt.amount / maxMonthlyAmount) * 76),
+              4,
+            );
             return (
-              <div
-                key={m.month}
+              <m.div
+                key={pt.month}
                 className="flex-1 flex flex-col items-center gap-1.5"
+                whileHover={{ opacity: 0.85 }}
               >
                 {isPeak ? (
                   <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
                 ) : (
                   <span className="text-[10px] font-medium text-muted-foreground">
-                    {m.amount > 0
-                      ? `₹${m.amount >= 1000 ? `${(m.amount / 1000).toFixed(1)}K` : m.amount}`
+                    {pt.amount > 0
+                      ? `₹${pt.amount >= 1000 ? `${(pt.amount / 1000).toFixed(1)}K` : pt.amount}`
                       : ""}
                   </span>
                 )}
-                <div
+                <m.div
                   className={cn(
-                    "w-full rounded-t-lg transition-all",
-                    m.amount > 0
+                    "w-full rounded-t-lg",
+                    pt.amount > 0
                       ? isPeak
                         ? "bg-gradient-to-t from-amber-500/80 to-yellow-400/60"
                         : "bg-gradient-to-t from-primary/80 to-primary/40"
                       : "bg-white/5",
                   )}
-                  style={{
-                    height: `${Math.max((m.amount / maxMonthlyAmount) * 100, 4)}%`,
-                    minHeight: "4px",
+                  initial={{ height: 0 }}
+                  animate={{ height: barH }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 180,
+                    damping: 20,
+                    delay: i * 0.07,
                   }}
                 />
                 <span
@@ -74,9 +83,9 @@ export function EarningsChart({
                       : "text-muted-foreground",
                   )}
                 >
-                  {m.month}
+                  {pt.month}
                 </span>
-              </div>
+              </m.div>
             );
           })}
         </div>

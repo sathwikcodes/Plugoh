@@ -1,19 +1,37 @@
 "use client";
 
-import { Suspense, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search } from "lucide-react";
+import { AlertTriangle, Search } from "lucide-react";
 import { AnimatePresence, m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
 import { useInboxConversations } from "@/hooks/queries/use-inbox-conversations";
 import { Input } from "@/components/ui/input";
-import { fadeUp, stagger } from "@/lib/animations";
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import {
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+  fadeUp,
+  stagger,
+} from "@/lib/animations";
+import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ConversationList } from "./_components/conversation-list";
 import { ChatPanel } from "./_components/chat-panel";
 import { InboxEmptyState } from "./_components/inbox-empty-state";
+import InboxLoading from "./loading";
 
-function InboxPageInner() {
+const MOBILE_VIEWPORT_STYLE = {
+  height: "100dvh",
+  minHeight: "100dvh",
+} as const;
+
+const MOBILE_DOCK_INSET_STYLE = {
+  paddingBottom: "calc(104px + env(safe-area-inset-bottom, 0px))",
+} as const;
+
+export default function InfluencerInboxPage() {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -21,9 +39,12 @@ function InboxPageInner() {
   const selectedId = searchParams.get("chat");
   const [search, setSearch] = useState("");
 
-  const { data: conversations = [], isLoading } = useInboxConversations(
-    user?.id,
-  );
+  const {
+    data: conversations = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useInboxConversations(user?.id);
 
   const selectedConversation = useMemo(
     () => conversations.find((c) => c.campaign.id === selectedId) ?? null,
@@ -41,22 +62,46 @@ function InboxPageInner() {
     router.push("/dashboard/influencer/inbox");
   }, [router]);
 
-  const mobileViewportHeight = "100dvh";
-  const mobileDockInset = "calc(104px + env(safe-area-inset-bottom, 0px))";
   const showMobileChat = isMobile && !!selectedConversation;
+
+  if (isLoading) return <InboxLoading />;
+
+  if (isError) {
+    return (
+      <div className="flex h-dvh flex-col items-center justify-center gap-3">
+        <AlertTriangle className="h-8 w-8 text-red-400/60" />
+        <p className="text-sm font-medium text-muted-foreground/60">
+          Failed to load conversations
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetch()}
+          className="rounded-full"
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div
       className="relative h-dvh overflow-hidden"
-      style={
-        isMobile
-          ? {
-              height: mobileViewportHeight,
-              minHeight: mobileViewportHeight,
-            }
-          : undefined
-      }
+      style={isMobile ? MOBILE_VIEWPORT_STYLE : undefined}
     >
+      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
+        <AnimatedGradientBackground
+          Breathing
+          gradientColors={GRADIENT_COLORS}
+          gradientStops={GRADIENT_STOPS}
+          startingGap={125}
+          breathingRange={2.2}
+          animationSpeed={0.008}
+          containerStyle={GRADIENT_STYLE}
+        />
+      </div>
+
       <div className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6">
         <AnimatePresence mode="wait">
           {showMobileChat ? (
@@ -111,7 +156,7 @@ function InboxPageInner() {
                 className="min-h-0 flex-1 md:flex-none md:h-[calc(100dvh-14rem)]"
                 style={
                   isMobile && !showMobileChat
-                    ? { paddingBottom: mobileDockInset }
+                    ? MOBILE_DOCK_INSET_STYLE
                     : undefined
                 }
               >
@@ -123,7 +168,6 @@ function InboxPageInner() {
                         searchQuery={search}
                         selectedId={selectedId}
                         currentUserId={user?.id || ""}
-                        isLoading={isLoading}
                         onSelect={handleSelect}
                       />
                     </div>
@@ -164,13 +208,5 @@ function InboxPageInner() {
         </AnimatePresence>
       </div>
     </div>
-  );
-}
-
-export default function InboxPage() {
-  return (
-    <Suspense fallback={null}>
-      <InboxPageInner />
-    </Suspense>
   );
 }

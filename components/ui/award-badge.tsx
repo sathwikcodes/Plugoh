@@ -266,22 +266,22 @@ export const AwardBadge = ({ type, link }: AwardBadgeProps) => {
           {/* Brand label */}
           <text
             fontFamily="Helvetica-Bold, Helvetica"
-            fontSize="9"
+            fontSize="12"
             fontWeight="bold"
             fill="#666"
             x="53"
-            y="22"
+            y="21"
           >
             REELREACH
           </text>
           {/* Tier name */}
           <text
             fontFamily="Helvetica-Bold, Helvetica"
-            fontSize="15"
+            fontSize="22"
             fontWeight="bold"
             fill="#555"
             x="52"
-            y="40"
+            y="43"
           >
             {title[type]}
           </text>

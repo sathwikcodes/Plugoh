@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/auth-context";
+import { useMyInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import {
   useCampaignMessages,
   useSendMessage,
@@ -14,12 +15,22 @@ import {
 } from "@/components/campaign/message-bubble";
 import { MessageInput } from "@/components/campaign/message-input";
 import { ChatHeader } from "./chat-header";
-import { Loader2, Lock, MessageSquare } from "lucide-react";
+import {
+  AlertTriangle,
+  Loader2,
+  Lock,
+  MessageSquare,
+} from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import type { Conversation } from "@/hooks/queries/use-inbox-conversations";
-import { getBrandAvatarUrl, getBrandDisplayName } from "./profile-display";
+import {
+  getBrandAvatarUrl,
+  getBrandDisplayName,
+  getInfluencerDisplayName,
+} from "./profile-display";
 
 interface ChatPanelProps {
   conversation: Conversation;
@@ -27,14 +38,21 @@ interface ChatPanelProps {
 }
 
 export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
-  const { user, profile: myProfile } = useAuth();
+  const { user } = useAuth();
+  const { data: myIdentity } = useMyInfluencerProfile(user?.id);
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { campaign, businessProfile } = conversation;
-  const { data: messages, isLoading } = useCampaignMessages(campaign.id);
+  const {
+    data: messages,
+    isLoading,
+    isError,
+    refetch,
+  } = useCampaignMessages(campaign.id);
   const sendMessage = useSendMessage();
-  const markRead = useMarkNotificationsReadForCampaign();
+  const { mutate: markNotificationsRead } =
+    useMarkNotificationsReadForCampaign();
   const insertFile = useMutation(
     trpc.campaignFile.insertCampaignFile.mutationOptions(),
   );
@@ -46,9 +64,6 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         });
         queryClient.invalidateQueries({
           queryKey: trpc.inbox.getInboxConversations.queryKey(),
-        });
-        queryClient.invalidateQueries({
-          queryKey: trpc.inbox.getBusinessInboxConversations.queryKey(),
         });
         toast({ title: "Campaign updated" });
       },
@@ -65,7 +80,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
 
   const brandName = getBrandDisplayName(businessProfile);
   const brandAvatarUrl = getBrandAvatarUrl(businessProfile);
-  const influencerName = myProfile?.full_name || "Influencer";
+  const influencerName = getInfluencerDisplayName(myIdentity ?? null);
   const chatLocked = ![
     "in_escrow",
     "delivery_submitted",
@@ -78,47 +93,50 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages?.length]);
 
-  // Mark new_message notifications as read when this conversation is opened
   useEffect(() => {
     if (!user?.id || !campaign.id) return;
-    markRead.mutate({ campaignId: campaign.id, userId: user.id });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [campaign.id, user?.id]);
+    markNotificationsRead({ campaignId: campaign.id, userId: user.id });
+  }, [campaign.id, user?.id, markNotificationsRead]);
 
-  const handleSendMessage = (content: string) => {
-    if (!user) return;
-    sendMessage.mutate({
-      campaignId: campaign.id,
-      senderId: user.id,
-      recipientId: campaign.business_id,
-      content,
-    });
-  };
+  const handleSendMessage = useCallback(
+    (content: string) => {
+      if (!user) return;
+      sendMessage.mutate({
+        campaignId: campaign.id,
+        senderId: user.id,
+        recipientId: campaign.business_id,
+        content,
+      });
+    },
+    [user, sendMessage, campaign.id, campaign.business_id],
+  );
 
-  const handleSendFile = (file: File, url: string) => {
-    if (!user) return;
-    sendMessage.mutate({
-      campaignId: campaign.id,
-      senderId: user.id,
-      recipientId: campaign.business_id,
-      content: file.name,
-      messageType: "file",
-      metadata: {
-        url,
-        filename: file.name,
-        size: file.size,
-        mime_type: file.type,
-      },
-    });
-
-    insertFile.mutate({
-      campaignId: campaign.id,
-      fileName: file.name,
-      fileUrl: url,
-      fileSize: file.size,
-      mimeType: file.type,
-    });
-  };
+  const handleSendFile = useCallback(
+    (file: File, url: string) => {
+      if (!user) return;
+      sendMessage.mutate({
+        campaignId: campaign.id,
+        senderId: user.id,
+        recipientId: campaign.business_id,
+        content: file.name,
+        messageType: "file",
+        metadata: {
+          url,
+          filename: file.name,
+          size: file.size,
+          mime_type: file.type,
+        },
+      });
+      insertFile.mutate({
+        campaignId: campaign.id,
+        fileName: file.name,
+        fileUrl: url,
+        fileSize: file.size,
+        mimeType: file.type,
+      });
+    },
+    [user, sendMessage, insertFile, campaign.id, campaign.business_id],
+  );
 
   const getSenderName = useCallback(
     (senderId: string) => {
@@ -141,9 +159,23 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         onBack={onBack}
       />
 
-      {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 min-h-0">
-        {isLoading ? (
+        {isError ? (
+          <div className="flex flex-col items-center justify-center h-full text-center gap-3">
+            <AlertTriangle className="h-7 w-7 text-red-400/60" />
+            <p className="text-sm font-medium text-muted-foreground/60">
+              Failed to load messages
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              className="rounded-full"
+            >
+              Retry
+            </Button>
+          </div>
+        ) : isLoading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/40" />
           </div>
@@ -199,7 +231,6 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         )}
       </div>
 
-      {/* Message input / locked banner */}
       {chatLocked ? (
         <div className="shrink-0 border-t border-white/8 px-4 py-3">
           <div className="flex items-center gap-2.5 rounded-full border border-white/8 bg-white/3 px-4 py-2.5">
