@@ -4,7 +4,6 @@ import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Globe } from "lucide-react";
 import ProfileStrength from "../profile-strength";
-import CareerStats from "../career-stats";
 import type { Database } from "@/lib/supabase/types";
 
 type InfluencerProfile =
@@ -19,7 +18,6 @@ interface OverviewTabProps {
 
 export default function OverviewTab({
   profile,
-  campaigns,
   onNavigateToTab,
 }: OverviewTabProps) {
   return (
@@ -30,8 +28,6 @@ export default function OverviewTab({
       className="space-y-4 pt-4"
     >
       <ProfileStrength profile={profile} onNavigateToTab={onNavigateToTab} />
-
-      <CareerStats campaigns={campaigns} />
 
       {profile.bio && (
         <m.div variants={fadeUp}>
