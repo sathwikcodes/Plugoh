@@ -7,6 +7,7 @@ export type BusinessProfile =
 export interface BusinessIdentity {
   basicProfile: BasicProfile | null;
   businessProfile: BusinessProfile | null;
+  authAvatarUrl?: string | null;
 }
 
 export function getBusinessDisplayName(identity: BusinessIdentity | null) {

@@ -7,7 +7,7 @@ import {
   formatConversationTime,
 } from "@/components/inbox/shared-conversation-item";
 import {
-  getInfluencerAvatarUrl,
+  getInfluencerAvatarUrlWithFallback,
   getInfluencerDisplayName,
 } from "./profile-display";
 
@@ -27,7 +27,10 @@ export function ConversationItem({
   const { campaign, influencerProfile, lastMessage } = conversation;
 
   const influencerName = getInfluencerDisplayName(influencerProfile);
-  const influencerAvatarUrl = getInfluencerAvatarUrl(influencerProfile);
+  const influencerAvatarUrl = getInfluencerAvatarUrlWithFallback(
+    influencerProfile,
+    conversation.influencerAuthAvatarUrl,
+  );
   const msgPreview = lastMessage
     ? buildConversationPreview(lastMessage.content, lastMessage.message_type)
     : "No messages yet";

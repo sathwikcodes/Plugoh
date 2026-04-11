@@ -10,7 +10,11 @@ export function getBrandDisplayName(identity: BusinessIdentity | null) {
 }
 
 export function getBrandAvatarUrl(identity: BusinessIdentity | null) {
-  return identity?.businessProfile?.ig_profile_picture_url || null;
+  return (
+    identity?.businessProfile?.ig_profile_picture_url?.trim() ||
+    identity?.authAvatarUrl?.trim() ||
+    null
+  );
 }
 
 export function getInfluencerDisplayName(

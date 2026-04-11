@@ -15,12 +15,14 @@ type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 interface ProfileCardProps {
   profile: InfluencerProfile;
   basicProfile?: Profile | null;
+  authAvatarUrl?: string | null;
   onNavigateToSettings?: () => void;
 }
 
 export default function ProfileCard({
   profile,
   basicProfile,
+  authAvatarUrl,
   onNavigateToSettings,
 }: ProfileCardProps) {
   const initials = (profile.display_name || basicProfile?.full_name || "U")
@@ -35,6 +37,7 @@ export default function ProfileCard({
   const instagramUrl =
     profile.instagram_url ||
     (handle ? `https://instagram.com/${handle}` : null);
+  const avatarUrl = profile.ig_profile_picture_url || authAvatarUrl || null;
 
   return (
     <m.div variants={fadeUp}>
@@ -53,9 +56,9 @@ export default function ProfileCard({
             <div
               className="rounded-full p-[3px] shadow-lg"
             >
-              {profile.ig_profile_picture_url ? (
+              {avatarUrl ? (
                 <Image
-                  src={profile.ig_profile_picture_url}
+                  src={avatarUrl}
                   alt={profile.display_name || "Profile"}
                   width={96}
                   height={96}

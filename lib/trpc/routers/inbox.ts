@@ -1,5 +1,23 @@
 import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../init";
+import { createServiceClient } from "@/lib/supabase/server";
+import { getAuthUserAvatarUrl } from "@/lib/avatar-utils";
+
+async function fetchAuthAvatarMap(userIds: string[]) {
+  const uniqueIds = [...new Set(userIds.filter(Boolean))];
+  if (uniqueIds.length === 0) return new Map<string, string | null>();
+
+  const adminDb = createServiceClient();
+  const results = await Promise.all(
+    uniqueIds.map(async (userId) => {
+      const { data, error } = await adminDb.auth.admin.getUserById(userId);
+      if (error || !data.user) return [userId, null] as const;
+      return [userId, getAuthUserAvatarUrl(data.user)] as const;
+    }),
+  );
+
+  return new Map<string, string | null>(results);
+}
 
 export const inboxRouter = router({
   getBusinessInboxConversations: protectedProcedure.query(async ({ ctx }) => {
@@ -22,7 +40,7 @@ export const inboxRouter = router({
     const influencerIds = [...new Set(campaigns.map((c) => c.influencer_id))];
     const campaignIds = campaigns.map((c) => c.id);
 
-    const [{ data: profiles }, { data: allMessages }] = await Promise.all([
+    const [{ data: profiles }, { data: allMessages }, avatarMap] = await Promise.all([
       db.from("influencer_profiles").select("*").in("user_id", influencerIds),
       db
         .from("campaign_messages")
@@ -30,6 +48,7 @@ export const inboxRouter = router({
         .in("campaign_id", campaignIds)
         .neq("message_type", "system")
         .order("created_at", { ascending: false }),
+      fetchAuthAvatarMap(influencerIds),
     ]);
 
     const profileMap = new Map((profiles ?? []).map((p) => [p.user_id, p]));
@@ -46,6 +65,7 @@ export const inboxRouter = router({
     const convos = campaigns.map((c) => ({
       campaign: c,
       influencerProfile: profileMap.get(c.influencer_id) ?? null,
+      influencerAuthAvatarUrl: avatarMap.get(c.influencer_id) ?? null,
       lastMessage: messageMap.get(c.id) ?? null,
     }));
 
@@ -86,6 +106,7 @@ export const inboxRouter = router({
       { data: basicProfiles },
       { data: businessProfiles },
       { data: allMessages },
+      avatarMap,
     ] = await Promise.all([
       db.from("profiles").select("*").in("id", businessIds),
       db.from("business_profiles").select("*").in("user_id", businessIds),
@@ -95,6 +116,7 @@ export const inboxRouter = router({
         .in("campaign_id", campaignIds)
         .neq("message_type", "system")
         .order("created_at", { ascending: false }),
+      fetchAuthAvatarMap(businessIds),
     ]);
 
     const profileMap = new Map((basicProfiles ?? []).map((p) => [p.id, p]));
@@ -116,6 +138,7 @@ export const inboxRouter = router({
       businessProfile: {
         basicProfile: profileMap.get(c.business_id) ?? null,
         businessProfile: businessMap.get(c.business_id) ?? null,
+        authAvatarUrl: avatarMap.get(c.business_id) ?? null,
       },
       lastMessage: messageMap.get(c.id) ?? null,
     }));

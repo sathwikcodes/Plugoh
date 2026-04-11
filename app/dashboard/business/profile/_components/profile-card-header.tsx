@@ -20,6 +20,7 @@ interface ProfileCardHeaderProps {
   identity: BusinessIdentity;
   totalCampaigns: number;
   totalSpent: number;
+  authAvatarUrl?: string | null;
   onNavigateToSettings?: () => void;
 }
 
@@ -27,6 +28,7 @@ export default function BusinessProfileCardHeader({
   identity,
   totalCampaigns,
   totalSpent,
+  authAvatarUrl,
   onNavigateToSettings,
 }: ProfileCardHeaderProps) {
   const profile = identity.basicProfile as Profile | null;
@@ -43,6 +45,7 @@ export default function BusinessProfileCardHeader({
     .slice(0, 2);
 
   const hasPhone = !!profile?.phone;
+  const avatarUrl = businessProfile?.ig_profile_picture_url || authAvatarUrl || null;
 
   return (
     <m.div variants={fadeUp}>
@@ -98,9 +101,9 @@ export default function BusinessProfileCardHeader({
                   "linear-gradient(135deg, #f59e0b, #3b82f6, #6366f1, #8b5cf6)",
               }}
             >
-              {businessProfile?.ig_profile_picture_url ? (
+              {avatarUrl ? (
                 <Image
-                  src={businessProfile.ig_profile_picture_url}
+                  src={avatarUrl}
                   alt={displayName}
                   width={96}
                   height={96}

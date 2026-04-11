@@ -44,7 +44,7 @@ type TabValue =
   | "settings";
 
 function BusinessProfilePageInner() {
-  const { user, profile, loading: authLoading, signOut } = useAuth();
+  const { user, profile, avatarUrl, loading: authLoading, signOut } = useAuth();
   const searchParams = useSearchParams();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -148,6 +148,7 @@ function BusinessProfilePageInner() {
             identity={identity}
             totalCampaigns={totalCampaigns}
             totalSpent={totalSpent}
+            authAvatarUrl={avatarUrl}
             onNavigateToSettings={() => setActiveTab("settings")}
           />
 
@@ -170,6 +171,7 @@ function BusinessProfilePageInner() {
             {aiStatus !== "running" && resolvedActiveTab === "instagram" && (
               <BusinessInstagramTab
                 businessProfile={identity.businessProfile!}
+                authAvatarUrl={avatarUrl}
                 media={media}
               />
             )}

@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
   Menu,
@@ -27,7 +27,7 @@ import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useTheme } from "next-themes";
 
 export function Navbar() {
-  const { user, profile, role, signOut } = useAuth();
+  const { user, profile, role, avatarUrl, signOut } = useAuth();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -80,6 +80,7 @@ export function Navbar() {
                     className="relative h-9 w-9 rounded-full"
                   >
                     <Avatar className="h-9 w-9">
+                      {avatarUrl ? <AvatarImage src={avatarUrl} alt={initials} /> : null}
                       <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
                         {initials}
                       </AvatarFallback>
@@ -131,6 +132,7 @@ export function Navbar() {
                   className="relative h-9 w-9 rounded-full"
                 >
                   <Avatar className="h-8 w-8">
+                    {avatarUrl ? <AvatarImage src={avatarUrl} alt={initials} /> : null}
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
                       {initials}
                     </AvatarFallback>
@@ -186,6 +188,7 @@ export function Navbar() {
                     <>
                       <div className="flex items-center gap-3 p-3 mb-2">
                         <Avatar className="h-10 w-10">
+                          {avatarUrl ? <AvatarImage src={avatarUrl} alt={initials} /> : null}
                           <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
                             {initials}
                           </AvatarFallback>

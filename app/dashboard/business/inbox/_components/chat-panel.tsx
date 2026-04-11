@@ -30,7 +30,7 @@ import { getBusinessDisplayName } from "@/lib/business-profile";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
-  getInfluencerAvatarUrl,
+  getInfluencerAvatarUrlWithFallback,
   getInfluencerDisplayName,
 } from "./profile-display";
 
@@ -59,7 +59,10 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const influencerName = getInfluencerDisplayName(influencerProfile);
-  const influencerAvatarUrl = getInfluencerAvatarUrl(influencerProfile);
+  const influencerAvatarUrl = getInfluencerAvatarUrlWithFallback(
+    influencerProfile,
+    conversation.influencerAuthAvatarUrl,
+  );
   const brandName = getBusinessDisplayName(myIdentity ?? null);
   const chatLocked = ![
     "in_escrow",

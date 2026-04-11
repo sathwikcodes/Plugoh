@@ -25,7 +25,7 @@ import {
 type TabValue = "pricing" | "instagram" | "settings";
 
 function InfluencerProfilePageInner() {
-  const { user, profile, loading: authLoading, signOut } = useAuth();
+  const { user, profile, avatarUrl, loading: authLoading, signOut } = useAuth();
   const searchParams = useSearchParams();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -109,6 +109,7 @@ function InfluencerProfilePageInner() {
           <ProfileCard
             profile={ip}
             basicProfile={profile}
+            authAvatarUrl={avatarUrl}
             onNavigateToSettings={() => setActiveTab("settings")}
           />
 

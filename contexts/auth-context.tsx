@@ -13,6 +13,7 @@ import type { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
 import { isBusinessProfileComplete } from "@/lib/business-profile";
+import { getPreferredAvatarUrl } from "@/lib/avatar-utils";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
 
@@ -21,6 +22,7 @@ interface AuthContextType {
   session: Session | null;
   role: AppRole | null;
   profile: Database["public"]["Tables"]["profiles"]["Row"] | null;
+  avatarUrl: string | null;
   loading: boolean;
   error: string | null;
   needsOnboarding: boolean;
@@ -40,14 +42,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<
     Database["public"]["Tables"]["profiles"]["Row"] | null
   >(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [isProfileComplete, setIsProfileComplete] = useState(false);
 
-  const fetchUserData = useCallback(async (userId: string) => {
+  const fetchUserData = useCallback(async (authUser: User) => {
     try {
       setError(null);
+      const userId = authUser.id;
       const [roleRes, profileRes] = await Promise.all([
         supabase
           .from("user_roles")
@@ -60,10 +64,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         roleRes.data?.role === "business"
           ? await supabase
               .from("business_profiles")
-              .select("*")
+              .select("*, ig_profile_picture_url")
               .eq("user_id", userId)
               .maybeSingle()
           : { data: null, error: null };
+      const influencerProfileRes =
+        roleRes.data?.role === "influencer"
+          ? await supabase
+              .from("influencer_profiles")
+              .select("ig_profile_picture_url")
+              .eq("user_id", userId)
+              .maybeSingle()
+          : { data: null, error: null };
+
+      const instagramAvatarUrl =
+        roleRes.data?.role === "business"
+          ? businessProfileRes.data?.ig_profile_picture_url
+          : roleRes.data?.role === "influencer"
+            ? influencerProfileRes.data?.ig_profile_picture_url
+            : null;
+      setAvatarUrl(
+        getPreferredAvatarUrl({
+          instagramAvatarUrl,
+          user: authUser,
+        }),
+      );
 
       if (roleRes.data) {
         setRole(roleRes.data.role);
@@ -96,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshUserData = useCallback(async () => {
-    if (user) await fetchUserData(user.id);
+    if (user) await fetchUserData(user);
   }, [user, fetchUserData]);
 
   useEffect(() => {
@@ -109,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
-        await fetchUserData(s.user.id);
+        await fetchUserData(s.user);
       }
       if (mounted) setLoading(false);
     });
@@ -121,10 +146,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
-        await fetchUserData(s.user.id);
+        await fetchUserData(s.user);
       } else {
         setRole(null);
         setProfile(null);
+        setAvatarUrl(null);
         setNeedsOnboarding(false);
         setIsProfileComplete(false);
         setError(null);
@@ -158,6 +184,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setRole(null);
     setProfile(null);
+    setAvatarUrl(null);
     setNeedsOnboarding(false);
     setIsProfileComplete(false);
     setError(null);
@@ -169,6 +196,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       role,
       profile,
+      avatarUrl,
       loading,
       error,
       needsOnboarding,
@@ -183,6 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       role,
       profile,
+      avatarUrl,
       loading,
       error,
       needsOnboarding,

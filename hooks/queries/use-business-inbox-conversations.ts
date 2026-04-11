@@ -12,6 +12,7 @@ type InfluencerProfile =
 export interface BusinessConversation {
   campaign: Campaign;
   influencerProfile: InfluencerProfile | null;
+  influencerAuthAvatarUrl: string | null;
   lastMessage: CampaignMessage | null;
 }
 

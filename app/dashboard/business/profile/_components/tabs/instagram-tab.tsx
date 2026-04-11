@@ -9,15 +9,17 @@ type InstagramMedia = Database["public"]["Tables"]["instagram_media"]["Row"];
 
 interface InstagramTabProps {
   businessProfile: BusinessProfile;
+  authAvatarUrl?: string | null;
   media: InstagramMedia[];
 }
 
 export default function BusinessInstagramTab({
   businessProfile,
+  authAvatarUrl,
   media,
 }: InstagramTabProps) {
   const handle = businessProfile.ig_username;
-  const avatar = businessProfile.ig_profile_picture_url;
+  const avatar = businessProfile.ig_profile_picture_url || authAvatarUrl;
   const recentMedia = media.slice(0, 9);
 
   if (!handle) {

@@ -29,7 +29,6 @@ export function buildConversationPreview(
 export function SharedConversationItem({
   name,
   avatarUrl,
-  campaignTitle,
   preview,
   timeLabel,
   status,
@@ -88,9 +87,6 @@ export function SharedConversationItem({
             {timeLabel}
           </span>
         </div>
-        <p className="mt-0.5 truncate text-xs leading-tight text-white/72">
-          {campaignTitle}
-        </p>
         <p className="mt-0.5 truncate text-xs leading-tight text-white/62">
           {isOwn ? "You: " : ""}
           {preview}

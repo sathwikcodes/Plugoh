@@ -22,3 +22,10 @@ export function getInfluencerHandle(profile: Profile | null): string | null {
 export function getInfluencerAvatarUrl(profile: Profile | null): string | null {
   return profile?.ig_profile_picture_url?.trim() || null;
 }
+
+export function getInfluencerAvatarUrlWithFallback(
+  profile: Profile | null,
+  fallbackAvatarUrl: string | null | undefined,
+): string | null {
+  return profile?.ig_profile_picture_url?.trim() || fallbackAvatarUrl?.trim() || null;
+}
