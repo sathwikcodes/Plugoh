@@ -86,8 +86,9 @@ export function StatsRow({
             src="/clock.png"
             alt="pending"
             className="h-9 w-9 object-contain mb-3"
+            style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
           />
-          <p className="text-xl font-extrabold tracking-tight">
+          <p className="num text-xl font-extrabold tracking-tight">
             ₹<AnimatedNumber value={pendingEarnings} />
           </p>
           <p className="text-[11px] text-muted-foreground mt-0.5">Pending</p>
@@ -98,8 +99,9 @@ export function StatsRow({
             src="/premium_target.png"
             alt="completed"
             className="h-9 w-9 object-contain mb-3"
+            style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
           />
-          <p className="text-xl font-extrabold tracking-tight">
+          <p className="num text-xl font-extrabold tracking-tight">
             {completedCount}
           </p>
           <p className="text-[11px] text-muted-foreground mt-0.5">Completed</p>

@@ -103,8 +103,13 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> =
         >
           <div
             ref={containerRef}
-            style={containerStyle}
-            className="absolute inset-0 transition-transform"
+            style={{
+              ...containerStyle,
+              transform: "translateZ(0)",
+              WebkitBackfaceVisibility: "hidden",
+              backfaceVisibility: "hidden",
+            }}
+            className="absolute inset-0"
           />
         </m.div>
       );

@@ -204,7 +204,7 @@ function CampaignCardFront({
                 className="relative flex h-12 w-12 items-center justify-center rounded-full border border-white/16 bg-white/6 text-white/45 shadow-[0_8px_24px_rgba(0,0,0,0.2)]"
               >
                 <MessageCircle className="h-5 w-5 opacity-70" />
-                <span className="absolute -right-0.5 -top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-white/20 bg-[#11151c]">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-white/20 bg-[#0d0b0f]">
                   <Lock className="h-2.5 w-2.5 text-white/75" />
                 </span>
               </button>

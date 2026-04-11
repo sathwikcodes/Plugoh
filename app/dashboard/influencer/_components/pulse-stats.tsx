@@ -32,7 +32,7 @@ export function PulseStats({ stats, hasMedia }: PulseStatsProps) {
         </div>
         <p
           className={cn(
-            "text-2xl font-extrabold tracking-tight",
+            "num text-2xl font-extrabold tracking-tight",
             stats.engagementColor,
           )}
         >
@@ -50,7 +50,7 @@ export function PulseStats({ stats, hasMedia }: PulseStatsProps) {
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/20 to-yellow-500/15 mb-3">
           <Users className="h-4 w-4 text-amber-400" />
         </div>
-        <p className="text-2xl font-extrabold tracking-tight">
+        <p className="num text-2xl font-extrabold tracking-tight">
           {stats.totalReach > 0 ? compactNumber(stats.totalReach) : "—"}
         </p>
         <p className="text-[11px] text-muted-foreground mt-0.5">Total Reach</p>
@@ -61,7 +61,7 @@ export function PulseStats({ stats, hasMedia }: PulseStatsProps) {
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 mb-3">
           <Sparkles className="h-4 w-4 text-violet-400" />
         </div>
-        <p className="text-2xl font-extrabold tracking-tight">
+        <p className="num text-2xl font-extrabold tracking-tight">
           {hasMedia ? (
             <>
               {stats.contentScore}

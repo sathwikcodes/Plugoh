@@ -175,9 +175,28 @@
   }
   html {
     @apply font-sans overflow-x-hidden;
+    /* ── Premium rendering stack ── */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   body {
     @apply bg-background text-foreground overflow-x-hidden;
+    font-synthesis: none;
+  }
+  /* Geometric precision for all SVG icons (Lucide, etc.) */
+  svg {
+    shape-rendering: geometricPrecision;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  /* Prevent blurring on images during transforms/animations */
+  img {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 }
 
@@ -217,6 +236,20 @@
   .brand-mark {
     font-family: var(--font-serif), Georgia, serif;
     letter-spacing: -0.04em;
+  }
+
+  /* Tabular numbers — keeps stat values stable-width as they update */
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* GPU compositing layer for Framer Motion animated cards — prevents mid-animation blur */
+  .gpu {
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
   }
 
   .glass-card {

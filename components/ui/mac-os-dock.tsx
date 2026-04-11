@@ -93,6 +93,7 @@ function DockIcon({ app, mouseX, isOpen, onClick, isTouch }: DockIconProps) {
         style={{
           width: isTouch ? BASE_SIZE : sizeSpring,
           height: isTouch ? BASE_SIZE : sizeSpring,
+          willChange: "width, height",
         }}
         className="relative"
       >
@@ -120,6 +121,7 @@ function DockIcon({ app, mouseX, isOpen, onClick, isTouch }: DockIconProps) {
           src={app.icon}
           alt={app.name}
           className="w-full h-full object-contain rounded-xl select-none"
+          style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
           draggable={false}
         />
       </m.div>

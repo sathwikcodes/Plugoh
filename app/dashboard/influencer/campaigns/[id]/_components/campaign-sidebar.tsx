@@ -15,11 +15,11 @@ export function CampaignSidebar({
 }: CampaignSidebarProps) {
   return (
     <div className="space-y-3">
-      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
+      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
         <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
           Your Earnings
         </p>
-        <p className="text-[30px] font-bold leading-none tracking-[-0.04em] text-white">
+        <p className="num text-[30px] font-bold leading-none tracking-[-0.04em] text-white">
           {formatCurrency(campaign.price_offered)}
         </p>
         <p className="mt-1.5 text-xs text-white/40">
@@ -27,7 +27,7 @@ export function CampaignSidebar({
         </p>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
+      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
         <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
           Details
         </p>
@@ -61,7 +61,7 @@ export function CampaignSidebar({
 
       {showContactInfo &&
       (campaign.business_contact_email || campaign.business_contact_phone) ? (
-        <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
+        <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
           <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
             Brand contact
           </p>

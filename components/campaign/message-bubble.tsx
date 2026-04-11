@@ -185,8 +185,8 @@ function getPackageIcon(type: string | null | undefined) {
       label: "Post",
       icon: null as typeof BookOpen | null,
       img: "/image.png",
-      color: "text-blue-400",
-      bg: "from-blue-500/20 to-cyan-500/20",
+      color: "text-amber-400",
+      bg: "from-amber-400/20 to-orange-400/20",
     };
   if (t.includes("story") || t.includes("stories"))
     return {
