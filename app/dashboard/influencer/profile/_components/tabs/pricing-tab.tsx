@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ShinyButton } from "@/components/ui/shiny-button";
 import { cn } from "@/lib/utils";
 import {
   CONTENT_TYPES,
@@ -257,6 +259,8 @@ interface PricingSliderCardProps {
   onEdit: () => void;
   onCancel: () => void;
   onSave: (price: number) => void;
+  draftPrice?: number;
+  onDraftPriceChange?: (price: number) => void;
 }
 
 function PricingSliderCard({
@@ -273,8 +277,19 @@ function PricingSliderCard({
   onEdit,
   onCancel,
   onSave,
+  draftPrice,
+  onDraftPriceChange,
 }: PricingSliderCardProps) {
-  const [draft, setDraft] = useState(initialPrice);
+  const [internalDraft, setInternalDraft] = useState(initialPrice);
+
+  const draft = draftPrice ?? internalDraft;
+  const setDraft = onDraftPriceChange ?? setInternalDraft;
+
+  useEffect(() => {
+    if (draftPrice === undefined && !isEditing) {
+      setInternalDraft(initialPrice);
+    }
+  }, [draftPrice, initialPrice, isEditing]);
 
   // Displayed price: raw draft while editing (instant), saved price when not
   const displayPrice = isEditing ? draft : initialPrice;
@@ -409,6 +424,150 @@ function PricingSliderCard({
   );
 }
 
+interface PricingCarouselProps {
+  cards: typeof CARD_CONFIG;
+  profile: InfluencerProfile;
+  editingCard: "reel" | "post" | "story" | null;
+  savingCard: "reel" | "post" | "story" | null;
+  onEdit: (key: "reel" | "post" | "story") => void;
+  onCancel: () => void;
+  onSave: (key: "reel" | "post" | "story", price: number) => void;
+}
+
+function PricingCarousel({
+  cards,
+  profile,
+  editingCard,
+  savingCard,
+  onEdit,
+  onCancel,
+  onSave,
+}: PricingCarouselProps) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [drafts, setDrafts] = useState<Record<"reel" | "post" | "story", number>>(
+    {
+      reel: profile.price_per_reel ?? CARD_CONFIG[0].default,
+      post: profile.price_per_post ?? CARD_CONFIG[1].default,
+      story: profile.price_per_story ?? CARD_CONFIG[2].default,
+    },
+  );
+
+  const total = cards.length;
+
+  useEffect(() => {
+    setDrafts((prev) => ({
+      reel:
+        editingCard === "reel" || savingCard === "reel"
+          ? prev.reel
+          : (profile.price_per_reel ?? CARD_CONFIG[0].default),
+      post:
+        editingCard === "post" || savingCard === "post"
+          ? prev.post
+          : (profile.price_per_post ?? CARD_CONFIG[1].default),
+      story:
+        editingCard === "story" || savingCard === "story"
+          ? prev.story
+          : (profile.price_per_story ?? CARD_CONFIG[2].default),
+    }));
+  }, [editingCard, profile.price_per_post, profile.price_per_reel, profile.price_per_story, savingCard]);
+
+  const goTo = (next: number, dir: number) => {
+    setDirection(dir);
+    setActiveIdx(next);
+  };
+
+  const card = cards[activeIdx];
+  const currentPrice = profile[card.profileKey] ?? card.default;
+
+  return (
+    <div className="space-y-4 sm:hidden">
+      <AnimatePresence mode="wait" custom={direction}>
+        <m.div
+          key={activeIdx}
+          custom={direction}
+          variants={{
+            enter: (d: number) => ({ x: d * 40, opacity: 0 }),
+            center: { x: 0, opacity: 1 },
+            exit: (d: number) => ({ x: d * -40, opacity: 0 }),
+          }}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.22, ease: "easeInOut" }}
+        >
+          <PricingSliderCard
+            title={card.title}
+            subtitle={card.subtitle}
+            description={card.description}
+            features={card.features}
+            initialPrice={currentPrice}
+            min={card.min}
+            max={card.max}
+            step={card.step}
+            isEditing={editingCard === card.key}
+            isSaving={savingCard === card.key}
+            onEdit={() => {
+              setDrafts((prev) => ({ ...prev, [card.key]: currentPrice }));
+              onEdit(card.key);
+            }}
+            onCancel={() => {
+              setDrafts((prev) => ({ ...prev, [card.key]: currentPrice }));
+              onCancel();
+            }}
+            onSave={(price) => {
+              setDrafts((prev) => ({ ...prev, [card.key]: price }));
+              onSave(card.key, price);
+            }}
+            draftPrice={drafts[card.key]}
+            onDraftPriceChange={(price) =>
+              setDrafts((prev) => ({ ...prev, [card.key]: price }))
+            }
+          />
+        </m.div>
+      </AnimatePresence>
+
+      <div className="flex w-full items-center justify-center gap-3">
+        <ShinyButton
+          onClick={() => goTo((activeIdx - 1 + total) % total, -1)}
+          className="flex h-12 w-12 items-center justify-center rounded-[20px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+        >
+          <Image
+            src="/back.png"
+            alt="Previous"
+            width={22}
+            height={22}
+            className="h-5.5 w-5.5 shrink-0 object-contain"
+          />
+        </ShinyButton>
+
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="min-w-11 text-center">
+            <span className="text-sm font-medium tabular-nums text-white/78">
+              {activeIdx + 1}
+            </span>
+            <span className="px-1 text-white/22">/</span>
+            <span className="text-sm tabular-nums text-white/48">{total}</span>
+          </div>
+        </div>
+
+        <ShinyButton
+          onClick={() => goTo((activeIdx + 1) % total, 1)}
+          className="flex h-12 w-12 items-center justify-center rounded-[20px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+        >
+          <Image
+            src="/next.png"
+            alt="Next"
+            width={22}
+            height={22}
+            className="h-5.5 w-5.5 shrink-0 object-contain"
+          />
+        </ShinyButton>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Pricing Tab ────────────────────────────────────────────────────────
 
 export default function PricingTab({
@@ -493,8 +652,19 @@ export default function PricingTab({
       animate="visible"
       className="space-y-4 pt-4"
     >
-      {/* Three pricing cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* Mobile: carousel */}
+      <PricingCarousel
+        cards={CARD_CONFIG}
+        profile={profile}
+        editingCard={editingCard}
+        savingCard={savingCard}
+        onEdit={(key) => setEditingCard(key)}
+        onCancel={() => setEditingCard(null)}
+        onSave={handleSavePrice}
+      />
+
+      {/* Desktop: grid */}
+      <div className="hidden gap-4 sm:grid sm:grid-cols-3">
         {CARD_CONFIG.map((card) => {
           const currentPrice = profile[card.profileKey] ?? card.default;
           return (
