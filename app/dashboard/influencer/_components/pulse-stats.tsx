@@ -47,8 +47,8 @@ export function PulseStats({ stats, hasMedia }: PulseStatsProps) {
 
       {/* Total Reach */}
       <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 transition-all hover:border-white/20 hover:scale-[1.02]">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 mb-3">
-          <Users className="h-4 w-4 text-blue-400" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/20 to-yellow-500/15 mb-3">
+          <Users className="h-4 w-4 text-amber-400" />
         </div>
         <p className="text-2xl font-extrabold tracking-tight">
           {stats.totalReach > 0 ? compactNumber(stats.totalReach) : "—"}

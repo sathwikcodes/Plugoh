@@ -86,8 +86,8 @@ export default function InstagramTab({ profile, media }: InstagramTabProps) {
       value: profile.avg_views_per_reel
         ? formatCompact(Math.round(profile.avg_views_per_reel))
         : null,
-      gradient: "from-blue-500/20 to-cyan-500/20",
-      iconColor: "text-blue-400",
+      gradient: "from-amber-400/20 to-orange-400/20",
+      iconColor: "text-amber-400",
     }
   ];
 

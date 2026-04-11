@@ -45,7 +45,7 @@ export default function ProfileCard({
         className="rounded-3xl border border-white/[0.08] p-6 space-y-5 shadow-2xl"
         style={{
           background:
-            "radial-gradient(120% 120% at 30% 10%, #1e1e1e 0%, #111112 55%, #0c0c0d 100%)",
+            "radial-gradient(120% 120% at 30% 10%, #1c1524 0%, #120e18 55%, #0a0810 100%)",
         }}
       >
 
@@ -62,10 +62,10 @@ export default function ProfileCard({
                   alt={profile.display_name || "Profile"}
                   width={96}
                   height={96}
-                  className="h-24 w-24 rounded-full object-cover border-[3px] border-[#111112]"
+                  className="h-24 w-24 rounded-full object-cover border-[3px] border-[#120e18]"
                 />
               ) : (
-                <div className="h-24 w-24 rounded-full border-[3px] border-[#111112] bg-[#1e1e1e] flex items-center justify-center">
+                <div className="h-24 w-24 rounded-full border-[3px] border-[#120e18] bg-[#1c1524] flex items-center justify-center">
                   <span className="text-2xl font-bold text-white/60">
                     {initials}
                   </span>

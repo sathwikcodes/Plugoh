@@ -1,19 +1,19 @@
 export const GRADIENT_COLORS = [
-  "#0C0A0E",
-  "#1A0E1A",
-  "#C94B8A",
-  "#B5602A",
-  "#C49510",
-  "#5C3808",
-  "#1A0E05",
-  "#0A0808",
+  "#08060d",
+  "#180e22",
+  "#c22e8a",
+  "#e05a10",
+  "#c9a000",
+  "#6b1e48",
+  "#170c1e",
+  "#060408",
 ];
 
 export const GRADIENT_STOPS = [20, 34, 48, 58, 68, 78, 88, 100];
 
 export const GRADIENT_STYLE = {
-  opacity: 0.72,
-  filter: "blur(70px) saturate(130%)",
+  opacity: 0.78,
+  filter: "blur(70px) saturate(140%)",
 } as const;
 
 export const INSTAGRAM_GRADIENT =

@@ -14,7 +14,7 @@ export default function InfluencerDashboardLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="relative min-h-[calc(100dvh-4rem)] overflow-hidden md:min-h-dvh bg-[#0F1115]">
+    <div className="relative min-h-[calc(100dvh-4rem)] overflow-hidden md:min-h-dvh bg-background">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <AnimatedGradientBackground
           Breathing

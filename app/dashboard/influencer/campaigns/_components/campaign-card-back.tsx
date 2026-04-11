@@ -6,7 +6,7 @@ export function CampaignCardBack({ card }: { card: CampaignCardData }) {
 
   return (
     <>
-      <div className="absolute inset-0 bg-[#080a0d]" />
+      <div className="absolute inset-0 bg-[#080609]" />
       <div
         className="pointer-events-none absolute inset-0"
         style={{

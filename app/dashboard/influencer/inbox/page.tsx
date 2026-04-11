@@ -7,11 +7,7 @@ import { AnimatePresence, m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
 import { useInboxConversations } from "@/hooks/queries/use-inbox-conversations";
 import { Input } from "@/components/ui/input";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
   fadeUp,
   stagger,
 } from "@/lib/animations";
@@ -90,18 +86,6 @@ export default function InfluencerInboxPage() {
       className="relative h-dvh overflow-hidden"
       style={isMobile ? MOBILE_VIEWPORT_STYLE : undefined}
     >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={125}
-          breathingRange={2.2}
-          animationSpeed={0.008}
-          containerStyle={GRADIENT_STYLE}
-        />
-      </div>
-
       <div className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6">
         <AnimatePresence mode="wait">
           {showMobileChat ? (
@@ -111,7 +95,7 @@ export default function InfluencerInboxPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 12 }}
               transition={{ duration: 0.18 }}
-              className="flex h-full flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#151922]/75 shadow-[0_24px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl"
+              className="flex h-full flex-col overflow-hidden rounded-[28px] border border-white/10 bg-card/75 shadow-[0_24px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl"
             >
               <ChatPanel
                 conversation={selectedConversation}
@@ -161,7 +145,7 @@ export default function InfluencerInboxPage() {
                 }
               >
                 <div className="flex h-full min-h-0 flex-col gap-4 md:flex-row">
-                  <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] border border-white/14 bg-[linear-gradient(160deg,rgba(21,25,34,0.96)_0%,rgba(21,25,34,0.94)_46%,rgba(27,34,48,0.92)_100%)] shadow-[0_24px_70px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl md:w-70 md:shrink-0 md:flex-none">
+                  <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] border border-white/14 bg-[linear-gradient(160deg,rgba(22,18,25,0.96)_0%,rgba(22,18,25,0.94)_46%,rgba(30,24,41,0.92)_100%)] shadow-[0_24px_70px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl md:w-70 md:shrink-0 md:flex-none">
                     <div className="min-h-0 flex-1 px-4 py-4">
                       <ConversationList
                         conversations={conversations}
@@ -173,7 +157,7 @@ export default function InfluencerInboxPage() {
                     </div>
                   </div>
 
-                  <div className="hidden min-h-0 flex-1 overflow-hidden rounded-[28px] border border-white/10 bg-[#151922]/75 shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-2xl md:flex md:min-w-0">
+                  <div className="hidden min-h-0 flex-1 overflow-hidden rounded-[28px] border border-white/10 bg-card/75 shadow-[0_24px_90px_rgba(0,0,0,0.48)] backdrop-blur-2xl md:flex md:min-w-0">
                     <AnimatePresence mode="wait">
                       {selectedConversation ? (
                         <m.div
