@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+
+# Environment & secrets
+.env
+.env.local
+.env*.local
+.env.production
+
+# Package manager lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Cache & tooling
+.eslintcache
+.turbo/
+.vercel/
+.swc/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Large static assets
+public/videos/
+public/fonts/
+*.woff
+*.woff2
+*.ttf
+*.otf
