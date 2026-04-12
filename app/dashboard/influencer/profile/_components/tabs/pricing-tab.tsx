@@ -223,10 +223,12 @@ function HistogramSlider({
       {/* Thumb */}
       <div
         className={cn(
-          "absolute bottom-0 w-5 h-5 -translate-x-1/2 rounded-full bg-primary",
-          "shadow-[0_0_0_3px_hsl(var(--background)),0_0_0_5px_hsl(var(--primary)/0.35)]",
-          isDragging ? "cursor-grabbing scale-110" : "cursor-grab",
-          "transition-transform duration-75",
+          "absolute bottom-1.5 h-5 w-5 -translate-x-1/2 rounded-full border border-white/25 bg-primary",
+          "shadow-[0_8px_16px_hsl(var(--primary)/0.35)]",
+          isDragging
+            ? "cursor-grabbing scale-110 shadow-[0_10px_20px_hsl(var(--primary)/0.45)]"
+            : "cursor-grab",
+          "transition-[transform,box-shadow] duration-100",
         )}
         style={{ left: `${progress}%` }}
       />

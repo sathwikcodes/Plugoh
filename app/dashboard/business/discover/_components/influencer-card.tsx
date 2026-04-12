@@ -167,7 +167,7 @@ export function InfluencerCardInfoPanel({
         {instagramHandle ? (
           <div className="mt-1 flex min-w-0 items-center gap-2">
             <Image
-              src="/instagram_icon.png"
+              src="/instagram_3d.png"
               alt=""
               width={14}
               height={14}

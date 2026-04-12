@@ -6,15 +6,7 @@ import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import {
   Instagram,
-  Users,
-  Eye,
-  Heart,
-  BarChart2,
-  Grid3x3,
-  Play,
   ExternalLink,
-  Images,
-  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/lib/supabase/types";
@@ -56,38 +48,30 @@ export default function InstagramTab({ profile, media }: InstagramTabProps) {
 
   const stats = [
     {
-      icon: Users,
+      iconSrc: "/people_insta.png",
       label: "Followers",
       value: profile.ig_followers_count
         ? formatCompact(profile.ig_followers_count)
         : null,
-      gradient: "from-primary/20 to-primary/5",
-      iconColor: "text-primary",
     },
     {
-      icon: BarChart2,
+      iconSrc: "/flash-insta.png",
       label: "Engagement",
       value: engagementRate ? `${engagementRate}%` : null,
-      gradient: "from-purple-500/20 to-violet-500/20",
-      iconColor: "text-purple-400",
     },
     {
-      icon: Heart,
+      iconSrc: "/heart.png",
       label: "Avg Likes",
       value: profile.avg_likes_per_reel
         ? formatCompact(Math.round(profile.avg_likes_per_reel))
         : null,
-      gradient: "from-red-500/20 to-orange-500/20",
-      iconColor: "text-red-400",
     },
     {
-      icon: Eye,
+      iconSrc: "/megaphone.png",
       label: "Avg Views",
       value: profile.avg_views_per_reel
         ? formatCompact(Math.round(profile.avg_views_per_reel))
         : null,
-      gradient: "from-amber-400/20 to-orange-400/20",
-      iconColor: "text-amber-400",
     }
   ];
 
@@ -108,7 +92,7 @@ export default function InstagramTab({ profile, media }: InstagramTabProps) {
               {/* Platform icon */}
               <div className="shrink-0">
                 <Image
-                  src="/instagram_icon.png"
+                  src="/instagram_3d.png"
                   alt="Instagram"
                   width={64}
                   height={64}
@@ -119,7 +103,7 @@ export default function InstagramTab({ profile, media }: InstagramTabProps) {
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="font-bold text-base truncate">@{handle}</p>
+                  <p className="font-bold text-base truncate">{handle}</p>
                   {profile.instagram_url && (
                     <a
                       href={profile.instagram_url}
@@ -170,14 +154,13 @@ export default function InstagramTab({ profile, media }: InstagramTabProps) {
                 )}
               >
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div
-                    className={cn(
-                      "flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br",
-                      stat.gradient,
-                    )}
-                  >
-                    <stat.icon className={cn("h-3.5 w-3.5", stat.iconColor)} />
-                  </div>
+                  <Image
+                    src={stat.iconSrc}
+                    alt=""
+                    width={14}
+                    height={14}
+                    className="h-3.5 w-3.5 object-contain"
+                  />
                   <p className="text-[11px] text-muted-foreground">
                     {stat.label}
                   </p>
