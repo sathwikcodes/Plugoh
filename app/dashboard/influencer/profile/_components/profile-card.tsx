@@ -14,6 +14,7 @@ interface ProfileCardProps {
   profile: InfluencerProfile;
   basicProfile?: Profile | null;
   authAvatarUrl?: string | null;
+  onNavigateToSettings?: () => void;
 }
 
 export default function ProfileCard({

@@ -103,7 +103,9 @@ function WorkspaceProvider<T extends Workspace>({
   };
 
   return (
-    <WorkspaceContext.Provider value={value}>
+    <WorkspaceContext.Provider
+      value={value as unknown as WorkspaceContextValue<Workspace>}
+    >
       <Popover open={open} onOpenChange={setOpen}>
         {children}
       </Popover>
