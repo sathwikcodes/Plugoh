@@ -60,9 +60,9 @@ function BookingDrawerContent({
           onOpenChange(nextOpen);
         }}
       >
-        <DrawerContent className="ml-auto flex h-[88dvh] max-h-[88dvh] min-h-0 flex-col overflow-hidden rounded-t-[32px] border-t border-white/10 bg-[#241e30] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)] md:h-dvh md:max-h-dvh md:w-[420px] md:max-w-none md:rounded-none md:border-t-0 md:border-l md:border-white/10 md:shadow-[-28px_0_90px_rgba(0,0,0,0.5)]">
-          <DrawerHeader className="shrink-0 border-b border-white/8 px-5 py-4 md:px-6">
-            <div className="flex items-start justify-between gap-4">
+        <DrawerContent className="ml-auto flex h-[88dvh] max-h-[88dvh] min-h-0 flex-col overflow-hidden rounded-t-[32px] border-t border-white/10 bg-[#241e30] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)] md:h-dvh md:max-h-dvh md:w-105 md:max-w-none md:rounded-none md:border-t-0 md:border-l md:border-white/10 md:shadow-[-28px_0_90px_rgba(0,0,0,0.5)]">
+          <DrawerHeader className="shrink-0 border-b border-white/8 px-5 py-4 text-left md:px-6">
+            <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
                 {form.step === 2 ? (
                   <button
@@ -74,14 +74,14 @@ function BookingDrawerContent({
                     <ArrowLeft className="h-4 w-4" />
                   </button>
                 ) : null}
-                <div className="min-w-0">
-                  <DrawerTitle className="text-xl font-semibold text-white">
+                <div className="min-w-0 text-left">
+                  <DrawerTitle className="text-left text-xl font-semibold text-white">
                     {form.step === 1 ? "Book creator" : "Confirm & pay"}
                   </DrawerTitle>
-                  <DrawerDescription className="mt-1 truncate text-sm text-white/55">
+                  <DrawerDescription className="mt-1 truncate text-left text-sm text-white/55">
                     {form.step === 1
                       ? `${creator.display_name || "Creator"} · no charge until they accept`
-                      : "Pre-authorization only — charged only if accepted"}
+                      : "Review your booking details"}
                   </DrawerDescription>
                 </div>
               </div>
@@ -91,7 +91,7 @@ function BookingDrawerContent({
                 size="icon"
                 onClick={() => onOpenChange(false)}
                 disabled={form.isPaying}
-                className="h-9 w-9 shrink-0 rounded-full text-white/65 hover:bg-white/8 hover:text-white"
+                className="h-9 w-9 shrink-0 self-center rounded-full text-white/65 hover:bg-white/8 hover:text-white"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -164,14 +164,11 @@ function BookingDrawerContent({
                       ) : (
                         <>
                           <Lock className="mr-2 h-4 w-4" />
-                          Pre-authorize ₹
+                          Hold ₹
                           {form.totalIfAccepted.toLocaleString("en-IN")}
                         </>
                       )}
                     </Button>
-                    <p className="text-center text-xs text-white/35">
-                      Charged only if the creator accepts within 24 hours
-                    </p>
                   </>
                 )}
               </div>

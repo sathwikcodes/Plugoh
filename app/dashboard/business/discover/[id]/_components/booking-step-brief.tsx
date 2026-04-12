@@ -1,20 +1,17 @@
-import { useMemo } from "react";
-import { CalendarDays, ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Check, MapPin, Pencil, X } from "lucide-react";
 import {
   BOOKING_OBJECTIVES,
   BOOKING_TIMING_OPTIONS,
-  CONTENT_STYLES,
-  OBJECTIVE_PLACEHOLDERS,
   shouldShowEventName,
   type BookingObjective,
   type BookingTimingMode,
-  type ContentStyle,
 } from "@/lib/booking";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { Workspace } from "@/components/ui/workspaces";
+import { Calendar32 } from "@/components/ui/calendar-picker-in-a-drawer";
 import type { BookingForm } from "./use-booking-form";
-import { BookingDropdown } from "./booking-step-package";
+import { BookingSelect } from "./booking-step-package";
 
 interface BookingStepBriefProps {
   form: BookingForm;
@@ -23,15 +20,11 @@ interface BookingStepBriefProps {
 export function BookingStepBrief({ form }: BookingStepBriefProps) {
   const objectiveItems = useMemo(
     () =>
-      BOOKING_OBJECTIVES.filter((o) => o.value !== "ugc").map((o) => ({
+      BOOKING_OBJECTIVES.map((o) => ({
         id: o.value,
         name: o.label,
         description: o.description,
       })),
-    [],
-  );
-  const contentStyleItems = useMemo(
-    () => CONTENT_STYLES.map((s) => ({ id: s.value, name: s.label })),
     [],
   );
   const timingItems = useMemo(
@@ -46,151 +39,34 @@ export function BookingStepBrief({ form }: BookingStepBriefProps) {
 
   return (
     <>
-      <BookingDropdown
+      <BookingSelect
         heading="What's this for?"
-        label="Objective"
         items={objectiveItems}
         selectedId={form.objective}
-        onSelect={(ws: Workspace) =>
-          form.setObjective(ws.id as BookingObjective)
-        }
+        onSelect={(id) => form.setObjective(id as BookingObjective)}
       />
-      <section className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-        <Label htmlFor="focus-text" className="text-white/80">
-          What should they show?
-        </Label>
-        <Input
-          id="focus-text"
-          value={form.focusText}
-          onChange={(e) => form.setFocusText(e.target.value.slice(0, 120))}
-          placeholder={OBJECTIVE_PLACEHOLDERS[form.objective]}
-          className="h-10"
-          required
-        />
-        <p className="text-right text-xs text-white/30">
-          {form.focusText.length}/120
-        </p>
-      </section>
       {shouldShowEventName(form.objective) ? (
-        <section className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-          <Label htmlFor="event-name" className="text-white/80">
-            Where?
-          </Label>
-          <Input
-            id="event-name"
-            value={form.eventName}
-            onChange={(e) => form.setEventName(e.target.value)}
-            placeholder="e.g. Cafe Drifter, Indiranagar"
-            className="h-10"
-            required
-          />
-        </section>
+        <VenueAddressCard form={form} />
       ) : null}
-      <BookingDropdown
-        heading="Content style"
-        label="Content style"
-        items={contentStyleItems}
-        selectedId={form.contentStyles[0]}
-        onSelect={(ws: Workspace) =>
-          form.setContentStyles([ws.id as ContentStyle])
-        }
-      />
-      <BookingDropdown
+      <BookingSelect
         heading="When do you need it?"
-        label="Timing"
         items={timingItems}
         selectedId={form.timingMode}
-        onSelect={(ws: Workspace) =>
-          form.setTimingMode(ws.id as BookingTimingMode)
-        }
+        onSelect={(id) => form.setTimingMode(id as BookingTimingMode)}
       >
         {form.timingMode === "choose_date" ? (
-          <div className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-            <Label htmlFor="due-date" className="text-white/80">
-              Select date
-            </Label>
-            <div className="relative">
-              <CalendarDays className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-white/40" />
-              <Input
-                id="due-date"
-                type="date"
-                value={form.dueDate}
-                onChange={(e) => form.setDueDate(e.target.value)}
-                className="h-10 pl-10"
-              />
-            </div>
+          <div className="space-y-2 rounded-2xl border border-white/10 bg-white/3 p-4">
+            <Calendar32
+              id="due-date"
+              label="Select date"
+              value={form.dueDate}
+              onChange={form.setDueDate}
+            />
           </div>
         ) : null}
-      </BookingDropdown>
-      <section className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
-        <div>
-          <p className="text-sm font-medium text-white">Brand can repost?</p>
-          <p className="text-xs text-white/40">
-            {form.usageRights
-              ? "Creator grants repost rights"
-              : "Creator-only — no brand repost"}
-          </p>
-        </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={form.usageRights}
-          onClick={() => form.setUsageRights((v) => !v)}
-          className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${form.usageRights ? "bg-white" : "bg-white/20"}`}
-        >
-          <span
-            className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full transition-transform ${form.usageRights ? "translate-x-5 bg-black" : "translate-x-0 bg-white/60"}`}
-          />
-        </button>
-      </section>
-      <section className="space-y-3">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03]">
-          <button
-            type="button"
-            onClick={() => form.setShowDetails((v) => !v)}
-            className="flex w-full items-center justify-between px-4 py-3 text-left"
-          >
-            <span className="text-sm font-medium text-white">
-              + Add details
-            </span>
-            <ChevronDown
-              className={`h-4 w-4 text-white/60 transition-transform ${form.showDetails ? "rotate-180" : ""}`}
-            />
-          </button>
-          {form.showDetails ? (
-            <div className="space-y-4 border-t border-white/10 p-4">
-              <div className="space-y-2">
-                <Label htmlFor="hashtags" className="text-white/80">
-                  Tags & mentions
-                </Label>
-                <Input
-                  id="hashtags"
-                  value={form.hashtagsMentions}
-                  onChange={(e) => form.setHashtagsMentions(e.target.value)}
-                  placeholder="#SummerVibes @yourbrand"
-                  className="h-10"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cta" className="text-white/80">
-                  Key message or CTA
-                </Label>
-                <Input
-                  id="cta"
-                  value={form.ctaMessage}
-                  onChange={(e) =>
-                    form.setCtaMessage(e.target.value.slice(0, 100))
-                  }
-                  placeholder="e.g. Use code SUMMER20, Link in bio..."
-                  className="h-10"
-                />
-              </div>
-            </div>
-          ) : null}
-        </div>
-      </section>
+      </BookingSelect>
       {form.requiresContactInput || form.requiresPhoneInput ? (
-        <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <section className="space-y-3 rounded-2xl border border-white/10 bg-white/3 p-4">
           <div>
             <h2 className="text-sm font-semibold text-white">
               Contact for booking
@@ -200,7 +76,7 @@ export function BookingStepBrief({ form }: BookingStepBriefProps) {
             </p>
           </div>
           <div className="grid gap-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
               <Label className="text-xs uppercase tracking-[0.18em] text-white/45">
                 Email
               </Label>
@@ -219,7 +95,7 @@ export function BookingStepBrief({ form }: BookingStepBriefProps) {
                 </p>
               )}
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
               <Label className="text-xs uppercase tracking-[0.18em] text-white/45">
                 Phone
               </Label>
@@ -240,5 +116,99 @@ export function BookingStepBrief({ form }: BookingStepBriefProps) {
         </section>
       ) : null}
     </>
+  );
+}
+
+function VenueAddressCard({ form }: { form: BookingForm }) {
+  const [editing, setEditing] = useState(!form.venueAddressDraft);
+  const [draft, setDraft] = useState(form.venueAddressDraft);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editing) inputRef.current?.focus();
+  }, [editing]);
+
+  const startEdit = () => {
+    setDraft(form.venueAddressDraft);
+    setEditing(true);
+  };
+
+  const save = () => {
+    form.setVenueAddress(draft.trim());
+    setEditing(false);
+  };
+
+  const cancel = () => {
+    setDraft(form.venueAddressDraft);
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <section className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/3 px-4 py-3">
+        <MapPin className="mt-3 h-4 w-4 shrink-0 text-white/50" />
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <p className="text-sm font-medium text-white">Venue address</p>
+          <div className="flex items-center gap-2">
+            <Input
+              ref={inputRef}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  save();
+                } else if (e.key === "Escape") {
+                  e.preventDefault();
+                  cancel();
+                }
+              }}
+              placeholder="Street, area, city, pincode"
+              className="h-9 flex-1"
+            />
+            <button
+              type="button"
+              onClick={save}
+              disabled={!draft.trim()}
+              aria-label="Save address"
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/40"
+            >
+              <Check className="h-4 w-4" />
+            </button>
+            {form.venueAddressDraft ? (
+              <button
+                type="button"
+                onClick={cancel}
+                aria-label="Cancel"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 text-white/65 transition hover:bg-white/8 hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/3 px-4 py-3">
+      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/50" />
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium text-white">Venue address</p>
+        <p className="mt-0.5 truncate text-xs text-white/50">
+          {form.venueAddressDraft ||
+            "Add your business address in your profile to continue."}
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={startEdit}
+        aria-label="Edit venue address"
+        className="shrink-0 rounded-full p-1.5 text-white/55 transition hover:bg-white/8 hover:text-white"
+      >
+        <Pencil className="h-3.5 w-3.5" />
+      </button>
+    </section>
   );
 }

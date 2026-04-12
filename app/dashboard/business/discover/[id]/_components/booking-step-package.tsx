@@ -1,102 +1,87 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Check, ChevronDown, CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { getAvailablePackages, type BookablePackage } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
-import {
-  Workspaces,
-  WorkspaceTrigger,
-  WorkspaceContent,
-  type Workspace,
-} from "@/components/ui/workspaces";
 
-export function DropdownTrigger({
-  label,
-  workspace,
-  isOpen,
-}: {
-  label: string;
-  workspace: Workspace;
-  isOpen: boolean;
-}) {
-  return (
-    <div className="flex w-full items-center justify-between gap-3">
-      <div className="min-w-0 text-left">
-        <p className="text-[10px] uppercase tracking-[0.22em] text-white/45">
-          {label}
-        </p>
-        <p className="mt-1 truncate text-sm font-medium text-white">
-          {workspace.name}
-        </p>
-      </div>
-      <ChevronDown
-        className={`h-4 w-4 text-white/55 transition-transform ${isOpen ? "rotate-180" : ""}`}
-      />
-    </div>
-  );
+export interface BookingSelectItem {
+  id: string;
+  name: string;
+  description?: string;
 }
 
-export function WorkspaceRow({
-  workspace,
-  isSelected,
-}: {
-  workspace: Workspace;
-  isSelected: boolean;
-}) {
-  return (
-    <div className="flex min-w-0 flex-1 items-center gap-3">
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm text-white">{workspace.name}</p>
-        {workspace.description ? (
-          <p className="mt-1 text-xs text-white/50">{workspace.description}</p>
-        ) : null}
-      </div>
-      {isSelected ? <Check className="h-4 w-4 text-white" /> : null}
-    </div>
-  );
-}
-
-interface BookingDropdownProps {
+interface BookingSelectProps {
   heading: string;
-  label: string;
-  items: Workspace[];
+  items: BookingSelectItem[];
   selectedId: string;
-  onSelect: (ws: Workspace) => void;
+  onSelect: (id: string) => void;
   children?: ReactNode;
 }
 
-export function BookingDropdown({
+export function BookingSelect({
   heading,
-  label,
   items,
   selectedId,
   onSelect,
   children,
-}: BookingDropdownProps) {
+}: BookingSelectProps) {
+  const [open, setOpen] = useState(false);
+  const selected = items.find((i) => i.id === selectedId) ?? items[0];
+
   return (
     <section className="space-y-3">
       <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
         {heading}
       </h2>
-      <Workspaces
-        workspaces={items}
-        selectedWorkspaceId={selectedId}
-        onWorkspaceChange={onSelect}
-      >
-        <WorkspaceTrigger
-          className="w-full rounded-[22px] border border-white/10 bg-white/4 px-4 py-3 text-left shadow-[0_16px_32px_rgba(0,0,0,0.18)] transition-colors hover:bg-white/6.5"
-          renderTrigger={(ws, isOpen) => (
-            <DropdownTrigger label={label} workspace={ws} isOpen={isOpen} />
-          )}
-        />
-        <WorkspaceContent
-          title={label}
-          className="border-white/10 bg-[#241e30] text-white"
-          renderWorkspace={(ws, isSelected) => (
-            <WorkspaceRow workspace={ws} isSelected={isSelected} />
-          )}
-        />
-      </Workspaces>
+      <div className="overflow-hidden rounded-[22px] border border-white/10 bg-white/4 shadow-[0_16px_32px_rgba(0,0,0,0.18)]">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-white/6"
+        >
+          <p className="min-w-0 truncate text-sm font-medium text-white">
+            {selected?.name ?? ""}
+          </p>
+          <ChevronDown
+            className={`h-4 w-4 shrink-0 text-white/55 transition-transform ${open ? "rotate-180" : ""}`}
+          />
+        </button>
+        {open ? (
+          <div className="border-t border-white/8 p-1">
+            {items.map((item) => {
+              const isSelected = item.id === selectedId;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    onSelect(item.id);
+                    setOpen(false);
+                  }}
+                  className={`flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition ${
+                    isSelected ? "bg-white/10" : "hover:bg-white/6"
+                  }`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-white">
+                      {item.name}
+                    </p>
+                    {item.description ? (
+                      <p className="mt-0.5 text-xs text-white/50">
+                        {item.description}
+                      </p>
+                    ) : null}
+                  </div>
+                  {isSelected ? (
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-white" />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
       {children}
     </section>
   );

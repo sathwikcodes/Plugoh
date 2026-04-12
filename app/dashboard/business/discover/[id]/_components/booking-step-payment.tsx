@@ -5,7 +5,6 @@ import {
   type BookablePackage,
   type BookingObjective,
   type BookingTimingMode,
-  type ContentStyle,
   type InfluencerProfile,
 } from "@/lib/booking";
 
@@ -17,12 +16,7 @@ interface ProcessBookingPaymentParams {
   objective: BookingObjective;
   timingMode: BookingTimingMode;
   dueDate: string;
-  focusText: string;
-  eventName: string;
-  contentStyles: ContentStyle[];
-  usageRights: boolean;
-  hashtagsMentions: string;
-  ctaMessage: string;
+  venueAddress: string;
   onVerified: (campaignId: string) => void;
   onVerifyFailed: (error: string) => void;
   onDismiss: () => void;
@@ -87,12 +81,7 @@ export async function processBookingPayment(
           objective: params.objective,
           timing_mode: params.timingMode,
           due_date: params.dueDate || undefined,
-          focus_text: params.focusText,
-          event_name: params.eventName || undefined,
-          content_styles: params.contentStyles,
-          usage_rights: params.usageRights,
-          hashtags_mentions: params.hashtagsMentions || undefined,
-          cta_message: params.ctaMessage || undefined,
+          event_name: params.venueAddress || undefined,
           contact_email: params.contactEmail,
           contact_phone: params.contactPhone,
         }),
@@ -112,55 +101,43 @@ export async function processBookingPayment(
 const STEPS = [
   {
     icon: Lock,
-    color: "text-primary",
-    bg: "bg-primary/10 border-primary/15",
-    title: "Your bank places a temporary hold",
-    desc: "No money is deducted. You'll see it as 'pending' in your banking app — not a charge.",
+    title: "We place a temporary hold",
+    desc: "Amount is blocked now, not charged.",
   },
   {
     icon: Clock,
-    color: "text-amber-300",
-    bg: "bg-amber-300/10 border-amber-300/15",
-    title: "Creator has 24 hours to accept",
-    desc: "They see your booking instantly. You'll get a confirmation email from Razorpay — that just means the hold was placed, not that you were charged.",
+    title: "Creator gets 24h to accept",
+    desc: "If they decline or miss it, the hold auto-releases.",
   },
   {
     icon: Check,
-    color: "text-emerald-300",
-    bg: "bg-emerald-300/10 border-emerald-300/15",
-    title: "Accepted → payment secured in escrow",
-    desc: "Only then is the hold converted to an actual charge. Released to creator after you approve the content.",
+    title: "Accepted means payment is secured",
+    desc: "Then it moves to escrow until delivery approval.",
   },
 ] as const;
 
 export function BookingStepPayment() {
   return (
-    <>
-      <div className="space-y-3">
-        <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">
-          How it works
-        </p>
-        <div className="space-y-2">
-          {STEPS.map(({ icon: Icon, color, bg, title, desc }) => (
-            <div
-              key={title}
-              className={`flex items-start gap-3 rounded-2xl border p-3.5 ${bg}`}
-            >
-              <div className={`mt-0.5 shrink-0 ${color}`}>
-                <Icon className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">{title}</p>
-                <p className="text-xs text-white/50">{desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <p className="text-center text-xs text-white/35">
-        If the creator declines or doesn&apos;t respond within 24h, the hold is
-        released and the pending charge disappears from your statement.
+    <div className="space-y-3 rounded-xl border border-white/8 bg-black/20 p-4">
+      <p className="text-[11px] uppercase tracking-[0.22em] text-white/40">
+        How it works
       </p>
-    </>
+      <div className="space-y-2">
+        {STEPS.map(({ icon: Icon, title, desc }) => (
+          <div
+            key={title}
+            className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/3 p-3"
+          >
+            <div className="mt-0.5 shrink-0 text-white/75">
+              <Icon className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">{title}</p>
+              <p className="text-xs text-white/55">{desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

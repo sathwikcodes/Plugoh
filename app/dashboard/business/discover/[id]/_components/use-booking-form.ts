@@ -11,12 +11,11 @@ import {
   type BookingObjective,
   type BookingTimingMode,
   type BookablePackage,
-  type ContentStyle,
   type InfluencerProfile,
 } from "@/lib/booking";
 import { processBookingPayment } from "./booking-step-payment";
 
-const DEFAULT_OBJECTIVE: BookingObjective = "product_launch";
+const DEFAULT_OBJECTIVE: BookingObjective = "feature_product";
 const DEFAULT_TIMING: BookingTimingMode = "asap";
 
 function getInitialPackage(
@@ -52,17 +51,11 @@ export function useBookingForm(
   const [timingMode, setTimingMode] =
     useState<BookingTimingMode>(DEFAULT_TIMING);
   const [dueDate, setDueDate] = useState("");
-  const [focusText, setFocusText] = useState("");
-  const [eventName, setEventName] = useState("");
-  const [contentStyles, setContentStyles] = useState<ContentStyle[]>([
-    "honest_review",
-  ]);
-  const [usageRights, setUsageRights] = useState(false);
-  const [hashtagsMentions, setHashtagsMentions] = useState("");
-  const [ctaMessage, setCtaMessage] = useState("");
-  const [showDetails, setShowDetails] = useState(false);
   const [contactEmailDraft, setContactEmailDraft] = useState("");
   const [contactPhoneDraft, setContactPhoneDraft] = useState("");
+  const [venueAddress, setVenueAddress] = useState(
+    () => businessProfile?.location?.trim() ?? "",
+  );
 
   const selectedPackageData =
     availablePackages.find((p) => p.key === selectedPackage) ??
@@ -86,23 +79,18 @@ export function useBookingForm(
     "Timing";
   const objectiveLabel =
     BOOKING_OBJECTIVES.find((o) => o.value === objective)?.label ?? "Booking";
+  const effectiveVenueAddress = shouldShowEventName(objective)
+    ? venueAddress.trim()
+    : "";
 
   const handleContinueToPayment = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedPackageData) return;
-    if (!focusText.trim()) {
+    if (shouldShowEventName(objective) && !effectiveVenueAddress) {
       toast({
-        title: "What should they feature?",
+        title: "Add your business address",
         description:
-          "Tell the creator what to highlight — even a few words helps.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (shouldShowEventName(objective) && !eventName.trim()) {
-      toast({
-        title: "Where should they go?",
-        description: "Add the venue or event name so the creator can prepare.",
+          "We'll share it with the creator so they know where to visit. Update your profile to continue.",
         variant: "destructive",
       });
       return;
@@ -138,12 +126,7 @@ export function useBookingForm(
         objective,
         timingMode,
         dueDate,
-        focusText,
-        eventName,
-        contentStyles,
-        usageRights,
-        hashtagsMentions,
-        ctaMessage,
+        venueAddress: effectiveVenueAddress,
         onVerified: (campaignId) => {
           toast({
             title: "Booking sent!",
@@ -186,25 +169,14 @@ export function useBookingForm(
     objective,
     setObjective,
     objectiveLabel,
-    focusText,
-    setFocusText,
-    eventName,
-    setEventName,
-    contentStyles,
-    setContentStyles,
     timingMode,
     setTimingMode,
     timingLabel,
     dueDate,
     setDueDate,
-    usageRights,
-    setUsageRights,
-    showDetails,
-    setShowDetails,
-    hashtagsMentions,
-    setHashtagsMentions,
-    ctaMessage,
-    setCtaMessage,
+    venueAddress: effectiveVenueAddress,
+    venueAddressDraft: venueAddress,
+    setVenueAddress,
     contactEmail,
     contactPhone,
     requiresContactInput,

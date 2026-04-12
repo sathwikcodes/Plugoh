@@ -1,5 +1,4 @@
 import {
-  CONTENT_STYLES,
   getPackageLabel,
   shouldShowEventName,
   type InfluencerProfile,
@@ -12,33 +11,38 @@ interface BookingStepReviewProps {
   creator: InfluencerProfile;
 }
 
+function formatDueDate(value: string) {
+  if (!value) return "ASAP";
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) return value;
+
+  const localDate = new Date(year, month - 1, day);
+  return localDate.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
   if (!form.selectedPackageData) return null;
 
+  const timingValue =
+    form.timingMode === "choose_date" && form.dueDate
+      ? formatDueDate(form.dueDate)
+      : "ASAP";
+
   return (
     <div className="space-y-4 rounded-[20px] border border-white/10 bg-white/4 p-5">
-      <div className="flex items-start gap-4">
-        <div className="min-w-0 flex-1">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-white/40">
-            {form.objectiveLabel}
-          </p>
-          <p className="mt-1 text-lg font-semibold text-white">
-            {getPackageLabel(form.selectedPackageData.key)} ·{" "}
-            {creator.display_name ?? "Creator"}
-          </p>
-          <p className="text-sm text-white/50">
-            {form.timingMode === "choose_date" && form.dueDate
-              ? `Needed by ${form.dueDate}`
-              : form.timingLabel}
-          </p>
-        </div>
-      </div>
-
       <div className="space-y-2 rounded-xl border border-white/8 bg-black/20 p-4">
         <p className="text-[11px] uppercase tracking-[0.22em] text-white/40">
-          Your selections
+          Booking details
         </p>
         <div className="space-y-2 text-sm text-white/65">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-white/45">Creator</span>
+            <span className="text-right">{creator.display_name ?? "Creator"}</span>
+          </div>
           <div className="flex items-start justify-between gap-3">
             <span className="text-white/45">Package</span>
             <span className="text-right">
@@ -46,32 +50,18 @@ export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
             </span>
           </div>
           <div className="flex items-start justify-between gap-3">
-            <span className="text-white/45">What to feature</span>
-            <span className="text-right">{form.focusText || "—"}</span>
+            <span className="text-white/45">Objective</span>
+            <span className="text-right">{form.objectiveLabel}</span>
           </div>
-          {shouldShowEventName(form.objective) ? (
+          {shouldShowEventName(form.objective) && form.venueAddress ? (
             <div className="flex items-start justify-between gap-3">
-              <span className="text-white/45">Event/Venue</span>
-              <span className="text-right">{form.eventName || "—"}</span>
+              <span className="text-white/45">Venue</span>
+              <span className="text-right">{form.venueAddress}</span>
             </div>
           ) : null}
           <div className="flex items-start justify-between gap-3">
-            <span className="text-white/45">Content style</span>
-            <span className="text-right">
-              {form.contentStyles[0]
-                ? (CONTENT_STYLES.find(
-                    (style) => style.value === form.contentStyles[0],
-                  )?.label ?? "—")
-                : "—"}
-            </span>
-          </div>
-          <div className="flex items-start justify-between gap-3">
-            <span className="text-white/45">Timing</span>
-            <span className="text-right">
-              {form.timingMode === "choose_date" && form.dueDate
-                ? `${form.timingLabel} · ${form.dueDate}`
-                : form.timingLabel}
-            </span>
+            <span className="text-white/45">Need by</span>
+            <span className="text-right">{timingValue}</span>
           </div>
         </div>
       </div>

@@ -4,13 +4,13 @@ export type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
 export type BookingObjective =
-  | "product_launch"
-  | "restaurant_visit"
-  | "brand_awareness"
-  | "ugc"
-  | "event_coverage";
+  | "visit_place"
+  | "feature_product"
+  | "showcase_service"
+  | "promote_offer"
+  | "brand_shoutout";
 
-export type BookingTimingMode = "asap" | "this_week" | "choose_date";
+export type BookingTimingMode = "asap" | "choose_date";
 
 export type BookablePackage = "reel" | "post" | "story";
 
@@ -22,17 +22,25 @@ export type ContentStyle =
   | "day_in_life"
   | "unboxing";
 
+const LEGACY_CONTENT_STYLE_LABELS: Record<string, string> = {
+  honest_review: "Honest review",
+  aesthetic: "Aesthetic",
+  fun_quirky: "Fun & quirky",
+  tutorial: "Tutorial-style",
+  day_in_life: "Day-in-life",
+  unboxing: "Unboxing",
+};
+
+export function getContentStyleLabel(style: ContentStyle): string {
+  return LEGACY_CONTENT_STYLE_LABELS[style] ?? style;
+}
+
 export interface BookingFormState {
   objective: BookingObjective;
   packageType: BookablePackage;
   timingMode: BookingTimingMode;
   dueDate: string;
-  focusText: string;
-  eventName: string;
-  contentStyles: ContentStyle[];
-  usageRights: boolean;
-  hashtagsMentions: string;
-  ctaMessage: string;
+  venueAddress: string;
   contactEmail: string;
   contactPhone: string;
 }
@@ -45,66 +53,47 @@ export const BOOKING_OBJECTIVES: Array<{
   description: string;
 }> = [
   {
-    value: "product_launch",
-    label: "Product launch",
-    shortLabel: "Launch",
-    description:
-      "Introduce a new product or menu item with a clear hero angle.",
-  },
-  {
-    value: "restaurant_visit",
-    label: "Restaurant visit",
+    value: "visit_place",
+    label: "Visit my place",
     shortLabel: "Visit",
     needsEventName: true,
     description:
-      "Drive footfall or buzz around a venue, cafe, or in-person experience.",
+      "Drive footfall to a physical venue — restaurant, gym, salon, studio, or store.",
   },
   {
-    value: "brand_awareness",
-    label: "Brand awareness",
-    shortLabel: "Awareness",
+    value: "feature_product",
+    label: "Feature my product",
+    shortLabel: "Product",
+    description: "Show off a specific product — D2C, fashion, jewellery, tech.",
+  },
+  {
+    value: "showcase_service",
+    label: "Showcase my service",
+    shortLabel: "Service",
     description:
-      "Build recognition with a simple top-of-funnel branded mention.",
+      "Highlight a service — salon treatment, training session, class, or consult.",
   },
   {
-    value: "ugc",
-    label: "UGC",
-    shortLabel: "UGC",
-    description: "Commission creator-first content the brand can later reuse.",
+    value: "promote_offer",
+    label: "Promote an offer / launch",
+    shortLabel: "Offer",
+    description: "Sale, new opening, limited-time deal, or launch moment.",
   },
   {
-    value: "event_coverage",
-    label: "Event coverage",
-    shortLabel: "Event",
-    needsEventName: true,
-    description:
-      "Capture a launch, meetup, or special activation in real time.",
+    value: "brand_shoutout",
+    label: "Brand shout-out",
+    shortLabel: "Shout-out",
+    description: "Pure awareness — tag, mention, vibe-match content.",
   },
 ];
 
-export const CONTENT_STYLES: Array<{
-  value: ContentStyle;
-  label: string;
-}> = [
-  { value: "honest_review", label: "Honest review" },
-  { value: "aesthetic", label: "Aesthetic" },
-  { value: "fun_quirky", label: "Fun & quirky" },
-  { value: "tutorial", label: "Tutorial-style" },
-  { value: "day_in_life", label: "Day-in-life" },
-  { value: "unboxing", label: "Unboxing" },
-];
-
-export const OBJECTIVE_PLACEHOLDERS: Record<BookingObjective, string> = {
-  product_launch: "e.g. our new protein bars, summer collection...",
-  restaurant_visit: "e.g. butter chicken, new weekend brunch menu...",
-  brand_awareness: "e.g. brand logo, tagline mention, key USP...",
-  ugc: "e.g. skincare routine with our serum, outfit styling...",
-  event_coverage: "e.g. grand opening, launch party, meetup...",
+const LEGACY_OBJECTIVE_LABELS: Record<string, string> = {
+  product_launch: "Feature my product",
+  restaurant_visit: "Visit my place",
+  brand_awareness: "Brand shout-out",
+  ugc: "Feature my product",
+  event_coverage: "Visit my place",
 };
-
-export function getContentStyleLabel(style: ContentStyle): string {
-  return CONTENT_STYLES.find((s) => s.value === style)?.label ?? style;
-}
 
 export const BOOKING_TIMING_OPTIONS: Array<{
   value: BookingTimingMode;
@@ -113,13 +102,8 @@ export const BOOKING_TIMING_OPTIONS: Array<{
 }> = [
   {
     value: "asap",
-    label: "ASAP",
+    label: "Instant",
     description: "Fastest possible turnaround",
-  },
-  {
-    value: "this_week",
-    label: "This week",
-    description: "Flexible but needed soon",
   },
   {
     value: "choose_date",
@@ -164,6 +148,14 @@ export function getStartsAtPrice(profile: InfluencerProfile): number | null {
 
 export function getObjectiveMeta(objective: BookingObjective) {
   return BOOKING_OBJECTIVES.find((item) => item.value === objective);
+}
+
+export function getObjectiveLabel(objective: string): string {
+  return (
+    BOOKING_OBJECTIVES.find((item) => item.value === objective)?.label ??
+    LEGACY_OBJECTIVE_LABELS[objective] ??
+    "Campaign"
+  );
 }
 
 export function shouldShowEventName(objective: BookingObjective) {
@@ -219,15 +211,14 @@ export function buildCampaignTitle(
   profile: Pick<InfluencerProfile, "display_name"> | null,
 ) {
   const objectiveLabel =
-    getObjectiveMeta(formState.objective)?.label ??
-    profile?.display_name?.trim() ??
+    getObjectiveLabel(formState.objective) ||
+    profile?.display_name?.trim() ||
     "Campaign";
   return `${objectiveLabel} • ${getPackageLabel(formState.packageType)}`;
 }
 
 export function buildCampaignBrief(formState: BookingFormState) {
-  const objectiveLabel =
-    getObjectiveMeta(formState.objective)?.label ?? "Campaign";
+  const objectiveLabel = getObjectiveLabel(formState.objective);
   const timingLabel =
     BOOKING_TIMING_OPTIONS.find((item) => item.value === formState.timingMode)
       ?.label ?? formState.timingMode;
@@ -237,18 +228,8 @@ export function buildCampaignBrief(formState: BookingFormState) {
     `Package: ${getPackageLabel(formState.packageType)}`,
   ];
 
-  if (formState.contentStyles.length > 0) {
-    lines.push(
-      `Style: ${formState.contentStyles.map(getContentStyleLabel).join(", ")}`,
-    );
-  }
-
-  if (formState.focusText.trim()) {
-    lines.push(`What to feature: ${formState.focusText.trim()}`);
-  }
-
-  if (shouldShowEventName(formState.objective) && formState.eventName.trim()) {
-    lines.push(`Event/Venue: ${formState.eventName.trim()}`);
+  if (shouldShowEventName(formState.objective) && formState.venueAddress.trim()) {
+    lines.push(`Venue: ${formState.venueAddress.trim()}`);
   }
 
   lines.push(
@@ -258,18 +239,6 @@ export function buildCampaignBrief(formState: BookingFormState) {
         : timingLabel
     }`,
   );
-
-  lines.push(
-    `Usage rights: ${formState.usageRights ? "Brand can repost" : "Creator-only"}`,
-  );
-
-  if (formState.hashtagsMentions.trim()) {
-    lines.push(`Tags & mentions: ${formState.hashtagsMentions.trim()}`);
-  }
-
-  if (formState.ctaMessage.trim()) {
-    lines.push(`CTA: ${formState.ctaMessage.trim()}`);
-  }
 
   return lines.join("\n");
 }

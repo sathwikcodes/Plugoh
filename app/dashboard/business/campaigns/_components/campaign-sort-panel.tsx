@@ -112,8 +112,7 @@ export function CampaignSortPanel({
                 {STATUS_FILTERS.map((sf) => {
                   const active = statusFilter === sf;
                   const count = statusCounts[sf];
-                  const isUrgent =
-                    sf === "payment_pending" && count > 0 && !active;
+                  const isUrgent = sf === "requested" && count > 0 && !active;
                   return (
                     <button
                       key={sf}
