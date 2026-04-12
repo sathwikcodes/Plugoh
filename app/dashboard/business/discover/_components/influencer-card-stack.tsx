@@ -181,7 +181,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
                           profile={profile}
                           className="opacity-[0.92]"
                         />
-                        <div className="absolute inset-x-6 bottom-6 h-20 rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(18,20,24,0.22)_0%,rgba(9,10,14,0.74)_100%)] opacity-70 backdrop-blur-[16px]" />
+                        <div className="absolute inset-x-6 bottom-6 h-20 rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(18,20,24,0.22)_0%,rgba(9,10,14,0.74)_100%)] opacity-70 backdrop-blur-lg" />
                         <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]" />
                       </>
                     )}
@@ -196,7 +196,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
       <div className="flex w-full shrink-0 items-center justify-center gap-3 pt-3 pb-1">
         <ShinyButton
           onClick={moveToStart}
-          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/[0.05] px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
         >
           <Image
             src="/back.png"
@@ -207,7 +207,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
           />
         </ShinyButton>
 
-        <div className="min-w-[76px] text-center">
+        <div className="min-w-19 text-center">
           <span className="text-sm font-medium tabular-nums text-white/78">
             {currentIndex + 1}
           </span>
@@ -217,7 +217,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
 
         <ShinyButton
           onClick={moveToEnd}
-          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/[0.05] px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
         >
           <Image
             src="/next.png"

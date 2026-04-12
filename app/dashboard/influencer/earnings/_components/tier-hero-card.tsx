@@ -63,6 +63,7 @@ export function TierHeroCard({
         />
 
         <div className="relative flex items-start gap-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={tier.emoji}
             alt="tier icon"
@@ -101,7 +102,7 @@ export function TierHeroCard({
                 <div className="h-2.5 w-full rounded-full bg-white/10 overflow-hidden">
                   <m.div
                     className={cn(
-                      "h-full rounded-full bg-gradient-to-r",
+                      "h-full rounded-full bg-linear-to-r",
                       tier.barClass,
                     )}
                     initial={{ width: "0%" }}

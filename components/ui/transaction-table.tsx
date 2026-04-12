@@ -215,6 +215,7 @@ export function TransactionTable({
   if (transactions.length === 0) {
     return (
       <div className={cn("py-10 text-center", className)}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/premium.png"
           alt="no transactions"
@@ -299,6 +300,7 @@ export function TransactionTable({
                     <div className="relative grid grid-cols-[1fr_auto_auto] sm:grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_1fr] gap-3 items-center px-4 py-3.5">
                       {/* Campaign — Wallet icon (no background) + title/brand */}
                       <div className="flex items-center gap-3 min-w-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src="/premium.png"
                           alt="campaign"
@@ -346,6 +348,7 @@ export function TransactionTable({
 
                       {/* Amount — coin.png + number, no ₹ symbol */}
                       <div className="flex items-center gap-1.5">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src="/coin.png"
                           alt="coin"

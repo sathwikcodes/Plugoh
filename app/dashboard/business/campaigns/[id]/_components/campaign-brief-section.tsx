@@ -67,7 +67,7 @@ function StatusTimeline({ status }: { status: string }) {
                     ? reachedTone === "success"
                       ? "border-green-300/30 bg-green-300/15"
                       : "border-yellow-300/30 bg-yellow-300/15"
-                    : "border-white/10 bg-white/[0.04]",
+                    : "border-white/10 bg-white/4",
                 )}
               >
                 <CircleDot

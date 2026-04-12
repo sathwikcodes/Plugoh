@@ -499,7 +499,7 @@ export function BookingCardMessage({
                 disabled={isMutating}
                 className={cn(
                   "w-full h-10 rounded-xl text-sm font-semibold transition-all",
-                  "bg-gradient-to-r from-green-500 to-emerald-600 text-white",
+                  "bg-linear-to-r from-green-500 to-emerald-600 text-white",
                   "hover:brightness-110 active:scale-[0.98]",
                   "disabled:opacity-50 disabled:pointer-events-none",
                   "flex items-center justify-center gap-2",

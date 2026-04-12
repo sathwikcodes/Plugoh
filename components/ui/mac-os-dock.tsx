@@ -117,6 +117,7 @@ function DockIcon({ app, mouseX, isOpen, onClick, isTouch }: DockIconProps) {
             opacity: isOpen ? 1 : 0,
           }}
         />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={app.icon}
           alt={app.name}
@@ -129,7 +130,7 @@ function DockIcon({ app, mouseX, isOpen, onClick, isTouch }: DockIconProps) {
       {/* Active indicator dot */}
       <span
         className={cn(
-          "absolute -bottom-1 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full bg-white/75 transition-opacity duration-200",
+          "absolute -bottom-1 left-1/2 -translate-x-1/2 w-[3px] h-0.75 rounded-full bg-white/75 transition-opacity duration-200",
           isOpen ? "opacity-100" : "opacity-0",
         )}
       />

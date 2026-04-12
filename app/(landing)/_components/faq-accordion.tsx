@@ -41,7 +41,7 @@ const FaqSection = React.forwardRef<HTMLElement, FaqSectionProps>(
             transition={{ duration: 0.5 }}
             className="max-w-2xl mx-auto text-center mb-12"
           >
-            <h2 className="font-display heading-premium mb-3 text-3xl font-medium bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent">
+            <h2 className="font-display heading-premium mb-3 text-3xl font-medium bg-linear-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent">
               {title}
             </h2>
             {description && (

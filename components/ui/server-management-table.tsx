@@ -429,7 +429,7 @@ export function ServerManagementTable({
               transition={{ duration: 0.2 }}
               className="absolute inset-0 bg-background/60 backdrop-blur-sm flex flex-col rounded-2xl z-10 overflow-hidden"
             >
-              <div className="relative bg-gradient-to-r from-muted/50 to-transparent p-4 border-b border-border/30 flex items-center justify-between">
+              <div className="relative bg-linear-to-r from-muted/50 to-transparent p-4 border-b border-border/30 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="text-2xl font-bold text-muted-foreground">
                     {activeSelectedServer.number}

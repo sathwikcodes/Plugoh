@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useMyInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
-import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc/client";
 import { Loader2 } from "lucide-react";
@@ -46,8 +45,7 @@ function InfluencerProfilePageInner() {
     user?.id,
     { refetchInterval: aiStatus === "running" ? 3000 : false },
   );
-  const { data: igMedia } = useInstagramMedia(user?.id);
-  const { data: campaigns } = useCampaigns(user?.id, "influencer");
+  useCampaigns(user?.id, "influencer");
 
   const loading = authLoading || profileLoading;
 
@@ -83,7 +81,7 @@ function InfluencerProfilePageInner() {
           "AI suggestions unavailable — you can fill in your details manually.",
         );
       });
-  }, [isOnboarding, user?.id, queryClient]);
+  }, [isOnboarding, queryClient, trpc.profile.getMyInfluencerProfile, user?.id]);
 
   if (loading) {
     return (
@@ -139,17 +137,13 @@ function InfluencerProfilePageInner() {
                 animate="visible"
               >
                 {activeTab === "instagram" && (
-                  <InstagramTab profile={ip} media={igMedia ?? []} />
+                  <InstagramTab profile={ip} />
                 )}
                 {activeTab === "pricing" && (
                   <PricingTab profile={ip} userId={user.id} />
                 )}
                 {activeTab === "settings" && (
-                  <SettingsTab
-                    profile={ip}
-                    userId={user.id}
-                    onSignOut={signOut}
-                  />
+                  <SettingsTab userId={user.id} onSignOut={signOut} />
                 )}
               </m.div>
             )}

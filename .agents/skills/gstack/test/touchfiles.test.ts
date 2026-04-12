@@ -255,7 +255,7 @@ describe("TOUCHFILES completeness", () => {
     const testNames: string[] = [];
     let match;
     while ((match = testNameRegex.exec(e2eContent)) !== null) {
-      let name = match[1];
+      const name = match[1];
       // Handle template literals like `qa-${label}` — these expand to
       // qa-b6-static, qa-b7-spa, qa-b8-checkout
       if (name.includes("${")) continue; // skip template literals, check expanded forms below

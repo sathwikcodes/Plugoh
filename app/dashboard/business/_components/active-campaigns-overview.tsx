@@ -85,7 +85,7 @@ export function ActiveCampaignsOverview({
                 href={`/dashboard/business/campaigns/${campaign.id}`}
                 className="snap-start shrink-0 w-[180px] sm:w-[200px] rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md overflow-hidden group transition-all hover:border-white/20 hover:scale-[1.02]"
               >
-                <div className="h-1.5 w-full bg-gradient-to-r from-primary via-primary/70 to-[#FF7A59]" />
+                <div className="h-1.5 w-full bg-linear-to-r from-primary via-primary/70 to-[#FF7A59]" />
 
                 <div className="p-4 space-y-3">
                   <div className="flex items-center gap-2.5">

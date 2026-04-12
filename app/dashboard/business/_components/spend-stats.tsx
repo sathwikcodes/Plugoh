@@ -71,10 +71,10 @@ export function SpendStats({ stats, hasCampaigns }: SpendStatsProps) {
               className={cn(
                 "h-full rounded-full transition-all duration-1000",
                 stats.acceptanceRate >= 70
-                  ? "bg-gradient-to-r from-green-500 to-emerald-400"
+                  ? "bg-linear-to-r from-green-500 to-emerald-400"
                   : stats.acceptanceRate >= 40
-                    ? "bg-gradient-to-r from-yellow-500 to-orange-400"
-                    : "bg-gradient-to-r from-red-500 to-rose-400",
+                    ? "bg-linear-to-r from-yellow-500 to-orange-400"
+                    : "bg-linear-to-r from-red-500 to-rose-400",
               )}
               style={{ width: `${stats.acceptanceRate}%` }}
             />

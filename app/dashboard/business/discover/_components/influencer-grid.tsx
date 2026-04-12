@@ -39,7 +39,7 @@ export function InfluencerGrid({
         <m.div
           key="mobile-skeleton"
           variants={fadeUp}
-          className="flex min-h-0 flex-1 md:hidden pb-[100px] items-center justify-center"
+          className="flex min-h-0 flex-1 md:hidden pb-25 items-center justify-center"
         >
           <div className="w-full max-w-[min(85vw,21rem)]">
             <InfluencerCardSkeleton />

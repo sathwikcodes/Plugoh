@@ -63,7 +63,7 @@ export default function DiscoverLoading() {
                 </div>
                 <Skeleton className="h-12 w-full rounded-full bg-white/5 border border-white/10" />
               </div>
-              <Skeleton className="relative flex h-12 w-12 shrink-0 rounded-full border border-primary/20 bg-primary/[0.07] sm:w-[100px]" />
+              <Skeleton className="relative flex h-12 w-12 shrink-0 rounded-full border border-primary/20 bg-primary/[0.07] sm:w-25" />
             </div>
           </div>
 
@@ -73,7 +73,7 @@ export default function DiscoverLoading() {
             ))}
           </div>
 
-          <div className="flex min-h-0 flex-1 md:hidden pb-[100px] items-center justify-center">
+          <div className="flex min-h-0 flex-1 md:hidden pb-25 items-center justify-center">
             <div className="w-full max-w-[min(85vw,21rem)]">
               <InfluencerCardSkeleton />
             </div>

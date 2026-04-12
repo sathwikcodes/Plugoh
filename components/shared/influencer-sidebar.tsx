@@ -29,7 +29,7 @@ export function InfluencerSidebar() {
               )}
             >
               <Icon
-                className="h-[18px] w-[18px] shrink-0"
+                className="h-4.5 w-4.5 shrink-0"
                 strokeWidth={active ? 2.5 : 1.5}
               />
               {tab.label}

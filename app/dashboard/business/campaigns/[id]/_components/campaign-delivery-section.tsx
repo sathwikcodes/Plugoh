@@ -85,7 +85,7 @@ export function CampaignDeliverySection({
     : 7;
 
   return (
-    <div className="rounded-2xl border border-yellow-500/25 bg-yellow-500/[0.08] p-4 sm:p-5 space-y-4">
+    <div className="rounded-2xl border border-yellow-500/25 bg-yellow-500/8 p-4 sm:p-5 space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">
           <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-300/80" />

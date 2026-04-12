@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,24 +15,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { LogOut, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { LogOut } from "lucide-react";
 import { useUpdateInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import { toast } from "sonner";
-import type { Database } from "@/lib/supabase/types";
-
-type InfluencerProfile =
-  Database["public"]["Tables"]["influencer_profiles"]["Row"];
 
 interface SettingsTabProps {
-  profile: InfluencerProfile;
   userId: string;
   onSignOut: () => Promise<void>;
 }
 
 export default function SettingsTab({
-  profile,
   userId,
   onSignOut,
 }: SettingsTabProps) {
@@ -54,14 +45,6 @@ export default function SettingsTab({
       );
     } catch {
       toast.error("Failed to update. Please try again.");
-    }
-  };
-
-  const handleToggle = (checked: boolean) => {
-    if (!checked) {
-      setShowDeactivateDialog(true);
-    } else {
-      handleToggleActive(true);
     }
   };
 

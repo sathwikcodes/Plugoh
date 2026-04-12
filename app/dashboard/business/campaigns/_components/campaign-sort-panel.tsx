@@ -79,7 +79,7 @@ export function CampaignSortPanel({
         </div>
         <button
           onClick={onClose}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white"
+          className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/6 hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
@@ -124,10 +124,10 @@ export function CampaignSortPanel({
                       className={cn(
                         "flex w-full items-center justify-between rounded-[22px] border px-4 py-3.5 text-left transition-colors",
                         active
-                          ? "border-white/20 bg-white/[0.1]"
+                          ? "border-white/20 bg-white/10"
                           : isUrgent
                             ? "border-yellow-400/40 bg-yellow-400/10 hover:bg-yellow-400/15"
-                            : "border-white/10 bg-white/[0.035] hover:bg-white/[0.065]",
+                            : "border-white/10 bg-white/[0.035] hover:bg-white/6.5",
                       )}
                     >
                       <div className="pr-4">
@@ -149,7 +149,7 @@ export function CampaignSortPanel({
                       </div>
                       <span
                         className={cn(
-                          "flex min-w-[32px] items-center justify-center rounded-full border px-2 py-1 text-[11px]",
+                          "flex min-w-8 items-center justify-center rounded-full border px-2 py-1 text-[11px]",
                           active
                             ? "border-white bg-white text-black"
                             : isUrgent
@@ -181,8 +181,8 @@ export function CampaignSortPanel({
                       className={cn(
                         "flex w-full items-center justify-between rounded-[22px] border px-4 py-3.5 text-left transition-colors",
                         active
-                          ? "border-white/20 bg-white/[0.1]"
-                          : "border-white/10 bg-white/[0.035] hover:bg-white/[0.065]",
+                          ? "border-white/20 bg-white/10"
+                          : "border-white/10 bg-white/[0.035] hover:bg-white/6.5",
                       )}
                     >
                       <div className="pr-4">
@@ -248,7 +248,7 @@ export function CampaignSortPanel({
             <m.div
               key="sort-panel-desktop"
               ref={panelRef}
-              className="fixed bottom-0 right-0 top-0 z-50 flex w-[420px] flex-col border-l border-white/10 bg-[#241e30] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
+              className="fixed bottom-0 right-0 top-0 z-50 flex w-105 flex-col border-l border-white/10 bg-[#241e30] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}

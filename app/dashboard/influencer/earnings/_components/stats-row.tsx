@@ -46,6 +46,7 @@ export function StatsRow({
       {/* This Month — hero on mobile, normal on sm+ */}
       <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 flex items-center justify-between sm:flex-col sm:items-start sm:justify-start">
         <div className="flex items-center gap-3 sm:flex-col sm:items-start sm:gap-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/coin.png"
             alt="coin"
@@ -82,6 +83,7 @@ export function StatsRow({
       {/* Pending + Completed — 2-col row on mobile, normal cols on sm+ */}
       <div className="grid grid-cols-2 gap-3 sm:contents">
         <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/clock.png"
             alt="pending"
@@ -95,6 +97,7 @@ export function StatsRow({
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/premium_target.png"
             alt="completed"

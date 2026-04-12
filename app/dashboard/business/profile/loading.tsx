@@ -56,7 +56,7 @@ export default function BusinessProfileLoading() {
             {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton
                 key={i}
-                className="h-10 w-[100px] rounded-full bg-white/10"
+                className="h-10 w-25 rounded-full bg-white/10"
               />
             ))}
           </div>

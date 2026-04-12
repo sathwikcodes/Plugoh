@@ -89,10 +89,10 @@ export default function ProfileHeader({
                     alt={profile.display_name || "Profile"}
                     width={72}
                     height={72}
-                    className="h-[72px] w-[72px] rounded-full object-cover border-2 border-background"
+                    className="h-18 w-18 rounded-full object-cover border-2 border-background"
                   />
                 ) : (
-                  <div className="h-[72px] w-[72px] rounded-full border-2 border-background bg-card flex items-center justify-center">
+                  <div className="h-18 w-18 rounded-full border-2 border-background bg-card flex items-center justify-center">
                     <span className="text-lg font-bold text-muted-foreground">
                       {initials}
                     </span>

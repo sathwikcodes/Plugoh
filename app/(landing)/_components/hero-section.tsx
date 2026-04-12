@@ -39,7 +39,7 @@ export function Header() {
         className={[
           "grid grid-cols-3 items-center rounded-full transition-all duration-150 ease-out",
           scrolled
-            ? "h-16 px-4 sm:px-8 border border-white/[0.08] bg-white/[0.04] shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md"
+            ? "h-16 px-4 sm:px-8 border border-white/[0.08] bg-white/4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md"
             : "h-14 px-3 sm:px-6 border border-transparent bg-transparent",
         ].join(" ")}
       >
@@ -58,12 +58,12 @@ export function Header() {
 
         {/* Center — Nav icons (perfectly centered) */}
         <div className="hidden md:flex items-center justify-center">
-          <div className="flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-1.5">
+          <div className="flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/4 px-2 py-1.5">
             {navIcons.map((item, i) => (
               <Link
                 key={i}
                 href={item.href}
-                className="flex items-center justify-center size-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-white/[0.08]"
+                className="flex items-center justify-center size-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-white/8"
                 title={item.label}
               >
                 <item.icon className="size-[18px]" />
@@ -88,7 +88,7 @@ export function Header() {
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="inline-flex items-center justify-center size-10 rounded-full border border-white/[0.1] text-foreground hover:bg-white/[0.06]"
+            className="inline-flex items-center justify-center size-10 rounded-full border border-white/[0.1] text-foreground hover:bg-white/6"
           >
             {mobileOpen ? (
               <X className="size-5" />
@@ -101,14 +101,14 @@ export function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden mt-2 rounded-3xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+        <div className="md:hidden mt-2 rounded-3xl border border-white/[0.08] bg-white/4 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
           <div className="flex flex-col gap-1 px-6 py-4">
             {navIcons.map((item, i) => (
               <Link
                 key={i}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-white/[0.06]"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-white/6"
               >
                 <item.icon className="size-4 text-muted-foreground" />
                 {item.label}
@@ -118,7 +118,7 @@ export function Header() {
               <Link href="/login" onClick={() => setMobileOpen(false)}>
                 <LiquidButton
                   size="default"
-                  className="w-full rounded-full px-6 text-sm font-semibold !text-white bg-gradient-to-r from-[#EC4E02] to-[#FF8A50] shadow-[0_0_20px_rgba(236,78,2,0.3)] gap-2"
+                  className="w-full rounded-full px-6 text-sm font-semibold !text-white bg-linear-to-r from-[#EC4E02] to-[#FF8A50] shadow-[0_0_20px_rgba(236,78,2,0.3)] gap-2"
                 >
                   Get Started
                   <ArrowRight className="size-4" />

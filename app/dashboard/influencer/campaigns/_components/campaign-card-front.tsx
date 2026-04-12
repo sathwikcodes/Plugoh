@@ -207,7 +207,7 @@ export function CampaignCardFront({
             "mt-3 flex items-center gap-2.5 rounded-2xl border px-3 py-2",
             isClosed
               ? "border-white/6 bg-white/[0.025]"
-              : "border-white/8 bg-white/[0.04]",
+              : "border-white/8 bg-white/4",
           )}
         >
           <Avatar
@@ -372,7 +372,7 @@ export function CampaignCardFront({
             <Link
               href={card.detailHref}
               onPointerDown={(e) => e.stopPropagation()}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/8 bg-white/[0.05] transition-transform duration-150 hover:scale-105 active:scale-95"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/8 bg-white/5 transition-transform duration-150 hover:scale-105 active:scale-95"
             >
               <ArrowRight className="h-4 w-4 text-white/40" />
             </Link>
@@ -383,14 +383,14 @@ export function CampaignCardFront({
                 onPointerDown={(e) => e.stopPropagation()}
                 className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-[0_6px_20px_rgba(0,0,0,0.28)] transition-transform duration-150 hover:scale-105 active:scale-95"
               >
-                <MessageCircle className="h-[18px] w-[18px] text-black" />
+                <MessageCircle className="h-4.5 w-4.5 text-black" />
               </Link>
               <Link
                 href={card.detailHref}
                 onPointerDown={(e) => e.stopPropagation()}
                 className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-[0_6px_20px_rgba(0,0,0,0.28)] transition-transform duration-150 hover:scale-105 active:scale-95"
               >
-                <ArrowRight className="h-[18px] w-[18px] text-black" />
+                <ArrowRight className="h-4.5 w-4.5 text-black" />
               </Link>
             </div>
           )}

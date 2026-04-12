@@ -15,7 +15,7 @@ export default function SocialProof({ brands }: SocialProofProps) {
       <m.div variants={fadeUp}>
         <Link
           href="/dashboard/influencer/complete-profile?step=3"
-          className="block rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:border-white/20 hover:bg-white/[0.04]"
+          className="block rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:border-white/20 hover:bg-white/4"
         >
           <p className="text-sm text-muted-foreground">
             Add brands you&apos;ve collaborated with

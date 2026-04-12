@@ -29,7 +29,7 @@ function FilterRow({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center justify-between rounded-[26px] border border-white/10 bg-white/[0.04] px-5 py-4 text-left shadow-[0_16px_32px_rgba(0,0,0,0.18)] transition-colors hover:bg-white/[0.065]"
+      className="flex w-full items-center justify-between rounded-[26px] border border-white/10 bg-white/4 px-5 py-4 text-left shadow-[0_16px_32px_rgba(0,0,0,0.18)] transition-colors hover:bg-white/6.5"
     >
       <span className="text-[1rem] font-medium text-white">{label}</span>
       <span className="flex items-center gap-3">
@@ -89,7 +89,7 @@ export function FilterPanelContent({
             <button
               type="button"
               onClick={() => setStep("root")}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/6 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
@@ -106,7 +106,7 @@ export function FilterPanelContent({
             if (step !== "root") setStep("root");
             else handleDismiss();
           }}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white"
+          className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/6 hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
@@ -203,7 +203,7 @@ export function FilterPanelContent({
             type="button"
             variant="outline"
             onClick={onClearAll}
-            className="h-12 rounded-full border-white/12 bg-white/[0.04] text-[15px] font-medium text-white hover:bg-white/[0.08]"
+            className="h-12 rounded-full border-white/12 bg-white/4 text-[15px] font-medium text-white hover:bg-white/8"
           >
             Clear
             {filterCount > 0 ? ` (${filterCount})` : ""}

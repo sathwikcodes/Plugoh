@@ -231,7 +231,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     } finally {
       setRequestingCall(false);
     }
-  }, [campaign.id, requestingCall, user]);
+  }, [campaign.id, requestingCall, session?.access_token, user]);
 
   if (!user) return null;
 

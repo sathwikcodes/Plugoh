@@ -278,12 +278,6 @@ function PricingSliderCard({
   const draft = draftPrice ?? internalDraft;
   const setDraft = onDraftPriceChange ?? setInternalDraft;
 
-  useEffect(() => {
-    if (draftPrice === undefined && !isEditing) {
-      setInternalDraft(initialPrice);
-    }
-  }, [draftPrice, initialPrice, isEditing]);
-
   // Displayed price: raw draft while editing (instant), saved price when not
   const displayPrice = isEditing ? draft : initialPrice;
   const handleEdit = () => {
@@ -448,23 +442,6 @@ function PricingCarousel({
 
   const total = cards.length;
 
-  useEffect(() => {
-    setDrafts((prev) => ({
-      reel:
-        editingCard === "reel" || savingCard === "reel"
-          ? prev.reel
-          : (profile.price_per_reel ?? CARD_CONFIG[0].default),
-      post:
-        editingCard === "post" || savingCard === "post"
-          ? prev.post
-          : (profile.price_per_post ?? CARD_CONFIG[1].default),
-      story:
-        editingCard === "story" || savingCard === "story"
-          ? prev.story
-          : (profile.price_per_story ?? CARD_CONFIG[2].default),
-    }));
-  }, [editingCard, profile.price_per_post, profile.price_per_reel, profile.price_per_story, savingCard]);
-
   const goTo = (next: number, dir: number) => {
     setDirection(dir);
     setActiveIdx(next);
@@ -512,7 +489,11 @@ function PricingCarousel({
               setDrafts((prev) => ({ ...prev, [card.key]: price }));
               onSave(card.key, price);
             }}
-            draftPrice={drafts[card.key]}
+            draftPrice={
+              editingCard === card.key || savingCard === card.key
+                ? drafts[card.key]
+                : currentPrice
+            }
             onDraftPriceChange={(price) =>
               setDrafts((prev) => ({ ...prev, [card.key]: price }))
             }

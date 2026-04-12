@@ -81,6 +81,7 @@ export function AchievementsStrip({ badges }: AchievementsStripProps) {
                       </div>
                     </>
                   ) : (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src="/lock.png"
                       alt="locked"

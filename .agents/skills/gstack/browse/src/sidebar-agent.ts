@@ -124,7 +124,7 @@ function shorten(str: string): string {
 function summarizeToolInput(tool: string, input: any): string {
   if (!input) return "";
   if (tool === "Bash" && input.command) {
-    let cmd = shorten(input.command);
+    const cmd = shorten(input.command);
     return cmd.length > 80 ? cmd.slice(0, 80) + "…" : cmd;
   }
   if (tool === "Read" && input.file_path) return shorten(input.file_path);
@@ -195,7 +195,7 @@ async function askClaude(queueEntry: any): Promise<void> {
   return new Promise((resolve) => {
     // Use args from queue entry (server sets --model, --allowedTools, prompt framing).
     // Fall back to defaults only if queue entry has no args (backward compat).
-    let claudeArgs = args || [
+    const claudeArgs = args || [
       "-p",
       prompt,
       "--output-format",

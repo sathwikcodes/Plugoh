@@ -224,7 +224,7 @@ function scanClaudeCode(since: Date): Session[] {
     if (!hasRecentFile) continue;
 
     // Resolve cwd
-    let cwd = resolveClaudeCodeCwd(dirPath, dirName, jsonlFiles);
+    const cwd = resolveClaudeCodeCwd(dirPath, dirName, jsonlFiles);
     if (!cwd) continue;
 
     // Count only JSONL files modified within the window as sessions
@@ -370,7 +370,7 @@ function scanGemini(since: Date): Session[] {
 
   // Load projects.json for path mapping
   const projectsPath = join(homedir(), ".gemini", "projects.json");
-  let projectsMap: Record<string, string> = {}; // name → path
+  const projectsMap: Record<string, string> = {}; // name → path
   if (existsSync(projectsPath)) {
     try {
       const data = JSON.parse(

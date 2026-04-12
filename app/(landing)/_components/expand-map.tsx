@@ -361,7 +361,7 @@ export function LocationMap({
 
             {/* Animated underline */}
             <m.div
-              className="h-px bg-gradient-to-r from-emerald-500/50 via-emerald-400/30 to-transparent"
+              className="h-px bg-linear-to-r from-emerald-500/50 via-emerald-400/30 to-transparent"
               initial={{ scaleX: 0, originX: 0 }}
               animate={{
                 scaleX: isHovered || isExpanded ? 1 : 0.3,

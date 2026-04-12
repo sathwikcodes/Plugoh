@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import Image from "next/image";
 import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
@@ -13,11 +11,9 @@ import type { Database } from "@/lib/supabase/types";
 
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
-type InstagramMedia = Database["public"]["Tables"]["instagram_media"]["Row"];
 
 interface InstagramTabProps {
   profile: InfluencerProfile;
-  media: InstagramMedia[];
 }
 
 function formatCompact(n: number): string {
@@ -26,15 +22,7 @@ function formatCompact(n: number): string {
   return n.toString();
 }
 
-function mediaBadgeLabel(type: string | null) {
-  if (type === "VIDEO") return "Reel";
-  if (type === "CAROUSEL_ALBUM") return "Carousel";
-  return "Post";
-}
-
-export default function InstagramTab({ profile, media }: InstagramTabProps) {
-  const [showAll, setShowAll] = useState(false);
-
+export default function InstagramTab({ profile }: InstagramTabProps) {
   const handle = profile.instagram_handle ?? profile.ig_username;
   const isConnected = !!(handle ?? profile.ig_user_id);
 
@@ -74,8 +62,6 @@ export default function InstagramTab({ profile, media }: InstagramTabProps) {
         : null,
     }
   ];
-
-  const visibleMedia = showAll ? media : media.slice(0, 12);
 
   return (
     <m.div

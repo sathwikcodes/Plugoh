@@ -81,7 +81,7 @@ export default function CampaignsLoading() {
                 <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-white/35" />
                 <Skeleton className="flex h-12 w-full items-center rounded-full border border-white/10 bg-white/5 pl-11" />
               </div>
-              <Skeleton className="relative flex h-12 w-12 shrink-0 rounded-full border border-white/25 bg-white/12 sm:w-[100px]" />
+              <Skeleton className="relative flex h-12 w-12 shrink-0 rounded-full border border-white/25 bg-white/12 sm:w-25" />
             </div>
           </div>
 

@@ -103,7 +103,13 @@ function BusinessProfilePageInner() {
           "AI suggestions unavailable — you can finish the brand profile manually.",
         );
       });
-  }, [isOnboarding, queryClient, user?.id]);
+  }, [
+    isOnboarding,
+    queryClient,
+    trpc.profile.getMyBusinessProfile,
+    trpc.profile.getMyProfile,
+    user?.id,
+  ]);
 
   if (loading) {
     return <BusinessProfileLoading />;

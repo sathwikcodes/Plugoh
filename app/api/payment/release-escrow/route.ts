@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     userId = user.id;
   }
 
-  const { campaign_id, approved_by } = await request.json();
+  const { campaign_id } = await request.json();
   if (!campaign_id) {
     return NextResponse.json(
       { error: "campaign_id is required" },

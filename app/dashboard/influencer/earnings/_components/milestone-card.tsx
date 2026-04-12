@@ -32,6 +32,7 @@ export function MilestoneCard({
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/trophy.png"
               alt="trophy"
@@ -60,7 +61,7 @@ export function MilestoneCard({
           <div className="relative h-3.5 w-full rounded-full bg-white/10 overflow-visible">
             <div className="absolute inset-0 rounded-full overflow-hidden">
               <m.div
-                className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400"
+                className="h-full rounded-full bg-linear-to-r from-amber-500 to-yellow-400"
                 initial={{ width: "0%" }}
                 animate={{ width: `${clampedProgress}%` }}
                 transition={{ duration: 1.4, ease: "easeOut", delay: 0.5 }}

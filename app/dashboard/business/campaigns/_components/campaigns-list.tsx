@@ -47,7 +47,7 @@ export function CampaignsList({
         className="flex flex-1 items-center rounded-[28px] border border-dashed border-white/10 bg-white/[0.025] py-20 text-center"
       >
         <div className="mx-auto">
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-3xl bg-white/[0.05]">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-3xl bg-white/5">
             <Megaphone className="h-6 w-6 text-white/40" />
           </div>
           <p className="text-lg font-semibold text-white">No campaigns yet</p>
@@ -84,7 +84,7 @@ export function CampaignsList({
           <button
             type="button"
             onClick={onClearFilters}
-            className="mt-4 rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-sm text-white/70 transition-colors hover:text-white"
+            className="mt-4 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/70 transition-colors hover:text-white"
           >
             Clear filters
           </button>

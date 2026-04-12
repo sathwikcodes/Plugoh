@@ -31,8 +31,8 @@ export function OptionList({
             className={cn(
               "flex w-full items-center justify-between rounded-[22px] border px-4 py-3.5 text-left transition-colors",
               active
-                ? "border-white/20 bg-white/[0.1]"
-                : "border-white/10 bg-white/[0.035] hover:bg-white/[0.065]",
+                ? "border-white/20 bg-white/10"
+                : "border-white/10 bg-white/[0.035] hover:bg-white/6.5",
             )}
           >
             <span className="text-[15px] text-white">

@@ -66,6 +66,7 @@ export function TopContent({ items, totalMediaCount }: TopContentProps) {
               {/* Image */}
               <div className="relative aspect-square bg-white/5">
                 {item.thumbnail_url || item.media_url ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={(item.thumbnail_url || item.media_url)!}
                     alt=""

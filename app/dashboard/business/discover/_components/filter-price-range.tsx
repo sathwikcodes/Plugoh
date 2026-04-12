@@ -63,16 +63,16 @@ export function PriceRangePicker({
 
       <div className="mt-5 rounded-[24px] border border-white/8 bg-black/20 px-3 py-5 sm:px-4 sm:py-6">
         <div className="relative h-14">
-          <div className="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-white/12" />
+          <div className="absolute inset-x-0 top-1/2 h-0.75 -translate-y-1/2 rounded-full bg-white/12" />
           <div
-            className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-300 to-cyan-300 shadow-[0_0_24px_rgba(110,231,183,0.35)]"
+            className="absolute top-1/2 h-0.75 -translate-y-1/2 rounded-full bg-linear-to-r from-emerald-300 to-cyan-300 shadow-[0_0_24px_rgba(110,231,183,0.35)]"
             style={{
               left: `${minPercent}%`,
               width: `${maxPercent - minPercent}%`,
             }}
           />
           <div
-            className="absolute left-0 right-0 top-[8px] h-7 rounded-full bg-[radial-gradient(circle_at_35%_50%,rgba(110,231,183,0.9),rgba(110,231,183,0.38)_40%,transparent_68%)] opacity-75"
+            className="absolute left-0 right-0 top-2 h-7 rounded-full bg-[radial-gradient(circle_at_35%_50%,rgba(110,231,183,0.9),rgba(110,231,183,0.38)_40%,transparent_68%)] opacity-75"
             style={{
               clipPath: `inset(0 ${100 - maxPercent}% 0 ${minPercent}%)`,
             }}
@@ -108,7 +108,7 @@ export function PriceRangePicker({
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center">
-          <div className="rounded-[20px] border border-white/10 bg-white/[0.045] px-4 py-3">
+          <div className="rounded-[20px] border border-white/10 bg-white/4.5 px-4 py-3">
             <p className="text-[11px] uppercase tracking-[0.08em] text-white/45">
               Min
             </p>
@@ -119,7 +119,7 @@ export function PriceRangePicker({
           <span className="hidden text-lg font-medium text-white/55 sm:block">
             -
           </span>
-          <div className="rounded-[20px] border border-white/10 bg-white/[0.045] px-4 py-3">
+          <div className="rounded-[20px] border border-white/10 bg-white/4.5 px-4 py-3">
             <p className="text-[11px] uppercase tracking-[0.08em] text-white/45">
               Max
             </p>

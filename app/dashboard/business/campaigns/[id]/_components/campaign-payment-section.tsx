@@ -123,7 +123,7 @@ export function CampaignPaymentSection({
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="lazyOnload"
       />
-      <div className="rounded-2xl border border-yellow-500/25 bg-yellow-500/[0.08] p-4 sm:p-5 space-y-4">
+      <div className="rounded-2xl border border-yellow-500/25 bg-yellow-500/8 p-4 sm:p-5 space-y-4">
         <div className="flex items-start gap-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-yellow-300/80" />
           <div>

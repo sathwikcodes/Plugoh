@@ -14,14 +14,12 @@ interface ProfileCardProps {
   profile: InfluencerProfile;
   basicProfile?: Profile | null;
   authAvatarUrl?: string | null;
-  onNavigateToSettings?: () => void;
 }
 
 export default function ProfileCard({
   profile,
   basicProfile,
   authAvatarUrl,
-  onNavigateToSettings,
 }: ProfileCardProps) {
   const initials = (profile.display_name || basicProfile?.full_name || "U")
     .split(" ")

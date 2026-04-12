@@ -72,7 +72,7 @@ export function MediaShowcase({
           </div>
         )}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,5,8,0)_0%,rgba(3,5,8,0.35)_52%,rgba(3,5,8,0.9)_100%)]" />
-        <div className="absolute inset-x-3 bottom-3 rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(40,44,49,0.24)_0%,rgba(12,14,19,0.9)_100%)] px-4 py-3 shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-[16px]">
+        <div className="absolute inset-x-3 bottom-3 rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(40,44,49,0.24)_0%,rgba(12,14,19,0.9)_100%)] px-4 py-3 shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-lg">
           <p className="text-[10px] uppercase tracking-[0.28em] text-white/60">
             {hasMedia
               ? activeMedia?.media_type || "Content"
@@ -110,7 +110,7 @@ export function MediaShowcase({
           onClick={() =>
             setShowcaseIndex((prev) => (total ? (prev - 1 + total) % total : 0))
           }
-          className="flex h-12 w-12 items-center justify-center rounded-[20px] border-white/14 bg-white/[0.05] px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+          className="flex h-12 w-12 items-center justify-center rounded-[20px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
         >
           <Image
             src="/back.png"
@@ -120,7 +120,7 @@ export function MediaShowcase({
             className="h-5.5 w-5.5 shrink-0 object-contain"
           />
         </ShinyButton>
-        <div className="min-w-[72px] text-center">
+        <div className="min-w-18 text-center">
           <span className="text-sm font-medium tabular-nums text-white/78">
             {total ? showcaseIndex + 1 : 0}
           </span>
@@ -131,7 +131,7 @@ export function MediaShowcase({
           onClick={() =>
             setShowcaseIndex((prev) => (total ? (prev + 1) % total : 0))
           }
-          className="flex h-12 w-12 items-center justify-center rounded-[20px] border-white/14 bg-white/[0.05] px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+          className="flex h-12 w-12 items-center justify-center rounded-[20px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
         >
           <Image
             src="/next.png"

@@ -93,7 +93,7 @@ export function MessageInput({
           type="button"
           variant="ghost"
           size="icon"
-          className="shrink-0 h-9 w-9 rounded-xl text-muted-foreground/50 hover:text-foreground/70 hover:bg-white/[0.04] transition-colors"
+          className="shrink-0 h-9 w-9 rounded-xl text-muted-foreground/50 hover:text-foreground/70 hover:bg-white/4 transition-colors"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled || uploading}
         >
@@ -116,7 +116,7 @@ export function MessageInput({
         <Button
           type="button"
           size="icon"
-          className="shrink-0 h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-foreground/70 hover:text-foreground border-0 transition-all active:scale-95 disabled:opacity-30"
+          className="shrink-0 h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/10 text-foreground/70 hover:text-foreground border-0 transition-all active:scale-95 disabled:opacity-30"
           onClick={handleSend}
           disabled={!canSend}
         >

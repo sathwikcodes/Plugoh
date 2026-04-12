@@ -32,7 +32,7 @@ export function MetricPill({ kind, value }: MetricPillProps) {
           alt=""
           width={18}
           height={18}
-          className="h-[18px] w-[18px] object-contain"
+          className="h-4.5 w-4.5 object-contain"
         />
       ) : (
         <Image
@@ -40,7 +40,7 @@ export function MetricPill({ kind, value }: MetricPillProps) {
           alt=""
           width={18}
           height={18}
-          className="h-[18px] w-[18px] object-contain"
+          className="h-4.5 w-4.5 object-contain"
         />
       )}
       <p className="truncate text-[14px] font-semibold tracking-[-0.03em] text-white">
@@ -63,7 +63,7 @@ export function ExperiencePill({ isPro }: ExperiencePillProps) {
           alt=""
           width={18}
           height={18}
-          className="h-[18px] w-[18px] object-contain"
+          className="h-4.5 w-4.5 object-contain"
         />
       ) : (
         <Image
@@ -71,7 +71,7 @@ export function ExperiencePill({ isPro }: ExperiencePillProps) {
           alt=""
           width={18}
           height={18}
-          className="h-[18px] w-[18px] object-contain"
+          className="h-4.5 w-4.5 object-contain"
         />
       )}
       <p

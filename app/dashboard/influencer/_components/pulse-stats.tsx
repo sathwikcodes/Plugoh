@@ -79,7 +79,7 @@ export function PulseStats({ stats, hasMedia }: PulseStatsProps) {
         {hasMedia && (
           <div className="h-1 w-full rounded-full bg-white/10 mt-2 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-violet-500 to-purple-400 transition-all duration-1000"
+              className="h-full rounded-full bg-linear-to-r from-violet-500 to-purple-400 transition-all duration-1000"
               style={{ width: `${stats.contentScore}%` }}
             />
           </div>

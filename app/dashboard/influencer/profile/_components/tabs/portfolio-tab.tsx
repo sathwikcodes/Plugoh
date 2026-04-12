@@ -291,7 +291,7 @@ export default function PortfolioTab({
                     <button
                       key={`empty-${i}`}
                       onClick={() => setIsEditing(true)}
-                      className="aspect-square rounded-xl border border-dashed border-white/10 bg-white/[0.02] flex items-center justify-center transition-colors hover:border-white/20 hover:bg-white/[0.04]"
+                      className="aspect-square rounded-xl border border-dashed border-white/10 bg-white/[0.02] flex items-center justify-center transition-colors hover:border-white/20 hover:bg-white/4"
                     >
                       <Plus className="h-5 w-5 text-muted-foreground/50" />
                     </button>

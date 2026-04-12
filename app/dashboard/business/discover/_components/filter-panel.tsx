@@ -112,7 +112,7 @@ export function FilterPanel({
             <m.div
               key="filter-panel-desktop"
               ref={panelRef}
-              className="fixed bottom-0 right-0 top-0 z-50 flex w-[420px] flex-col border-l border-white/10 bg-[#241e30] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
+              className="fixed bottom-0 right-0 top-0 z-50 flex w-105 flex-col border-l border-white/10 bg-[#241e30] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}

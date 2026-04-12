@@ -43,8 +43,8 @@ export function SortSelector({
                 className={cn(
                   "flex items-center justify-between rounded-[22px] border px-4 py-3.5 text-left transition-colors",
                   active
-                    ? "border-white/20 bg-white/[0.1]"
-                    : "border-white/10 bg-white/[0.035] hover:bg-white/[0.065]",
+                    ? "border-white/20 bg-white/10"
+                    : "border-white/10 bg-white/[0.035] hover:bg-white/6.5",
                 )}
               >
                 <span className="text-[15px] text-white">{option.label}</span>
@@ -87,8 +87,8 @@ export function SortSelector({
                 className={cn(
                   "rounded-[22px] border px-4 py-3 text-sm font-medium transition-colors",
                   active
-                    ? "border-white/20 bg-white/[0.1] text-white"
-                    : "border-white/10 bg-white/[0.035] text-white/60 hover:bg-white/[0.065] hover:text-white",
+                    ? "border-white/20 bg-white/10 text-white"
+                    : "border-white/10 bg-white/[0.035] text-white/60 hover:bg-white/6.5 hover:text-white",
                 )}
               >
                 {option.label}
