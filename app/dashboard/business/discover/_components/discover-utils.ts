@@ -37,11 +37,9 @@ export function getDefaultPriceBounds(
   if (prices.length === 0) return [500, 50000];
 
   const min = Math.max(500, Math.floor(prices[0] / 500) * 500);
-  const rawMax = prices[prices.length - 1];
-  const paddedMax = rawMax < 10000 ? rawMax + 2000 : rawMax * 1.1;
-  const max = Math.ceil(paddedMax / 500) * 500;
+  const max = prices[prices.length - 1];
 
-  return [min, Math.max(min + 500, max)];
+  return [min, Math.max(min, max)];
 }
 
 export function createDefaultFilters(
@@ -50,7 +48,6 @@ export function createDefaultFilters(
   return {
     place: "All",
     category: "All",
-    contentType: "All",
     priceRange: priceBounds,
     sortField: "followers",
     sortDirection: "desc",
@@ -102,15 +99,6 @@ export function applyFilters(
           return false;
         }
       } else if (!isBudgetDefault) {
-        return false;
-      }
-
-      if (
-        filters.contentType !== "All" &&
-        !(profile.content_types as string[] | null)?.includes(
-          filters.contentType,
-        )
-      ) {
         return false;
       }
 

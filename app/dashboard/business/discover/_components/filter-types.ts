@@ -4,7 +4,6 @@ export type SortDirection = "desc" | "asc";
 export interface DiscoverFilters {
   place: string;
   category: string;
-  contentType: string;
   priceRange: [number, number];
   sortField: SortField;
   sortDirection: SortDirection;
@@ -14,7 +13,6 @@ export type FilterStep =
   | "root"
   | "place"
   | "category"
-  | "contentType"
   | "price"
   | "sort";
 
@@ -29,7 +27,6 @@ export interface FilterPanelProps {
   ) => void;
   placeOptions: string[];
   categoryOptions: string[];
-  contentTypeOptions: string[];
   priceBounds: [number, number];
   resultCount: number;
   filterCount: number;

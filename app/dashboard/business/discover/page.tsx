@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { m } from "framer-motion";
 import {
   GRADIENT_COLORS,
@@ -38,44 +38,68 @@ export default function InfluencerDiscovery() {
     createDefaultFilters(priceBounds),
   );
 
-  const [prevBoundsMin, setPrevBoundsMin] = useState(priceBounds[0]);
-  const [prevBoundsMax, setPrevBoundsMax] = useState(priceBounds[1]);
-  const [boundsMin, boundsMax] = priceBounds;
+  const previousBoundsRef = useRef<[number, number]>(priceBounds);
 
-  if (prevBoundsMin !== boundsMin || prevBoundsMax !== boundsMax) {
+  useEffect(() => {
+    const [boundsMin, boundsMax] = priceBounds;
+    const [prevBoundsMin, prevBoundsMax] = previousBoundsRef.current;
+
+    if (prevBoundsMin === boundsMin && prevBoundsMax === boundsMax) {
+      return;
+    }
+
     const previousDefaults = createDefaultFilters([
       prevBoundsMin,
       prevBoundsMax,
     ]);
     const nextDefaults = createDefaultFilters([boundsMin, boundsMax]);
 
-    setPrevBoundsMin(boundsMin);
-    setPrevBoundsMax(boundsMax);
     setActiveFilters((prev) => {
       const priceWasDefault =
         prev.priceRange[0] === previousDefaults.priceRange[0] &&
         prev.priceRange[1] === previousDefaults.priceRange[1];
-      return priceWasDefault
-        ? { ...prev, priceRange: nextDefaults.priceRange }
-        : prev;
+
+      if (priceWasDefault) {
+        return { ...prev, priceRange: nextDefaults.priceRange };
+      }
+
+      const nextMin = Math.max(boundsMin, prev.priceRange[0]);
+      const nextMax = Math.min(boundsMax, prev.priceRange[1]);
+      if (nextMin > nextMax) {
+        return { ...prev, priceRange: nextDefaults.priceRange };
+      }
+
+      if (nextMin !== prev.priceRange[0] || nextMax !== prev.priceRange[1]) {
+        return { ...prev, priceRange: [nextMin, nextMax] };
+      }
+
+      return prev;
     });
+
     setDraftFilters((prev) => {
       const priceWasDefault =
         prev.priceRange[0] === previousDefaults.priceRange[0] &&
         prev.priceRange[1] === previousDefaults.priceRange[1];
+
       if (priceWasDefault) {
         return { ...prev, priceRange: nextDefaults.priceRange };
       }
-      if (
-        prev.priceRange[0] < boundsMin ||
-        prev.priceRange[1] > boundsMax ||
-        prev.priceRange[0] >= prev.priceRange[1]
-      ) {
+
+      const nextMin = Math.max(boundsMin, prev.priceRange[0]);
+      const nextMax = Math.min(boundsMax, prev.priceRange[1]);
+      if (nextMin > nextMax) {
         return { ...prev, priceRange: nextDefaults.priceRange };
       }
+
+      if (nextMin !== prev.priceRange[0] || nextMax !== prev.priceRange[1]) {
+        return { ...prev, priceRange: [nextMin, nextMax] };
+      }
+
       return prev;
     });
-  }
+
+    previousBoundsRef.current = priceBounds;
+  }, [priceBounds]);
 
   const placeOptions = useMemo(
     () =>
@@ -97,18 +121,6 @@ export default function InfluencerDiscovery() {
     [profiles],
   );
 
-  const contentTypeOptions = useMemo(
-    () =>
-      [
-        ...new Set(
-          profiles.flatMap((profile) =>
-            ((profile.content_types as string[] | null) ?? []).filter(Boolean),
-          ),
-        ),
-      ].sort((a, b) => a.localeCompare(b)),
-    [profiles],
-  );
-
   const filtered = useMemo(
     () => applyFilters(profiles, deferredSearch, activeFilters, priceBounds),
     [profiles, deferredSearch, activeFilters, priceBounds],
@@ -122,7 +134,6 @@ export default function InfluencerDiscovery() {
   const activeFilterCount = [
     activeFilters.place !== "All",
     activeFilters.category !== "All",
-    activeFilters.contentType !== "All",
     activeFilters.priceRange[0] !== priceBounds[0] ||
       activeFilters.priceRange[1] !== priceBounds[1],
   ].filter(Boolean).length;
@@ -130,7 +141,6 @@ export default function InfluencerDiscovery() {
   const draftFilterCount = [
     draftFilters.place !== "All",
     draftFilters.category !== "All",
-    draftFilters.contentType !== "All",
     draftFilters.priceRange[0] !== priceBounds[0] ||
       draftFilters.priceRange[1] !== priceBounds[1],
   ].filter(Boolean).length;
@@ -208,7 +218,6 @@ export default function InfluencerDiscovery() {
         setDraftFilters={(updater) => setDraftFilters((prev) => updater(prev))}
         placeOptions={placeOptions}
         categoryOptions={categoryOptions}
-        contentTypeOptions={contentTypeOptions}
         priceBounds={priceBounds}
         resultCount={previewFiltered.length}
         filterCount={draftFilterCount}

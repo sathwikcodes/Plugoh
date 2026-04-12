@@ -23,7 +23,6 @@ export function FilterPanel({
   setDraftFilters,
   placeOptions,
   categoryOptions,
-  contentTypeOptions,
   priceBounds,
   resultCount,
   filterCount,
@@ -76,7 +75,6 @@ export function FilterPanel({
     setDraftFilters,
     placeOptions,
     categoryOptions,
-    contentTypeOptions,
     priceBounds,
     resultCount,
     filterCount,
@@ -102,18 +100,11 @@ export function FilterPanel({
             <m.div
               key="filter-sheet-mobile"
               ref={panelRef}
-              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[88dvh] flex-col rounded-t-[32px] border-t border-white/10 bg-[#241e30] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)]"
-              style={{ height: "min(88dvh, 760px)" }}
+              className="fixed bottom-0 left-0 right-0 z-50 flex h-[92dvh] max-h-[92dvh] flex-col overflow-hidden rounded-t-[32px] border-t border-white/10 bg-[#241e30] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)]"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={MOBILE_SPRING}
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={0.18}
-              onDragEnd={(_, info) => {
-                if (step === "root" && info.offset.y > 90) handleDismiss();
-              }}
             >
               <FilterPanelContent {...contentProps} />
             </m.div>

@@ -2,7 +2,6 @@
 
 import { ArrowLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { DiscoverFilters, FilterStep } from "./filter-types";
 import { summarizePrice } from "./filter-types";
 import { OptionList } from "./option-list";
@@ -13,7 +12,6 @@ const STEP_TITLES: Record<FilterStep, string> = {
   root: "Filter",
   place: "Place",
   category: "Category",
-  contentType: "Content type",
   price: "Price range",
   sort: "Sort",
 };
@@ -53,7 +51,6 @@ export interface FilterPanelContentProps {
   ) => void;
   placeOptions: string[];
   categoryOptions: string[];
-  contentTypeOptions: string[];
   priceBounds: [number, number];
   resultCount: number;
   filterCount: number;
@@ -71,7 +68,6 @@ export function FilterPanelContent({
   setDraftFilters,
   placeOptions,
   categoryOptions,
-  contentTypeOptions,
   priceBounds,
   resultCount,
   filterCount,
@@ -116,7 +112,14 @@ export function FilterPanelContent({
         </button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5">
+      <div
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5"
+        style={{
+          paddingBottom: isMobile
+            ? "calc(env(safe-area-inset-bottom, 0px) + 120px)"
+            : "88px",
+        }}
+      >
         {step === "root" ? (
           <div className="space-y-4 pb-6">
             <FilterRow
@@ -125,15 +128,6 @@ export function FilterPanelContent({
                 draftFilters.place === "All" ? "All places" : draftFilters.place
               }
               onClick={() => setStep("place")}
-            />
-            <FilterRow
-              label="Content type"
-              value={
-                draftFilters.contentType === "All"
-                  ? "All content"
-                  : draftFilters.contentType
-              }
-              onClick={() => setStep("contentType")}
             />
             <FilterRow
               label="Category"
@@ -181,16 +175,6 @@ export function FilterPanelContent({
               setStep("root");
             }}
           />
-        ) : step === "contentType" ? (
-          <OptionList
-            options={contentTypeOptions}
-            selected={draftFilters.contentType}
-            allLabel="All content"
-            onSelect={(value) => {
-              setDraftFilters((prev) => ({ ...prev, contentType: value }));
-              setStep("root");
-            }}
-          />
         ) : step === "price" ? (
           <PriceRangePicker
             priceRange={draftFilters.priceRange}
@@ -204,8 +188,6 @@ export function FilterPanelContent({
             setDraftFilters={setDraftFilters}
           />
         )}
-
-        <div className={cn("h-6", isMobile && "h-24")} />
       </div>
 
       <div
@@ -234,7 +216,7 @@ export function FilterPanelContent({
             }}
             className="h-12 rounded-full bg-white text-[15px] font-medium text-black hover:bg-white/90"
           >
-            Show {resultCount}
+            Show [{resultCount}]
           </Button>
         </div>
       </div>

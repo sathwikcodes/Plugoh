@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { compactNumber } from "@/lib/format";
 import { INSTAGRAM_GRADIENT } from "@/lib/animations";
 import type { Database } from "@/lib/supabase/types";
 import {
   VerificationBadge,
+  ExperiencePill,
   MetricPill,
   PriceButton,
 } from "./influencer-card-stats";
@@ -62,8 +62,7 @@ function getFollowerLabel(profile: InfluencerProfile) {
 function getPriceLabel(profile: InfluencerProfile) {
   const startsAt = getStartsAtPrice(profile);
   if (!startsAt) return "On request";
-  const formatted = new Intl.NumberFormat("en-IN").format(startsAt);
-  return `₹${formatted}`;
+  return new Intl.NumberFormat("en-IN").format(startsAt);
 }
 
 function getEngagementLabel(profile: InfluencerProfile) {
@@ -72,6 +71,10 @@ function getEngagementLabel(profile: InfluencerProfile) {
     profile.follower_count,
   );
   return engagementRate > 0 ? `${engagementRate.toFixed(1)}%` : "New";
+}
+
+function isProInfluencer(profile: InfluencerProfile) {
+  return Array.isArray(profile.previous_brands) && profile.previous_brands.length > 0;
 }
 
 function getInstagramHandle(profile: InfluencerProfile) {
@@ -163,12 +166,25 @@ export function InfluencerCardInfoPanel({
 
         {instagramHandle ? (
           <div className="mt-1 flex min-w-0 items-center gap-2">
-            <p className="truncate text-[12px] font-medium tracking-[0.08em] text-white/55">
-              @{instagramHandle}
+            <Image
+              src="/instagram_icon.png"
+              alt=""
+              width={14}
+              height={14}
+              className="h-3 w-3 shrink-0 object-contain"
+            />
+            <p className="truncate text-[12px] font-medium tracking-[0.08em] text-[#f7a3c8]/95">
+              {instagramHandle}
             </p>
             {locationLabel ? (
               <div className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-white/70">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-white/60" />
+                <Image
+                  src="/map.png"
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="h-3.5 w-3.5 shrink-0 object-contain"
+                />
                 <span className="max-w-23 truncate sm:max-w-33">
                   {locationLabel}
                 </span>
@@ -184,12 +200,20 @@ export function InfluencerCardInfoPanel({
         <div className="mt-4 flex items-center justify-between gap-2.5 sm:gap-3">
           <div className="flex w-fit shrink-0 flex-col justify-center gap-2.5 sm:grid sm:grid-cols-2 sm:gap-3">
             <MetricPill kind="followers" value={getFollowerLabel(profile)} />
-            <MetricPill kind="engagement" value={getEngagementLabel(profile)} />
+            <div className="sm:hidden">
+              <ExperiencePill isPro={isProInfluencer(profile)} />
+            </div>
+            <div className="hidden sm:block">
+              <MetricPill
+                kind="engagement"
+                value={getEngagementLabel(profile)}
+              />
+            </div>
           </div>
           <PriceButton
             profileId={profile.id}
             label={getPriceLabel(profile)}
-            className="min-w-0 flex-1 justify-between gap-2 rounded-[20px] px-3.5 py-2.5 sm:w-[clamp(132px,42%,168px)] sm:min-w-33 sm:flex-none sm:rounded-[22px] sm:px-5 sm:py-3"
+            className="min-w-0 flex-[0.88] sm:flex-1"
           />
         </div>
       </div>
