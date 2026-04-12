@@ -5,7 +5,9 @@ import { AnimatePresence, m } from "framer-motion";
 
 const Digit = ({ value, compact }: { value: number; compact?: boolean }) => {
   return (
-    <div className={`relative overflow-hidden rounded-md bg-zinc-900 font-mono font-bold text-white flex items-center justify-center ${compact ? "h-10 w-7 text-xl" : "h-14 w-10 text-3xl"}`}>
+    <div
+      className={`relative overflow-hidden rounded-md bg-zinc-900 font-mono font-bold text-white flex items-center justify-center ${compact ? "h-10 w-7 text-xl" : "h-14 w-10 text-3xl"}`}
+    >
       <AnimatePresence mode="popLayout">
         <m.span
           key={value}
@@ -74,11 +76,19 @@ export default function FlipClock({
       {hours.split("").map((digit, i) => (
         <Digit key={`h-${i}`} value={parseInt(digit)} compact={compact} />
       ))}
-      <span className={`font-bold text-white/40 ${compact ? "text-xl" : "text-3xl"}`}>:</span>
+      <span
+        className={`font-bold text-white/40 ${compact ? "text-xl" : "text-3xl"}`}
+      >
+        :
+      </span>
       {minutes.split("").map((digit, i) => (
         <Digit key={`m-${i}`} value={parseInt(digit)} compact={compact} />
       ))}
-      <span className={`font-bold text-white/40 ${compact ? "text-xl" : "text-3xl"}`}>:</span>
+      <span
+        className={`font-bold text-white/40 ${compact ? "text-xl" : "text-3xl"}`}
+      >
+        :
+      </span>
       {seconds.split("").map((digit, i) => (
         <Digit key={`s-${i}`} value={parseInt(digit)} compact={compact} />
       ))}

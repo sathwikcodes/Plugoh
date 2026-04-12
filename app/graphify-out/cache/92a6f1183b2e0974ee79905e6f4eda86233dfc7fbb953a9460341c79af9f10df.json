@@ -1,1 +1,38 @@
-{"nodes": [{"id": "chat_header", "label": "chat-header.tsx", "file_type": "code", "source_file": "app/dashboard/business/inbox/_components/chat-header.tsx", "source_location": "L1"}, {"id": "chat_header_chatheader", "label": "ChatHeader()", "file_type": "code", "source_file": "app/dashboard/business/inbox/_components/chat-header.tsx", "source_location": "L13"}], "edges": [{"source": "chat_header", "target": "shared_chat_header", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/chat-header.tsx", "source_location": "L3", "weight": 1.0}, {"source": "chat_header", "target": "chat_header_chatheader", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/chat-header.tsx", "source_location": "L13", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "chat_header",
+      "label": "chat-header.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/inbox/_components/chat-header.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "chat_header_chatheader",
+      "label": "ChatHeader()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/inbox/_components/chat-header.tsx",
+      "source_location": "L13"
+    }
+  ],
+  "edges": [
+    {
+      "source": "chat_header",
+      "target": "shared_chat_header",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/chat-header.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "chat_header",
+      "target": "chat_header_chatheader",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/chat-header.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    }
+  ]
+}

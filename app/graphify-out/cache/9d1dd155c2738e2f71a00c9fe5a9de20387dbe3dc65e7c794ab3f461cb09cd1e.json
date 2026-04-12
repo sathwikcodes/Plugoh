@@ -1,1 +1,119 @@
-{"nodes": [{"id": "page", "label": "page.tsx", "file_type": "code", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L1"}, {"id": "page_influencerdiscovery", "label": "InfluencerDiscovery()", "file_type": "code", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L23"}], "edges": [{"source": "page", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L3", "weight": 1.0}, {"source": "page", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L4", "weight": 1.0}, {"source": "page", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L5", "weight": 1.0}, {"source": "page", "target": "animated_gradient_background", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L11", "weight": 1.0}, {"source": "page", "target": "use_influencer_profiles", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L12", "weight": 1.0}, {"source": "page", "target": "use_mobile", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L13", "weight": 1.0}, {"source": "page", "target": "filter_panel", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L14", "weight": 1.0}, {"source": "page", "target": "discover_header", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L15", "weight": 1.0}, {"source": "page", "target": "influencer_grid", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L16", "weight": 1.0}, {"source": "page", "target": "discover_utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L17", "weight": 1.0}, {"source": "page", "target": "page_influencerdiscovery", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/page.tsx", "source_location": "L23", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "page",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "page_influencerdiscovery",
+      "label": "InfluencerDiscovery()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L23"
+    }
+  ],
+  "edges": [
+    {
+      "source": "page",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "animated_gradient_background",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "use_influencer_profiles",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "use_mobile",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "filter_panel",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "discover_header",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "influencer_grid",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "discover_utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "page_influencerdiscovery",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/page.tsx",
+      "source_location": "L23",
+      "weight": 1.0
+    }
+  ]
+}

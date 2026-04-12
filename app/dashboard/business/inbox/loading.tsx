@@ -3,7 +3,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search } from "lucide-react";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   GRADIENT_COLORS,
   GRADIENT_STOPS,
@@ -23,22 +22,8 @@ function ConversationRowSkeleton() {
 }
 
 export default function InboxLoading() {
-  const isMobile = useIsMobile();
-  const mobileViewportHeight = "100dvh";
-  const mobileDockInset = "calc(104px + env(safe-area-inset-bottom, 0px))";
-
   return (
-    <div
-      className="relative h-dvh overflow-hidden bg-background"
-      style={
-        isMobile
-          ? {
-              height: mobileViewportHeight,
-              minHeight: mobileViewportHeight,
-            }
-          : undefined
-      }
-    >
+    <div className="relative h-dvh overflow-hidden bg-background">
       <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
         <AnimatedGradientBackground
           Breathing
@@ -70,10 +55,7 @@ export default function InboxLoading() {
             </div>
           </div>
 
-          <div
-            className="min-h-0 flex-1 md:flex-none md:h-[calc(100dvh-14rem)]"
-            style={isMobile ? { paddingBottom: mobileDockInset } : undefined}
-          >
+          <div className="min-h-0 flex-1 pb-[calc(104px+env(safe-area-inset-bottom,0px))] md:flex-none md:h-[calc(100dvh-14rem)] md:pb-0">
             <div className="flex h-full min-h-0 flex-col gap-4 md:flex-row">
               <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] border border-white/14 bg-[linear-gradient(160deg,rgba(22,18,25,0.96)_0%,rgba(22,18,25,0.94)_46%,rgba(30,24,41,0.92)_100%)] shadow-[0_24px_70px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl md:w-70 md:shrink-0 md:flex-none">
                 <div className="min-h-0 flex-1 overflow-hidden space-y-2 py-4">

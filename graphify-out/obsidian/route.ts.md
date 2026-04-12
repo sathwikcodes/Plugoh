@@ -12,6 +12,7 @@ tags:
 # route.ts
 
 ## Connections
+
 - [[GET()]] - `contains` [EXTRACTED]
 - [[POST()]] - `contains` [EXTRACTED]
 - [[errorRedirect()]] - `contains` [EXTRACTED]

@@ -1,1 +1,101 @@
-{"nodes": [{"id": "profile_card", "label": "profile-card.tsx", "file_type": "code", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L1"}, {"id": "profile_card_cn", "label": "cn()", "file_type": "code", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L57"}], "edges": [{"source": "profile_card", "target": "image", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L3", "weight": 1.0}, {"source": "profile_card", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L4", "weight": 1.0}, {"source": "profile_card", "target": "realreach_verified_badge", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L5", "weight": 1.0}, {"source": "profile_card", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L6", "weight": 1.0}, {"source": "profile_card", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L7", "weight": 1.0}, {"source": "profile_card", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L8", "weight": 1.0}, {"source": "profile_card", "target": "types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L9", "weight": 1.0}, {"source": "profile_card", "target": "profile_card_cn", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L57", "weight": 1.0}, {"source": "profile_card", "target": "profile_card_cn", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx", "source_location": "L70", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "profile_card",
+      "label": "profile-card.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "profile_card_cn",
+      "label": "cn()",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L57"
+    }
+  ],
+  "edges": [
+    {
+      "source": "profile_card",
+      "target": "image",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_card",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_card",
+      "target": "realreach_verified_badge",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_card",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_card",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_card",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_card",
+      "target": "types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_card",
+      "target": "profile_card_cn",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_card",
+      "target": "profile_card_cn",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/profile-card.tsx",
+      "source_location": "L70",
+      "weight": 1.0
+    }
+  ]
+}

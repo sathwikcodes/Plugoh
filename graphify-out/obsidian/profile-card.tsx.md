@@ -12,6 +12,7 @@ tags:
 # profile-card.tsx
 
 ## Connections
+
 - [[cn()]] - `contains` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]
 - [[types.ts]] - `imports_from` [EXTRACTED]

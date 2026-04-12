@@ -12,6 +12,7 @@ tags:
 # infinite-slider.tsx
 
 ## Connections
+
 - [[InfiniteSlider()]] - `contains` [EXTRACTED]
 - [[logo-cloud.tsx]] - `imports_from` [EXTRACTED]
 

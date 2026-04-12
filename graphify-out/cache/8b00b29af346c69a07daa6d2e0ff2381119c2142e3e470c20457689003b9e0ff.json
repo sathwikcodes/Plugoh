@@ -1,1 +1,70 @@
-{"nodes": [{"id": "profile_display", "label": "profile-display.ts", "file_type": "code", "source_file": "app/dashboard/business/inbox/_components/profile-display.ts", "source_location": "L1"}, {"id": "profile_display_getinfluencerdisplayname", "label": "getInfluencerDisplayName()", "file_type": "code", "source_file": "app/dashboard/business/inbox/_components/profile-display.ts", "source_location": "L5"}, {"id": "profile_display_getinfluencerhandle", "label": "getInfluencerHandle()", "file_type": "code", "source_file": "app/dashboard/business/inbox/_components/profile-display.ts", "source_location": "L14"}, {"id": "profile_display_getinfluenceravatarurl", "label": "getInfluencerAvatarUrl()", "file_type": "code", "source_file": "app/dashboard/business/inbox/_components/profile-display.ts", "source_location": "L22"}], "edges": [{"source": "profile_display", "target": "types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/profile-display.ts", "source_location": "L1", "weight": 1.0}, {"source": "profile_display", "target": "profile_display_getinfluencerdisplayname", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/profile-display.ts", "source_location": "L5", "weight": 1.0}, {"source": "profile_display", "target": "profile_display_getinfluencerhandle", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/profile-display.ts", "source_location": "L14", "weight": 1.0}, {"source": "profile_display", "target": "profile_display_getinfluenceravatarurl", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/profile-display.ts", "source_location": "L22", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "profile_display",
+      "label": "profile-display.ts",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/inbox/_components/profile-display.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "profile_display_getinfluencerdisplayname",
+      "label": "getInfluencerDisplayName()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/inbox/_components/profile-display.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "profile_display_getinfluencerhandle",
+      "label": "getInfluencerHandle()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/inbox/_components/profile-display.ts",
+      "source_location": "L14"
+    },
+    {
+      "id": "profile_display_getinfluenceravatarurl",
+      "label": "getInfluencerAvatarUrl()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/inbox/_components/profile-display.ts",
+      "source_location": "L22"
+    }
+  ],
+  "edges": [
+    {
+      "source": "profile_display",
+      "target": "types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/profile-display.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_display",
+      "target": "profile_display_getinfluencerdisplayname",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/profile-display.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_display",
+      "target": "profile_display_getinfluencerhandle",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/profile-display.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_display",
+      "target": "profile_display_getinfluenceravatarurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/profile-display.ts",
+      "source_location": "L22",
+      "weight": 1.0
+    }
+  ]
+}

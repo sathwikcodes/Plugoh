@@ -12,6 +12,7 @@ tags:
 # business-tab-bar.tsx
 
 ## Connections
+
 - [[cn()_7]] - `contains` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]
 

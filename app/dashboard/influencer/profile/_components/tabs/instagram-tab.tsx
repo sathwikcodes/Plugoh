@@ -2,10 +2,7 @@
 import Image from "next/image";
 import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
-import {
-  Instagram,
-  ExternalLink,
-} from "lucide-react";
+import { Instagram, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/lib/supabase/types";
 
@@ -60,7 +57,7 @@ export default function InstagramTab({ profile }: InstagramTabProps) {
       value: profile.avg_views_per_reel
         ? formatCompact(Math.round(profile.avg_views_per_reel))
         : null,
-    }
+    },
   ];
 
   return (

@@ -24,10 +24,7 @@ interface SettingsTabProps {
   onSignOut: () => Promise<void>;
 }
 
-export default function SettingsTab({
-  userId,
-  onSignOut,
-}: SettingsTabProps) {
+export default function SettingsTab({ userId, onSignOut }: SettingsTabProps) {
   const [showDeactivateDialog, setShowDeactivateDialog] = useState(false);
   const router = useRouter();
   const updateProfile = useUpdateInfluencerProfile();
@@ -61,7 +58,6 @@ export default function SettingsTab({
         animate="visible"
         className="space-y-4 pt-4"
       >
-
         {/* Account */}
         <m.div variants={fadeUp}>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-3">

@@ -1,1 +1,56 @@
-{"nodes": [{"id": "booking_step_payment", "label": "booking-step-payment.tsx", "file_type": "code", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx", "source_location": "L1"}, {"id": "booking_step_payment_processbookingpayment", "label": "processBookingPayment()", "file_type": "code", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx", "source_location": "L31"}], "edges": [{"source": "booking_step_payment", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx", "source_location": "L1", "weight": 1.0}, {"source": "booking_step_payment", "target": "client", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx", "source_location": "L2", "weight": 1.0}, {"source": "booking_step_payment", "target": "booking", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx", "source_location": "L3", "weight": 1.0}, {"source": "booking_step_payment", "target": "booking_step_payment_processbookingpayment", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx", "source_location": "L31", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "booking_step_payment",
+      "label": "booking-step-payment.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "booking_step_payment_processbookingpayment",
+      "label": "processBookingPayment()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx",
+      "source_location": "L31"
+    }
+  ],
+  "edges": [
+    {
+      "source": "booking_step_payment",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_payment",
+      "target": "client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_payment",
+      "target": "booking",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_payment",
+      "target": "booking_step_payment_processbookingpayment",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-payment.tsx",
+      "source_location": "L31",
+      "weight": 1.0
+    }
+  ]
+}

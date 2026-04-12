@@ -12,6 +12,7 @@ tags:
 # influencer-card-stack.tsx
 
 ## Connections
+
 - [[influencer-card.tsx]] - `imports_from` [EXTRACTED]
 - [[influencer-grid.tsx]] - `imports_from` [EXTRACTED]
 - [[updateViewport()_1]] - `contains` [EXTRACTED]

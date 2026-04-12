@@ -12,6 +12,7 @@ tags:
 # rate-card.tsx
 
 ## Connections
+
 - [[types.ts]] - `imports_from` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_1

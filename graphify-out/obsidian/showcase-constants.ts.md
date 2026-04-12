@@ -12,6 +12,7 @@ tags:
 # showcase-constants.ts
 
 ## Connections
+
 - [[influencer-instagram-tab.tsx]] - `imports_from` [EXTRACTED]
 - [[media-showcase.tsx]] - `imports_from` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]

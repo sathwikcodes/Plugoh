@@ -1,1 +1,22 @@
-{"nodes": [{"id": "influencer_packages", "label": "influencer-packages.tsx", "file_type": "code", "source_file": "app/dashboard/business/discover/[id]/_components/influencer-packages.tsx", "source_location": "L1"}], "edges": [{"source": "influencer_packages", "target": "booking", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/influencer-packages.tsx", "source_location": "L1", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "influencer_packages",
+      "label": "influencer-packages.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/[id]/_components/influencer-packages.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "influencer_packages",
+      "target": "booking",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/influencer-packages.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ]
+}

@@ -12,6 +12,7 @@ tags:
 # QuickActions()
 
 ## Connections
+
 - [[quick-actions.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_20

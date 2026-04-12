@@ -1,1 +1,38 @@
-{"nodes": [{"id": "animated_number", "label": "animated-number.tsx", "file_type": "code", "source_file": "components/ui/animated-number.tsx", "source_location": "L1"}, {"id": "animated_number_animatednumber", "label": "AnimatedNumber()", "file_type": "code", "source_file": "components/ui/animated-number.tsx", "source_location": "L11"}], "edges": [{"source": "animated_number", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/animated-number.tsx", "source_location": "L3", "weight": 1.0}, {"source": "animated_number", "target": "animated_number_animatednumber", "relation": "contains", "confidence": "EXTRACTED", "source_file": "components/ui/animated-number.tsx", "source_location": "L11", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "animated_number",
+      "label": "animated-number.tsx",
+      "file_type": "code",
+      "source_file": "components/ui/animated-number.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "animated_number_animatednumber",
+      "label": "AnimatedNumber()",
+      "file_type": "code",
+      "source_file": "components/ui/animated-number.tsx",
+      "source_location": "L11"
+    }
+  ],
+  "edges": [
+    {
+      "source": "animated_number",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/animated-number.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "animated_number",
+      "target": "animated_number_animatednumber",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/animated-number.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    }
+  ]
+}

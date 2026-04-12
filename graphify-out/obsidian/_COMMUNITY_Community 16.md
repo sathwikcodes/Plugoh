@@ -10,10 +10,11 @@ members: 4
 **Members:** 4 nodes
 
 ## Members
-- [[LocationMap()]] - code - app/(landing)/_components/expand-map.tsx
-- [[MapSection()]] - code - app/(landing)/_components/map-section.tsx
-- [[expand-map.tsx]] - code - app/(landing)/_components/expand-map.tsx
-- [[map-section.tsx]] - code - app/(landing)/_components/map-section.tsx
+
+- [[LocationMap()]] - code - app/(landing)/\_components/expand-map.tsx
+- [[MapSection()]] - code - app/(landing)/\_components/map-section.tsx
+- [[expand-map.tsx]] - code - app/(landing)/\_components/expand-map.tsx
+- [[map-section.tsx]] - code - app/(landing)/\_components/map-section.tsx
 
 ## Live Query (requires Dataview plugin)
 

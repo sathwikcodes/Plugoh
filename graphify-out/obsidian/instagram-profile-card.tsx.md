@@ -12,6 +12,7 @@ tags:
 # instagram-profile-card.tsx
 
 ## Connections
+
 - [[formatNumber()_1]] - `contains` [EXTRACTED]
 - [[initialsFromName()]] - `contains` [EXTRACTED]
 - [[mediaIcon()]] - `contains` [EXTRACTED]

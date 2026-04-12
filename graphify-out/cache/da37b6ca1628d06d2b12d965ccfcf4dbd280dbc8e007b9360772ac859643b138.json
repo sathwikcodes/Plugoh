@@ -1,1 +1,99 @@
-{"nodes": [{"id": "booking_step_package", "label": "booking-step-package.tsx", "file_type": "code", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L1"}, {"id": "booking_step_package_dropdowntrigger", "label": "DropdownTrigger()", "file_type": "code", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L13"}, {"id": "booking_step_package_workspacerow", "label": "WorkspaceRow()", "file_type": "code", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L39"}], "edges": [{"source": "booking_step_package", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L1", "weight": 1.0}, {"source": "booking_step_package", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L2", "weight": 1.0}, {"source": "booking_step_package", "target": "link", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L3", "weight": 1.0}, {"source": "booking_step_package", "target": "booking", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L4", "weight": 1.0}, {"source": "booking_step_package", "target": "button", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L5", "weight": 1.0}, {"source": "booking_step_package", "target": "workspaces", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L6", "weight": 1.0}, {"source": "booking_step_package", "target": "booking_step_package_dropdowntrigger", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L13", "weight": 1.0}, {"source": "booking_step_package", "target": "booking_step_package_workspacerow", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx", "source_location": "L39", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "booking_step_package",
+      "label": "booking-step-package.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "booking_step_package_dropdowntrigger",
+      "label": "DropdownTrigger()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "booking_step_package_workspacerow",
+      "label": "WorkspaceRow()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L39"
+    }
+  ],
+  "edges": [
+    {
+      "source": "booking_step_package",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_package",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_package",
+      "target": "link",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_package",
+      "target": "booking",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_package",
+      "target": "button",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_package",
+      "target": "workspaces",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_package",
+      "target": "booking_step_package_dropdowntrigger",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_step_package",
+      "target": "booking_step_package_workspacerow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/[id]/_components/booking-step-package.tsx",
+      "source_location": "L39",
+      "weight": 1.0
+    }
+  ]
+}

@@ -12,6 +12,7 @@ tags:
 # pricing-tab.tsx
 
 ## Connections
+
 - [[cn()_2]] - `contains` [EXTRACTED]
 - [[goTo()]] - `contains` [EXTRACTED]
 - [[handleCancel()_1]] - `contains` [EXTRACTED]

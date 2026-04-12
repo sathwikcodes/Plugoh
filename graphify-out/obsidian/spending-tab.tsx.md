@@ -12,6 +12,7 @@ tags:
 # spending-tab.tsx
 
 ## Connections
+
 - [[page.tsx]] - `imports_from` [EXTRACTED]
 - [[spending-transaction-row.tsx]] - `imports_from` [EXTRACTED]
 - [[types.ts]] - `imports_from` [EXTRACTED]

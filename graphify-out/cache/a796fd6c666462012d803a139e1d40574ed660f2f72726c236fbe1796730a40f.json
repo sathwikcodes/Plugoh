@@ -1,1 +1,63 @@
-{"nodes": [{"id": "generate_profile", "label": "generate-profile.ts", "file_type": "code", "source_file": "lib/ai/generate-profile.ts", "source_location": "L1"}, {"id": "generate_profile_generateinfluencerprofile", "label": "generateInfluencerProfile()", "file_type": "code", "source_file": "lib/ai/generate-profile.ts", "source_location": "L68"}, {"id": "generate_profile_generatebusinessprofile", "label": "generateBusinessProfile()", "file_type": "code", "source_file": "lib/ai/generate-profile.ts", "source_location": "L144"}], "edges": [{"source": "generate_profile", "target": "generative_ai", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "lib/ai/generate-profile.ts", "source_location": "L1", "weight": 1.0}, {"source": "generate_profile", "target": "constants", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "lib/ai/generate-profile.ts", "source_location": "L2", "weight": 1.0}, {"source": "generate_profile", "target": "generate_profile_generateinfluencerprofile", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/ai/generate-profile.ts", "source_location": "L68", "weight": 1.0}, {"source": "generate_profile", "target": "generate_profile_generatebusinessprofile", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/ai/generate-profile.ts", "source_location": "L144", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "generate_profile",
+      "label": "generate-profile.ts",
+      "file_type": "code",
+      "source_file": "lib/ai/generate-profile.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "generate_profile_generateinfluencerprofile",
+      "label": "generateInfluencerProfile()",
+      "file_type": "code",
+      "source_file": "lib/ai/generate-profile.ts",
+      "source_location": "L68"
+    },
+    {
+      "id": "generate_profile_generatebusinessprofile",
+      "label": "generateBusinessProfile()",
+      "file_type": "code",
+      "source_file": "lib/ai/generate-profile.ts",
+      "source_location": "L144"
+    }
+  ],
+  "edges": [
+    {
+      "source": "generate_profile",
+      "target": "generative_ai",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/ai/generate-profile.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_profile",
+      "target": "constants",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/ai/generate-profile.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_profile",
+      "target": "generate_profile_generateinfluencerprofile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/ai/generate-profile.ts",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_profile",
+      "target": "generate_profile_generatebusinessprofile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/ai/generate-profile.ts",
+      "source_location": "L144",
+      "weight": 1.0
+    }
+  ]
+}

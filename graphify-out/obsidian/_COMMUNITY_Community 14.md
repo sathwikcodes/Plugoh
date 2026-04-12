@@ -10,11 +10,12 @@ members: 5
 **Members:** 5 nodes
 
 ## Members
-- [[handleSave()_1]] - code - app/dashboard/business/profile/_components/tabs/settings-tab.tsx
-- [[handleSignOut()]] - code - app/dashboard/business/profile/_components/tabs/settings-tab.tsx
-- [[handleToggle()_1]] - code - app/dashboard/influencer/profile/_components/tabs/settings-tab.tsx
-- [[handleToggleActive()]] - code - app/dashboard/influencer/profile/_components/tabs/settings-tab.tsx
-- [[settings-tab.tsx]] - code - app/dashboard/business/profile/_components/tabs/settings-tab.tsx
+
+- [[handleSave()_1]] - code - app/dashboard/business/profile/\_components/tabs/settings-tab.tsx
+- [[handleSignOut()]] - code - app/dashboard/business/profile/\_components/tabs/settings-tab.tsx
+- [[handleToggle()_1]] - code - app/dashboard/influencer/profile/\_components/tabs/settings-tab.tsx
+- [[handleToggleActive()]] - code - app/dashboard/influencer/profile/\_components/tabs/settings-tab.tsx
+- [[settings-tab.tsx]] - code - app/dashboard/business/profile/\_components/tabs/settings-tab.tsx
 
 ## Live Query (requires Dataview plugin)
 
@@ -24,8 +25,10 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
+
 - 1 edge to [[_COMMUNITY_Community 0]]
 - 1 edge to [[_COMMUNITY_Community 1]]
 
 ## Top bridge nodes
+
 - [[settings-tab.tsx]] - degree 6, connects to 2 communities

@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { m } from "framer-motion";
-import {
-  Banknote,
-  Instagram,
-  Settings2,
-  type LucideIcon,
-} from "lucide-react";
+import { Banknote, Instagram, Settings2, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SPRING = {

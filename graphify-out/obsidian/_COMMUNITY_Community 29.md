@@ -10,7 +10,8 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[footer.tsx]] - code - app/(landing)/_components/footer.tsx
+
+- [[footer.tsx]] - code - app/(landing)/\_components/footer.tsx
 
 ## Live Query (requires Dataview plugin)
 

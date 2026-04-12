@@ -12,6 +12,7 @@ tags:
 # FaqSectionWrapper()
 
 ## Connections
+
 - [[faq-section.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_18

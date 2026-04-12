@@ -1,1 +1,40 @@
-{"nodes": [{"id": "shiny_button", "label": "shiny-button.tsx", "file_type": "code", "source_file": "components/ui/shiny-button.tsx", "source_location": "L1"}], "edges": [{"source": "shiny_button", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/shiny-button.tsx", "source_location": "L3", "weight": 1.0}, {"source": "shiny_button", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/shiny-button.tsx", "source_location": "L4", "weight": 1.0}, {"source": "shiny_button", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/shiny-button.tsx", "source_location": "L6", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "shiny_button",
+      "label": "shiny-button.tsx",
+      "file_type": "code",
+      "source_file": "components/ui/shiny-button.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "shiny_button",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/shiny-button.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "shiny_button",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/shiny-button.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "shiny_button",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/shiny-button.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    }
+  ]
+}

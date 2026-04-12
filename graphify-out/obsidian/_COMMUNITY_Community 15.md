@@ -10,11 +10,12 @@ members: 5
 **Members:** 5 nodes
 
 ## Members
-- [[InfiniteSlider()]] - code - app/(landing)/_components/infinite-slider.tsx
-- [[LogoCloud()]] - code - app/(landing)/_components/logo-cloud.tsx
-- [[clients-section.tsx]] - code - app/(landing)/_components/clients-section.tsx
-- [[infinite-slider.tsx]] - code - app/(landing)/_components/infinite-slider.tsx
-- [[logo-cloud.tsx]] - code - app/(landing)/_components/logo-cloud.tsx
+
+- [[InfiniteSlider()]] - code - app/(landing)/\_components/infinite-slider.tsx
+- [[LogoCloud()]] - code - app/(landing)/\_components/logo-cloud.tsx
+- [[clients-section.tsx]] - code - app/(landing)/\_components/clients-section.tsx
+- [[infinite-slider.tsx]] - code - app/(landing)/\_components/infinite-slider.tsx
+- [[logo-cloud.tsx]] - code - app/(landing)/\_components/logo-cloud.tsx
 
 ## Live Query (requires Dataview plugin)
 

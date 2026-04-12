@@ -12,6 +12,7 @@ tags:
 # handleTogglePortfolioItem()
 
 ## Connections
+
 - [[step-portfolio.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_1

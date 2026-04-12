@@ -12,6 +12,7 @@ tags:
 # chat-header.tsx
 
 ## Connections
+
 - [[ChatHeader()]] - `contains` [EXTRACTED]
 - [[chat-panel.tsx]] - `imports_from` [EXTRACTED]
 

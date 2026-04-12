@@ -1,1 +1,63 @@
-{"nodes": [{"id": "business_avatar", "label": "business-avatar.tsx", "file_type": "code", "source_file": "components/shared/business-avatar.tsx", "source_location": "L1"}, {"id": "business_avatar_getinitials", "label": "getInitials()", "file_type": "code", "source_file": "components/shared/business-avatar.tsx", "source_location": "L13"}, {"id": "business_avatar_businessavatar", "label": "BusinessAvatar()", "file_type": "code", "source_file": "components/shared/business-avatar.tsx", "source_location": "L25"}], "edges": [{"source": "business_avatar", "target": "business_profile", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/shared/business-avatar.tsx", "source_location": "L3", "weight": 1.0}, {"source": "business_avatar", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/shared/business-avatar.tsx", "source_location": "L4", "weight": 1.0}, {"source": "business_avatar", "target": "business_avatar_getinitials", "relation": "contains", "confidence": "EXTRACTED", "source_file": "components/shared/business-avatar.tsx", "source_location": "L13", "weight": 1.0}, {"source": "business_avatar", "target": "business_avatar_businessavatar", "relation": "contains", "confidence": "EXTRACTED", "source_file": "components/shared/business-avatar.tsx", "source_location": "L25", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "business_avatar",
+      "label": "business-avatar.tsx",
+      "file_type": "code",
+      "source_file": "components/shared/business-avatar.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "business_avatar_getinitials",
+      "label": "getInitials()",
+      "file_type": "code",
+      "source_file": "components/shared/business-avatar.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "business_avatar_businessavatar",
+      "label": "BusinessAvatar()",
+      "file_type": "code",
+      "source_file": "components/shared/business-avatar.tsx",
+      "source_location": "L25"
+    }
+  ],
+  "edges": [
+    {
+      "source": "business_avatar",
+      "target": "business_profile",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/shared/business-avatar.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "business_avatar",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/shared/business-avatar.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "business_avatar",
+      "target": "business_avatar_getinitials",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/shared/business-avatar.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "business_avatar",
+      "target": "business_avatar_businessavatar",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/shared/business-avatar.tsx",
+      "source_location": "L25",
+      "weight": 1.0
+    }
+  ]
+}

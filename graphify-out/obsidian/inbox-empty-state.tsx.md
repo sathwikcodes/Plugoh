@@ -12,6 +12,7 @@ tags:
 # inbox-empty-state.tsx
 
 ## Connections
+
 - [[InboxEmptyState()]] - `contains` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]
 

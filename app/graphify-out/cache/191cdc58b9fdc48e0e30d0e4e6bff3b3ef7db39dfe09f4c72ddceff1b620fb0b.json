@@ -1,1 +1,173 @@
-{"nodes": [{"id": "page", "label": "page.tsx", "file_type": "code", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L1"}, {"id": "page_campaignspage", "label": "CampaignsPage()", "file_type": "code", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L38"}], "edges": [{"source": "page", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L3", "weight": 1.0}, {"source": "page", "target": "react_query", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L4", "weight": 1.0}, {"source": "page", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L5", "weight": 1.0}, {"source": "page", "target": "auth_context", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L6", "weight": 1.0}, {"source": "page", "target": "use_campaigns", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L7", "weight": 1.0}, {"source": "page", "target": "client", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L8", "weight": 1.0}, {"source": "page", "target": "client", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L9", "weight": 1.0}, {"source": "page", "target": "types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L10", "weight": 1.0}, {"source": "page", "target": "animated_gradient_background", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L11", "weight": 1.0}, {"source": "page", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L12", "weight": 1.0}, {"source": "page", "target": "use_mobile", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L19", "weight": 1.0}, {"source": "page", "target": "campaign_constants", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L20", "weight": 1.0}, {"source": "page", "target": "campaign_sort_panel", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L26", "weight": 1.0}, {"source": "page", "target": "campaign_filters", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L27", "weight": 1.0}, {"source": "page", "target": "campaigns_list", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L28", "weight": 1.0}, {"source": "page", "target": "loading", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L29", "weight": 1.0}, {"source": "page", "target": "page_campaignspage", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/page.tsx", "source_location": "L38", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "page",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "page_campaignspage",
+      "label": "CampaignsPage()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L38"
+    }
+  ],
+  "edges": [
+    {
+      "source": "page",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "react_query",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "auth_context",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "use_campaigns",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "animated_gradient_background",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "use_mobile",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "campaign_constants",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "campaign_sort_panel",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "campaign_filters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "campaigns_list",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "loading",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "page_campaignspage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/page.tsx",
+      "source_location": "L38",
+      "weight": 1.0
+    }
+  ]
+}

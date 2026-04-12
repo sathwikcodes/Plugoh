@@ -12,6 +12,7 @@ tags:
 # normalizePackage()
 
 ## Connections
+
 - [[LegacyBookRedirect()]] - `calls` [EXTRACTED]
 - [[page.tsx]] - `contains` [EXTRACTED]
 

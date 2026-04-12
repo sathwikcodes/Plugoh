@@ -12,6 +12,7 @@ tags:
 # mediaIcon()
 
 ## Connections
+
 - [[instagram-profile-card.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_1

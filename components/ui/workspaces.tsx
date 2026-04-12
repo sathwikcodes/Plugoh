@@ -34,9 +34,8 @@ interface WorkspaceContextValue<T extends Workspace> {
   getWorkspaceName: (workspace: T) => string;
 }
 
-const WorkspaceContext = React.createContext<WorkspaceContextValue<Workspace> | null>(
-  null,
-);
+const WorkspaceContext =
+  React.createContext<WorkspaceContextValue<Workspace> | null>(null);
 
 function useWorkspaceContext<T extends Workspace>() {
   const context = React.useContext(
@@ -213,7 +212,7 @@ function WorkspaceContent({
     <div className="flex min-w-0 flex-1 items-center gap-2">
       <Avatar className="h-6 w-6">
         <AvatarImage
-            src={(workspace as WorkspaceWithMeta).logo}
+          src={(workspace as WorkspaceWithMeta).logo}
           alt={getWorkspaceName(workspace)}
         />
         <AvatarFallback className="text-xs">

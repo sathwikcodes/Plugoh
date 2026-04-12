@@ -1,1 +1,29 @@
-{"nodes": [{"id": "location_time", "label": "location-time.ts", "file_type": "code", "source_file": "lib/location-time.ts", "source_location": "L1"}, {"id": "location_time_parselocation", "label": "parseLocation()", "file_type": "code", "source_file": "lib/location-time.ts", "source_location": "L1"}], "edges": [{"source": "location_time", "target": "location_time_parselocation", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/location-time.ts", "source_location": "L1", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "location_time",
+      "label": "location-time.ts",
+      "file_type": "code",
+      "source_file": "lib/location-time.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "location_time_parselocation",
+      "label": "parseLocation()",
+      "file_type": "code",
+      "source_file": "lib/location-time.ts",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "location_time",
+      "target": "location_time_parselocation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/location-time.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ]
+}

@@ -12,6 +12,7 @@ tags:
 # formatPriceShort()
 
 ## Connections
+
 - [[filter-types.ts]] - `contains` [EXTRACTED]
 - [[summarizePrice()]] - `calls` [EXTRACTED]
 

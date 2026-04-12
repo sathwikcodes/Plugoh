@@ -12,6 +12,7 @@ tags:
 # handleToggle()
 
 ## Connections
+
 - [[profile-header.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_1

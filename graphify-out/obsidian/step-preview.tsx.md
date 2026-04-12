@@ -12,6 +12,7 @@ tags:
 # step-preview.tsx
 
 ## Connections
+
 - [[formatNum()]] - `contains` [EXTRACTED]
 - [[types.ts]] - `imports_from` [EXTRACTED]
 

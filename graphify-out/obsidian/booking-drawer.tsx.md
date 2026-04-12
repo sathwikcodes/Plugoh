@@ -12,6 +12,7 @@ tags:
 # booking-drawer.tsx
 
 ## Connections
+
 - [[BookingDrawer()]] - `contains` [EXTRACTED]
 - [[booking-step-brief.tsx]] - `imports_from` [EXTRACTED]
 - [[booking-step-package.tsx]] - `imports_from` [EXTRACTED]

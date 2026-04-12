@@ -12,6 +12,7 @@ tags:
 # booking-step-payment.tsx
 
 ## Connections
+
 - [[booking-drawer.tsx]] - `imports_from` [EXTRACTED]
 - [[processBookingPayment()]] - `contains` [EXTRACTED]
 - [[use-booking-form.ts]] - `imports_from` [EXTRACTED]

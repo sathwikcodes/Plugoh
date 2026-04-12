@@ -138,19 +138,27 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const campaignId = body?.campaignId as string | undefined;
     if (!campaignId) {
-      return NextResponse.json({ error: "Missing campaignId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing campaignId" },
+        { status: 400 },
+      );
     }
 
     const supabase = createServiceClient();
 
     const { data: campaign, error: campaignError } = await supabase
       .from("campaigns")
-      .select("id, business_id, influencer_id, title, status, package_type, price_offered, created_at")
+      .select(
+        "id, business_id, influencer_id, title, status, package_type, price_offered, created_at",
+      )
       .eq("id", campaignId)
       .single();
 
     if (campaignError || !campaign) {
-      return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Campaign not found" },
+        { status: 404 },
+      );
     }
 
     if (campaign.business_id !== user.id) {
@@ -192,18 +200,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const [{ data: influencerProfile }, { data: businessProfile }] = await Promise.all([
-      supabase
-        .from("profiles")
-        .select("email, full_name")
-        .eq("id", campaign.influencer_id)
-        .single(),
-      supabase
-        .from("profiles")
-        .select("email, full_name, business_name, phone")
-        .eq("id", campaign.business_id)
-        .single(),
-    ]);
+    const [{ data: influencerProfile }, { data: businessProfile }] =
+      await Promise.all([
+        supabase
+          .from("profiles")
+          .select("email, full_name")
+          .eq("id", campaign.influencer_id)
+          .single(),
+        supabase
+          .from("profiles")
+          .select("email, full_name, business_name, phone")
+          .eq("id", campaign.business_id)
+          .single(),
+      ]);
 
     let influencerEmail = influencerProfile?.email ?? null;
     if (!influencerEmail) {
@@ -302,6 +311,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch {
-    return NextResponse.json({ error: "Failed to send request" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to send request" },
+      { status: 500 },
+    );
   }
 }

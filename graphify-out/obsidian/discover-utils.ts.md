@@ -12,6 +12,7 @@ tags:
 # discover-utils.ts
 
 ## Connections
+
 - [[applyFilters()]] - `contains` [EXTRACTED]
 - [[createDefaultFilters()]] - `contains` [EXTRACTED]
 - [[filter-panel.tsx]] - `imports_from` [EXTRACTED]

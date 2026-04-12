@@ -12,6 +12,7 @@ tags:
 # error.tsx
 
 ## Connections
+
 - [[BusinessError()]] - `contains` [EXTRACTED]
 - [[DashboardError()]] - `contains` [EXTRACTED]
 - [[Error()]] - `contains` [EXTRACTED]

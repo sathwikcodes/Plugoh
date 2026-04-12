@@ -12,6 +12,7 @@ tags:
 # InboxLoading()
 
 ## Connections
+
 - [[loading.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_2

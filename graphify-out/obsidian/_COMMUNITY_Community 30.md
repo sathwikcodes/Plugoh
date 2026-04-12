@@ -10,7 +10,8 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[features-primary-section.tsx]] - code - app/(landing)/_components/features-primary-section.tsx
+
+- [[features-primary-section.tsx]] - code - app/(landing)/\_components/features-primary-section.tsx
 
 ## Live Query (requires Dataview plugin)
 

@@ -12,6 +12,7 @@ tags:
 # campaign-delivery-section.tsx
 
 ## Connections
+
 - [[campaign-types.ts]] - `imports_from` [EXTRACTED]
 - [[daysRemaining()_1]] - `contains` [EXTRACTED]
 - [[handleCancel()_2]] - `contains` [EXTRACTED]

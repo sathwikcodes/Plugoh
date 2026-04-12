@@ -12,6 +12,7 @@ tags:
 # updateViewport()
 
 ## Connections
+
 - [[influencer-card-stack.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_2

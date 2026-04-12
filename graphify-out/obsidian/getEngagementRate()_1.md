@@ -12,6 +12,7 @@ tags:
 # getEngagementRate()
 
 ## Connections
+
 - [[discover-utils.ts]] - `contains` [EXTRACTED]
 - [[getSortValue()]] - `calls` [EXTRACTED]
 

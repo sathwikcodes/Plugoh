@@ -10,7 +10,8 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[brand-insights.tsx]] - code - app/dashboard/business/_components/brand-insights.tsx
+
+- [[brand-insights.tsx]] - code - app/dashboard/business/\_components/brand-insights.tsx
 
 ## Live Query (requires Dataview plugin)
 

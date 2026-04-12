@@ -42,7 +42,9 @@ export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
         <div className="space-y-2 text-sm text-white/65">
           <div className="flex items-start justify-between gap-3">
             <span className="text-white/45">Creator</span>
-            <span className="text-right">{creator.display_name ?? "Creator"}</span>
+            <span className="text-right">
+              {creator.display_name ?? "Creator"}
+            </span>
           </div>
           <div className="flex items-start justify-between gap-3">
             <span className="text-white/45">Package</span>

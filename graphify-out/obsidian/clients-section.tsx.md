@@ -12,6 +12,7 @@ tags:
 # clients-section.tsx
 
 ## Connections
+
 - [[logo-cloud.tsx]] - `imports_from` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_15

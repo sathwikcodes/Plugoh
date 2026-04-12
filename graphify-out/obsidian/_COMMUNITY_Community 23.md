@@ -10,7 +10,8 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[top-content.tsx]] - code - app/dashboard/influencer/_components/top-content.tsx
+
+- [[top-content.tsx]] - code - app/dashboard/influencer/\_components/top-content.tsx
 
 ## Live Query (requires Dataview plugin)
 

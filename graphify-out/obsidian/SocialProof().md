@@ -12,6 +12,7 @@ tags:
 # SocialProof()
 
 ## Connections
+
 - [[social-proof.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_19

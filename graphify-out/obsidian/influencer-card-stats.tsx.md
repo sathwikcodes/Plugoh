@@ -12,6 +12,7 @@ tags:
 # influencer-card-stats.tsx
 
 ## Connections
+
 - [[VerificationBadge()]] - `contains` [EXTRACTED]
 - [[influencer-card.tsx]] - `imports_from` [EXTRACTED]
 

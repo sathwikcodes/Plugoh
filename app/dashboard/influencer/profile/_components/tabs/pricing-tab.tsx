@@ -5,13 +5,7 @@ import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
-import {
-  Diamond,
-  Pencil,
-  X,
-  Loader2,
-  Check,
-} from "lucide-react";
+import { Diamond, Pencil, X, Loader2, Check } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { cn } from "@/lib/utils";
@@ -432,13 +426,13 @@ function PricingCarousel({
 }: PricingCarouselProps) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [drafts, setDrafts] = useState<Record<"reel" | "post" | "story", number>>(
-    {
-      reel: profile.price_per_reel ?? CARD_CONFIG[0].default,
-      post: profile.price_per_post ?? CARD_CONFIG[1].default,
-      story: profile.price_per_story ?? CARD_CONFIG[2].default,
-    },
-  );
+  const [drafts, setDrafts] = useState<
+    Record<"reel" | "post" | "story", number>
+  >({
+    reel: profile.price_per_reel ?? CARD_CONFIG[0].default,
+    post: profile.price_per_post ?? CARD_CONFIG[1].default,
+    story: profile.price_per_story ?? CARD_CONFIG[2].default,
+  });
 
   const total = cards.length;
 

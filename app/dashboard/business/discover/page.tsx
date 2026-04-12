@@ -10,7 +10,6 @@ import {
 } from "@/lib/animations";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { FilterPanel, type DiscoverFilters } from "./_components/filter-panel";
 import { DiscoverHeader } from "./_components/discover-header";
 import { InfluencerGrid } from "./_components/influencer-grid";
@@ -22,7 +21,6 @@ import {
 
 export default function InfluencerDiscovery() {
   const { data: profiles = [], isLoading: loading } = useInfluencerProfiles();
-  const isMobile = useIsMobile();
 
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -160,22 +158,9 @@ export default function InfluencerDiscovery() {
     setFilterPanelOpen(true);
   };
 
-  const mobileViewportHeight = "100dvh";
-  const mobileBottomInset = "calc(96px + env(safe-area-inset-bottom, 0px))";
-
   return (
     <>
-      <div
-        className="relative overflow-hidden min-h-dvh"
-        style={
-          isMobile
-            ? {
-                height: mobileViewportHeight,
-                minHeight: mobileViewportHeight,
-              }
-            : undefined
-        }
-      >
+      <div className="relative overflow-hidden h-dvh md:min-h-dvh md:h-auto">
         <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
           <AnimatedGradientBackground
             Breathing
@@ -188,10 +173,7 @@ export default function InfluencerDiscovery() {
           />
         </div>
 
-        <div
-          className="relative z-10 container h-full py-4 md:h-auto md:py-6"
-          style={isMobile ? { paddingBottom: mobileBottomInset } : undefined}
-        >
+        <div className="relative z-10 container h-full py-4 pb-[calc(96px+env(safe-area-inset-bottom,0px))] md:h-auto md:py-6 md:pb-6">
           <m.div
             variants={stagger}
             initial="hidden"

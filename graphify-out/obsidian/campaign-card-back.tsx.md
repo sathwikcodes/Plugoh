@@ -12,6 +12,7 @@ tags:
 # campaign-card-back.tsx
 
 ## Connections
+
 - [[CampaignCardBack()]] - `contains` [EXTRACTED]
 - [[campaign-card-front.tsx]] - `imports_from` [EXTRACTED]
 - [[campaign-card-stack.tsx]] - `imports_from` [EXTRACTED]

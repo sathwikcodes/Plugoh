@@ -12,6 +12,7 @@ tags:
 # profile-strength-card.tsx
 
 ## Connections
+
 - [[overview-tab.tsx]] - `imports_from` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_1

@@ -12,6 +12,7 @@ tags:
 # booking-step-brief.tsx
 
 ## Connections
+
 - [[booking-drawer.tsx]] - `imports_from` [EXTRACTED]
 - [[booking-step-package.tsx]] - `imports_from` [EXTRACTED]
 - [[use-booking-form.ts]] - `imports_from` [EXTRACTED]

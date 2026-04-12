@@ -12,6 +12,7 @@ tags:
 # faq-section.tsx
 
 ## Connections
+
 - [[FaqSectionWrapper()]] - `contains` [EXTRACTED]
 - [[faq-accordion.tsx]] - `imports_from` [EXTRACTED]
 

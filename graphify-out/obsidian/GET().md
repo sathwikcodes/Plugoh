@@ -12,6 +12,7 @@ tags:
 # GET()
 
 ## Connections
+
 - [[errorRedirect()]] - `calls` [EXTRACTED]
 - [[route.ts]] - `contains` [EXTRACTED]
 - [[syncInstagramMedia()]] - `calls` [EXTRACTED]

@@ -12,6 +12,7 @@ tags:
 # chat-panel.tsx
 
 ## Connections
+
 - [[chat-header.tsx]] - `imports_from` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]
 - [[profile-display.ts]] - `imports_from` [EXTRACTED]

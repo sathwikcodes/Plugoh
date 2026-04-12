@@ -6,7 +6,9 @@ function cleanUrl(value: unknown): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-export function getAuthUserAvatarUrl(user: User | null | undefined): string | null {
+export function getAuthUserAvatarUrl(
+  user: User | null | undefined,
+): string | null {
   if (!user) return null;
 
   const metadata = user.user_metadata as Record<string, unknown> | undefined;

@@ -12,6 +12,7 @@ tags:
 # influencer-card.tsx
 
 ## Connections
+
 - [[discover-utils.ts]] - `imports_from` [EXTRACTED]
 - [[getDisplayName()]] - `contains` [EXTRACTED]
 - [[getEngagementLabel()]] - `contains` [EXTRACTED]

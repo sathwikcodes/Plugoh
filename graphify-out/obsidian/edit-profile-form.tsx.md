@@ -12,6 +12,7 @@ tags:
 # edit-profile-form.tsx
 
 ## Connections
+
 - [[EditProfileForm()]] - `contains` [EXTRACTED]
 - [[types.ts]] - `imports_from` [EXTRACTED]
 

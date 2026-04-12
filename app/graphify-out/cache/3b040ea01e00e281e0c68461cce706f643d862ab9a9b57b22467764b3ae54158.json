@@ -1,1 +1,12 @@
-{"nodes": [{"id": "showcase_constants", "label": "showcase-constants.ts", "file_type": "code", "source_file": "app/dashboard/business/discover/[id]/_components/showcase-constants.ts", "source_location": "L1"}], "edges": []}
+{
+  "nodes": [
+    {
+      "id": "showcase_constants",
+      "label": "showcase-constants.ts",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/[id]/_components/showcase-constants.ts",
+      "source_location": "L1"
+    }
+  ],
+  "edges": []
+}

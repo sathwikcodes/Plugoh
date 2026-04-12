@@ -12,6 +12,7 @@ tags:
 # booking-step-package.tsx
 
 ## Connections
+
 - [[DropdownTrigger()]] - `contains` [EXTRACTED]
 - [[WorkspaceRow()]] - `contains` [EXTRACTED]
 - [[booking-drawer.tsx]] - `imports_from` [EXTRACTED]

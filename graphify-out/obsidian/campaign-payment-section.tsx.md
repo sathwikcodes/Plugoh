@@ -12,6 +12,7 @@ tags:
 # campaign-payment-section.tsx
 
 ## Connections
+
 - [[campaign-types.ts]] - `imports_from` [EXTRACTED]
 - [[handlePayEscrow()]] - `contains` [EXTRACTED]
 - [[invalidate()_1]] - `contains` [EXTRACTED]

@@ -10,8 +10,9 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[Features()]] - code - app/(landing)/_components/features-alt-section.tsx
-- [[features-alt-section.tsx]] - code - app/(landing)/_components/features-alt-section.tsx
+
+- [[Features()]] - code - app/(landing)/\_components/features-alt-section.tsx
+- [[features-alt-section.tsx]] - code - app/(landing)/\_components/features-alt-section.tsx
 
 ## Live Query (requires Dataview plugin)
 

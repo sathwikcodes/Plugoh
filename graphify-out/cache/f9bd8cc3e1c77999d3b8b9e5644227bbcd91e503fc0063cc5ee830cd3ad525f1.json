@@ -1,1 +1,47 @@
-{"nodes": [{"id": "not_found", "label": "not-found.tsx", "file_type": "code", "source_file": "app/dashboard/not-found.tsx", "source_location": "L1"}, {"id": "not_found_dashboardnotfound", "label": "DashboardNotFound()", "file_type": "code", "source_file": "app/dashboard/not-found.tsx", "source_location": "L4"}], "edges": [{"source": "not_found", "target": "link", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/not-found.tsx", "source_location": "L1", "weight": 1.0}, {"source": "not_found", "target": "button", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/not-found.tsx", "source_location": "L2", "weight": 1.0}, {"source": "not_found", "target": "not_found_dashboardnotfound", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/not-found.tsx", "source_location": "L4", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "not_found",
+      "label": "not-found.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/not-found.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "not_found_dashboardnotfound",
+      "label": "DashboardNotFound()",
+      "file_type": "code",
+      "source_file": "app/dashboard/not-found.tsx",
+      "source_location": "L4"
+    }
+  ],
+  "edges": [
+    {
+      "source": "not_found",
+      "target": "link",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/not-found.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "not_found",
+      "target": "button",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/not-found.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "not_found",
+      "target": "not_found_dashboardnotfound",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/not-found.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    }
+  ]
+}

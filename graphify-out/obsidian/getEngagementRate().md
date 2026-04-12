@@ -12,6 +12,7 @@ tags:
 # getEngagementRate()
 
 ## Connections
+
 - [[getEngagementLabel()]] - `calls` [EXTRACTED]
 - [[influencer-card.tsx]] - `contains` [EXTRACTED]
 

@@ -12,6 +12,7 @@ tags:
 # conversation-item.tsx
 
 ## Connections
+
 - [[ConversationItem()]] - `contains` [EXTRACTED]
 - [[conversation-list.tsx]] - `imports_from` [EXTRACTED]
 - [[profile-display.ts]] - `imports_from` [EXTRACTED]

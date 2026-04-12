@@ -12,6 +12,7 @@ tags:
 # processBookingPayment()
 
 ## Connections
+
 - [[booking-step-payment.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_6

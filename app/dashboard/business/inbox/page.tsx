@@ -17,24 +17,17 @@ import {
 } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useHasMounted } from "@/hooks/use-has-mounted";
 import { ConversationList } from "./_components/conversation-list";
 import { ChatPanel } from "./_components/chat-panel";
 import { InboxEmptyState } from "./_components/inbox-empty-state";
 import InboxLoading from "./loading";
 
-const MOBILE_VIEWPORT_STYLE = {
-  height: "100dvh",
-  minHeight: "100dvh",
-} as const;
-
-const MOBILE_DOCK_INSET_STYLE = {
-  paddingBottom: "calc(104px + env(safe-area-inset-bottom, 0px))",
-} as const;
-
 export default function BusinessInboxPage() {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const mounted = useHasMounted();
   const isMobile = useIsMobile();
   const selectedId = searchParams.get("chat");
   const [search, setSearch] = useState("");
@@ -62,7 +55,7 @@ export default function BusinessInboxPage() {
     router.push("/dashboard/business/inbox");
   }, [router]);
 
-  const showMobileChat = isMobile && !!selectedConversation;
+  const showMobileChat = mounted && isMobile && !!selectedConversation;
 
   if (isLoading) return <InboxLoading />;
 
@@ -86,10 +79,7 @@ export default function BusinessInboxPage() {
   }
 
   return (
-    <div
-      className="relative h-dvh overflow-hidden"
-      style={isMobile ? MOBILE_VIEWPORT_STYLE : undefined}
-    >
+    <div className="relative h-dvh overflow-hidden">
       <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
         <AnimatedGradientBackground
           Breathing
@@ -153,12 +143,7 @@ export default function BusinessInboxPage() {
 
               <m.section
                 variants={fadeUp}
-                className="min-h-0 flex-1 md:flex-none md:h-[calc(100dvh-14rem)]"
-                style={
-                  isMobile && !showMobileChat
-                    ? MOBILE_DOCK_INSET_STYLE
-                    : undefined
-                }
+                className="min-h-0 flex-1 pb-[calc(104px+env(safe-area-inset-bottom,0px))] md:flex-none md:h-[calc(100dvh-14rem)] md:pb-0"
               >
                 <div className="flex h-full min-h-0 flex-col gap-4 md:flex-row">
                   <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] border border-white/14 bg-[linear-gradient(160deg,rgba(22,18,25,0.96)_0%,rgba(22,18,25,0.94)_46%,rgba(30,24,41,0.92)_100%)] shadow-[0_24px_70px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl md:w-70 md:shrink-0 md:flex-none">

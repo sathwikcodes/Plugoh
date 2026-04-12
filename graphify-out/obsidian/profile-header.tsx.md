@@ -12,6 +12,7 @@ tags:
 # profile-header.tsx
 
 ## Connections
+
 - [[handleToggle()]] - `contains` [EXTRACTED]
 - [[types.ts]] - `imports_from` [EXTRACTED]
 

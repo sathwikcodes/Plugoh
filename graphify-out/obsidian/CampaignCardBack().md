@@ -12,6 +12,7 @@ tags:
 # CampaignCardBack()
 
 ## Connections
+
 - [[campaign-card-back.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_5

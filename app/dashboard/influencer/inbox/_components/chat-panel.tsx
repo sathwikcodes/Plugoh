@@ -15,12 +15,7 @@ import {
 } from "@/components/campaign/message-bubble";
 import { MessageInput } from "@/components/campaign/message-input";
 import { ChatHeader } from "./chat-header";
-import {
-  AlertTriangle,
-  Loader2,
-  Lock,
-  MessageSquare,
-} from "lucide-react";
+import { AlertTriangle, Loader2, Lock, MessageSquare } from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";

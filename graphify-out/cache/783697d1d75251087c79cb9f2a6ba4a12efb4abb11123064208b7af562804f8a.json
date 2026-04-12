@@ -1,1 +1,63 @@
-{"nodes": [{"id": "use_campaigns", "label": "use-campaigns.ts", "file_type": "code", "source_file": "hooks/queries/use-campaigns.ts", "source_location": "L1"}, {"id": "use_campaigns_usecampaigns", "label": "useCampaigns()", "file_type": "code", "source_file": "hooks/queries/use-campaigns.ts", "source_location": "L4"}, {"id": "use_campaigns_usecampaign", "label": "useCampaign()", "file_type": "code", "source_file": "hooks/queries/use-campaigns.ts", "source_location": "L15"}], "edges": [{"source": "use_campaigns", "target": "react_query", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "hooks/queries/use-campaigns.ts", "source_location": "L1", "weight": 1.0}, {"source": "use_campaigns", "target": "client", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "hooks/queries/use-campaigns.ts", "source_location": "L2", "weight": 1.0}, {"source": "use_campaigns", "target": "use_campaigns_usecampaigns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "hooks/queries/use-campaigns.ts", "source_location": "L4", "weight": 1.0}, {"source": "use_campaigns", "target": "use_campaigns_usecampaign", "relation": "contains", "confidence": "EXTRACTED", "source_file": "hooks/queries/use-campaigns.ts", "source_location": "L15", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "use_campaigns",
+      "label": "use-campaigns.ts",
+      "file_type": "code",
+      "source_file": "hooks/queries/use-campaigns.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "use_campaigns_usecampaigns",
+      "label": "useCampaigns()",
+      "file_type": "code",
+      "source_file": "hooks/queries/use-campaigns.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "use_campaigns_usecampaign",
+      "label": "useCampaign()",
+      "file_type": "code",
+      "source_file": "hooks/queries/use-campaigns.ts",
+      "source_location": "L15"
+    }
+  ],
+  "edges": [
+    {
+      "source": "use_campaigns",
+      "target": "react_query",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/queries/use-campaigns.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "use_campaigns",
+      "target": "client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/queries/use-campaigns.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "use_campaigns",
+      "target": "use_campaigns_usecampaigns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/queries/use-campaigns.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "use_campaigns",
+      "target": "use_campaigns_usecampaign",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/queries/use-campaigns.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    }
+  ]
+}

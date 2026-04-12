@@ -50,14 +50,11 @@ export default function ProfileCard({
             "radial-gradient(120% 120% at 30% 10%, #1c1524 0%, #120e18 55%, #0a0810 100%)",
         }}
       >
-
         {/* ── IDENTITY ROW ── */}
         <div className="flex items-center gap-5">
           {/* Avatar */}
           <div className="shrink-0">
-            <div
-              className="rounded-full p-0.75 shadow-lg"
-            >
+            <div className="rounded-full p-0.75 shadow-lg">
               {avatarUrl ? (
                 <Image
                   src={avatarUrl}
@@ -132,7 +129,9 @@ export default function ProfileCard({
                     height={14}
                     className="h-3.5 w-3.5 shrink-0 object-contain"
                   />
-                  <span className="font-medium text-white/70">{locationLabel}</span>
+                  <span className="font-medium text-white/70">
+                    {locationLabel}
+                  </span>
                 </span>
               )}
             </div>

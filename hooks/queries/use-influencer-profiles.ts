@@ -7,7 +7,10 @@ type InfluencerProfile =
 
 export function useInfluencerProfiles() {
   const trpc = useTRPC();
-  return useQuery(trpc.profile.getInfluencerProfiles.queryOptions());
+  return useQuery({
+    ...trpc.profile.getInfluencerProfiles.queryOptions(),
+    staleTime: 60_000,
+  });
 }
 
 export function useInfluencerProfile(id: string | undefined) {

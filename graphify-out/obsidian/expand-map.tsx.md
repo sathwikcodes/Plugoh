@@ -12,6 +12,7 @@ tags:
 # expand-map.tsx
 
 ## Connections
+
 - [[LocationMap()]] - `contains` [EXTRACTED]
 - [[map-section.tsx]] - `imports_from` [EXTRACTED]
 

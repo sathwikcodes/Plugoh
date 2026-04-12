@@ -1,1 +1,56 @@
-{"nodes": [{"id": "conversation_item", "label": "conversation-item.tsx", "file_type": "code", "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx", "source_location": "L1"}, {"id": "conversation_item_conversationitem", "label": "ConversationItem()", "file_type": "code", "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx", "source_location": "L21"}], "edges": [{"source": "conversation_item", "target": "use_business_inbox_conversations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx", "source_location": "L3", "weight": 1.0}, {"source": "conversation_item", "target": "shared_conversation_item", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx", "source_location": "L4", "weight": 1.0}, {"source": "conversation_item", "target": "profile_display", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx", "source_location": "L9", "weight": 1.0}, {"source": "conversation_item", "target": "conversation_item_conversationitem", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx", "source_location": "L21", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "conversation_item",
+      "label": "conversation-item.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "conversation_item_conversationitem",
+      "label": "ConversationItem()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx",
+      "source_location": "L21"
+    }
+  ],
+  "edges": [
+    {
+      "source": "conversation_item",
+      "target": "use_business_inbox_conversations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "conversation_item",
+      "target": "shared_conversation_item",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "conversation_item",
+      "target": "profile_display",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "conversation_item",
+      "target": "conversation_item_conversationitem",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/inbox/_components/conversation-item.tsx",
+      "source_location": "L21",
+      "weight": 1.0
+    }
+  ]
+}

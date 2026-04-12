@@ -12,6 +12,7 @@ tags:
 # filter-types.ts
 
 ## Connections
+
 - [[filter-panel-content.tsx]] - `imports_from` [EXTRACTED]
 - [[filter-panel.tsx]] - `imports_from` [EXTRACTED]
 - [[filter-price-range.tsx]] - `imports_from` [EXTRACTED]

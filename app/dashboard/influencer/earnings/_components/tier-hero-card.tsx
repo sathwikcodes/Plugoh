@@ -20,11 +20,11 @@ const TIER_BADGE_MAP: Record<string, { type: AwardBadgeType; place?: number }> =
 
 // Maps tier name → its brand color hex for the shimmer gradient
 const TIER_SHIMMER_COLOR: Record<string, string> = {
-  "Rising Star": "#fb7185",   // rose-400
-  Creator: "#fbbf24",          // amber-400
-  "Pro Creator": "#fb923c",    // orange-400
-  "Elite Creator": "#a78bfa",  // violet-400
-  "Top Creator": "#facc15",    // yellow-400
+  "Rising Star": "#fb7185", // rose-400
+  Creator: "#fbbf24", // amber-400
+  "Pro Creator": "#fb923c", // orange-400
+  "Elite Creator": "#a78bfa", // violet-400
+  "Top Creator": "#facc15", // yellow-400
 };
 
 interface TierHeroCardProps {
@@ -80,7 +80,9 @@ export function TierHeroCard({
                 />
               </div>
               <div className="text-right shrink-0">
-                <p className="text-[10px] text-muted-foreground">Total Earned</p>
+                <p className="text-[10px] text-muted-foreground">
+                  Total Earned
+                </p>
                 <p
                   className="num text-3xl font-black tracking-tight"
                   style={{

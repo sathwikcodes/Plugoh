@@ -1,1 +1,63 @@
-{"nodes": [{"id": "server", "label": "server.ts", "file_type": "code", "source_file": "lib/supabase/server.ts", "source_location": "L1"}, {"id": "server_authenticateuser", "label": "authenticateUser()", "file_type": "code", "source_file": "lib/supabase/server.ts", "source_location": "L9"}, {"id": "server_createserviceclient", "label": "createServiceClient()", "file_type": "code", "source_file": "lib/supabase/server.ts", "source_location": "L27"}], "edges": [{"source": "server", "target": "supabase_js", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "lib/supabase/server.ts", "source_location": "L1", "weight": 1.0}, {"source": "server", "target": "types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "lib/supabase/server.ts", "source_location": "L2", "weight": 1.0}, {"source": "server", "target": "server_authenticateuser", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/supabase/server.ts", "source_location": "L9", "weight": 1.0}, {"source": "server", "target": "server_createserviceclient", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/supabase/server.ts", "source_location": "L27", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "server",
+      "label": "server.ts",
+      "file_type": "code",
+      "source_file": "lib/supabase/server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "server_authenticateuser",
+      "label": "authenticateUser()",
+      "file_type": "code",
+      "source_file": "lib/supabase/server.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "server_createserviceclient",
+      "label": "createServiceClient()",
+      "file_type": "code",
+      "source_file": "lib/supabase/server.ts",
+      "source_location": "L27"
+    }
+  ],
+  "edges": [
+    {
+      "source": "server",
+      "target": "supabase_js",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/supabase/server.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "server",
+      "target": "types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/supabase/server.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "server",
+      "target": "server_authenticateuser",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/supabase/server.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "server",
+      "target": "server_createserviceclient",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/supabase/server.ts",
+      "source_location": "L27",
+      "weight": 1.0
+    }
+  ]
+}

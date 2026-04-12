@@ -12,6 +12,7 @@ tags:
 # campaign-sidebar.tsx
 
 ## Connections
+
 - [[CampaignSidebar()]] - `contains` [EXTRACTED]
 - [[campaign-types.ts]] - `imports_from` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]

@@ -12,6 +12,7 @@ tags:
 # NotFound()
 
 ## Connections
+
 - [[not-found.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_17

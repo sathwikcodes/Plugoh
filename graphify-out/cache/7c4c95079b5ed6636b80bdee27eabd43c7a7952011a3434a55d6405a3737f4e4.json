@@ -1,1 +1,49 @@
-{"nodes": [{"id": "business_dock", "label": "business-dock.tsx", "file_type": "code", "source_file": "components/shared/business-dock.tsx", "source_location": "L1"}], "edges": [{"source": "business_dock", "target": "navigation", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/shared/business-dock.tsx", "source_location": "L3", "weight": 1.0}, {"source": "business_dock", "target": "mac_os_dock", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/shared/business-dock.tsx", "source_location": "L4", "weight": 1.0}, {"source": "business_dock", "target": "dock_auto_hide_wrapper", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/shared/business-dock.tsx", "source_location": "L5", "weight": 1.0}, {"source": "business_dock", "target": "use_unread_counts", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/shared/business-dock.tsx", "source_location": "L6", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "business_dock",
+      "label": "business-dock.tsx",
+      "file_type": "code",
+      "source_file": "components/shared/business-dock.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "business_dock",
+      "target": "navigation",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/shared/business-dock.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "business_dock",
+      "target": "mac_os_dock",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/shared/business-dock.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "business_dock",
+      "target": "dock_auto_hide_wrapper",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/shared/business-dock.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "business_dock",
+      "target": "use_unread_counts",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/shared/business-dock.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    }
+  ]
+}

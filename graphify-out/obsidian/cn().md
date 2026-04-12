@@ -12,6 +12,7 @@ tags:
 # cn()
 
 ## Connections
+
 - [[profile-card.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_1

@@ -1,1 +1,72 @@
-{"nodes": [{"id": "shared_conversation_item", "label": "shared-conversation-item.tsx", "file_type": "code", "source_file": "components/inbox/shared-conversation-item.tsx", "source_location": "L1"}, {"id": "shared_conversation_item_buildconversationpreview", "label": "buildConversationPreview()", "file_type": "code", "source_file": "components/inbox/shared-conversation-item.tsx", "source_location": "L20"}, {"id": "shared_conversation_item_cn", "label": "cn()", "file_type": "code", "source_file": "components/inbox/shared-conversation-item.tsx", "source_location": "L80"}], "edges": [{"source": "shared_conversation_item", "target": "avatar", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/inbox/shared-conversation-item.tsx", "source_location": "L3", "weight": 1.0}, {"source": "shared_conversation_item", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/inbox/shared-conversation-item.tsx", "source_location": "L4", "weight": 1.0}, {"source": "shared_conversation_item", "target": "constants", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/inbox/shared-conversation-item.tsx", "source_location": "L5", "weight": 1.0}, {"source": "shared_conversation_item", "target": "shared_conversation_item_buildconversationpreview", "relation": "contains", "confidence": "EXTRACTED", "source_file": "components/inbox/shared-conversation-item.tsx", "source_location": "L20", "weight": 1.0}, {"source": "shared_conversation_item", "target": "shared_conversation_item_cn", "relation": "contains", "confidence": "EXTRACTED", "source_file": "components/inbox/shared-conversation-item.tsx", "source_location": "L80", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "shared_conversation_item",
+      "label": "shared-conversation-item.tsx",
+      "file_type": "code",
+      "source_file": "components/inbox/shared-conversation-item.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "shared_conversation_item_buildconversationpreview",
+      "label": "buildConversationPreview()",
+      "file_type": "code",
+      "source_file": "components/inbox/shared-conversation-item.tsx",
+      "source_location": "L20"
+    },
+    {
+      "id": "shared_conversation_item_cn",
+      "label": "cn()",
+      "file_type": "code",
+      "source_file": "components/inbox/shared-conversation-item.tsx",
+      "source_location": "L80"
+    }
+  ],
+  "edges": [
+    {
+      "source": "shared_conversation_item",
+      "target": "avatar",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/inbox/shared-conversation-item.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "shared_conversation_item",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/inbox/shared-conversation-item.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "shared_conversation_item",
+      "target": "constants",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/inbox/shared-conversation-item.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "shared_conversation_item",
+      "target": "shared_conversation_item_buildconversationpreview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/inbox/shared-conversation-item.tsx",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "shared_conversation_item",
+      "target": "shared_conversation_item_cn",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/inbox/shared-conversation-item.tsx",
+      "source_location": "L80",
+      "weight": 1.0
+    }
+  ]
+}

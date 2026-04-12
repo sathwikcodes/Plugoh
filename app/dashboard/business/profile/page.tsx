@@ -9,7 +9,6 @@ import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
 import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc/client";
-import dynamic from "next/dynamic";
 import { m } from "framer-motion";
 import {
   stagger,
@@ -18,11 +17,7 @@ import {
   GRADIENT_STYLE,
 } from "@/lib/animations";
 import { toast } from "sonner";
-
-const AnimatedGradientBackground = dynamic(
-  () => import("@/components/ui/animated-gradient-background"),
-  { ssr: false },
-);
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import BusinessProfileCardHeader from "./_components/profile-card-header";
 import BusinessInstagramTab from "./_components/tabs/instagram-tab";
 import AnalyticsTab from "./_components/tabs/analytics-tab";
@@ -35,27 +30,33 @@ import {
 import { BusinessTabBar } from "./_components/business-tab-bar";
 import BusinessProfileLoading from "./loading";
 
-type TabValue =
-  | "instagram"
-  | "analytics"
-  | "spending"
-  | "settings";
+type TabValue = "instagram" | "analytics" | "spending" | "settings";
 
 function BusinessProfilePageInner() {
   const { user, profile, avatarUrl, loading: authLoading, signOut } = useAuth();
   const searchParams = useSearchParams();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const isOnboarding =
-    searchParams.get("source") === "onboarding" ||
-    (typeof window !== "undefined" &&
-      sessionStorage.getItem("plugoh_business_ai_pending") === user?.id);
+  const fromUrl = searchParams.get("source") === "onboarding";
+  const [hasPendingAi, setHasPendingAi] = useState(false);
+  const isOnboarding = fromUrl || hasPendingAi;
 
   const [activeTab, setActiveTab] = useState<TabValue>("spending");
   const [aiStatus, setAiStatus] = useState<
     "idle" | "running" | "done" | "failed"
-  >(isOnboarding ? "running" : "idle");
+  >(fromUrl ? "running" : "idle");
   const aiTriggeredRef = useRef(false);
+  const aiTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const pending =
+      sessionStorage.getItem("plugoh_business_ai_pending") === user.id;
+    if (pending) {
+      setHasPendingAi(true);
+      setAiStatus((prev) => (prev === "idle" ? "running" : prev));
+    }
+  }, [user?.id]);
 
   const { data: identity, isLoading: identityLoading } = useMyBusinessProfile(
     user?.id,
@@ -80,6 +81,17 @@ function BusinessProfilePageInner() {
     if (!isOnboarding || !user?.id || aiTriggeredRef.current) return;
     aiTriggeredRef.current = true;
 
+    aiTimeoutRef.current = setTimeout(() => {
+      setAiStatus((prev) => {
+        if (prev !== "running") return prev;
+        sessionStorage.removeItem("plugoh_business_ai_pending");
+        toast.error(
+          "AI suggestions timed out — you can finish the brand profile manually.",
+        );
+        return "failed";
+      });
+    }, 120_000);
+
     fetch("/api/ai/generate-business-profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -103,13 +115,16 @@ function BusinessProfilePageInner() {
           "AI suggestions unavailable — you can finish the brand profile manually.",
         );
       });
-  }, [
-    isOnboarding,
-    queryClient,
-    trpc.profile.getMyBusinessProfile,
-    trpc.profile.getMyProfile,
-    user?.id,
-  ]);
+
+    return () => {
+      if (aiTimeoutRef.current) {
+        clearTimeout(aiTimeoutRef.current);
+        aiTimeoutRef.current = null;
+      }
+    };
+    // trpc proxy accessors are stable within provider; exclude them to avoid false-positive re-runs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOnboarding, queryClient, user?.id]);
 
   if (loading) {
     return <BusinessProfileLoading />;

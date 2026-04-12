@@ -24,7 +24,9 @@ export function CampaignCardBack({ card }: { card: CampaignCardData }) {
             {card.title || "Untitled Campaign"}
           </p>
           <div className="flex shrink-0 items-center gap-1.5">
-            <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", statusDot)} />
+            <span
+              className={cn("h-1.5 w-1.5 shrink-0 rounded-full", statusDot)}
+            />
             <span className="text-[13px] font-semibold tabular-nums text-white/60">
               {formatCurrency(card.price_offered)}
             </span>

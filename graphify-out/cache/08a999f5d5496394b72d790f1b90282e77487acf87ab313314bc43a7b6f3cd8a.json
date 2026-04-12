@@ -1,1 +1,148 @@
-{"nodes": [{"id": "page", "label": "page.tsx", "file_type": "code", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L1"}], "edges": [{"source": "page", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L3", "weight": 1.0}, {"source": "page", "target": "auth_context", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L4", "weight": 1.0}, {"source": "page", "target": "use_campaigns", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L5", "weight": 1.0}, {"source": "page", "target": "use_business_profiles", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L6", "weight": 1.0}, {"source": "page", "target": "transaction_table", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L7", "weight": 1.0}, {"source": "page", "target": "loading_spinner", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L8", "weight": 1.0}, {"source": "page", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L9", "weight": 1.0}, {"source": "page", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L10", "weight": 1.0}, {"source": "page", "target": "use_earnings_summary", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L11", "weight": 1.0}, {"source": "page", "target": "business_profile", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L18", "weight": 1.0}, {"source": "page", "target": "tier_hero_card", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L20", "weight": 1.0}, {"source": "page", "target": "stats_row", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L21", "weight": 1.0}, {"source": "page", "target": "achievements_strip", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L22", "weight": 1.0}, {"source": "page", "target": "milestone_card", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L23", "weight": 1.0}, {"source": "page", "target": "earnings_chart", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/page.tsx", "source_location": "L24", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "page",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "page",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "auth_context",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "use_campaigns",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "use_business_profiles",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "transaction_table",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "loading_spinner",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "use_earnings_summary",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "business_profile",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "tier_hero_card",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "stats_row",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "achievements_strip",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "milestone_card",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "page",
+      "target": "earnings_chart",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/page.tsx",
+      "source_location": "L24",
+      "weight": 1.0
+    }
+  ]
+}

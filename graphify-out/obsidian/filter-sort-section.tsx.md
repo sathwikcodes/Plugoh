@@ -12,6 +12,7 @@ tags:
 # filter-sort-section.tsx
 
 ## Connections
+
 - [[cn()_6]] - `contains` [EXTRACTED]
 - [[filter-panel-content.tsx]] - `imports_from` [EXTRACTED]
 - [[filter-types.ts]] - `imports_from` [EXTRACTED]

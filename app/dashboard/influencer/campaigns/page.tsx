@@ -28,16 +28,12 @@ export default function CampaignsPage() {
     user?.id,
     "influencer",
   );
-  const {
-    acceptCampaign,
-    declineCampaign,
-    acceptingId,
-    decliningId,
-  } = useInfluencerCampaignActions({
-    acceptRedirectTo: (campaignId) =>
-      `/dashboard/influencer/campaigns/${campaignId}`,
-    acceptSuccessDescription: "Opening the campaign details.",
-  });
+  const { acceptCampaign, declineCampaign, acceptingId, decliningId } =
+    useInfluencerCampaignActions({
+      acceptRedirectTo: (campaignId) =>
+        `/dashboard/influencer/campaigns/${campaignId}`,
+      acceptSuccessDescription: "Opening the campaign details.",
+    });
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [search, setSearch] = useState("");
@@ -81,7 +77,10 @@ export default function CampaignsPage() {
     };
     for (const campaign of campaigns) {
       for (const key of Object.keys(STATUS_FILTER_GROUPS) as StatusFilter[]) {
-        if (key !== "All" && STATUS_FILTER_GROUPS[key].includes(campaign.status))
+        if (
+          key !== "All" &&
+          STATUS_FILTER_GROUPS[key].includes(campaign.status)
+        )
           counts[key]++;
       }
     }

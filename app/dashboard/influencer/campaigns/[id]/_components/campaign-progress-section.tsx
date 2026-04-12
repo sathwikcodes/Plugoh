@@ -65,11 +65,14 @@ function StatusTimeline({ status }: { status: string }) {
               <div
                 className={cn(
                   "flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all",
-                  current && !isCompleted &&
+                  current &&
+                    !isCompleted &&
                     "border-amber-400/50 bg-amber-400/15 ring-4 ring-amber-400/10",
-                  current && isCompleted &&
+                  current &&
+                    isCompleted &&
                     "border-emerald-400/50 bg-emerald-400/15 ring-4 ring-emerald-400/10",
-                  reached && !current &&
+                  reached &&
+                    !current &&
                     "border-emerald-400/40 bg-emerald-400/10",
                   !reached && "border-white/[0.12] bg-white/[0.03]",
                 )}
@@ -100,9 +103,7 @@ function StatusTimeline({ status }: { status: string }) {
               <div
                 className={cn(
                   "mx-2 mt-[17px] h-px flex-1",
-                  index < currentIndex
-                    ? "bg-emerald-300/40"
-                    : "bg-white/8",
+                  index < currentIndex ? "bg-emerald-300/40" : "bg-white/8",
                 )}
               />
             )}

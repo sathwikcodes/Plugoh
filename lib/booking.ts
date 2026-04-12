@@ -228,7 +228,10 @@ export function buildCampaignBrief(formState: BookingFormState) {
     `Package: ${getPackageLabel(formState.packageType)}`,
   ];
 
-  if (shouldShowEventName(formState.objective) && formState.venueAddress.trim()) {
+  if (
+    shouldShowEventName(formState.objective) &&
+    formState.venueAddress.trim()
+  ) {
     lines.push(`Venue: ${formState.venueAddress.trim()}`);
   }
 

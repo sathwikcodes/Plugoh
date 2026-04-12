@@ -10,7 +10,8 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[spend-stats.tsx]] - code - app/dashboard/business/_components/spend-stats.tsx
+
+- [[spend-stats.tsx]] - code - app/dashboard/business/\_components/spend-stats.tsx
 
 ## Live Query (requires Dataview plugin)
 

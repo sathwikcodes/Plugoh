@@ -1,1 +1,88 @@
-{"nodes": [{"id": "profile_display", "label": "profile-display.ts", "file_type": "code", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L1"}, {"id": "profile_display_getbranddisplayname", "label": "getBrandDisplayName()", "file_type": "code", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L8"}, {"id": "profile_display_getbrandavatarurl", "label": "getBrandAvatarUrl()", "file_type": "code", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L12"}, {"id": "profile_display_getinfluencerdisplayname", "label": "getInfluencerDisplayName()", "file_type": "code", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L16"}], "edges": [{"source": "profile_display", "target": "business_profile", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L1", "weight": 1.0}, {"source": "profile_display", "target": "business_profile", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L2", "weight": 1.0}, {"source": "profile_display", "target": "types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L3", "weight": 1.0}, {"source": "profile_display", "target": "profile_display_getbranddisplayname", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L8", "weight": 1.0}, {"source": "profile_display", "target": "profile_display_getbrandavatarurl", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L12", "weight": 1.0}, {"source": "profile_display", "target": "profile_display_getinfluencerdisplayname", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts", "source_location": "L16", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "profile_display",
+      "label": "profile-display.ts",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "profile_display_getbranddisplayname",
+      "label": "getBrandDisplayName()",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "profile_display_getbrandavatarurl",
+      "label": "getBrandAvatarUrl()",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "profile_display_getinfluencerdisplayname",
+      "label": "getInfluencerDisplayName()",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L16"
+    }
+  ],
+  "edges": [
+    {
+      "source": "profile_display",
+      "target": "business_profile",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_display",
+      "target": "business_profile",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_display",
+      "target": "types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_display",
+      "target": "profile_display_getbranddisplayname",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_display",
+      "target": "profile_display_getbrandavatarurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "profile_display",
+      "target": "profile_display_getinfluencerdisplayname",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/_components/profile-display.ts",
+      "source_location": "L16",
+      "weight": 1.0
+    }
+  ]
+}

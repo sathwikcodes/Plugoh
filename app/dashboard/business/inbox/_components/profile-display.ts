@@ -27,5 +27,7 @@ export function getInfluencerAvatarUrlWithFallback(
   profile: Profile | null,
   fallbackAvatarUrl: string | null | undefined,
 ): string | null {
-  return profile?.ig_profile_picture_url?.trim() || fallbackAvatarUrl?.trim() || null;
+  return (
+    profile?.ig_profile_picture_url?.trim() || fallbackAvatarUrl?.trim() || null
+  );
 }

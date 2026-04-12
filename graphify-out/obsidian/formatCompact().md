@@ -12,6 +12,7 @@ tags:
 # formatCompact()
 
 ## Connections
+
 - [[instagram-tab.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_1

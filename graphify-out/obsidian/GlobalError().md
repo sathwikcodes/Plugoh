@@ -12,6 +12,7 @@ tags:
 # GlobalError()
 
 ## Connections
+
 - [[global-error.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_9

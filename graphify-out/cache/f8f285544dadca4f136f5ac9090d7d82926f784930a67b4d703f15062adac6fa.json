@@ -1,1 +1,31 @@
-{"nodes": [{"id": "animated_gradient_background", "label": "animated-gradient-background.tsx", "file_type": "code", "source_file": "components/ui/animated-gradient-background.tsx", "source_location": "L1"}], "edges": [{"source": "animated_gradient_background", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/animated-gradient-background.tsx", "source_location": "L1", "weight": 1.0}, {"source": "animated_gradient_background", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/animated-gradient-background.tsx", "source_location": "L2", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "animated_gradient_background",
+      "label": "animated-gradient-background.tsx",
+      "file_type": "code",
+      "source_file": "components/ui/animated-gradient-background.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "animated_gradient_background",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/animated-gradient-background.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "animated_gradient_background",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/animated-gradient-background.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    }
+  ]
+}

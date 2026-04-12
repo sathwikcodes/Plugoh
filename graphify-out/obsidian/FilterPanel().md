@@ -12,6 +12,7 @@ tags:
 # FilterPanel()
 
 ## Connections
+
 - [[filter-panel.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_4

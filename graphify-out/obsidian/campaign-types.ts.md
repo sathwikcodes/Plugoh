@@ -12,6 +12,7 @@ tags:
 # campaign-types.ts
 
 ## Connections
+
 - [[campaign-brand-section.tsx]] - `imports_from` [EXTRACTED]
 - [[campaign-brief-section.tsx]] - `imports_from` [EXTRACTED]
 - [[campaign-chat-section.tsx]] - `imports_from` [EXTRACTED]

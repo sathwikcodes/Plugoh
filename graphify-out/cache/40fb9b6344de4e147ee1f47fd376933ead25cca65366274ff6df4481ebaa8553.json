@@ -1,1 +1,54 @@
-{"nodes": [{"id": "theme_context", "label": "theme-context.tsx", "file_type": "code", "source_file": "components/auth/theme-context.tsx", "source_location": "L1"}, {"id": "theme_context_auththemeprovider", "label": "AuthThemeProvider()", "file_type": "code", "source_file": "components/auth/theme-context.tsx", "source_location": "L17"}, {"id": "theme_context_useauththeme", "label": "useAuthTheme()", "file_type": "code", "source_file": "components/auth/theme-context.tsx", "source_location": "L26"}], "edges": [{"source": "theme_context", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/auth/theme-context.tsx", "source_location": "L3", "weight": 1.0}, {"source": "theme_context", "target": "theme_context_auththemeprovider", "relation": "contains", "confidence": "EXTRACTED", "source_file": "components/auth/theme-context.tsx", "source_location": "L17", "weight": 1.0}, {"source": "theme_context", "target": "theme_context_useauththeme", "relation": "contains", "confidence": "EXTRACTED", "source_file": "components/auth/theme-context.tsx", "source_location": "L26", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "theme_context",
+      "label": "theme-context.tsx",
+      "file_type": "code",
+      "source_file": "components/auth/theme-context.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "theme_context_auththemeprovider",
+      "label": "AuthThemeProvider()",
+      "file_type": "code",
+      "source_file": "components/auth/theme-context.tsx",
+      "source_location": "L17"
+    },
+    {
+      "id": "theme_context_useauththeme",
+      "label": "useAuthTheme()",
+      "file_type": "code",
+      "source_file": "components/auth/theme-context.tsx",
+      "source_location": "L26"
+    }
+  ],
+  "edges": [
+    {
+      "source": "theme_context",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/auth/theme-context.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "theme_context",
+      "target": "theme_context_auththemeprovider",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/auth/theme-context.tsx",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "theme_context",
+      "target": "theme_context_useauththeme",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/auth/theme-context.tsx",
+      "source_location": "L26",
+      "weight": 1.0
+    }
+  ]
+}

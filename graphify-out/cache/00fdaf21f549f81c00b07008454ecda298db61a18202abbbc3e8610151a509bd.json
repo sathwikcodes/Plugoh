@@ -1,1 +1,40 @@
-{"nodes": [{"id": "milestone_card", "label": "milestone-card.tsx", "file_type": "code", "source_file": "app/dashboard/influencer/earnings/_components/milestone-card.tsx", "source_location": "L1"}], "edges": [{"source": "milestone_card", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/_components/milestone-card.tsx", "source_location": "L3", "weight": 1.0}, {"source": "milestone_card", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/_components/milestone-card.tsx", "source_location": "L4", "weight": 1.0}, {"source": "milestone_card", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/earnings/_components/milestone-card.tsx", "source_location": "L5", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "milestone_card",
+      "label": "milestone-card.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/earnings/_components/milestone-card.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "milestone_card",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/_components/milestone-card.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "milestone_card",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/_components/milestone-card.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "milestone_card",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/earnings/_components/milestone-card.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    }
+  ]
+}

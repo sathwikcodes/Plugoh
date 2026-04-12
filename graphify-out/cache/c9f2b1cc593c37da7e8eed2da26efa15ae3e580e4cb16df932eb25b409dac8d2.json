@@ -1,1 +1,49 @@
-{"nodes": [{"id": "shared_chat_header", "label": "shared-chat-header.tsx", "file_type": "code", "source_file": "components/inbox/shared-chat-header.tsx", "source_location": "L1"}], "edges": [{"source": "shared_chat_header", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/inbox/shared-chat-header.tsx", "source_location": "L3", "weight": 1.0}, {"source": "shared_chat_header", "target": "avatar", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/inbox/shared-chat-header.tsx", "source_location": "L4", "weight": 1.0}, {"source": "shared_chat_header", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/inbox/shared-chat-header.tsx", "source_location": "L5", "weight": 1.0}, {"source": "shared_chat_header", "target": "constants", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/inbox/shared-chat-header.tsx", "source_location": "L6", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "shared_chat_header",
+      "label": "shared-chat-header.tsx",
+      "file_type": "code",
+      "source_file": "components/inbox/shared-chat-header.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "shared_chat_header",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/inbox/shared-chat-header.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "shared_chat_header",
+      "target": "avatar",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/inbox/shared-chat-header.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "shared_chat_header",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/inbox/shared-chat-header.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "shared_chat_header",
+      "target": "constants",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/inbox/shared-chat-header.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    }
+  ]
+}

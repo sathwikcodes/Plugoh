@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
@@ -16,7 +16,6 @@ import {
   fadeUp,
   stagger,
 } from "@/lib/animations";
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   STATUS_FILTER_GROUPS,
   type EnrichedCampaign,
@@ -37,7 +36,6 @@ type InfluencerPick = Pick<
 
 export default function CampaignsPage() {
   const { user } = useAuth();
-  const isMobile = useIsMobile();
   const { data: campaigns = [], isLoading: campaignsLoading } = useCampaigns(
     user?.id,
     "business",
@@ -49,14 +47,17 @@ export default function CampaignsPage() {
   const [sortPanelOpen, setSortPanelOpen] = useState(false);
   const [sortPanelTab, setSortPanelTab] = useState<"status" | "sort">("status");
 
+  const markedReadRef = useRef<Set<string>>(new Set());
   useEffect(() => {
     if (!campaigns.length) return;
-    campaigns.forEach((c) => {
+    for (const c of campaigns) {
+      if (markedReadRef.current.has(c.id)) continue;
+      markedReadRef.current.add(c.id);
       trpcClient.campaign.markNotificationsRead.mutate({
         campaignId: c.id,
         notificationType: "new_booking",
       });
-    });
+    }
   }, [campaigns]);
 
   const influencerProfileIds = useMemo(
@@ -167,18 +168,12 @@ export default function CampaignsPage() {
 
   if (campaignsLoading) return <CampaignsLoading />;
 
-  const mobileStyle = isMobile
-    ? { height: "100dvh" as const, minHeight: "100dvh" as const }
-    : undefined;
-  const mobileInset = isMobile
-    ? { paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))" }
-    : undefined;
   const activeSelectionCount =
     Number(statusFilter !== "All") + Number(sortMode !== "newest");
 
   return (
     <>
-      <div className="relative h-dvh overflow-hidden" style={mobileStyle}>
+      <div className="relative h-dvh overflow-hidden">
         <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
           <AnimatedGradientBackground
             Breathing
@@ -190,10 +185,7 @@ export default function CampaignsPage() {
             containerStyle={GRADIENT_STYLE}
           />
         </div>
-        <div
-          className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6"
-          style={mobileInset}
-        >
+        <div className="relative z-10 container h-full py-4 pb-[calc(96px+env(safe-area-inset-bottom,0px))] md:flex md:h-full md:flex-col md:py-6 md:pb-6">
           <m.div
             variants={stagger}
             initial="hidden"

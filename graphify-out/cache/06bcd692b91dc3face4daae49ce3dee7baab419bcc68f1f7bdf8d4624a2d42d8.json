@@ -1,1 +1,12 @@
-{"nodes": [{"id": "animations", "label": "animations.ts", "file_type": "code", "source_file": "lib/animations.ts", "source_location": "L1"}], "edges": []}
+{
+  "nodes": [
+    {
+      "id": "animations",
+      "label": "animations.ts",
+      "file_type": "code",
+      "source_file": "lib/animations.ts",
+      "source_location": "L1"
+    }
+  ],
+  "edges": []
+}

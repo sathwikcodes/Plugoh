@@ -12,6 +12,7 @@ tags:
 # page.tsx
 
 ## Connections
+
 - [[BusinessCampaignDetail()]] - `contains` [EXTRACTED]
 - [[BusinessDashboard()]] - `contains` [EXTRACTED]
 - [[CampaignsPage()]] - `contains` [EXTRACTED]

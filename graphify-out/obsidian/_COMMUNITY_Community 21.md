@@ -10,8 +10,9 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[cn()_3]] - code - app/dashboard/influencer/_components/pulse-stats.tsx
-- [[pulse-stats.tsx]] - code - app/dashboard/influencer/_components/pulse-stats.tsx
+
+- [[cn()_3]] - code - app/dashboard/influencer/\_components/pulse-stats.tsx
+- [[pulse-stats.tsx]] - code - app/dashboard/influencer/\_components/pulse-stats.tsx
 
 ## Live Query (requires Dataview plugin)
 

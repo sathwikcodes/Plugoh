@@ -12,6 +12,7 @@ tags:
 # cta-section.tsx
 
 ## Connections
+
 - [[CTASection()]] - `contains` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]
 

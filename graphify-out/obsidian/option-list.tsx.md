@@ -12,6 +12,7 @@ tags:
 # option-list.tsx
 
 ## Connections
+
 - [[filter-panel-content.tsx]] - `imports_from` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_4

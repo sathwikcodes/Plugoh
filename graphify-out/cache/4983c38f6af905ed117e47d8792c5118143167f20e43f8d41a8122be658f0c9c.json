@@ -1,1 +1,252 @@
-{"nodes": [{"id": "booking", "label": "booking.ts", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L1"}, {"id": "booking_getcontentstylelabel", "label": "getContentStyleLabel()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L105"}, {"id": "booking_getengagementrate", "label": "getEngagementRate()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L131"}, {"id": "booking_getcreatortier", "label": "getCreatorTier()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L139"}, {"id": "booking_getprofileinitials", "label": "getProfileInitials()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L146"}, {"id": "booking_getstartsatprice", "label": "getStartsAtPrice()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L155"}, {"id": "booking_getobjectivemeta", "label": "getObjectiveMeta()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L165"}, {"id": "booking_shouldshoweventname", "label": "shouldShowEventName()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L169"}, {"id": "booking_getpackagelabel", "label": "getPackageLabel()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L173"}, {"id": "booking_getavailablepackages", "label": "getAvailablePackages()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L179"}, {"id": "booking_buildcampaigntitle", "label": "buildCampaignTitle()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L217"}, {"id": "booking_buildcampaignbrief", "label": "buildCampaignBrief()", "file_type": "code", "source_file": "lib/booking.ts", "source_location": "L228"}], "edges": [{"source": "booking", "target": "types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L1", "weight": 1.0}, {"source": "booking", "target": "booking_getcontentstylelabel", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L105", "weight": 1.0}, {"source": "booking", "target": "booking_getengagementrate", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L131", "weight": 1.0}, {"source": "booking", "target": "booking_getcreatortier", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L139", "weight": 1.0}, {"source": "booking", "target": "booking_getprofileinitials", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L146", "weight": 1.0}, {"source": "booking", "target": "booking_getstartsatprice", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L155", "weight": 1.0}, {"source": "booking", "target": "booking_getobjectivemeta", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L165", "weight": 1.0}, {"source": "booking", "target": "booking_shouldshoweventname", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L169", "weight": 1.0}, {"source": "booking", "target": "booking_getpackagelabel", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L173", "weight": 1.0}, {"source": "booking", "target": "booking_getavailablepackages", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L179", "weight": 1.0}, {"source": "booking", "target": "booking_buildcampaigntitle", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L217", "weight": 1.0}, {"source": "booking", "target": "booking_buildcampaignbrief", "relation": "contains", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L228", "weight": 1.0}, {"source": "booking_shouldshoweventname", "target": "booking_getobjectivemeta", "relation": "calls", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L170", "weight": 1.0}, {"source": "booking_buildcampaigntitle", "target": "booking_getobjectivemeta", "relation": "calls", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L222", "weight": 1.0}, {"source": "booking_buildcampaigntitle", "target": "booking_getpackagelabel", "relation": "calls", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L225", "weight": 1.0}, {"source": "booking_buildcampaignbrief", "target": "booking_getobjectivemeta", "relation": "calls", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L230", "weight": 1.0}, {"source": "booking_buildcampaignbrief", "target": "booking_getpackagelabel", "relation": "calls", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L237", "weight": 1.0}, {"source": "booking_buildcampaignbrief", "target": "booking_shouldshoweventname", "relation": "calls", "confidence": "EXTRACTED", "source_file": "lib/booking.ts", "source_location": "L250", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "booking",
+      "label": "booking.ts",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "booking_getcontentstylelabel",
+      "label": "getContentStyleLabel()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L105"
+    },
+    {
+      "id": "booking_getengagementrate",
+      "label": "getEngagementRate()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L131"
+    },
+    {
+      "id": "booking_getcreatortier",
+      "label": "getCreatorTier()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L139"
+    },
+    {
+      "id": "booking_getprofileinitials",
+      "label": "getProfileInitials()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L146"
+    },
+    {
+      "id": "booking_getstartsatprice",
+      "label": "getStartsAtPrice()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L155"
+    },
+    {
+      "id": "booking_getobjectivemeta",
+      "label": "getObjectiveMeta()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L165"
+    },
+    {
+      "id": "booking_shouldshoweventname",
+      "label": "shouldShowEventName()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L169"
+    },
+    {
+      "id": "booking_getpackagelabel",
+      "label": "getPackageLabel()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L173"
+    },
+    {
+      "id": "booking_getavailablepackages",
+      "label": "getAvailablePackages()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L179"
+    },
+    {
+      "id": "booking_buildcampaigntitle",
+      "label": "buildCampaignTitle()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L217"
+    },
+    {
+      "id": "booking_buildcampaignbrief",
+      "label": "buildCampaignBrief()",
+      "file_type": "code",
+      "source_file": "lib/booking.ts",
+      "source_location": "L228"
+    }
+  ],
+  "edges": [
+    {
+      "source": "booking",
+      "target": "types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_getcontentstylelabel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_getengagementrate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_getcreatortier",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_getprofileinitials",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_getstartsatprice",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_getobjectivemeta",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L165",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_shouldshoweventname",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L169",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_getpackagelabel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L173",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_getavailablepackages",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L179",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_buildcampaigntitle",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L217",
+      "weight": 1.0
+    },
+    {
+      "source": "booking",
+      "target": "booking_buildcampaignbrief",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L228",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_shouldshoweventname",
+      "target": "booking_getobjectivemeta",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L170",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_buildcampaigntitle",
+      "target": "booking_getobjectivemeta",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_buildcampaigntitle",
+      "target": "booking_getpackagelabel",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_buildcampaignbrief",
+      "target": "booking_getobjectivemeta",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L230",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_buildcampaignbrief",
+      "target": "booking_getpackagelabel",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L237",
+      "weight": 1.0
+    },
+    {
+      "source": "booking_buildcampaignbrief",
+      "target": "booking_shouldshoweventname",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/booking.ts",
+      "source_location": "L250",
+      "weight": 1.0
+    }
+  ]
+}

@@ -12,6 +12,7 @@ tags:
 # InfiniteSlider()
 
 ## Connections
+
 - [[infinite-slider.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_15

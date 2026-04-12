@@ -12,6 +12,7 @@ tags:
 # influencer-profile-overview.tsx
 
 ## Connections
+
 - [[formatNumber()]] - `contains` [EXTRACTED]
 - [[getInitials()]] - `contains` [EXTRACTED]
 - [[types.ts]] - `imports_from` [EXTRACTED]

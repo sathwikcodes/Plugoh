@@ -12,6 +12,7 @@ tags:
 # filter-panel-content.tsx
 
 ## Connections
+
 - [[FilterRow()]] - `contains` [EXTRACTED]
 - [[filter-panel.tsx]] - `imports_from` [EXTRACTED]
 - [[filter-price-range.tsx]] - `imports_from` [EXTRACTED]

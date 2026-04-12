@@ -42,7 +42,10 @@ export function StatsRow({
   );
 
   return (
-    <m.div variants={fadeUp} className="flex flex-col gap-3 sm:grid sm:grid-cols-3">
+    <m.div
+      variants={fadeUp}
+      className="flex flex-col gap-3 sm:grid sm:grid-cols-3"
+    >
       {/* This Month — hero on mobile, normal on sm+ */}
       <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4 flex items-center justify-between sm:flex-col sm:items-start sm:justify-start">
         <div className="flex items-center gap-3 sm:flex-col sm:items-start sm:gap-0">
@@ -56,7 +59,9 @@ export function StatsRow({
             <p className="text-3xl font-black tracking-tight sm:text-xl">
               ₹<AnimatedNumber value={thisMonthEarnings} />
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">This Month</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              This Month
+            </p>
             {/* Desktop: inline pill below label */}
             {hasChange && (
               <div className={cn("hidden sm:flex mt-1", changePillClasses)}>

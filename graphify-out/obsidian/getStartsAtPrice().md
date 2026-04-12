@@ -12,6 +12,7 @@ tags:
 # getStartsAtPrice()
 
 ## Connections
+
 - [[getPriceLabel()]] - `calls` [EXTRACTED]
 - [[influencer-card.tsx]] - `contains` [EXTRACTED]
 

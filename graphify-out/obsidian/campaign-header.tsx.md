@@ -12,6 +12,7 @@ tags:
 # campaign-header.tsx
 
 ## Connections
+
 - [[CampaignHeader()]] - `contains` [EXTRACTED]
 - [[campaign-types.ts]] - `imports_from` [EXTRACTED]
 - [[formatCurrency()]] - `contains` [EXTRACTED]

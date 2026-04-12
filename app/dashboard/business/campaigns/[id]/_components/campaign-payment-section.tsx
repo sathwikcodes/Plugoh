@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Script from "next/script";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
@@ -33,6 +32,7 @@ export function CampaignPaymentSection({
     queryClient.invalidateQueries({
       queryKey: trpc.campaign.getCampaigns.queryKey(),
     });
+    // No-arg queryKey() is a TRPC prefix wildcard — matches every getCampaign({...}) query.
     queryClient.invalidateQueries({
       queryKey: trpc.campaign.getCampaign.queryKey(),
     });
@@ -119,10 +119,6 @@ export function CampaignPaymentSection({
 
   return (
     <>
-      <Script
-        src="https://checkout.razorpay.com/v1/checkout.js"
-        strategy="lazyOnload"
-      />
       <div className="rounded-2xl border border-yellow-500/25 bg-yellow-500/8 p-4 sm:p-5 space-y-4">
         <div className="flex items-start gap-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-yellow-300/80" />

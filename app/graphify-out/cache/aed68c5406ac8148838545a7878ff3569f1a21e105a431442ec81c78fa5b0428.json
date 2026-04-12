@@ -1,1 +1,99 @@
-{"nodes": [{"id": "instagram_tab", "label": "instagram-tab.tsx", "file_type": "code", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L1"}, {"id": "instagram_tab_formatcompact", "label": "formatCompact()", "file_type": "code", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L30"}, {"id": "instagram_tab_mediabadgelabel", "label": "mediaBadgeLabel()", "file_type": "code", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L36"}], "edges": [{"source": "instagram_tab", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L3", "weight": 1.0}, {"source": "instagram_tab", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L4", "weight": 1.0}, {"source": "instagram_tab", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L5", "weight": 1.0}, {"source": "instagram_tab", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L6", "weight": 1.0}, {"source": "instagram_tab", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L18", "weight": 1.0}, {"source": "instagram_tab", "target": "types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L19", "weight": 1.0}, {"source": "instagram_tab", "target": "instagram_tab_formatcompact", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L30", "weight": 1.0}, {"source": "instagram_tab", "target": "instagram_tab_mediabadgelabel", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx", "source_location": "L36", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "instagram_tab",
+      "label": "instagram-tab.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "instagram_tab_formatcompact",
+      "label": "formatCompact()",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L30"
+    },
+    {
+      "id": "instagram_tab_mediabadgelabel",
+      "label": "mediaBadgeLabel()",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L36"
+    }
+  ],
+  "edges": [
+    {
+      "source": "instagram_tab",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "instagram_tab",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "instagram_tab",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "instagram_tab",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "instagram_tab",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "instagram_tab",
+      "target": "types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "instagram_tab",
+      "target": "instagram_tab_formatcompact",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "instagram_tab",
+      "target": "instagram_tab_mediabadgelabel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/profile/_components/tabs/instagram-tab.tsx",
+      "source_location": "L36",
+      "weight": 1.0
+    }
+  ]
+}

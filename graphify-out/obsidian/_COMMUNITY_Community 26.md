@@ -10,7 +10,8 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[analytics-spend-chart.tsx]] - code - app/dashboard/business/profile/_components/tabs/analytics-spend-chart.tsx
+
+- [[analytics-spend-chart.tsx]] - code - app/dashboard/business/profile/\_components/tabs/analytics-spend-chart.tsx
 
 ## Live Query (requires Dataview plugin)
 

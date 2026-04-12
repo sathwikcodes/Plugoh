@@ -12,7 +12,12 @@ interface AnalyticsFunnelProps {
 }
 
 const STAGES = [
-  { key: "sent", label: "Sent", color: "text-amber-400", bg: "bg-amber-400/10" },
+  {
+    key: "sent",
+    label: "Sent",
+    color: "text-amber-400",
+    bg: "bg-amber-400/10",
+  },
   {
     key: "accepted",
     label: "Accepted",

@@ -12,6 +12,7 @@ tags:
 # step-profile.tsx
 
 ## Connections
+
 - [[StepProfile()]] - `contains` [EXTRACTED]
 - [[types.ts]] - `imports_from` [EXTRACTED]
 

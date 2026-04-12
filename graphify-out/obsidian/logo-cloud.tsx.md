@@ -12,6 +12,7 @@ tags:
 # logo-cloud.tsx
 
 ## Connections
+
 - [[LogoCloud()]] - `contains` [EXTRACTED]
 - [[clients-section.tsx]] - `imports_from` [EXTRACTED]
 - [[infinite-slider.tsx]] - `imports_from` [EXTRACTED]

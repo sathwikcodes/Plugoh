@@ -12,6 +12,7 @@ tags:
 # campaigns-list.tsx
 
 ## Connections
+
 - [[CampaignsList()]] - `contains` [EXTRACTED]
 - [[campaign-card-stack.tsx]] - `imports_from` [EXTRACTED]
 - [[campaign-constants.ts]] - `imports_from` [EXTRACTED]

@@ -12,6 +12,7 @@ tags:
 # syncInstagramMedia()
 
 ## Connections
+
 - [[GET()]] - `calls` [EXTRACTED]
 - [[route.ts]] - `contains` [EXTRACTED]
 

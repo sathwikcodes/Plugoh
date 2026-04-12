@@ -9,12 +9,7 @@ export interface DiscoverFilters {
   sortDirection: SortDirection;
 }
 
-export type FilterStep =
-  | "root"
-  | "place"
-  | "category"
-  | "price"
-  | "sort";
+export type FilterStep = "root" | "place" | "category" | "price" | "sort";
 
 export interface FilterPanelProps {
   open: boolean;

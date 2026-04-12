@@ -10,7 +10,8 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[recent-activity.tsx]] - code - app/dashboard/business/_components/recent-activity.tsx
+
+- [[recent-activity.tsx]] - code - app/dashboard/business/\_components/recent-activity.tsx
 
 ## Live Query (requires Dataview plugin)
 

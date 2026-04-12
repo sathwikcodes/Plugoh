@@ -1,1 +1,65 @@
-{"nodes": [{"id": "business_tab_bar", "label": "business-tab-bar.tsx", "file_type": "code", "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx", "source_location": "L1"}, {"id": "business_tab_bar_cn", "label": "cn()", "file_type": "code", "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx", "source_location": "L64"}], "edges": [{"source": "business_tab_bar", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx", "source_location": "L3", "weight": 1.0}, {"source": "business_tab_bar", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx", "source_location": "L4", "weight": 1.0}, {"source": "business_tab_bar", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx", "source_location": "L11", "weight": 1.0}, {"source": "business_tab_bar", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx", "source_location": "L12", "weight": 1.0}, {"source": "business_tab_bar", "target": "business_tab_bar_cn", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx", "source_location": "L64", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "business_tab_bar",
+      "label": "business-tab-bar.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "business_tab_bar_cn",
+      "label": "cn()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx",
+      "source_location": "L64"
+    }
+  ],
+  "edges": [
+    {
+      "source": "business_tab_bar",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "business_tab_bar",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "business_tab_bar",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "business_tab_bar",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "business_tab_bar",
+      "target": "business_tab_bar_cn",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/business-tab-bar.tsx",
+      "source_location": "L64",
+      "weight": 1.0
+    }
+  ]
+}

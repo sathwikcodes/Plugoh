@@ -74,7 +74,9 @@ function getEngagementLabel(profile: InfluencerProfile) {
 }
 
 function isProInfluencer(profile: InfluencerProfile) {
-  return Array.isArray(profile.previous_brands) && profile.previous_brands.length > 0;
+  return (
+    Array.isArray(profile.previous_brands) && profile.previous_brands.length > 0
+  );
 }
 
 function getInstagramHandle(profile: InfluencerProfile) {

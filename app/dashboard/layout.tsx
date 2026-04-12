@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { ProtectedRoute } from "@/components/shared/protected-route";
 import { BusinessDock } from "@/components/shared/business-dock";
 import { InfluencerDock } from "@/components/shared/influencer-dock";
@@ -22,35 +23,42 @@ export default function DashboardLayout({
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const { role } = useAuth();
   const pathname = usePathname();
-  const isInfluencer =
-    role === "influencer" ||
-    (!role && pathname.startsWith("/dashboard/influencer"));
-  const isBusiness =
-    role === "business" ||
-    (!role && pathname.startsWith("/dashboard/business"));
-  const isInboxPage = pathname.includes("/inbox");
-  const isBusinessDiscoverHome = pathname === "/dashboard/business/discover";
-  const isBusinessCampaignsHome = pathname === "/dashboard/business/campaigns";
-  const isBusinessDashboardHome = pathname === "/dashboard/business";
-  const isInfluencerDashboardHome = pathname === "/dashboard/influencer";
-  const isInfluencerCampaignsHome = pathname === "/dashboard/influencer/campaigns";
+
+  const { isInfluencer, isBusiness, padClass } = useMemo(() => {
+    const inf =
+      role === "influencer" ||
+      (!role && pathname.startsWith("/dashboard/influencer"));
+    const biz =
+      role === "business" ||
+      (!role && pathname.startsWith("/dashboard/business"));
+    const isInboxPage = pathname.includes("/inbox");
+    const isBusinessDiscoverHome = pathname === "/dashboard/business/discover";
+    const isBusinessCampaignsHome =
+      pathname === "/dashboard/business/campaigns";
+    const isBusinessDashboardHome = pathname === "/dashboard/business";
+    const isInfluencerDashboardHome = pathname === "/dashboard/influencer";
+    const isInfluencerCampaignsHome =
+      pathname === "/dashboard/influencer/campaigns";
+    const shouldPad =
+      (inf || biz) &&
+      !isInboxPage &&
+      !isBusinessDiscoverHome &&
+      !isBusinessCampaignsHome &&
+      !isBusinessDashboardHome &&
+      !isInfluencerDashboardHome &&
+      !isInfluencerCampaignsHome;
+    return {
+      isInfluencer: inf,
+      isBusiness: biz,
+      padClass: shouldPad
+        ? "pb-[calc(88px+env(safe-area-inset-bottom,0px))] md:pb-4"
+        : undefined,
+    };
+  }, [role, pathname]);
 
   return (
     <>
-      <main
-        className={cn(
-          (isInfluencer || isBusiness) &&
-            !isInboxPage &&
-            !isBusinessDiscoverHome &&
-            !isBusinessCampaignsHome &&
-            !isBusinessDashboardHome &&
-            !isInfluencerDashboardHome &&
-            !isInfluencerCampaignsHome &&
-            "pb-[calc(88px+env(safe-area-inset-bottom,0px))] md:pb-4",
-        )}
-      >
-        {children}
-      </main>
+      <main className={cn(padClass)}>{children}</main>
       {isInfluencer ? <InfluencerDock /> : null}
       {isBusiness ? <BusinessDock /> : null}
     </>

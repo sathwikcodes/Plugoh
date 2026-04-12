@@ -37,7 +37,8 @@ export function CampaignStatusSection({
           <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300/80" />
           <div>
             <p className="text-sm font-semibold text-white">
-              {formatCurrency(campaign.price_offered)} locked in escrow — time to create
+              {formatCurrency(campaign.price_offered)} locked in escrow — time
+              to create
             </p>
             <p className="mt-0.5 text-[11px] text-white/55 sm:text-xs">
               Create the content, publish it, then submit the final link below

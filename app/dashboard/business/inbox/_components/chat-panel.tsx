@@ -47,9 +47,7 @@ function isCallRequestMeta(metadata: unknown): boolean {
   if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
     return false;
   }
-  return (
-    (metadata as Record<string, unknown>).event === "call_request"
-  );
+  return (metadata as Record<string, unknown>).event === "call_request";
 }
 
 function formatRemaining(ms: number): string {
@@ -128,7 +126,8 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const visibleMessages = useMemo(() => {
     if (!messages) return [];
     return messages.filter(
-      (msg) => !(msg.message_type === "system" && isCallRequestMeta(msg.metadata)),
+      (msg) =>
+        !(msg.message_type === "system" && isCallRequestMeta(msg.metadata)),
     );
   }, [messages]);
 

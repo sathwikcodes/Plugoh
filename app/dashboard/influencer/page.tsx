@@ -55,9 +55,9 @@ export default function InfluencerDashboard() {
             easier, faster, and more human.
           </p>
           <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/60 sm:text-base">
-            If you have any bugs, improvements, or suggestions, please fill
-            the anonymous form below. We would really appreciate you sharing
-            Plugoh with others too, so we can grow together.
+            If you have any bugs, improvements, or suggestions, please fill the
+            anonymous form below. We would really appreciate you sharing Plugoh
+            with others too, so we can grow together.
           </p>
         </m.div>
       </div>

@@ -10,8 +10,9 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[QuickActions()]] - code - app/dashboard/business/_components/quick-actions.tsx
-- [[quick-actions.tsx]] - code - app/dashboard/business/_components/quick-actions.tsx
+
+- [[QuickActions()]] - code - app/dashboard/business/\_components/quick-actions.tsx
+- [[quick-actions.tsx]] - code - app/dashboard/business/\_components/quick-actions.tsx
 
 ## Live Query (requires Dataview plugin)
 

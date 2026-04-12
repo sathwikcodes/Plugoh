@@ -1,1 +1,149 @@
-{"nodes": [{"id": "campaign_card_stack", "label": "campaign-card-stack.tsx", "file_type": "code", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L1"}, {"id": "campaign_card_stack_movetoend", "label": "moveToEnd()", "file_type": "code", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L60"}, {"id": "campaign_card_stack_movetostart", "label": "moveToStart()", "file_type": "code", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L65"}, {"id": "campaign_card_stack_updateviewport", "label": "updateViewport()", "file_type": "code", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L74"}, {"id": "campaign_card_stack_handledragend", "label": "handleDragEnd()", "file_type": "code", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L96"}], "edges": [{"source": "campaign_card_stack", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L3", "weight": 1.0}, {"source": "campaign_card_stack", "target": "image", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L4", "weight": 1.0}, {"source": "campaign_card_stack", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L5", "weight": 1.0}, {"source": "campaign_card_stack", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L11", "weight": 1.0}, {"source": "campaign_card_stack", "target": "shiny_button", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L12", "weight": 1.0}, {"source": "campaign_card_stack", "target": "campaign_card_front", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L13", "weight": 1.0}, {"source": "campaign_card_stack", "target": "campaign_card_back", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L14", "weight": 1.0}, {"source": "campaign_card_stack", "target": "campaign_card_front", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L15", "weight": 1.0}, {"source": "campaign_card_stack", "target": "campaign_card_stack_movetoend", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L60", "weight": 1.0}, {"source": "campaign_card_stack", "target": "campaign_card_stack_movetostart", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L65", "weight": 1.0}, {"source": "campaign_card_stack", "target": "campaign_card_stack_updateviewport", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L74", "weight": 1.0}, {"source": "campaign_card_stack", "target": "campaign_card_stack_handledragend", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx", "source_location": "L96", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "campaign_card_stack",
+      "label": "campaign-card-stack.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "campaign_card_stack_movetoend",
+      "label": "moveToEnd()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L60"
+    },
+    {
+      "id": "campaign_card_stack_movetostart",
+      "label": "moveToStart()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L65"
+    },
+    {
+      "id": "campaign_card_stack_updateviewport",
+      "label": "updateViewport()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L74"
+    },
+    {
+      "id": "campaign_card_stack_handledragend",
+      "label": "handleDragEnd()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L96"
+    }
+  ],
+  "edges": [
+    {
+      "source": "campaign_card_stack",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "image",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "shiny_button",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "campaign_card_front",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "campaign_card_back",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "campaign_card_front",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "campaign_card_stack_movetoend",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "campaign_card_stack_movetostart",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "campaign_card_stack_updateviewport",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_stack",
+      "target": "campaign_card_stack_handledragend",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaign-card-stack.tsx",
+      "source_location": "L96",
+      "weight": 1.0
+    }
+  ]
+}

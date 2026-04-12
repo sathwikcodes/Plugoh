@@ -1,1 +1,31 @@
-{"nodes": [{"id": "clients_section", "label": "clients-section.tsx", "file_type": "code", "source_file": "app/(landing)/_components/clients-section.tsx", "source_location": "L1"}], "edges": [{"source": "clients_section", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/(landing)/_components/clients-section.tsx", "source_location": "L1", "weight": 1.0}, {"source": "clients_section", "target": "logo_cloud", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/(landing)/_components/clients-section.tsx", "source_location": "L2", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "clients_section",
+      "label": "clients-section.tsx",
+      "file_type": "code",
+      "source_file": "app/(landing)/_components/clients-section.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "clients_section",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(landing)/_components/clients-section.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "clients_section",
+      "target": "logo_cloud",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(landing)/_components/clients-section.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    }
+  ]
+}

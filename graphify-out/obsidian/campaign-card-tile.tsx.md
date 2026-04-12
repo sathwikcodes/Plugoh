@@ -12,6 +12,7 @@ tags:
 # campaign-card-tile.tsx
 
 ## Connections
+
 - [[CampaignCardTile()]] - `contains` [EXTRACTED]
 - [[campaign-card-front.tsx]] - `imports_from` [EXTRACTED]
 

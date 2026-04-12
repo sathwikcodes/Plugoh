@@ -12,6 +12,7 @@ tags:
 # upsertBusinessProfile()
 
 ## Connections
+
 - [[handleBusinessContinue()]] - `calls` [EXTRACTED]
 - [[handleBusinessInstagramConnect()]] - `calls` [EXTRACTED]
 - [[page.tsx]] - `contains` [EXTRACTED]

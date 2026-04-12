@@ -10,13 +10,14 @@ members: 7
 **Members:** 7 nodes
 
 ## Members
-- [[FeatureCarouselSection()]] - code - app/(landing)/_components/feature-carousel-section.tsx
-- [[IconCheck()]] - code - app/(landing)/_components/feature-carousel.tsx
-- [[feature-carousel-section.tsx]] - code - app/(landing)/_components/feature-carousel-section.tsx
-- [[feature-carousel.tsx]] - code - app/(landing)/_components/feature-carousel.tsx
-- [[handleMouseMove()]] - code - app/(landing)/_components/feature-carousel.tsx
-- [[useIsMobile()]] - code - app/(landing)/_components/feature-carousel.tsx
-- [[useNumberCycler()]] - code - app/(landing)/_components/feature-carousel.tsx
+
+- [[FeatureCarouselSection()]] - code - app/(landing)/\_components/feature-carousel-section.tsx
+- [[IconCheck()]] - code - app/(landing)/\_components/feature-carousel.tsx
+- [[feature-carousel-section.tsx]] - code - app/(landing)/\_components/feature-carousel-section.tsx
+- [[feature-carousel.tsx]] - code - app/(landing)/\_components/feature-carousel.tsx
+- [[handleMouseMove()]] - code - app/(landing)/\_components/feature-carousel.tsx
+- [[useIsMobile()]] - code - app/(landing)/\_components/feature-carousel.tsx
+- [[useNumberCycler()]] - code - app/(landing)/\_components/feature-carousel.tsx
 
 ## Live Query (requires Dataview plugin)
 

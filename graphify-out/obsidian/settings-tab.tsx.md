@@ -12,6 +12,7 @@ tags:
 # settings-tab.tsx
 
 ## Connections
+
 - [[handleSave()_1]] - `contains` [EXTRACTED]
 - [[handleSignOut()]] - `contains` [EXTRACTED]
 - [[handleToggle()_1]] - `contains` [EXTRACTED]

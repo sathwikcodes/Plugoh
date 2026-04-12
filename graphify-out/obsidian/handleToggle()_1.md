@@ -12,6 +12,7 @@ tags:
 # handleToggle()
 
 ## Connections
+
 - [[handleToggleActive()]] - `calls` [EXTRACTED]
 - [[settings-tab.tsx]] - `contains` [EXTRACTED]
 

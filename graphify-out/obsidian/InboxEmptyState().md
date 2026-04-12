@@ -12,6 +12,7 @@ tags:
 # InboxEmptyState()
 
 ## Connections
+
 - [[inbox-empty-state.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_0

@@ -12,6 +12,7 @@ tags:
 # portfolio-section.tsx
 
 ## Connections
+
 - [[types.ts]] - `imports_from` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_1

@@ -39,7 +39,8 @@ export default function BusinessProfileCardHeader({
   const instagramUrl =
     businessProfile?.instagram_url ||
     (cleanHandle ? `https://instagram.com/${cleanHandle}` : null);
-  const avatarUrl = businessProfile?.ig_profile_picture_url || authAvatarUrl || null;
+  const avatarUrl =
+    businessProfile?.ig_profile_picture_url || authAvatarUrl || null;
   const locationLabel = location
     ? /india/i.test(location)
       ? location
@@ -130,7 +131,9 @@ export default function BusinessProfileCardHeader({
                     height={14}
                     className="h-3.5 w-3.5 shrink-0 object-contain"
                   />
-                  <span className="font-medium text-white/70">{locationLabel}</span>
+                  <span className="font-medium text-white/70">
+                    {locationLabel}
+                  </span>
                 </span>
               )}
             </div>

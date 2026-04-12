@@ -12,6 +12,7 @@ tags:
 # feature-carousel.tsx
 
 ## Connections
+
 - [[IconCheck()]] - `contains` [EXTRACTED]
 - [[feature-carousel-section.tsx]] - `imports_from` [EXTRACTED]
 - [[handleMouseMove()]] - `contains` [EXTRACTED]

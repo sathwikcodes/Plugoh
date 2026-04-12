@@ -12,6 +12,7 @@ tags:
 # ChatHeader()
 
 ## Connections
+
 - [[chat-header.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_7

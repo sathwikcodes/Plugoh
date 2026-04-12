@@ -10,6 +10,7 @@ members: 6
 **Members:** 6 nodes
 
 ## Members
+
 - [[GET()]] - code - app/api/cron/auto-release/route.ts
 - [[POST()]] - code - app/api/instagram/sync/route.ts
 - [[errorRedirect()]] - code - app/api/auth/callback/instagram/route.ts
@@ -25,7 +26,9 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
+
 - 1 edge to [[_COMMUNITY_Community 1]]
 
 ## Top bridge nodes
+
 - [[route.ts]] - degree 6, connects to 1 community

@@ -12,6 +12,7 @@ tags:
 # filter-price-range.tsx
 
 ## Connections
+
 - [[PriceRangePicker()]] - `contains` [EXTRACTED]
 - [[filter-panel-content.tsx]] - `imports_from` [EXTRACTED]
 - [[filter-types.ts]] - `imports_from` [EXTRACTED]

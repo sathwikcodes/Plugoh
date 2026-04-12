@@ -12,6 +12,7 @@ tags:
 # CampaignCardFront()
 
 ## Connections
+
 - [[campaign-card-front.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_5

@@ -1,1 +1,90 @@
-{"nodes": [{"id": "loading", "label": "loading.tsx", "file_type": "code", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L1"}, {"id": "loading_conversationrowskeleton", "label": "ConversationRowSkeleton()", "file_type": "code", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L22"}, {"id": "loading_inboxloading", "label": "InboxLoading()", "file_type": "code", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L34"}], "edges": [{"source": "loading", "target": "skeleton", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L3", "weight": 1.0}, {"source": "loading", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L4", "weight": 1.0}, {"source": "loading", "target": "animated_gradient_background", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L5", "weight": 1.0}, {"source": "loading", "target": "use_mobile", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L6", "weight": 1.0}, {"source": "loading", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L7", "weight": 1.0}, {"source": "loading", "target": "loading_conversationrowskeleton", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L22", "weight": 1.0}, {"source": "loading", "target": "loading_inboxloading", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/inbox/loading.tsx", "source_location": "L34", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "loading",
+      "label": "loading.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "loading_conversationrowskeleton",
+      "label": "ConversationRowSkeleton()",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L22"
+    },
+    {
+      "id": "loading_inboxloading",
+      "label": "InboxLoading()",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L34"
+    }
+  ],
+  "edges": [
+    {
+      "source": "loading",
+      "target": "skeleton",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "loading",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "loading",
+      "target": "animated_gradient_background",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "loading",
+      "target": "use_mobile",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "loading",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "loading",
+      "target": "loading_conversationrowskeleton",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "loading",
+      "target": "loading_inboxloading",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/inbox/loading.tsx",
+      "source_location": "L34",
+      "weight": 1.0
+    }
+  ]
+}

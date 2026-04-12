@@ -12,6 +12,7 @@ tags:
 # media-showcase.tsx
 
 ## Connections
+
 - [[ShowcaseMediaImage()]] - `contains` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]
 - [[showcase-constants.ts]] - `imports_from` [EXTRACTED]

@@ -80,7 +80,9 @@ export function Navbar() {
                     className="relative h-9 w-9 rounded-full"
                   >
                     <Avatar className="h-9 w-9">
-                      {avatarUrl ? <AvatarImage src={avatarUrl} alt={initials} /> : null}
+                      {avatarUrl ? (
+                        <AvatarImage src={avatarUrl} alt={initials} />
+                      ) : null}
                       <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
                         {initials}
                       </AvatarFallback>
@@ -132,7 +134,9 @@ export function Navbar() {
                   className="relative h-9 w-9 rounded-full"
                 >
                   <Avatar className="h-8 w-8">
-                    {avatarUrl ? <AvatarImage src={avatarUrl} alt={initials} /> : null}
+                    {avatarUrl ? (
+                      <AvatarImage src={avatarUrl} alt={initials} />
+                    ) : null}
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
                       {initials}
                     </AvatarFallback>
@@ -188,7 +192,9 @@ export function Navbar() {
                     <>
                       <div className="flex items-center gap-3 p-3 mb-2">
                         <Avatar className="h-10 w-10">
-                          {avatarUrl ? <AvatarImage src={avatarUrl} alt={initials} /> : null}
+                          {avatarUrl ? (
+                            <AvatarImage src={avatarUrl} alt={initials} />
+                          ) : null}
                           <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
                             {initials}
                           </AvatarFallback>

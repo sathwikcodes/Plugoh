@@ -12,6 +12,7 @@ tags:
 # MapSection()
 
 ## Connections
+
 - [[map-section.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_16

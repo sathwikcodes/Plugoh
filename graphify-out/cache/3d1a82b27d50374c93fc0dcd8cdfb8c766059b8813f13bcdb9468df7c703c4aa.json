@@ -1,1 +1,56 @@
-{"nodes": [{"id": "campaign_card_tile", "label": "campaign-card-tile.tsx", "file_type": "code", "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx", "source_location": "L1"}, {"id": "campaign_card_tile_campaigncardtile", "label": "CampaignCardTile()", "file_type": "code", "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx", "source_location": "L5"}], "edges": [{"source": "campaign_card_tile", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx", "source_location": "L1", "weight": 1.0}, {"source": "campaign_card_tile", "target": "campaign_card_front", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx", "source_location": "L2", "weight": 1.0}, {"source": "campaign_card_tile", "target": "campaign_card_front", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx", "source_location": "L3", "weight": 1.0}, {"source": "campaign_card_tile", "target": "campaign_card_tile_campaigncardtile", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx", "source_location": "L5", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "campaign_card_tile",
+      "label": "campaign-card-tile.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "campaign_card_tile_campaigncardtile",
+      "label": "CampaignCardTile()",
+      "file_type": "code",
+      "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx",
+      "source_location": "L5"
+    }
+  ],
+  "edges": [
+    {
+      "source": "campaign_card_tile",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_tile",
+      "target": "campaign_card_front",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_tile",
+      "target": "campaign_card_front",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_card_tile",
+      "target": "campaign_card_tile_campaigncardtile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/influencer/campaigns/_components/campaign-card-tile.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    }
+  ]
+}

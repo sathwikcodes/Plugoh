@@ -1,1 +1,31 @@
-{"nodes": [{"id": "features_primary_section", "label": "features-primary-section.tsx", "file_type": "code", "source_file": "app/(landing)/_components/features-primary-section.tsx", "source_location": "L1"}], "edges": [{"source": "features_primary_section", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/(landing)/_components/features-primary-section.tsx", "source_location": "L1", "weight": 1.0}, {"source": "features_primary_section", "target": "image", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/(landing)/_components/features-primary-section.tsx", "source_location": "L2", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "features_primary_section",
+      "label": "features-primary-section.tsx",
+      "file_type": "code",
+      "source_file": "app/(landing)/_components/features-primary-section.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "features_primary_section",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(landing)/_components/features-primary-section.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "features_primary_section",
+      "target": "image",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(landing)/_components/features-primary-section.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    }
+  ]
+}

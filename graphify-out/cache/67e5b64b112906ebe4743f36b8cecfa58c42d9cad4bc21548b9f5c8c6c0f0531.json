@@ -1,1 +1,108 @@
-{"nodes": [{"id": "campaigns_list", "label": "campaigns-list.tsx", "file_type": "code", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L1"}, {"id": "campaigns_list_mapcardprops", "label": "mapCardProps()", "file_type": "code", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L20"}, {"id": "campaigns_list_campaignslist", "label": "CampaignsList()", "file_type": "code", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L38"}], "edges": [{"source": "campaigns_list", "target": "link", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L3", "weight": 1.0}, {"source": "campaigns_list", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L4", "weight": 1.0}, {"source": "campaigns_list", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L5", "weight": 1.0}, {"source": "campaigns_list", "target": "button", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L6", "weight": 1.0}, {"source": "campaigns_list", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L7", "weight": 1.0}, {"source": "campaigns_list", "target": "campaign_card_stack", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L8", "weight": 1.0}, {"source": "campaigns_list", "target": "campaign_constants", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L12", "weight": 1.0}, {"source": "campaigns_list", "target": "campaigns_list_mapcardprops", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L20", "weight": 1.0}, {"source": "campaigns_list", "target": "campaigns_list_campaignslist", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx", "source_location": "L38", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "campaigns_list",
+      "label": "campaigns-list.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "campaigns_list_mapcardprops",
+      "label": "mapCardProps()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L20"
+    },
+    {
+      "id": "campaigns_list_campaignslist",
+      "label": "CampaignsList()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L38"
+    }
+  ],
+  "edges": [
+    {
+      "source": "campaigns_list",
+      "target": "link",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "campaigns_list",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "campaigns_list",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "campaigns_list",
+      "target": "button",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "campaigns_list",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "campaigns_list",
+      "target": "campaign_card_stack",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "campaigns_list",
+      "target": "campaign_constants",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "campaigns_list",
+      "target": "campaigns_list_mapcardprops",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "campaigns_list",
+      "target": "campaigns_list_campaignslist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/_components/campaigns-list.tsx",
+      "source_location": "L38",
+      "weight": 1.0
+    }
+  ]
+}

@@ -12,6 +12,7 @@ tags:
 # filter-panel.tsx
 
 ## Connections
+
 - [[FilterPanel()]] - `contains` [EXTRACTED]
 - [[discover-utils.ts]] - `imports_from` [EXTRACTED]
 - [[filter-panel-content.tsx]] - `imports_from` [EXTRACTED]

@@ -1,1 +1,31 @@
-{"nodes": [{"id": "analytics_spend_chart", "label": "analytics-spend-chart.tsx", "file_type": "code", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-spend-chart.tsx", "source_location": "L1"}], "edges": [{"source": "analytics_spend_chart", "target": "recharts", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-spend-chart.tsx", "source_location": "L3", "weight": 1.0}, {"source": "analytics_spend_chart", "target": "format", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-spend-chart.tsx", "source_location": "L11", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "analytics_spend_chart",
+      "label": "analytics-spend-chart.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-spend-chart.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "analytics_spend_chart",
+      "target": "recharts",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-spend-chart.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "analytics_spend_chart",
+      "target": "format",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-spend-chart.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    }
+  ]
+}

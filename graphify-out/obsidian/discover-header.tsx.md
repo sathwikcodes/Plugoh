@@ -12,6 +12,7 @@ tags:
 # discover-header.tsx
 
 ## Connections
+
 - [[DiscoverHeader()]] - `contains` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]
 

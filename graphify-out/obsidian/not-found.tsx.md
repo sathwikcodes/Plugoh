@@ -12,6 +12,7 @@ tags:
 # not-found.tsx
 
 ## Connections
+
 - [[DashboardNotFound()]] - `contains` [EXTRACTED]
 - [[NotFound()]] - `contains` [EXTRACTED]
 

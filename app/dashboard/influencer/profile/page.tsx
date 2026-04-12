@@ -81,7 +81,12 @@ function InfluencerProfilePageInner() {
           "AI suggestions unavailable — you can fill in your details manually.",
         );
       });
-  }, [isOnboarding, queryClient, trpc.profile.getMyInfluencerProfile, user?.id]);
+  }, [
+    isOnboarding,
+    queryClient,
+    trpc.profile.getMyInfluencerProfile,
+    user?.id,
+  ]);
 
   if (loading) {
     return (
@@ -136,9 +141,7 @@ function InfluencerProfilePageInner() {
                 initial="hidden"
                 animate="visible"
               >
-                {activeTab === "instagram" && (
-                  <InstagramTab profile={ip} />
-                )}
+                {activeTab === "instagram" && <InstagramTab profile={ip} />}
                 {activeTab === "pricing" && (
                   <PricingTab profile={ip} userId={user.id} />
                 )}

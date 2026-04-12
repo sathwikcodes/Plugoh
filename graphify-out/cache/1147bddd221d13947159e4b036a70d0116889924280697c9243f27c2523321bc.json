@@ -1,1 +1,38 @@
-{"nodes": [{"id": "loading_spinner", "label": "loading-spinner.tsx", "file_type": "code", "source_file": "components/ui/loading-spinner.tsx", "source_location": "L1"}, {"id": "loading_spinner_pageloadingspinner", "label": "PageLoadingSpinner()", "file_type": "code", "source_file": "components/ui/loading-spinner.tsx", "source_location": "L3"}], "edges": [{"source": "loading_spinner", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/loading-spinner.tsx", "source_location": "L1", "weight": 1.0}, {"source": "loading_spinner", "target": "loading_spinner_pageloadingspinner", "relation": "contains", "confidence": "EXTRACTED", "source_file": "components/ui/loading-spinner.tsx", "source_location": "L3", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "loading_spinner",
+      "label": "loading-spinner.tsx",
+      "file_type": "code",
+      "source_file": "components/ui/loading-spinner.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "loading_spinner_pageloadingspinner",
+      "label": "PageLoadingSpinner()",
+      "file_type": "code",
+      "source_file": "components/ui/loading-spinner.tsx",
+      "source_location": "L3"
+    }
+  ],
+  "edges": [
+    {
+      "source": "loading_spinner",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/loading-spinner.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "loading_spinner",
+      "target": "loading_spinner_pageloadingspinner",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/loading-spinner.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    }
+  ]
+}

@@ -1,1 +1,56 @@
-{"nodes": [{"id": "expand_map", "label": "expand-map.tsx", "file_type": "code", "source_file": "app/(landing)/_components/expand-map.tsx", "source_location": "L1"}, {"id": "expand_map_locationmap", "label": "LocationMap()", "file_type": "code", "source_file": "app/(landing)/_components/expand-map.tsx", "source_location": "L20"}], "edges": [{"source": "expand_map", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/(landing)/_components/expand-map.tsx", "source_location": "L3", "weight": 1.0}, {"source": "expand_map", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/(landing)/_components/expand-map.tsx", "source_location": "L5", "weight": 1.0}, {"source": "expand_map", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/(landing)/_components/expand-map.tsx", "source_location": "L6", "weight": 1.0}, {"source": "expand_map", "target": "expand_map_locationmap", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/(landing)/_components/expand-map.tsx", "source_location": "L20", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "expand_map",
+      "label": "expand-map.tsx",
+      "file_type": "code",
+      "source_file": "app/(landing)/_components/expand-map.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "expand_map_locationmap",
+      "label": "LocationMap()",
+      "file_type": "code",
+      "source_file": "app/(landing)/_components/expand-map.tsx",
+      "source_location": "L20"
+    }
+  ],
+  "edges": [
+    {
+      "source": "expand_map",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(landing)/_components/expand-map.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "expand_map",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(landing)/_components/expand-map.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "expand_map",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(landing)/_components/expand-map.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "expand_map",
+      "target": "expand_map_locationmap",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(landing)/_components/expand-map.tsx",
+      "source_location": "L20",
+      "weight": 1.0
+    }
+  ]
+}

@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { m } from "framer-motion";
 import { ArrowRight, Megaphone } from "lucide-react";
-import { getBusinessDisplayName, getBusinessLocation } from "@/lib/business-profile";
+import {
+  getBusinessDisplayName,
+  getBusinessLocation,
+} from "@/lib/business-profile";
 import { Button } from "@/components/ui/button";
 import { fadeUp } from "@/lib/animations";
-import {
-  CampaignCardStack,
-  CampaignCardTile,
-} from "./campaign-card-stack";
+import { CampaignCardStack, CampaignCardTile } from "./campaign-card-stack";
 import type { EnrichedCampaign } from "./campaign-constants";
 
 interface CampaignsListProps {

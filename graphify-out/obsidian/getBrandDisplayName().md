@@ -12,6 +12,7 @@ tags:
 # getBrandDisplayName()
 
 ## Connections
+
 - [[profile-display.ts]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_7

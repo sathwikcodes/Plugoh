@@ -1,1 +1,94 @@
-{"nodes": [{"id": "analytics_tab", "label": "analytics-tab.tsx", "file_type": "code", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L1"}], "edges": [{"source": "analytics_tab", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L3", "weight": 1.0}, {"source": "analytics_tab", "target": "dynamic", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L4", "weight": 1.0}, {"source": "analytics_tab", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L5", "weight": 1.0}, {"source": "analytics_tab", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L6", "weight": 1.0}, {"source": "analytics_tab", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L7", "weight": 1.0}, {"source": "analytics_tab", "target": "types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L8", "weight": 1.0}, {"source": "analytics_tab", "target": "analytics_package_breakdown", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L9", "weight": 1.0}, {"source": "analytics_tab", "target": "analytics_top_influencers", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L10", "weight": 1.0}, {"source": "analytics_tab", "target": "analytics_funnel", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx", "source_location": "L11", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "analytics_tab",
+      "label": "analytics-tab.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "analytics_tab",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "analytics_tab",
+      "target": "dynamic",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "analytics_tab",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "analytics_tab",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "analytics_tab",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "analytics_tab",
+      "target": "types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "analytics_tab",
+      "target": "analytics_package_breakdown",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "analytics_tab",
+      "target": "analytics_top_influencers",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "analytics_tab",
+      "target": "analytics_funnel",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/profile/_components/tabs/analytics-tab.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    }
+  ]
+}

@@ -12,6 +12,7 @@ tags:
 # layout.tsx
 
 ## Connections
+
 - [[AuthLayout()]] - `contains` [EXTRACTED]
 - [[AuthLayoutInner()]] - `contains` [EXTRACTED]
 - [[DashboardLayout()]] - `contains` [EXTRACTED]

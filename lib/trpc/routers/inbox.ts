@@ -40,16 +40,17 @@ export const inboxRouter = router({
     const influencerIds = [...new Set(campaigns.map((c) => c.influencer_id))];
     const campaignIds = campaigns.map((c) => c.id);
 
-    const [{ data: profiles }, { data: allMessages }, avatarMap] = await Promise.all([
-      db.from("influencer_profiles").select("*").in("user_id", influencerIds),
-      db
-        .from("campaign_messages")
-        .select("*")
-        .in("campaign_id", campaignIds)
-        .neq("message_type", "system")
-        .order("created_at", { ascending: false }),
-      fetchAuthAvatarMap(influencerIds),
-    ]);
+    const [{ data: profiles }, { data: allMessages }, avatarMap] =
+      await Promise.all([
+        db.from("influencer_profiles").select("*").in("user_id", influencerIds),
+        db
+          .from("campaign_messages")
+          .select("*")
+          .in("campaign_id", campaignIds)
+          .neq("message_type", "system")
+          .order("created_at", { ascending: false }),
+        fetchAuthAvatarMap(influencerIds),
+      ]);
 
     const profileMap = new Map((profiles ?? []).map((p) => [p.user_id, p]));
     const messageMap = new Map<

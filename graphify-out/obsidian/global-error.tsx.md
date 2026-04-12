@@ -12,6 +12,7 @@ tags:
 # global-error.tsx
 
 ## Connections
+
 - [[GlobalError()]] - `contains` [EXTRACTED]
 - [[error.tsx]] - `imports_from` [EXTRACTED]
 

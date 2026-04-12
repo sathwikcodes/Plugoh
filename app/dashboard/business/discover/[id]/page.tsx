@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import {
   useParams,
@@ -8,7 +8,7 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import {
@@ -57,6 +57,7 @@ export default function InfluencerProfileView() {
   const searchParams = useSearchParams();
   const id = params?.id as string;
   const { isProfileComplete } = useAuth();
+  const [, startTransition] = useTransition();
   const [activeMedia, setActiveMedia] = useState<
     Database["public"]["Tables"]["instagram_media"]["Row"] | null
   >(null);
@@ -83,11 +84,7 @@ export default function InfluencerProfileView() {
       : [];
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return null;
   }
   if (!profile) {
     return (
@@ -117,8 +114,10 @@ export default function InfluencerProfileView() {
       nextParams.delete("package");
     }
     const query = nextParams.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, {
-      scroll: false,
+    startTransition(() => {
+      router.replace(query ? `${pathname}?${query}` : pathname, {
+        scroll: false,
+      });
     });
   };
 

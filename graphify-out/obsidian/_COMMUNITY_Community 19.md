@@ -10,8 +10,9 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[SocialProof()]] - code - app/dashboard/influencer/profile/_components/social-proof.tsx
-- [[social-proof.tsx]] - code - app/dashboard/influencer/profile/_components/social-proof.tsx
+
+- [[SocialProof()]] - code - app/dashboard/influencer/profile/\_components/social-proof.tsx
+- [[social-proof.tsx]] - code - app/dashboard/influencer/profile/\_components/social-proof.tsx
 
 ## Live Query (requires Dataview plugin)
 

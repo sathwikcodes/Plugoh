@@ -3,38 +3,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { m, type MotionValue } from "framer-motion";
-import {
-  ArrowRight,
-  Check,
-  Loader2,
-  MessageCircle,
-  X,
-} from "lucide-react";
+import { ArrowRight, Check, Loader2, MessageCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  formatCurrency,
-  formatPackage,
-  getInitials,
-} from "@/lib/format";
+import { formatCurrency, formatPackage, getInitials } from "@/lib/format";
 import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
 import FlipClock from "@/components/ui/flip-clock";
 
 // ─── Status glow (also used by campaign-card-back) ───────────────────────────
 export const STATUS_GLOW: Record<string, string> = {
-  pre_authorized:     "rgba(245,158,11,0.22)",
-  requested:          "rgba(245,158,11,0.22)",
-  pending:            "rgba(245,158,11,0.22)",
-  payment_pending:    "rgba(34,197,94,0.18)",
-  in_escrow:          "rgba(34,197,94,0.18)",
-  accepted:           "rgba(34,197,94,0.18)",
+  pre_authorized: "rgba(245,158,11,0.22)",
+  requested: "rgba(245,158,11,0.22)",
+  pending: "rgba(245,158,11,0.22)",
+  payment_pending: "rgba(34,197,94,0.18)",
+  in_escrow: "rgba(34,197,94,0.18)",
+  accepted: "rgba(34,197,94,0.18)",
   delivery_submitted: "rgba(34,197,94,0.16)",
-  completed:          "rgba(34,197,94,0.18)",
-  disputed:           "rgba(239,68,68,0.18)",
-  declined:           "rgba(239,68,68,0.18)",
-  rejected:           "rgba(239,68,68,0.18)",
-  cancelled:          "rgba(239,68,68,0.18)",
-  expired:            "rgba(239,68,68,0.18)",
-  refunded:           "rgba(239,68,68,0.18)",
+  completed: "rgba(34,197,94,0.18)",
+  disputed: "rgba(239,68,68,0.18)",
+  declined: "rgba(239,68,68,0.18)",
+  rejected: "rgba(239,68,68,0.18)",
+  cancelled: "rgba(239,68,68,0.18)",
+  expired: "rgba(239,68,68,0.18)",
+  refunded: "rgba(239,68,68,0.18)",
 };
 
 // ─── Card data interface ──────────────────────────────────────────────────────
@@ -61,30 +51,35 @@ export interface CampaignCardData {
 }
 
 // ─── State derivation ─────────────────────────────────────────────────────────
-const OFFER_STATUSES  = new Set(["pre_authorized", "requested", "pending"]);
-const CLOSED_STATUSES = new Set(["declined", "rejected", "expired", "cancelled", "refunded"]);
+const OFFER_STATUSES = new Set(["pre_authorized", "requested", "pending"]);
+const CLOSED_STATUSES = new Set([
+  "declined",
+  "rejected",
+  "expired",
+  "cancelled",
+  "refunded",
+]);
 
-type CardVariant =
-  | "offer-timer"
-  | "offer-no-timer"
-  | "non-offer";
+type CardVariant = "offer-timer" | "offer-no-timer" | "non-offer";
 
 function deriveCardState(status: string, expiresAt?: string | null) {
-  const isOffer  = OFFER_STATUSES.has(status);
+  const isOffer = OFFER_STATUSES.has(status);
   const isClosed = CLOSED_STATUSES.has(status);
   const hasTimer = isOffer && !!expiresAt;
-  const variant: CardVariant =
-    hasTimer ? "offer-timer" :
-    isOffer  ? "offer-no-timer" : "non-offer";
+  const variant: CardVariant = hasTimer
+    ? "offer-timer"
+    : isOffer
+      ? "offer-no-timer"
+      : "non-offer";
   return { isOffer, isClosed, hasTimer, variant };
 }
 
 const PRICE_LABEL: Record<string, string> = {
-  in_escrow:          "in escrow",
-  accepted:           "in escrow",
-  payment_pending:    "awaiting payment",
+  in_escrow: "in escrow",
+  accepted: "in escrow",
+  payment_pending: "awaiting payment",
   delivery_submitted: "pending payout",
-  completed:          "earned",
+  completed: "earned",
 };
 
 // ─── Local sub-components ─────────────────────────────────────────────────────
@@ -190,7 +185,6 @@ export function CampaignCardFront({
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]" />
 
       <div className="relative flex h-full flex-col px-5 pb-5 pt-5">
-
         {/* ── Title ── */}
         <h2
           className={cn(
@@ -234,10 +228,8 @@ export function CampaignCardFront({
 
         {/* ── Middle section: flex-1, top content + brief pinned to bottom ── */}
         <div className="mt-3 flex min-h-0 flex-1 flex-col justify-between">
-
           {/* Top content */}
           <div className="space-y-3">
-
             {/* Offer + timer */}
             {variant === "offer-timer" && (
               <div className="rounded-[16px] border border-amber-500/20 bg-amber-500/[0.07] px-4 py-3.5">
@@ -296,13 +288,10 @@ export function CampaignCardFront({
         </div>
 
         {/* ── Divider ── */}
-        {!isClosed ? (
-          <div className="mt-3 h-px bg-white/[0.07]" />
-        ) : null}
+        {!isClosed ? <div className="mt-3 h-px bg-white/[0.07]" /> : null}
 
         {/* ── Price + Actions ── */}
         <div className="flex items-center justify-between gap-3 pt-3.5">
-
           {/* Price */}
           <div className="min-w-0">
             <p

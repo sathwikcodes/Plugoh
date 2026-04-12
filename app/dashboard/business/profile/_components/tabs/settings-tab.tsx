@@ -52,7 +52,12 @@ export default function BusinessSettingsTab({
   );
   const [phone, setPhone] = useState(profile?.phone ?? "");
   const [editingField, setEditingField] = useState<
-    "fullName" | "businessName" | "businessType" | "brandLocation" | "phone" | null
+    | "fullName"
+    | "businessName"
+    | "businessType"
+    | "brandLocation"
+    | "phone"
+    | null
   >(null);
 
   const upsertProfile = useMutation(
@@ -99,7 +104,8 @@ export default function BusinessSettingsTab({
         phone: phone || undefined,
       },
       {
-        onSuccess: () => setEditingField((current) => (current === field ? null : current)),
+        onSuccess: () =>
+          setEditingField((current) => (current === field ? null : current)),
       },
     );
   };
@@ -114,13 +120,19 @@ export default function BusinessSettingsTab({
   ) => {
     if (field === "fullName") setFullName(profile?.full_name ?? "");
     if (field === "businessName") {
-      setBusinessName(businessProfile?.brand_name ?? profile?.business_name ?? "");
+      setBusinessName(
+        businessProfile?.brand_name ?? profile?.business_name ?? "",
+      );
     }
     if (field === "businessType") {
-      setBusinessType(businessProfile?.brand_type ?? profile?.business_type ?? "");
+      setBusinessType(
+        businessProfile?.brand_type ?? profile?.business_type ?? "",
+      );
     }
     if (field === "brandLocation") {
-      setBrandLocation(businessProfile?.brand_location ?? profile?.location ?? "");
+      setBrandLocation(
+        businessProfile?.brand_location ?? profile?.location ?? "",
+      );
     }
     if (field === "phone") setPhone(profile?.phone ?? "");
     setEditingField(null);

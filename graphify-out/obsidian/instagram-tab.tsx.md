@@ -12,6 +12,7 @@ tags:
 # instagram-tab.tsx
 
 ## Connections
+
 - [[formatCompact()]] - `contains` [EXTRACTED]
 - [[mediaBadgeLabel()]] - `contains` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]

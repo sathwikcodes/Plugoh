@@ -1,12 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  BarChart3,
-  Wallet,
-  Settings2,
-  Instagram,
-} from "lucide-react";
+import { BarChart3, Wallet, Settings2, Instagram } from "lucide-react";
 import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 

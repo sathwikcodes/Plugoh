@@ -10,6 +10,7 @@ members: 6
 **Members:** 6 nodes
 
 ## Members
+
 - [[AuthLayout()]] - code - app/(auth)/layout.tsx
 - [[AuthLayoutInner()]] - code - app/(auth)/layout.tsx
 - [[DashboardLayout()]] - code - app/dashboard/layout.tsx

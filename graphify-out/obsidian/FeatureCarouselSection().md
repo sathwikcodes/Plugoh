@@ -12,6 +12,7 @@ tags:
 # FeatureCarouselSection()
 
 ## Connections
+
 - [[feature-carousel-section.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_11

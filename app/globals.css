@@ -125,48 +125,50 @@
 }
 
 .dark {
-  --background:           #0d0b0f;
-  --foreground:           #f4f0f8;
-  --card:                 #161219;
-  --card-foreground:      #f4f0f8;
-  --popover:              #161219;
-  --popover-foreground:   #f4f0f8;
-  --primary:              #e0348c;
-  --primary-foreground:   #ffffff;
-  --secondary:            #1e1829;
+  --background: #0d0b0f;
+  --foreground: #f4f0f8;
+  --card: #161219;
+  --card-foreground: #f4f0f8;
+  --popover: #161219;
+  --popover-foreground: #f4f0f8;
+  --primary: #e0348c;
+  --primary-foreground: #ffffff;
+  --secondary: #1e1829;
   --secondary-foreground: #f4f0f8;
-  --muted:                #1e1829;
-  --muted-foreground:     #9d92ad;
-  --accent:               #1e1829;
-  --accent-foreground:    #f4f0f8;
-  --destructive:          #f05d6c;
-  --border:               #2e2238;
-  --input:                #2e2238;
-  --ring:                 #e0348c;
-  --chart-1:              #ffd700;
-  --chart-2:              #ffad00;
-  --chart-3:              #e0348c;
-  --chart-4:              #b02aaa;
-  --chart-5:              #7c1fa8;
-  --sidebar:              #161219;
-  --sidebar-foreground:   #f4f0f8;
-  --sidebar-primary:      #e0348c;
+  --muted: #1e1829;
+  --muted-foreground: #9d92ad;
+  --accent: #1e1829;
+  --accent-foreground: #f4f0f8;
+  --destructive: #f05d6c;
+  --border: #2e2238;
+  --input: #2e2238;
+  --ring: #e0348c;
+  --chart-1: #ffd700;
+  --chart-2: #ffad00;
+  --chart-3: #e0348c;
+  --chart-4: #b02aaa;
+  --chart-5: #7c1fa8;
+  --sidebar: #161219;
+  --sidebar-foreground: #f4f0f8;
+  --sidebar-primary: #e0348c;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:       #1e1829;
-  --sidebar-accent-foreground:  #f4f0f8;
-  --sidebar-border:       #2e2238;
-  --sidebar-ring:         #e0348c;
-  --success:              #3ecf8e;
-  --warning:              #f4b942;
-  --accent-warm:          #e0348c;
-  --accent-soft-bg:       #2a1523;
-  --surface-elevated:     #241e30;
-  --skeleton-base:        #211b2c;
-  --skeleton-highlight:   #2e2540;
-  --glass-border:         rgba(255,255,255,0.09);
-  --glass-border-strong:  rgba(255,255,255,0.14);
-  --glass-shadow:         0 24px 70px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.10);
-  --glass-shadow-heavy:   0 24px 90px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+  --sidebar-accent: #1e1829;
+  --sidebar-accent-foreground: #f4f0f8;
+  --sidebar-border: #2e2238;
+  --sidebar-ring: #e0348c;
+  --success: #3ecf8e;
+  --warning: #f4b942;
+  --accent-warm: #e0348c;
+  --accent-soft-bg: #2a1523;
+  --surface-elevated: #241e30;
+  --skeleton-base: #211b2c;
+  --skeleton-highlight: #2e2540;
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-strong: rgba(255, 255, 255, 0.14);
+  --glass-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --glass-shadow-heavy:
+    0 24px 90px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 @layer base {
@@ -179,7 +181,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
@@ -253,16 +258,22 @@
   }
 
   .glass-card {
-    background: linear-gradient(160deg, rgba(22,18,25,0.92) 0%, rgba(30,24,41,0.88) 100%);
-    border: 1px solid rgba(255,255,255,0.09);
-    box-shadow: 0 24px 70px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.10);
+    background: linear-gradient(
+      160deg,
+      rgba(22, 18, 25, 0.92) 0%,
+      rgba(30, 24, 41, 0.88) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    box-shadow:
+      0 24px 70px rgba(0, 0, 0, 0.48),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(16px);
     border-radius: var(--radius-3xl);
   }
 
   .glass-surface {
     background-color: var(--surface-elevated);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 }
 

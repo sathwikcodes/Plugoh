@@ -10,9 +10,10 @@ members: 3
 **Members:** 3 nodes
 
 ## Members
-- [[FaqSectionWrapper()]] - code - app/(landing)/_components/faq-section.tsx
-- [[faq-accordion.tsx]] - code - app/(landing)/_components/faq-accordion.tsx
-- [[faq-section.tsx]] - code - app/(landing)/_components/faq-section.tsx
+
+- [[FaqSectionWrapper()]] - code - app/(landing)/\_components/faq-section.tsx
+- [[faq-accordion.tsx]] - code - app/(landing)/\_components/faq-accordion.tsx
+- [[faq-section.tsx]] - code - app/(landing)/\_components/faq-section.tsx
 
 ## Live Query (requires Dataview plugin)
 

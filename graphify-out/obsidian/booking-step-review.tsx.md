@@ -12,6 +12,7 @@ tags:
 # booking-step-review.tsx
 
 ## Connections
+
 - [[booking-drawer.tsx]] - `imports_from` [EXTRACTED]
 - [[getPackageLabel()]] - `contains` [EXTRACTED]
 - [[use-booking-form.ts]] - `imports_from` [EXTRACTED]

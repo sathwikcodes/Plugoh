@@ -12,6 +12,7 @@ tags:
 # invalidate()
 
 ## Connections
+
 - [[campaign-payment-section.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_3

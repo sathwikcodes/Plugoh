@@ -12,6 +12,7 @@ tags:
 # DropdownTrigger()
 
 ## Connections
+
 - [[booking-step-package.tsx]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_6

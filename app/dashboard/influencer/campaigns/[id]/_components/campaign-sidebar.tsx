@@ -12,14 +12,46 @@ const EARNINGS_CONFIG: Record<
   string,
   { label: string; note: string; color: string }
 > = {
-  pre_authorized:     { label: "Offer Value",     note: "Accept to lock this deal",                        color: "text-amber-300" },
-  requested:          { label: "Offer Value",     note: "Accept to lock this deal",                        color: "text-amber-300" },
-  pending:            { label: "Offer Value",     note: "Accept to lock this deal",                        color: "text-amber-300" },
-  payment_pending:    { label: "Accepted",        note: "Waiting for brand to pay",                        color: "text-white" },
-  in_escrow:          { label: "In Escrow",       note: "Released on brand approval",                      color: "text-emerald-300" },
-  accepted:           { label: "In Escrow",       note: "Released on brand approval",                      color: "text-emerald-300" },
-  delivery_submitted: { label: "Pending Payout",  note: "Auto-releases in 7 days if brand doesn't act",   color: "text-yellow-300" },
-  completed:          { label: "Earned",          note: "Paid out to your account",                        color: "text-emerald-300" },
+  pre_authorized: {
+    label: "Offer Value",
+    note: "Accept to lock this deal",
+    color: "text-amber-300",
+  },
+  requested: {
+    label: "Offer Value",
+    note: "Accept to lock this deal",
+    color: "text-amber-300",
+  },
+  pending: {
+    label: "Offer Value",
+    note: "Accept to lock this deal",
+    color: "text-amber-300",
+  },
+  payment_pending: {
+    label: "Accepted",
+    note: "Waiting for brand to pay",
+    color: "text-white",
+  },
+  in_escrow: {
+    label: "In Escrow",
+    note: "Released on brand approval",
+    color: "text-emerald-300",
+  },
+  accepted: {
+    label: "In Escrow",
+    note: "Released on brand approval",
+    color: "text-emerald-300",
+  },
+  delivery_submitted: {
+    label: "Pending Payout",
+    note: "Auto-releases in 7 days if brand doesn't act",
+    color: "text-yellow-300",
+  },
+  completed: {
+    label: "Earned",
+    note: "Paid out to your account",
+    color: "text-emerald-300",
+  },
 };
 
 const DEFAULT_EARNINGS = {
@@ -42,15 +74,14 @@ export function CampaignSidebar({
     { day: "numeric", month: "short", year: "numeric" },
   );
 
-  const formattedExpiry =
-    campaign.expires_at
-      ? new Date(campaign.expires_at).toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "short",
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      : null;
+  const formattedExpiry = campaign.expires_at
+    ? new Date(campaign.expires_at).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : null;
 
   return (
     <div className="space-y-3">

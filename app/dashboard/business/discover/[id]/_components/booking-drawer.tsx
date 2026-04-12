@@ -1,6 +1,5 @@
 "use client";
 
-import Script from "next/script";
 import Image from "next/image";
 import { ArrowLeft, Loader2, Lock, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -49,10 +48,6 @@ function BookingDrawerContent({
 
   return (
     <>
-      <Script
-        src="https://checkout.razorpay.com/v1/checkout.js"
-        strategy="lazyOnload"
-      />
       <Drawer
         direction={isMobile ? "bottom" : "right"}
         open={open}

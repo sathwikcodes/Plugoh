@@ -1,1 +1,65 @@
-{"nodes": [{"id": "influencer_card_stats", "label": "influencer-card-stats.tsx", "file_type": "code", "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx", "source_location": "L1"}, {"id": "influencer_card_stats_verificationbadge", "label": "VerificationBadge()", "file_type": "code", "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx", "source_location": "L6"}], "edges": [{"source": "influencer_card_stats", "target": "image", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx", "source_location": "L1", "weight": 1.0}, {"source": "influencer_card_stats", "target": "link", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx", "source_location": "L2", "weight": 1.0}, {"source": "influencer_card_stats", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx", "source_location": "L3", "weight": 1.0}, {"source": "influencer_card_stats", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx", "source_location": "L4", "weight": 1.0}, {"source": "influencer_card_stats", "target": "influencer_card_stats_verificationbadge", "relation": "contains", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx", "source_location": "L6", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "influencer_card_stats",
+      "label": "influencer-card-stats.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "influencer_card_stats_verificationbadge",
+      "label": "VerificationBadge()",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx",
+      "source_location": "L6"
+    }
+  ],
+  "edges": [
+    {
+      "source": "influencer_card_stats",
+      "target": "image",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "influencer_card_stats",
+      "target": "link",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "influencer_card_stats",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "influencer_card_stats",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "influencer_card_stats",
+      "target": "influencer_card_stats_verificationbadge",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/discover/_components/influencer-card-stats.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    }
+  ]
+}

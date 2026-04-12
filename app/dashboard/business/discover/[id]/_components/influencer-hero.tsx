@@ -123,20 +123,20 @@ export function InfluencerHero({
                 Starts from
               </p>
               <p className="mt-3 text-3xl font-semibold text-white">
-                {startsAtPrice
-                  ? (
-                    <span className="inline-flex items-center gap-2">
-                      <Image
-                        src="/coin.png"
-                        alt="Price"
-                        width={24}
-                        height={24}
-                        className="h-6 w-6 object-contain"
-                      />
-                      {startsAtPrice.toLocaleString("en-IN")}
-                    </span>
-                  )
-                  : "—"}
+                {startsAtPrice ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Image
+                      src="/coin.png"
+                      alt="Price"
+                      width={24}
+                      height={24}
+                      className="h-6 w-6 object-contain"
+                    />
+                    {startsAtPrice.toLocaleString("en-IN")}
+                  </span>
+                ) : (
+                  "—"
+                )}
               </p>
               <p className="mt-2 text-xs text-slate-400">
                 Fixed pricing, faster bookings.

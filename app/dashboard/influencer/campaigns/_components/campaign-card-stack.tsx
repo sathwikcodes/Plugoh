@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, m, useMotionValue, useTransform } from "framer-motion";
+import {
+  AnimatePresence,
+  m,
+  useMotionValue,
+  useTransform,
+} from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { CampaignCardBack } from "./campaign-card-back";

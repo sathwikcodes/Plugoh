@@ -10,7 +10,8 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[creator-insights.tsx]] - code - app/dashboard/influencer/_components/creator-insights.tsx
+
+- [[creator-insights.tsx]] - code - app/dashboard/influencer/\_components/creator-insights.tsx
 
 ## Live Query (requires Dataview plugin)
 

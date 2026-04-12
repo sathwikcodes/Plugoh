@@ -12,6 +12,7 @@ tags:
 # faq-accordion.tsx
 
 ## Connections
+
 - [[faq-section.tsx]] - `imports_from` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Community_18

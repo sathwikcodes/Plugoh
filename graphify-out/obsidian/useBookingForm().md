@@ -12,6 +12,7 @@ tags:
 # useBookingForm()
 
 ## Connections
+
 - [[getInitialPackage()]] - `calls` [EXTRACTED]
 - [[use-booking-form.ts]] - `contains` [EXTRACTED]
 

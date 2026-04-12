@@ -33,6 +33,7 @@ export function CampaignDeliverySection({
     queryClient.invalidateQueries({
       queryKey: trpc.campaign.getCampaigns.queryKey(),
     });
+    // No-arg queryKey() is a TRPC prefix wildcard — matches every getCampaign({...}) query.
     queryClient.invalidateQueries({
       queryKey: trpc.campaign.getCampaign.queryKey(),
     });

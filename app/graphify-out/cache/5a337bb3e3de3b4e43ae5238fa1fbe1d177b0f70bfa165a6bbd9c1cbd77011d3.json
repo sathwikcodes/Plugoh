@@ -1,1 +1,76 @@
-{"nodes": [{"id": "campaign_chat_section", "label": "campaign-chat-section.tsx", "file_type": "code", "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx", "source_location": "L1"}], "edges": [{"source": "campaign_chat_section", "target": "link", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx", "source_location": "L1", "weight": 1.0}, {"source": "campaign_chat_section", "target": "image", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx", "source_location": "L2", "weight": 1.0}, {"source": "campaign_chat_section", "target": "lucide_react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx", "source_location": "L3", "weight": 1.0}, {"source": "campaign_chat_section", "target": "button", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx", "source_location": "L4", "weight": 1.0}, {"source": "campaign_chat_section", "target": "format", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx", "source_location": "L5", "weight": 1.0}, {"source": "campaign_chat_section", "target": "animations", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx", "source_location": "L11", "weight": 1.0}, {"source": "campaign_chat_section", "target": "campaign_types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx", "source_location": "L12", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "campaign_chat_section",
+      "label": "campaign-chat-section.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "campaign_chat_section",
+      "target": "link",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_chat_section",
+      "target": "image",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_chat_section",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_chat_section",
+      "target": "button",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_chat_section",
+      "target": "format",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_chat_section",
+      "target": "animations",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "campaign_chat_section",
+      "target": "campaign_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/business/campaigns/[id]/_components/campaign-chat-section.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    }
+  ]
+}

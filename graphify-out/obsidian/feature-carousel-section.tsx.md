@@ -12,6 +12,7 @@ tags:
 # feature-carousel-section.tsx
 
 ## Connections
+
 - [[FeatureCarouselSection()]] - `contains` [EXTRACTED]
 - [[feature-carousel.tsx]] - `imports_from` [EXTRACTED]
 

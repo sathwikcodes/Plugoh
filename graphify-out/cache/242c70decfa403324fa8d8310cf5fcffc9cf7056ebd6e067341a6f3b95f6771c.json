@@ -1,1 +1,56 @@
-{"nodes": [{"id": "mac_os_dock", "label": "mac-os-dock.tsx", "file_type": "code", "source_file": "components/ui/mac-os-dock.tsx", "source_location": "L1"}, {"id": "mac_os_dock_useistouchdevice", "label": "useIsTouchDevice()", "file_type": "code", "source_file": "components/ui/mac-os-dock.tsx", "source_location": "L27"}], "edges": [{"source": "mac_os_dock", "target": "react", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/mac-os-dock.tsx", "source_location": "L3", "weight": 1.0}, {"source": "mac_os_dock", "target": "framer_motion", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/mac-os-dock.tsx", "source_location": "L4", "weight": 1.0}, {"source": "mac_os_dock", "target": "utils", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "components/ui/mac-os-dock.tsx", "source_location": "L5", "weight": 1.0}, {"source": "mac_os_dock", "target": "mac_os_dock_useistouchdevice", "relation": "contains", "confidence": "EXTRACTED", "source_file": "components/ui/mac-os-dock.tsx", "source_location": "L27", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "mac_os_dock",
+      "label": "mac-os-dock.tsx",
+      "file_type": "code",
+      "source_file": "components/ui/mac-os-dock.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "mac_os_dock_useistouchdevice",
+      "label": "useIsTouchDevice()",
+      "file_type": "code",
+      "source_file": "components/ui/mac-os-dock.tsx",
+      "source_location": "L27"
+    }
+  ],
+  "edges": [
+    {
+      "source": "mac_os_dock",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/mac-os-dock.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "mac_os_dock",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/mac-os-dock.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "mac_os_dock",
+      "target": "utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/mac-os-dock.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "mac_os_dock",
+      "target": "mac_os_dock_useistouchdevice",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/mac-os-dock.tsx",
+      "source_location": "L27",
+      "weight": 1.0
+    }
+  ]
+}

@@ -12,6 +12,7 @@ tags:
 # upsertCommonProfile()
 
 ## Connections
+
 - [[handleBusinessContinue()]] - `calls` [EXTRACTED]
 - [[handleBusinessInstagramConnect()]] - `calls` [EXTRACTED]
 - [[handleInfluencerSubmit()]] - `calls` [EXTRACTED]

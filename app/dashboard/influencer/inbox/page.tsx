@@ -7,10 +7,7 @@ import { AnimatePresence, m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
 import { useInboxConversations } from "@/hooks/queries/use-inbox-conversations";
 import { Input } from "@/components/ui/input";
-import {
-  fadeUp,
-  stagger,
-} from "@/lib/animations";
+import { fadeUp, stagger } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ConversationList } from "./_components/conversation-list";

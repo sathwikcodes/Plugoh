@@ -12,6 +12,7 @@ tags:
 # hero-section.tsx
 
 ## Connections
+
 - [[onScroll()]] - `contains` [EXTRACTED]
 - [[page.tsx]] - `imports_from` [EXTRACTED]
 
