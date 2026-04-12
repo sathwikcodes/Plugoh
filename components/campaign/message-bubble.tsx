@@ -6,7 +6,6 @@ import {
   Download,
   BookOpen,
   Zap,
-  Briefcase,
   CheckCircle,
   X,
   Repeat2,
@@ -218,8 +217,8 @@ const statusConfig: Record<
   rejected: { label: "Declined", dot: "bg-red-400", text: "text-red-400" },
   completed: {
     label: "Completed",
-    dot: "bg-violet-400",
-    text: "text-violet-400",
+    dot: "bg-emerald-400",
+    text: "text-emerald-400",
   },
 };
 
@@ -261,9 +260,14 @@ export function BookingCardMessage({
                 stiffness: 260,
                 damping: 20,
               }}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-white/[0.06]"
+              className="flex h-12 w-12 shrink-0 items-center justify-center"
             >
-              <Briefcase className="h-5 w-5 text-primary" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/travel.png"
+                alt="Collaboration"
+                className="h-9 w-9 object-contain"
+              />
             </m.div>
             <div className="min-w-0 flex-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">

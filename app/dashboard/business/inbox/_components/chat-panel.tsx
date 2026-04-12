@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useMyBusinessProfile } from "@/hooks/queries/use-business-profiles";
 import {
@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import type { BusinessConversation } from "@/hooks/queries/use-business-inbox-conversations";
 import { getBusinessDisplayName } from "@/lib/business-profile";
 import Link from "next/link";
@@ -39,8 +40,31 @@ interface ChatPanelProps {
   onBack: () => void;
 }
 
+const CALL_REQUEST_COOLDOWN_MS = 6 * 60 * 60 * 1000;
+const ACTIVE_CALL_STATUSES = new Set(["in_escrow", "delivery_submitted"]);
+
+function isCallRequestMeta(metadata: unknown): boolean {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return false;
+  }
+  return (
+    (metadata as Record<string, unknown>).event === "call_request"
+  );
+}
+
+function formatRemaining(ms: number): string {
+  const totalMinutes = Math.max(1, Math.ceil(ms / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours <= 0) return `${minutes}m`;
+  if (minutes === 0) return `${hours}h`;
+  return `${hours}h ${minutes}m`;
+}
+
 export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
+  const [requestingCall, setRequestingCall] = useState(false);
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const { data: myIdentity } = useMyBusinessProfile(user?.id);
   const trpc = useTRPC();
   const { campaign, influencerProfile } = conversation;
@@ -72,9 +96,51 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   ].includes(campaign.status);
   const disabled = campaign.status === "completed";
 
+  const lastCallRequestMs = useMemo(() => {
+    if (!messages || !messages.length) return null;
+    let latest = 0;
+    for (const msg of messages) {
+      if (msg.sender_id !== campaign.business_id) continue;
+      if (msg.message_type !== "system") continue;
+      if (!isCallRequestMeta(msg.metadata)) continue;
+      const ts = new Date(msg.created_at).getTime();
+      if (!Number.isNaN(ts) && ts > latest) latest = ts;
+    }
+    return latest > 0 ? latest : null;
+  }, [messages, campaign.business_id]);
+
+  const cooldownRemainingMs = useMemo(() => {
+    if (!lastCallRequestMs) return 0;
+    const remaining = lastCallRequestMs + CALL_REQUEST_COOLDOWN_MS - nowMs;
+    return remaining > 0 ? remaining : 0;
+  }, [lastCallRequestMs, nowMs]);
+
+  const isCooldownActive = cooldownRemainingMs > 0;
+  const isActiveCampaignForCall = ACTIVE_CALL_STATUSES.has(campaign.status);
+  const callDisabled = !isActiveCampaignForCall || isCooldownActive;
+
+  const callDisabledReason = !isActiveCampaignForCall
+    ? "Call requests are available only for active campaigns"
+    : isCooldownActive
+      ? `You can send another call request in ${formatRemaining(cooldownRemainingMs)}`
+      : null;
+
+  const visibleMessages = useMemo(() => {
+    if (!messages) return [];
+    return messages.filter(
+      (msg) => !(msg.message_type === "system" && isCallRequestMeta(msg.metadata)),
+    );
+  }, [messages]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages?.length]);
+  }, [visibleMessages.length]);
+
+  useEffect(() => {
+    if (!isCooldownActive) return;
+    const id = window.setInterval(() => setNowMs(Date.now()), 30000);
+    return () => window.clearInterval(id);
+  }, [isCooldownActive]);
 
   useEffect(() => {
     if (!user?.id || !campaign.id) return;
@@ -130,6 +196,43 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
     [campaign.business_id, campaign.influencer_id, brandName, influencerName],
   );
 
+  const handleRequestCall = useCallback(async () => {
+    if (!user || requestingCall) return;
+    setRequestingCall(true);
+    try {
+      if (!session?.access_token) {
+        toast.error("Session expired. Please sign in again.");
+        return;
+      }
+
+      const res = await fetch("/api/inbox/request-call", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ campaignId: campaign.id }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const message =
+          typeof data?.error === "string"
+            ? data.error
+            : "Failed to send call request";
+        throw new Error(message);
+      }
+
+      toast.success("Call request sent");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to send call request";
+      toast.error(message);
+    } finally {
+      setRequestingCall(false);
+    }
+  }, [campaign.id, requestingCall, user]);
+
   if (!user) return null;
 
   return (
@@ -140,6 +243,10 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
         campaignTitle={campaign.title || "Untitled Campaign"}
         status={campaign.status}
         onBack={onBack}
+        onRequestCall={handleRequestCall}
+        requestingCall={requestingCall}
+        callDisabled={callDisabled}
+        callDisabledReason={callDisabledReason}
       />
 
       {campaign.status === "payment_pending" && (
@@ -187,9 +294,9 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
           <div className="flex items-center justify-center h-full">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/40" />
           </div>
-        ) : messages && messages.length > 0 ? (
+        ) : visibleMessages.length > 0 ? (
           <>
-            {messages.map((msg) =>
+            {visibleMessages.map((msg) =>
               msg.message_type === "booking_card" ? (
                 <BookingCardMessage
                   key={msg.id}

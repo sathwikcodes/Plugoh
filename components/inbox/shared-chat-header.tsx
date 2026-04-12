@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,7 @@ interface SharedChatHeaderProps {
   campaignTitle: string;
   status: string;
   onBack: () => void;
+  actions?: ReactNode;
 }
 
 export function SharedChatHeader({
@@ -19,6 +21,7 @@ export function SharedChatHeader({
   campaignTitle,
   status,
   onBack,
+  actions,
 }: SharedChatHeaderProps) {
   const initials = participantName
     .split(" ")
@@ -32,20 +35,20 @@ export function SharedChatHeader({
   const st = { label: cfg.shortLabel, classes: cfg.badge };
 
   return (
-    <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.05] bg-background/60 backdrop-blur-xl shrink-0">
+    <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/5 bg-background/60 backdrop-blur-xl shrink-0">
       <button
         type="button"
         onClick={onBack}
-        className="md:hidden shrink-0 p-1.5 -ml-1.5 rounded-xl hover:bg-white/[0.06] transition-colors"
+        className="md:hidden shrink-0 p-1.5 -ml-1.5 rounded-xl hover:bg-white/6 transition-colors"
       >
         <ArrowLeft className="h-5 w-5 text-foreground/70" />
       </button>
 
-      <Avatar className="h-9 w-9 shrink-0 ring-1 ring-white/[0.06]">
+      <Avatar className="h-9 w-9 shrink-0 ring-1 ring-white/6">
         {avatarUrl ? (
           <AvatarImage src={avatarUrl} alt={participantName} />
         ) : null}
-        <AvatarFallback className="bg-gradient-to-br from-primary/15 to-primary/5 text-xs font-semibold text-foreground/80">
+        <AvatarFallback className="bg-linear-to-br from-primary/15 to-primary/5 text-xs font-semibold text-foreground/80">
           {initials}
         </AvatarFallback>
       </Avatar>
@@ -59,14 +62,17 @@ export function SharedChatHeader({
         </p>
       </div>
 
-      <span
-        className={cn(
-          "text-[10px] font-semibold px-2.5 py-1 rounded-full border shrink-0",
-          st.classes,
-        )}
-      >
-        {st.label}
-      </span>
+      <div className="flex items-center gap-2 shrink-0">
+        {actions}
+        <span
+          className={cn(
+            "text-[10px] font-semibold px-2.5 py-1 rounded-full border shrink-0",
+            st.classes,
+          )}
+        >
+          {st.label}
+        </span>
+      </div>
     </div>
   );
 }
