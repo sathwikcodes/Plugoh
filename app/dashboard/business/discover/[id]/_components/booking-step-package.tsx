@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Check, ChevronDown, CircleAlert } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { getAvailablePackages, type BookablePackage } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
 
@@ -167,7 +168,16 @@ export function BookingStepPackage({
                   <p
                     className={`mt-1 text-lg font-semibold ${active ? "text-black" : "text-white"}`}
                   >
-                    ₹{item.price.toLocaleString("en-IN")}
+                    <span className="inline-flex items-center gap-2">
+                      <Image
+                        src="/coin.png"
+                        alt="Price"
+                        width={18}
+                        height={18}
+                        className="h-4.5 w-4.5 object-contain"
+                      />
+                      {item.price.toLocaleString("en-IN")}
+                    </span>
                   </p>
                 </button>
               );

@@ -45,9 +45,9 @@ export function CampaignFilters({
         >
           <SlidersHorizontal className="h-4 w-4" />
           <span className="hidden sm:inline">Sort</span>
-          {activeSelectionCount > 0 ? (
+          {hasActiveFilters ? (
             <span className="absolute right-0 top-0 flex h-5 min-w-5 translate-x-[28%] -translate-y-[28%] items-center justify-center rounded-full border border-[#0F1115]/70 bg-white px-1 text-[9px] font-semibold leading-none text-black shadow-[0_8px_20px_rgba(0,0,0,0.28)] ring-2 ring-[#151922] sm:hidden">
-              {activeSelectionCount}
+              {Math.max(activeSelectionCount, 1)}
             </span>
           ) : null}
         </button>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   getPackageLabel,
   shouldShowEventName,
@@ -69,15 +70,42 @@ export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
       <div className="space-y-2 rounded-xl border border-white/8 bg-black/20 p-4">
         <div className="flex justify-between text-sm text-white/60">
           <span>{getPackageLabel(form.selectedPackageData.key)}</span>
-          <span>₹{form.selectedPackageData.price.toLocaleString("en-IN")}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Image
+              src="/coin.png"
+              alt="Price"
+              width={14}
+              height={14}
+              className="h-3.5 w-3.5 object-contain"
+            />
+            {form.selectedPackageData.price.toLocaleString("en-IN")}
+          </span>
         </div>
         <div className="flex justify-between text-sm text-white/60">
           <span>Platform fee ({Math.round(PLATFORM_FEE_RATE * 100)}%)</span>
-          <span>₹{form.platformFee.toLocaleString("en-IN")}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Image
+              src="/coin.png"
+              alt="Platform fee"
+              width={14}
+              height={14}
+              className="h-3.5 w-3.5 object-contain"
+            />
+            {form.platformFee.toLocaleString("en-IN")}
+          </span>
         </div>
         <div className="flex justify-between border-t border-white/10 pt-2 text-sm font-semibold text-white">
           <span>Pre-authorization amount</span>
-          <span>₹{form.totalIfAccepted.toLocaleString("en-IN")}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Image
+              src="/coin.png"
+              alt="Pre-authorization amount"
+              width={14}
+              height={14}
+              className="h-3.5 w-3.5 object-contain"
+            />
+            {form.totalIfAccepted.toLocaleString("en-IN")}
+          </span>
         </div>
       </div>
     </div>

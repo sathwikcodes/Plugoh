@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, MapPin, TrendingUp, Users, Video } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,6 @@ import {
 interface InfluencerHeroProps {
   profile: InfluencerProfile;
   handle: string;
-  creatorTier: string;
   engagementRate: number;
   startsAtPrice: number | null;
   isProfileComplete: boolean;
@@ -29,7 +27,6 @@ interface InfluencerHeroProps {
 export function InfluencerHero({
   profile,
   handle,
-  creatorTier,
   engagementRate,
   startsAtPrice,
   isProfileComplete,
@@ -38,7 +35,7 @@ export function InfluencerHero({
 }: InfluencerHeroProps) {
   return (
     <>
-      <section className="border-b border-slate-800/70 bg-[linear-gradient(135deg,rgba(15,23,42,0.9),rgba(2,6,23,0.6))] px-6 py-8 sm:px-10">
+      <section className="border-b border-white/10 bg-transparent px-6 py-8 sm:px-10">
         <div className="grid gap-8 lg:grid-cols-[1.35fr_0.65fr]">
           <div className="flex min-w-0 items-start gap-5">
             <Avatar className="h-20 w-20 border border-slate-800/70 bg-slate-900/60">
@@ -59,24 +56,22 @@ export function InfluencerHero({
                 <Image
                   src="/verified.png"
                   alt="Verified"
-                  width={22}
-                  height={22}
-                  className="h-[22px] w-[22px] object-contain"
+                  width={30}
+                  height={30}
+                  className="h-7.5 w-7.5 object-contain"
                 />
-                <Badge className="rounded-full border border-slate-800/70 bg-slate-900/70 text-[10px] uppercase tracking-[0.2em] text-slate-200">
-                  {creatorTier}
-                </Badge>
-                {profile.category ? (
-                  <Badge className="rounded-full border border-slate-800/70 bg-slate-950/50 text-slate-300">
-                    {profile.category}
-                  </Badge>
-                ) : null}
               </div>
 
               <div className="flex flex-wrap items-center gap-3 text-sm text-slate-400">
                 {profile.city ? (
                   <span className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5" />
+                    <Image
+                      src="/map.png"
+                      alt="Location"
+                      width={14}
+                      height={14}
+                      className="h-3.5 w-3.5 object-contain"
+                    />
                     {profile.city}
                   </span>
                 ) : null}
@@ -89,12 +84,14 @@ export function InfluencerHero({
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-slate-200 transition-colors hover:text-white"
                   >
-                    <Instagram className="h-4 w-4" /> @{handle}
-                    {profile.follower_count ? (
-                      <span className="text-slate-500">
-                        &middot; {compactNumber(profile.follower_count)}
-                      </span>
-                    ) : null}
+                    <Image
+                      src="/instagram_3d.png"
+                      alt="Instagram"
+                      width={16}
+                      height={16}
+                      className="h-4 w-4 object-contain"
+                    />
+                    @{handle}
                   </a>
                 ) : null}
               </div>
@@ -105,16 +102,8 @@ export function InfluencerHero({
                 </p>
               ) : null}
 
-              {profile.content_types?.length || profile.languages?.length ? (
+              {profile.languages?.length ? (
                 <div className="flex flex-wrap gap-1.5">
-                  {profile.content_types?.map((type) => (
-                    <Badge
-                      key={type}
-                      className="rounded-full border border-slate-800/70 bg-slate-900/50 text-xs text-slate-300"
-                    >
-                      {type}
-                    </Badge>
-                  ))}
                   {profile.languages?.map((lang) => (
                     <Badge
                       key={lang}
@@ -135,7 +124,18 @@ export function InfluencerHero({
               </p>
               <p className="mt-3 text-3xl font-semibold text-white">
                 {startsAtPrice
-                  ? `₹${startsAtPrice.toLocaleString("en-IN")}`
+                  ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Image
+                        src="/coin.png"
+                        alt="Price"
+                        width={24}
+                        height={24}
+                        className="h-6 w-6 object-contain"
+                      />
+                      {startsAtPrice.toLocaleString("en-IN")}
+                    </span>
+                  )
                   : "—"}
               </p>
               <p className="mt-2 text-xs text-slate-400">
@@ -184,31 +184,55 @@ export function InfluencerHero({
       </section>
 
       <section className="grid grid-cols-3 gap-3 border-b border-slate-800/70 px-6 py-6 sm:px-10">
-        <div className="rounded-2xl border border-slate-800/70 bg-slate-900/50 p-4">
-          <div className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-slate-400">
-            <Users className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only">Followers</span>
+        <div className="rounded-2xl border border-slate-800/70 bg-slate-900/50 p-4 text-center">
+          <div className="mb-2 flex justify-center">
+            <Image
+              src="/people_insta.png"
+              alt="Followers"
+              width={28}
+              height={28}
+              className="h-7 w-7 object-contain"
+            />
           </div>
-          <p className="mt-2 text-xl font-semibold text-white">
+          <p className="text-xl font-semibold text-white">
             {compactNumber(profile.follower_count)}
           </p>
-        </div>
-        <div className="rounded-2xl border border-slate-800/70 bg-slate-900/50 p-4">
-          <div className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-slate-400">
-            <Video className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only">Avg views</span>
-          </div>
-          <p className="mt-2 text-xl font-semibold text-white">
-            {compactNumber(profile.avg_views_per_reel)}
+          <p className="mt-1 text-[9px] leading-tight text-slate-400 sm:text-[10px]">
+            Followers
           </p>
         </div>
-        <div className="rounded-2xl border border-slate-800/70 bg-slate-900/50 p-4">
-          <div className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-slate-400">
-            <TrendingUp className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only">Engagement</span>
+        <div className="rounded-2xl border border-slate-800/70 bg-slate-900/50 p-4 text-center">
+          <div className="mb-2 flex justify-center">
+            <Image
+              src="/play.png"
+              alt="Avg views"
+              width={28}
+              height={28}
+              className="h-7 w-7 object-contain"
+            />
           </div>
-          <p className="mt-2 text-xl font-semibold text-white">
+          <p className="text-xl font-semibold text-white">
+            {compactNumber(profile.avg_views_per_reel)}
+          </p>
+          <p className="mt-1 text-[9px] leading-tight text-slate-400 sm:text-[10px]">
+            Avg views
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-800/70 bg-slate-900/50 p-4 text-center">
+          <div className="mb-2 flex justify-center">
+            <Image
+              src="/premium_target.png"
+              alt="Engagement"
+              width={28}
+              height={28}
+              className="h-7 w-7 object-contain"
+            />
+          </div>
+          <p className="text-xl font-semibold text-white">
             {engagementRate > 0 ? `${engagementRate.toFixed(1)}%` : "—"}
+          </p>
+          <p className="mt-1 text-[9px] leading-tight text-slate-400 sm:text-[10px]">
+            Engagement
           </p>
         </div>
       </section>

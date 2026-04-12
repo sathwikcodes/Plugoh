@@ -136,6 +136,8 @@ export default function InfluencerDiscovery() {
     activeFilters.category !== "All",
     activeFilters.priceRange[0] !== priceBounds[0] ||
       activeFilters.priceRange[1] !== priceBounds[1],
+    activeFilters.sortField !== "followers",
+    activeFilters.sortDirection !== "desc",
   ].filter(Boolean).length;
 
   const draftFilterCount = [
@@ -143,6 +145,8 @@ export default function InfluencerDiscovery() {
     draftFilters.category !== "All",
     draftFilters.priceRange[0] !== priceBounds[0] ||
       draftFilters.priceRange[1] !== priceBounds[1],
+    draftFilters.sortField !== "followers",
+    draftFilters.sortDirection !== "desc",
   ].filter(Boolean).length;
 
   const clearFilters = () => {

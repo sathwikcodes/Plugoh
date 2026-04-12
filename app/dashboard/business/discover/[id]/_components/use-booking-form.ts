@@ -1,4 +1,4 @@
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +48,10 @@ export function useBookingForm(
   const [selectedPackage, setSelectedPackage] = useState<BookablePackage>(
     getInitialPackage(initialPackage, availablePackages),
   );
+
+  useEffect(() => {
+    setSelectedPackage(getInitialPackage(initialPackage, availablePackages));
+  }, [initialPackage, availablePackages]);
   const [timingMode, setTimingMode] =
     useState<BookingTimingMode>(DEFAULT_TIMING);
   const [dueDate, setDueDate] = useState("");

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { BookablePackage } from "@/lib/booking";
 
 interface PackageItem {
@@ -9,14 +10,12 @@ interface PackageItem {
 interface InfluencerPackagesProps {
   availablePackages: PackageItem[];
   canOpenBooking: boolean;
-  turnaroundTime: string | null;
   onSelectPackage: (pkg: BookablePackage) => void;
 }
 
 export function InfluencerPackages({
   availablePackages,
   canOpenBooking,
-  turnaroundTime,
   onSelectPackage,
 }: InfluencerPackagesProps) {
   if (availablePackages.length === 0) return null;
@@ -42,7 +41,16 @@ export function InfluencerPackages({
               {item.label}
             </p>
             <p className="mt-2 text-2xl font-semibold text-white">
-              ₹{item.price.toLocaleString("en-IN")}
+              <span className="inline-flex items-center gap-2">
+                <Image
+                  src="/coin.png"
+                  alt="Price"
+                  width={20}
+                  height={20}
+                  className="h-5 w-5 object-contain"
+                />
+                {item.price.toLocaleString("en-IN")}
+              </span>
             </p>
             <p className="mt-1 text-xs text-slate-400">
               {canOpenBooking
@@ -52,14 +60,6 @@ export function InfluencerPackages({
           </button>
         ))}
       </div>
-      {turnaroundTime ? (
-        <p className="text-xs text-slate-400">
-          Typical turnaround:{" "}
-          <span className="font-medium text-slate-200">
-            {turnaroundTime.replace(/_/g, " ").replace(/(\d)(\d)/, "$1-$2")}
-          </span>
-        </p>
-      ) : null}
     </div>
   );
 }

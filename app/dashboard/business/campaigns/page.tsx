@@ -173,7 +173,8 @@ export default function CampaignsPage() {
   const mobileInset = isMobile
     ? { paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))" }
     : undefined;
-  const activeSelectionCount = Number(sortMode !== "newest");
+  const activeSelectionCount =
+    Number(statusFilter !== "All") + Number(sortMode !== "newest");
 
   return (
     <>

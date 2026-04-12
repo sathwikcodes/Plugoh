@@ -17,9 +17,14 @@ import {
 } from "@/hooks/queries/use-instagram-media";
 import { useAuth } from "@/contexts/auth-context";
 import { compactNumber } from "@/lib/format";
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import {
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+} from "@/lib/animations";
 import {
   getAvailablePackages,
-  getCreatorTier,
   getEngagementRate,
   getStartsAtPrice,
   type BookablePackage,
@@ -70,7 +75,6 @@ export default function InfluencerProfileView() {
     profile?.avg_likes_per_reel ?? null,
     profile?.follower_count ?? null,
   );
-  const creatorTier = getCreatorTier(profile?.follower_count ?? null);
   const startsAtPrice = profile ? getStartsAtPrice(profile) : null;
   const showcaseItems = topMedia?.length
     ? topMedia.slice(0, 3)
@@ -119,131 +123,143 @@ export default function InfluencerProfileView() {
   };
 
   return (
-    <div className="container max-w-6xl space-y-6 py-6 animate-fade-in text-slate-100">
-      <div className="flex flex-wrap items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          asChild
-          className="h-9 w-9 rounded-full border border-slate-700/70 text-slate-200 hover:bg-white/10"
-        >
-          <Link
-            href="/dashboard/business/discover"
-            aria-label="Back to discover influencers"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-          </Link>
-        </Button>
-        <div className="min-w-0">
-          <h1 className="heading-mix text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-            Discover{" "}
-            <span className="heading-mix-accent text-3xl text-white/90 sm:text-4xl">
-              Influencers
-            </span>
-          </h1>
-        </div>
+    <div className="relative min-h-dvh overflow-hidden animate-fade-in text-slate-100">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
+        <AnimatedGradientBackground
+          Breathing
+          gradientColors={GRADIENT_COLORS}
+          gradientStops={GRADIENT_STOPS}
+          startingGap={125}
+          breathingRange={2.2}
+          animationSpeed={0.008}
+          containerStyle={GRADIENT_STYLE}
+        />
       </div>
 
-      <div className="overflow-hidden rounded-[32px] border border-slate-800/70 bg-slate-950/70 shadow-[0_24px_60px_rgba(2,6,23,0.55)] backdrop-blur-xl">
-        <InfluencerHero
-          profile={profile}
-          handle={handle}
-          creatorTier={creatorTier}
-          engagementRate={engagementRate}
-          startsAtPrice={startsAtPrice}
+      <div className="relative z-10 container max-w-6xl space-y-6 py-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="h-9 w-9 rounded-full border border-slate-700/70 text-slate-200 hover:bg-white/10"
+          >
+            <Link
+              href="/dashboard/business/discover"
+              aria-label="Back to discover influencers"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+            </Link>
+          </Button>
+          <div className="min-w-0">
+            <h1 className="heading-mix text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              Discover{" "}
+              <span className="heading-mix-accent text-3xl text-white/90 sm:text-4xl">
+                Influencers
+              </span>
+            </h1>
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-[32px] border border-white/10 bg-card/60 shadow-[0_24px_60px_rgba(2,6,23,0.45)] backdrop-blur-md">
+          <InfluencerHero
+            profile={profile}
+            handle={handle}
+            engagementRate={engagementRate}
+            startsAtPrice={startsAtPrice}
+            isProfileComplete={isProfileComplete}
+            availablePackages={availablePackages}
+            onBook={() => setBookingState(true)}
+          />
+
+          <section className="px-6 py-8 sm:px-10">
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-white">
+                    Content showcase
+                  </h2>
+                  <p className="text-sm text-slate-400">
+                    {topMedia && topMedia.length > 0
+                      ? "Their best-performing posts — see the real content."
+                      : "A preview of what this creator's content looks like."}
+                  </p>
+                </div>
+
+                <MediaShowcase
+                  showcaseItems={showcaseItems}
+                  showcaseFallback={SHOWCASE_FALLBACK}
+                  formatStat={formatStat}
+                />
+
+                {topMedia && topMedia.length > 0 ? (
+                  <InfluencerInstagramTab
+                    topMedia={topMedia}
+                    showcaseFallback={SHOWCASE_FALLBACK}
+                  />
+                ) : portfolioMedia?.length ? (
+                  <PortfolioGrid
+                    media={portfolioMedia}
+                    onSelect={setActiveMedia}
+                  />
+                ) : (
+                  <InfluencerInstagramTab
+                    topMedia={null}
+                    showcaseFallback={SHOWCASE_FALLBACK}
+                  />
+                )}
+
+                {handle ? (
+                  <div className="flex justify-center">
+                    <Button
+                      variant="outline"
+                      className="h-11 rounded-full border-slate-700/80 text-slate-200"
+                      asChild
+                    >
+                      <a
+                        href={
+                          profile.instagram_url ||
+                          `https://instagram.com/${handle}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Show more
+                      </a>
+                    </Button>
+                  </div>
+                ) : null}
+
+                <InfluencerPackages
+                  availablePackages={availablePackages}
+                  canOpenBooking={canOpenBooking}
+                  onSelectPackage={(pkg) => setBookingState(true, pkg)}
+                />
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <BookingDrawer
+          creator={profile}
+          initialPackage={selectedPackageSeed}
           isProfileComplete={isProfileComplete}
-          availablePackages={availablePackages}
-          onBook={() => setBookingState(true)}
+          open={bookingOpen}
+          onOpenChange={(nextOpen) => {
+            if (nextOpen) {
+              setBookingState(true, selectedPackageSeed);
+              return;
+            }
+            setBookingState(false);
+          }}
         />
 
-        <section className="px-6 py-8 sm:px-10">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-xl font-semibold text-white">
-                  Content showcase
-                </h2>
-                <p className="text-sm text-slate-400">
-                  {topMedia && topMedia.length > 0
-                    ? "Their best-performing posts — see the real content."
-                    : "A preview of what this creator's content looks like."}
-                </p>
-              </div>
-
-              <MediaShowcase
-                showcaseItems={showcaseItems}
-                showcaseFallback={SHOWCASE_FALLBACK}
-                formatStat={formatStat}
-              />
-
-              {topMedia && topMedia.length > 0 ? (
-                <InfluencerInstagramTab
-                  topMedia={topMedia}
-                  showcaseFallback={SHOWCASE_FALLBACK}
-                />
-              ) : portfolioMedia?.length ? (
-                <PortfolioGrid
-                  media={portfolioMedia}
-                  onSelect={setActiveMedia}
-                />
-              ) : (
-                <InfluencerInstagramTab
-                  topMedia={null}
-                  showcaseFallback={SHOWCASE_FALLBACK}
-                />
-              )}
-
-              {handle ? (
-                <div className="flex justify-center">
-                  <Button
-                    variant="outline"
-                    className="h-11 rounded-full border-slate-700/80 text-slate-200"
-                    asChild
-                  >
-                    <a
-                      href={
-                        profile.instagram_url ||
-                        `https://instagram.com/${handle}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Show more
-                    </a>
-                  </Button>
-                </div>
-              ) : null}
-
-              <InfluencerPackages
-                availablePackages={availablePackages}
-                canOpenBooking={canOpenBooking}
-                turnaroundTime={profile.turnaround_time}
-                onSelectPackage={(pkg) => setBookingState(true, pkg)}
-              />
-            </div>
-          </div>
-        </section>
+        <PortfolioDialog
+          activeMedia={activeMedia}
+          onClose={() => setActiveMedia(null)}
+          formatStat={formatStat}
+        />
       </div>
-
-      <BookingDrawer
-        creator={profile}
-        initialPackage={selectedPackageSeed}
-        isProfileComplete={isProfileComplete}
-        open={bookingOpen}
-        onOpenChange={(nextOpen) => {
-          if (nextOpen) {
-            setBookingState(true, selectedPackageSeed);
-            return;
-          }
-          setBookingState(false);
-        }}
-      />
-
-      <PortfolioDialog
-        activeMedia={activeMedia}
-        onClose={() => setActiveMedia(null)}
-        formatStat={formatStat}
-      />
     </div>
   );
 }

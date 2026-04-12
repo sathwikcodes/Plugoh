@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import Image from "next/image";
 import { ArrowLeft, Loader2, Lock, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { type BookablePackage, type InfluencerProfile } from "@/lib/booking";
@@ -164,7 +165,14 @@ function BookingDrawerContent({
                       ) : (
                         <>
                           <Lock className="mr-2 h-4 w-4" />
-                          Hold ₹
+                          Hold
+                          <Image
+                            src="/coin.png"
+                            alt="Amount"
+                            width={16}
+                            height={16}
+                            className="mx-1 h-4 w-4 object-contain"
+                          />
                           {form.totalIfAccepted.toLocaleString("en-IN")}
                         </>
                       )}
