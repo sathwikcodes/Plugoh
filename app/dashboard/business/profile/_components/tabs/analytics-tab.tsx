@@ -6,9 +6,7 @@ import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { BarChart3 } from "lucide-react";
 import type { Database } from "@/lib/supabase/types";
-import { AnalyticsPackageBreakdown } from "./analytics-package-breakdown";
 import { AnalyticsTopInfluencers } from "./analytics-top-influencers";
-import { AnalyticsFunnel } from "./analytics-funnel";
 
 const AnalyticsSpendChart = dynamic(
   () =>
@@ -55,24 +53,6 @@ export default function AnalyticsTab({
     () => new Map(influencerProfiles.map((ip) => [ip.id, ip])),
     [influencerProfiles],
   );
-
-  const packageData = useMemo(() => {
-    const map: Record<string, { count: number; total: number }> = {};
-    for (const c of completed) {
-      const pkg = c.package_type || "other";
-      if (!map[pkg]) map[pkg] = { count: 0, total: 0 };
-      map[pkg].count++;
-      map[pkg].total += c.price_offered || 0;
-    }
-    return Object.entries(map)
-      .sort((a, b) => b[1].total - a[1].total)
-      .map(([name, { count, total }]) => ({
-        name: name.charAt(0).toUpperCase() + name.slice(1),
-        rawName: name,
-        count,
-        total,
-      }));
-  }, [completed]);
 
   const monthlyData = useMemo(() => {
     const now = new Date();
@@ -124,22 +104,10 @@ export default function AnalyticsTab({
       }));
   }, [completed, ipMap]);
 
-  const funnel = useMemo(() => {
-    let sent = 0;
-    let accepted = 0;
-    let done = 0;
-    for (const c of campaigns) {
-      if (c.status !== "rejected") sent++;
-      if (c.status === "accepted" || c.status === "completed") accepted++;
-      if (c.status === "completed") done++;
-    }
-    return { sent, accepted, done };
-  }, [campaigns]);
-
   if (completed.length === 0) {
     return (
       <div className="pt-8 text-center space-y-3">
-        <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-[#b02aaa]/10">
+        <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-2xl bg-linear-to-br from-primary/10 to-[#b02aaa]/10">
           <BarChart3 className="h-8 w-8 text-muted-foreground" />
         </div>
         <p className="font-semibold">No analytics yet</p>
@@ -157,11 +125,6 @@ export default function AnalyticsTab({
       animate="visible"
       className="space-y-4 pt-4"
     >
-      {packageData.length > 0 && (
-        <m.div variants={fadeUp}>
-          <AnalyticsPackageBreakdown data={packageData} />
-        </m.div>
-      )}
       <m.div variants={fadeUp}>
         <AnalyticsSpendChart data={monthlyData} />
       </m.div>
@@ -170,9 +133,6 @@ export default function AnalyticsTab({
           <AnalyticsTopInfluencers data={topInfluencers} />
         </m.div>
       )}
-      <m.div variants={fadeUp}>
-        <AnalyticsFunnel data={funnel} />
-      </m.div>
     </m.div>
   );
 }

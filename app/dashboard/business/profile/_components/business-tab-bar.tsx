@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import {
-  LayoutDashboard,
   BarChart3,
   Wallet,
   Settings2,
@@ -19,9 +18,8 @@ const SPRING = {
 };
 
 const BASE_TABS = [
-  { id: "overview", label: "Overview", Icon: LayoutDashboard },
-  { id: "analytics", label: "Analytics", Icon: BarChart3 },
   { id: "spending", label: "Spending", Icon: Wallet },
+  { id: "analytics", label: "Analytics", Icon: BarChart3 },
   { id: "settings", label: "Settings", Icon: Settings2 },
 ] as const;
 
@@ -41,7 +39,10 @@ export function BusinessTabBar({
   onTabChange: (tab: string) => void;
 }) {
   const tabs = useMemo(
-    () => (hasInstagram ? [INSTAGRAM_TAB, ...BASE_TABS] : [...BASE_TABS]),
+    () =>
+      hasInstagram
+        ? [BASE_TABS[0], INSTAGRAM_TAB, BASE_TABS[1], BASE_TABS[2]]
+        : [...BASE_TABS],
     [hasInstagram],
   );
 
@@ -63,7 +64,7 @@ export function BusinessTabBar({
               transition={{ layout: SPRING }}
               className={cn(
                 "flex items-center gap-1.5 bg-secondary shadow-md",
-                "outline-2 outline outline-background overflow-hidden",
+                "outline-2 outline-background overflow-hidden",
                 "transition-colors duration-75 ease-out select-none",
                 isActive
                   ? "px-4 py-2.5 text-foreground"

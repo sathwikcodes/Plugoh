@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
-import { IndianRupee, Clock, TrendingUp, Wallet } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { compactNumber } from "@/lib/format";
 import type { Database } from "@/lib/supabase/types";
@@ -81,9 +82,13 @@ export default function SpendingTab({
       <m.div variants={fadeUp}>
         <div className="grid grid-cols-3 gap-3">
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 mb-2">
-              <IndianRupee className="h-3.5 w-3.5 text-green-400" />
-            </div>
+            <Image
+              src="/coin.png"
+              alt="Total paid"
+              width={32}
+              height={32}
+              className="mb-2 h-8 w-8 object-contain"
+            />
             <p className="text-lg font-extrabold">
               {summary.totalPaid > 0
                 ? `₹${compactNumber(summary.totalPaid)}`
@@ -94,9 +99,13 @@ export default function SpendingTab({
             </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20 mb-2">
-              <Clock className="h-3.5 w-3.5 text-amber-400" />
-            </div>
+            <Image
+              src="/clock.png"
+              alt="Pending"
+              width={32}
+              height={32}
+              className="mb-2 h-8 w-8 object-contain"
+            />
             <p className="text-lg font-extrabold">
               {summary.totalPending > 0
                 ? `₹${compactNumber(summary.totalPending)}`
@@ -105,9 +114,13 @@ export default function SpendingTab({
             <p className="text-[10px] text-muted-foreground mt-0.5">Pending</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 mb-2">
-              <TrendingUp className="h-3.5 w-3.5 text-violet-400" />
-            </div>
+            <Image
+              src="/premium_target.png"
+              alt="Average per campaign"
+              width={32}
+              height={32}
+              className="mb-2 h-8 w-8 object-contain"
+            />
             <p className="text-lg font-extrabold">
               {summary.avgPerCampaign > 0
                 ? `₹${compactNumber(summary.avgPerCampaign)}`

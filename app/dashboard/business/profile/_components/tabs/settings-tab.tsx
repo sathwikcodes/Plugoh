@@ -14,8 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LogOut, Loader2, Save } from "lucide-react";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { LogOut, Loader2, Save, Pencil, X } from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/auth-context";
@@ -48,11 +47,13 @@ export default function BusinessSettingsTab({
   const [businessType, setBusinessType] = useState(
     businessProfile?.brand_type ?? profile?.business_type ?? "",
   );
-  const [location, setLocation] = useState(profile?.location ?? "");
   const [brandLocation, setBrandLocation] = useState(
     businessProfile?.brand_location ?? profile?.location ?? "",
   );
   const [phone, setPhone] = useState(profile?.phone ?? "");
+  const [editingField, setEditingField] = useState<
+    "fullName" | "businessName" | "businessType" | "brandLocation" | "phone" | null
+  >(null);
 
   const upsertProfile = useMutation(
     trpc.profile.upsertBusinessProfile.mutationOptions({
@@ -72,16 +73,57 @@ export default function BusinessSettingsTab({
     }),
   );
 
-  const handleSave = () => {
-    if (!userId || !businessName.trim()) return;
-    upsertProfile.mutate({
-      fullName: fullName || "",
-      businessName: businessName.trim(),
-      businessType: businessType || undefined,
-      location: location || undefined,
-      brandLocation: brandLocation || undefined,
-      phone: phone || undefined,
-    });
+  const handleSaveField = (
+    field:
+      | "fullName"
+      | "businessName"
+      | "businessType"
+      | "brandLocation"
+      | "phone",
+  ) => {
+    const normalizedFullName = fullName.trim();
+    const normalizedBusinessName = businessName.trim();
+
+    if (!userId || !normalizedFullName || !normalizedBusinessName) {
+      toast.error("Full name and business name are required");
+      return;
+    }
+
+    upsertProfile.mutate(
+      {
+        fullName: normalizedFullName,
+        businessName: normalizedBusinessName,
+        businessType: businessType || undefined,
+        location: brandLocation || undefined,
+        brandLocation: brandLocation || undefined,
+        phone: phone || undefined,
+      },
+      {
+        onSuccess: () => setEditingField((current) => (current === field ? null : current)),
+      },
+    );
+  };
+
+  const cancelFieldEdit = (
+    field:
+      | "fullName"
+      | "businessName"
+      | "businessType"
+      | "brandLocation"
+      | "phone",
+  ) => {
+    if (field === "fullName") setFullName(profile?.full_name ?? "");
+    if (field === "businessName") {
+      setBusinessName(businessProfile?.brand_name ?? profile?.business_name ?? "");
+    }
+    if (field === "businessType") {
+      setBusinessType(businessProfile?.brand_type ?? profile?.business_type ?? "");
+    }
+    if (field === "brandLocation") {
+      setBrandLocation(businessProfile?.brand_location ?? profile?.location ?? "");
+    }
+    if (field === "phone") setPhone(profile?.phone ?? "");
+    setEditingField(null);
   };
 
   const handleSignOut = async () => {
@@ -111,119 +153,318 @@ export default function BusinessSettingsTab({
             <Input
               value={profile?.email ?? ""}
               disabled
-              className="h-11 bg-white/[0.03] border-white/10 text-muted-foreground"
+              className="h-11 bg-white/3 border-white/10 text-muted-foreground"
             />
           </div>
 
           {/* Full Name */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Full Name</Label>
-            <Input
-              placeholder="Your full name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="h-11 bg-white/[0.03] border-white/10"
-            />
+            <div className="flex items-center justify-between">
+              <Label className="text-xs text-muted-foreground">Full Name</Label>
+              {editingField !== "fullName" && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setEditingField("fullName")}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+            {editingField === "fullName" ? (
+              <>
+                <Input
+                  placeholder="Your full name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="h-11 bg-white/3 border-white/10"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => cancelFieldEdit("fullName")}
+                    disabled={saving}
+                  >
+                    <X className="mr-1.5 h-3.5 w-3.5" />
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleSaveField("fullName")}
+                    disabled={saving || !fullName.trim()}
+                  >
+                    {saving ? (
+                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Save className="mr-1.5 h-3.5 w-3.5" />
+                    )}
+                    Save
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="h-11 rounded-md border border-white/10 bg-white/3 px-3 text-sm flex items-center">
+                {fullName || "-"}
+              </div>
+            )}
           </div>
 
           {/* Business Name */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">
-              Business Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              placeholder="Your brand or business name"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              className="h-11 bg-white/[0.03] border-white/10"
-            />
+            <div className="flex items-center justify-between">
+              <Label className="text-xs text-muted-foreground">
+                Business Name <span className="text-destructive">*</span>
+              </Label>
+              {editingField !== "businessName" && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setEditingField("businessName")}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+            {editingField === "businessName" ? (
+              <>
+                <Input
+                  placeholder="Your brand or business name"
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  className="h-11 bg-white/3 border-white/10"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => cancelFieldEdit("businessName")}
+                    disabled={saving}
+                  >
+                    <X className="mr-1.5 h-3.5 w-3.5" />
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleSaveField("businessName")}
+                    disabled={saving || !businessName.trim()}
+                  >
+                    {saving ? (
+                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Save className="mr-1.5 h-3.5 w-3.5" />
+                    )}
+                    Save
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="h-11 rounded-md border border-white/10 bg-white/3 px-3 text-sm flex items-center">
+                {businessName || "-"}
+              </div>
+            )}
           </div>
 
           {/* Business Type */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">
-              Business Type
-            </Label>
-            <Select
-              value={businessType}
-              onValueChange={(v) => setBusinessType(v || "")}
-            >
-              <SelectTrigger className="h-11 bg-white/[0.03] border-white/10">
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                {BUSINESS_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs text-muted-foreground">
+                Business Type
+              </Label>
+              {editingField !== "businessType" && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setEditingField("businessType")}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+            {editingField === "businessType" ? (
+              <>
+                <Select
+                  value={businessType}
+                  onValueChange={(v) => setBusinessType(v || "")}
+                >
+                  <SelectTrigger className="h-11 bg-white/3 border-white/10">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BUSINESS_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => cancelFieldEdit("businessType")}
+                    disabled={saving}
+                  >
+                    <X className="mr-1.5 h-3.5 w-3.5" />
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleSaveField("businessType")}
+                    disabled={saving}
+                  >
+                    {saving ? (
+                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Save className="mr-1.5 h-3.5 w-3.5" />
+                    )}
+                    Save
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="h-11 rounded-md border border-white/10 bg-white/3 px-3 text-sm flex items-center">
+                {businessType || "-"}
+              </div>
+            )}
           </div>
 
-          {/* Location */}
+          {/* Brand Location */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Your Place</Label>
-            <Input
-              placeholder="e.g. Bangalore"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="h-11 bg-white/[0.03] border-white/10"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">
-              Brand Location
-            </Label>
-            <Input
-              placeholder="e.g. Jubilee Hills"
-              value={brandLocation}
-              onChange={(e) => setBrandLocation(e.target.value)}
-              className="h-11 bg-white/[0.03] border-white/10"
-            />
+            <div className="flex items-center justify-between">
+              <Label className="text-xs text-muted-foreground">
+                Brand Location
+              </Label>
+              {editingField !== "brandLocation" && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setEditingField("brandLocation")}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+            {editingField === "brandLocation" ? (
+              <>
+                <Input
+                  placeholder="e.g. Jubilee Hills"
+                  value={brandLocation}
+                  onChange={(e) => setBrandLocation(e.target.value)}
+                  className="h-11 bg-white/3 border-white/10"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => cancelFieldEdit("brandLocation")}
+                    disabled={saving}
+                  >
+                    <X className="mr-1.5 h-3.5 w-3.5" />
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleSaveField("brandLocation")}
+                    disabled={saving}
+                  >
+                    {saving ? (
+                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Save className="mr-1.5 h-3.5 w-3.5" />
+                    )}
+                    Save
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="h-11 rounded-md border border-white/10 bg-white/3 px-3 text-sm flex items-center">
+                {brandLocation || "-"}
+              </div>
+            )}
           </div>
 
           {/* Phone */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Phone</Label>
-            <Input
-              placeholder="Phone number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="h-11 bg-white/[0.03] border-white/10"
-            />
-          </div>
-
-          <Button
-            onClick={handleSave}
-            disabled={saving || !businessName.trim()}
-            className="w-full h-11 bg-gradient-to-r from-[#e0348c] to-[#b02aaa] hover:brightness-110 border-0"
-          >
-            {saving ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="mr-2 h-4 w-4" />
-            )}
-            Save Changes
-          </Button>
-        </div>
-      </m.div>
-
-      {/* Preferences */}
-      <m.div variants={fadeUp}>
-        <div className="rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md p-5 space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Preferences
-          </p>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">Theme</p>
-              <p className="text-xs text-muted-foreground">
-                Switch between light and dark mode
-              </p>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs text-muted-foreground">Phone</Label>
+              {editingField !== "phone" && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setEditingField("phone")}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              )}
             </div>
-            <ThemeToggle />
+            {editingField === "phone" ? (
+              <>
+                <Input
+                  placeholder="Phone number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="h-11 bg-white/3 border-white/10"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => cancelFieldEdit("phone")}
+                    disabled={saving}
+                  >
+                    <X className="mr-1.5 h-3.5 w-3.5" />
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleSaveField("phone")}
+                    disabled={saving}
+                  >
+                    {saving ? (
+                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Save className="mr-1.5 h-3.5 w-3.5" />
+                    )}
+                    Save
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="h-11 rounded-md border border-white/10 bg-white/3 px-3 text-sm flex items-center">
+                {phone || "-"}
+              </div>
+            )}
           </div>
         </div>
       </m.div>

@@ -24,7 +24,6 @@ const AnimatedGradientBackground = dynamic(
   { ssr: false },
 );
 import BusinessProfileCardHeader from "./_components/profile-card-header";
-import OverviewTab from "./_components/tabs/overview-tab";
 import BusinessInstagramTab from "./_components/tabs/instagram-tab";
 import AnalyticsTab from "./_components/tabs/analytics-tab";
 import SpendingTab from "./_components/tabs/spending-tab";
@@ -38,7 +37,6 @@ import BusinessProfileLoading from "./loading";
 
 type TabValue =
   | "instagram"
-  | "overview"
   | "analytics"
   | "spending"
   | "settings";
@@ -53,7 +51,7 @@ function BusinessProfilePageInner() {
     (typeof window !== "undefined" &&
       sessionStorage.getItem("plugoh_business_ai_pending") === user?.id);
 
-  const [activeTab, setActiveTab] = useState<TabValue>("overview");
+  const [activeTab, setActiveTab] = useState<TabValue>("spending");
   const [aiStatus, setAiStatus] = useState<
     "idle" | "running" | "done" | "failed"
   >(isOnboarding ? "running" : "idle");
@@ -113,17 +111,6 @@ function BusinessProfilePageInner() {
 
   if (!user || !profile || !identity) return null;
 
-  const totalCampaigns = campaigns.length;
-  const totalSpent = campaigns
-    .filter((c) => c.status === "completed")
-    .reduce((sum, c) => sum + (c.price_offered || 0), 0);
-  const resolvedActiveTab =
-    activeTab === "overview" &&
-    isOnboarding &&
-    identity.businessProfile?.ig_username
-      ? "instagram"
-      : activeTab;
-
   return (
     <div className="relative min-h-[calc(100dvh-4rem)]">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
@@ -146,10 +133,7 @@ function BusinessProfilePageInner() {
         >
           <BusinessProfileCardHeader
             identity={identity}
-            totalCampaigns={totalCampaigns}
-            totalSpent={totalSpent}
             authAvatarUrl={avatarUrl}
-            onNavigateToSettings={() => setActiveTab("settings")}
           />
 
           <AIStatusBanner visible={aiStatus === "running"} />
@@ -157,44 +141,36 @@ function BusinessProfilePageInner() {
           <div className="flex justify-center py-1">
             <BusinessTabBar
               hasInstagram={!!identity.businessProfile?.ig_username}
-              activeTab={resolvedActiveTab}
+              activeTab={activeTab}
               onTabChange={(tab) => setActiveTab(tab as TabValue)}
             />
           </div>
 
           <div>
-            {aiStatus === "running" && resolvedActiveTab !== "settings" ? (
+            {aiStatus === "running" && activeTab !== "settings" ? (
               <ProfileTabSkeleton
-                tab={resolvedActiveTab === "instagram" ? "instagram" : "career"}
+                tab={activeTab === "instagram" ? "instagram" : "career"}
               />
             ) : null}
-            {aiStatus !== "running" && resolvedActiveTab === "instagram" && (
-              <BusinessInstagramTab
-                businessProfile={identity.businessProfile!}
-                authAvatarUrl={avatarUrl}
-                media={media}
-              />
-            )}
-            {aiStatus !== "running" && resolvedActiveTab === "overview" && (
-              <OverviewTab
-                identity={identity}
-                campaigns={campaigns}
-                onNavigateToSettings={() => setActiveTab("settings")}
-              />
-            )}
-            {aiStatus !== "running" && resolvedActiveTab === "analytics" && (
+            {aiStatus !== "running" && activeTab === "analytics" && (
               <AnalyticsTab
                 campaigns={campaigns}
                 influencerProfiles={influencerProfiles}
               />
             )}
-            {aiStatus !== "running" && resolvedActiveTab === "spending" && (
+            {aiStatus !== "running" && activeTab === "instagram" && (
+              <BusinessInstagramTab
+                businessProfile={identity.businessProfile!}
+                media={media}
+              />
+            )}
+            {aiStatus !== "running" && activeTab === "spending" && (
               <SpendingTab
                 campaigns={campaigns}
                 influencerProfiles={influencerProfiles}
               />
             )}
-            {resolvedActiveTab === "settings" && (
+            {activeTab === "settings" && (
               <SettingsTab
                 key={`${identity.basicProfile?.id ?? "business"}-${identity.businessProfile?.created_at ?? "initial"}-${identity.businessProfile?.brand_name ?? ""}-${identity.basicProfile?.full_name ?? ""}`}
                 identity={identity}
