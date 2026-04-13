@@ -1,0 +1,251 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]: iD
+        - generic [ref=e7]: wero
+    - generic [ref=e8]:
+      - generic [ref=e9]: NL
+      - generic [ref=e10]: EN
+      - button "Contact" [ref=e11]:
+        - img [ref=e12]
+    - generic [ref=e17]:
+      - img
+      - img
+      - img [ref=e19]
+      - heading "iDEAL IS BECOMING WERO" [level=1] [ref=e32]:
+        - generic [ref=e33]: iDEAL IS
+        - generic [ref=e34]: BECOMING
+        - generic [ref=e35]: WERO
+      - img "Now in phase 1" [ref=e37]
+      - button "Scroll and discover what this means" [ref=e39]:
+        - generic [ref=e40]: Scroll and discover what this means
+        - img [ref=e42]
+    - generic [ref=e44]:
+      - generic [ref=e45]:
+        - img [ref=e47]
+        - img [ref=e53]
+        - generic [ref=e58]:
+          - generic [ref=e59]: But what is it actually?
+          - heading "iDEAL IS BECOMING WERO THE NEW EUROPEAN WAY TO PAY." [level=2] [ref=e60]:
+            - generic [ref=e61]: iDEAL IS BECOMING
+            - generic [ref=e62]:
+              - generic [ref=e63]: WERO
+              - generic [ref=e66]: THE
+            - generic [ref=e67]: NEW EUROPEAN
+            - generic [ref=e68]: WAY TO PAY.
+      - generic [ref=e69]:
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - img [ref=e73]
+            - text: Ambition without borders. Sowieso.
+          - 'heading "iDEAL IS BECOMING WERO: THE NEW EUROPEAN PAYMENT SYSTEM" [level=2] [ref=e75]':
+            - generic [ref=e76]: iDEAL IS BECOMING
+            - generic [ref=e77]: "WERO:"
+            - generic [ref=e78]: THE NEW EUROPEAN
+            - generic [ref=e79]: PAYMENT SYSTEM
+          - generic [ref=e80]: We're going international, baby! With a new platform and the backing of all the banks, we're ready for the future as a payment system. Wero offers the same safety and ease of use as iDEAL, but it is available across Europe. Plus it offers new payment options and services like purchase protection. Sounds good, right? Especially since we're making the transition smooth. So you can focus on running your business.
+        - generic:
+          - generic:
+            - img
+    - generic [ref=e82]:
+      - heading "HOW IS THIS GOING TO WORK?" [level=2] [ref=e84]:
+        - text: HOW IS THIS
+        - text: GOING TO WORK?
+      - generic [ref=e85]:
+        - generic [ref=e87]:
+          - generic [ref=e88]: "1"
+          - img [ref=e90]
+          - generic [ref=e99]:
+            - 'heading "PHASE 1: CO-BRANDING AND TECHNICAL TRANSITION" [level=3] [ref=e100]'
+            - paragraph [ref=e101]: We're kicking off with brand awareness with the co-branded iDEAL | Wero logo. After that, transactions will gradually be migrated in the background to the new European Wero technology. Your current iDEAL setup will stay as is. Your iDEAL provider will keep you informed and notify you in case you need to adjust anything.
+        - generic [ref=e103]:
+          - generic [ref=e104]: "2"
+          - img [ref=e106]
+          - generic [ref=e112]:
+            - 'heading "PHASE 2: THE ROLLOUT OF WERO" [level=3] [ref=e113]'
+            - paragraph [ref=e114]: We're going all-in. The logo, the technology — everything is now completely Wero. You and your customers will get access to new features like subscriptions, payment protection, and flexible payment plans. Your business becomes part of a pan-European payment network.
+    - generic [ref=e116]:
+      - generic [ref=e117]:
+        - generic [ref=e118]: "We understand there are questions:"
+        - heading "WILL WERO BE AS RELIABLE AS iDEAL?" [level=2] [ref=e119]:
+          - text: WILL WERO BE
+          - generic [ref=e120]: AS RELIABLE
+          - text: AS iDEAL?
+        - img [ref=e122]
+        - button "We have the answer" [ref=e128]:
+          - generic [ref=e129]: We have the answer
+          - img [ref=e131]
+      - generic [ref=e133]:
+        - generic [ref=e134]: "We understand there are questions:"
+        - heading "ARE ALL THE DUTCH BANKS PARTICIPATING?" [level=2] [ref=e135]:
+          - text: ARE
+          - generic [ref=e136]: ALL
+          - text: THE DUTCH BANKS PARTICIPATING?
+        - img [ref=e138]
+        - button "We have the answer" [ref=e145]:
+          - generic [ref=e146]: We have the answer
+          - img [ref=e148]
+      - generic [ref=e150]:
+        - generic [ref=e151]: "We understand there are questions:"
+        - heading "WILL WERO BE JUST AS EASY FOR MY CUSTOMERS TO USE?" [level=2] [ref=e152]:
+          - text: WILL WERO BE
+          - generic [ref=e153]: JUST AS EASY
+          - text: FOR MY CUSTOMERS TO USE?
+        - img [ref=e155]
+        - button "We have the answer" [ref=e160]:
+          - generic [ref=e161]: We have the answer
+          - img [ref=e163]
+    - generic [ref=e165]:
+      - heading "iDEAL" [level=3] [ref=e166]
+      - img [ref=e168]
+      - img [ref=e171]
+    - generic [ref=e174]:
+      - generic [ref=e175]:
+        - img [ref=e177]
+        - text: Our Wero Q&A Series
+      - heading "ALWAYS AVAILABLE WITH OUR PSP PARTNERS" [level=2] [ref=e179]:
+        - generic [ref=e180]: ALWAYS AVAILABLE
+        - generic [ref=e181]: WITH OUR PSP PARTNERS
+      - generic [ref=e182]:
+        - generic [ref=e183]:
+          - img [ref=e185]
+          - text: All available PSPs
+        - generic [ref=e187]: Your current PSP provider already supports the transition. You don't need to switch anything.
+      - generic [ref=e188]:
+        - img "abn amro" [ref=e191]
+        - img "adyen" [ref=e194]
+        - img "airwallex" [ref=e197]
+        - img "alipay" [ref=e200]
+        - img "asn bank" [ref=e203]
+        - img "better world payments" [ref=e206]
+        - img "bluesnap" [ref=e209]
+        - img "bng bank" [ref=e212]
+        - img "bnp paribas" [ref=e215]
+        - img "boku" [ref=e218]
+        - img "brite" [ref=e221]
+        - img "buckaroo" [ref=e224]
+        - img "bunq black white" [ref=e227]
+        - img "ccv" [ref=e230]
+        - img "certo escrow" [ref=e233]
+        - img "chase paymentech" [ref=e236]
+        - img "checkout dot com" [ref=e239]
+        - img "cm" [ref=e242]
+        - img "curo payments" [ref=e245]
+        - img "daopay" [ref=e248]
+        - img "deutsche bank" [ref=e251]
+        - img "ease2pay" [ref=e254]
+        - img "ecommbx" [ref=e257]
+        - img "embed" [ref=e260]
+        - img "finby" [ref=e263]
+        - img "first data fiserv" [ref=e266]
+        - img "gocredible" [ref=e269]
+        - img "hipay" [ref=e272]
+        - img "icepay" [ref=e275]
+        - img "ing bank" [ref=e278]
+        - img "ingenico" [ref=e281]
+        - img "isbank" [ref=e284]
+        - img "knab" [ref=e287]
+        - img "lyra" [ref=e290]
+        - img "mangopay" [ref=e293]
+        - img "mollie" [ref=e296]
+        - img "monext" [ref=e299]
+        - img "multisafepay" [ref=e302]
+        - img "mypos" [ref=e305]
+        - img "novalnet" [ref=e308]
+        - img "nuvei" [ref=e311]
+        - img "nwb bank" [ref=e314]
+        - img "online payment platform" [ref=e317]
+        - img "pay dot com" [ref=e320]
+        - img "pay fast forward" [ref=e323]
+        - img "pay" [ref=e326]
+        - img "payabl" [ref=e329]
+        - img "paycomet" [ref=e332]
+        - img "payone" [ref=e335]
+        - img "paypal" [ref=e338]
+        - img "payplug" [ref=e341]
+        - img "paypro" [ref=e344]
+        - img "paysafe" [ref=e347]
+        - img "pingpong" [ref=e350]
+        - img "pprop" [ref=e353]
+        - img "rabobank logo" [ref=e356]
+        - img "rootline" [ref=e359]
+        - img "shift4" [ref=e362]
+        - img "sibs pagamentos" [ref=e365]
+        - img "stripe" [ref=e368]
+        - img "sumup" [ref=e371]
+        - img "takeaway" [ref=e374]
+        - img "thunes" [ref=e377]
+        - img "trust payments" [ref=e380]
+        - img "trustly" [ref=e383]
+        - img "unified post payments" [ref=e386]
+        - img "unlimit" [ref=e389]
+        - img "unzer" [ref=e392]
+        - img "viva wallet" [ref=e395]
+        - img "windcave" [ref=e398]
+        - img "worldline" [ref=e401]
+        - img "worldpay" [ref=e404]
+        - img "xplor" [ref=e407]
+        - img "yabandpay" [ref=e410]
+        - img "yoursafe" [ref=e413]
+        - img "zen" [ref=e416]
+    - contentinfo [ref=e417]:
+      - generic [ref=e418]:
+        - generic [ref=e419]:
+          - link "Always available with our PSP partners" [ref=e421] [cursor=pointer]:
+            - /url: "#psp-partners"
+            - generic [ref=e422]: Always available with our PSP partners
+            - img [ref=e424]
+          - generic [ref=e427]:
+            - link "iDEAL" [ref=e429] [cursor=pointer]:
+              - /url: https://ideal.nl/en
+              - img "iDEAL" [ref=e430]
+              - img [ref=e432]
+            - link "Wero" [ref=e436] [cursor=pointer]:
+              - /url: https://wero-wallet.eu/
+              - img "Wero" [ref=e437]
+              - img [ref=e439]
+        - generic [ref=e442]:
+          - link "Frequently Asked Questions Will Wero be just as easy for my customers to use?" [ref=e444] [cursor=pointer]:
+            - /url: "#veelgestelde-vragen"
+            - generic [ref=e445]: Frequently Asked Questions
+            - generic [ref=e446]:
+              - text: Will Wero be
+              - generic [ref=e447]: just as easy
+              - text: for my
+              - text: customers to use?
+            - img [ref=e449]
+          - generic [ref=e452]:
+            - link "FB" [ref=e453] [cursor=pointer]:
+              - /url: https://www.facebook.com/wero.eu/
+              - img [ref=e454]
+            - link "IG" [ref=e456] [cursor=pointer]:
+              - /url: https://www.instagram.com/wero_eu/
+              - img [ref=e457]
+            - link "TT" [ref=e461] [cursor=pointer]:
+              - /url: https://www.tiktok.com/@wero_eu
+              - img [ref=e462]
+      - img "sowieso" [ref=e465]
+      - generic [ref=e467]:
+        - text: © 2026 EPI Company SE |
+        - link "Website Terms of Use" [ref=e468] [cursor=pointer]:
+          - /url: https://wero-wallet.eu/storage/files/ENGLISH-TC-Wero-Wallet-Website-2024.pdf
+    - navigation [ref=e469]:
+      - generic [ref=e470]:
+        - link "What is it?" [ref=e471] [cursor=pointer]:
+          - /url: "#puzzle"
+        - link "When?" [ref=e472] [cursor=pointer]:
+          - /url: "#cards"
+        - link "FAQ" [ref=e473] [cursor=pointer]:
+          - /url: "#faq"
+        - link "Your PSP Partners" [ref=e474] [cursor=pointer]:
+          - /url: "#psp-partners"
+    - button "FAQ" [ref=e476]:
+      - generic [ref=e477]: FAQ
+    - button "Cookies" [ref=e479]: CO
+    - button "Help" [ref=e481]:
+      - img [ref=e482]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e492] [cursor=pointer]:
+    - img [ref=e493]
+  - alert [ref=e496]
