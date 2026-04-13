@@ -12,66 +12,87 @@ export function AirplanesSection() {
     target: ref,
     offset: ["start end", "end start"],
   });
-  const plane1X = useTransform(scrollYProgress, [0, 1], ["-30%", "120%"]);
-  const plane1Y = useTransform(scrollYProgress, [0, 1], ["40%", "-40%"]);
-  const plane2X = useTransform(scrollYProgress, [0, 1], ["120%", "-30%"]);
-  const plane2Y = useTransform(scrollYProgress, [0, 1], ["80%", "10%"]);
+  // Text scrub timeline (0.0 -> 0.25)
+  const op1 = useTransform(scrollYProgress, [0.0, 0.1], [0, 1]);
+  const y1 = useTransform(scrollYProgress, [0.0, 0.1], [24, 0]);
+
+  const op2 = useTransform(scrollYProgress, [0.05, 0.15], [0, 1]);
+  const y2 = useTransform(scrollYProgress, [0.05, 0.15], [24, 0]);
+
+  const op3 = useTransform(scrollYProgress, [0.1, 0.2], [0, 1]);
+  const y3 = useTransform(scrollYProgress, [0.1, 0.2], [24, 0]);
+
+  const op4 = useTransform(scrollYProgress, [0.15, 0.25], [0, 1]);
+  const y4 = useTransform(scrollYProgress, [0.15, 0.25], [24, 0]);
+
+  // Airplane triggers delayed until after text completes (0.4 -> 0.8)
+  const plane1X = useTransform(scrollYProgress, [0.4, 0.8], ["-80%", "150%"]);
+  const plane1Y = useTransform(scrollYProgress, [0.4, 0.8], ["30%", "-50%"]);
+  
+  const plane2X = useTransform(scrollYProgress, [0.45, 0.85], ["150%", "-80%"]);
+  const plane2Y = useTransform(scrollYProgress, [0.45, 0.85], ["90%", "-10%"]);
 
   return (
     <section
       ref={ref}
       className="relative"
       style={{
-        minHeight: "125dvh",
-        padding: "clamp(0rem,6.47vw - 1.52rem,6.25rem) 30px",
+        height: "300vh", // Force extended scroll distance while pinned
         width: "100%",
       }}
     >
-      <m.div
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          x: plane1X,
-          y: plane1Y,
-          width: "min(975px, 90vw)",
-          zIndex: 0,
-          willChange: "transform",
-        }}
-      >
-        <Airplane variant="pink" />
-      </m.div>
-      <m.div
-        style={{
-          position: "absolute",
-          right: 0,
-          top: 0,
-          x: plane2X,
-          y: plane2Y,
-          width: "min(800px, 75vw)",
-          zIndex: 0,
-          willChange: "transform",
-        }}
-      >
-        <Airplane variant="green" />
-      </m.div>
-
-      <div className="relative z-[2] flex flex-col items-center justify-center pt-[18vh] pb-[30vh]">
-        <Reveal className={styles.eyebrow + " mb-8"}>But what is it actually?</Reveal>
-        <Reveal
-          as="h2"
-          className={styles.airplanesTitle}
-          amount={0.25}
+      <div className="sticky top-0 left-0 w-full h-[100vh] overflow-hidden flex flex-col items-center justify-center">
+        <m.div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            x: plane1X,
+            y: plane1Y,
+            width: "min(975px, 90vw)",
+            zIndex: 0,
+            willChange: "transform",
+          }}
         >
-          <span style={{ display: "block" }}>iDEAL IS BECOMING</span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.3em" }}>
-            <span>WERO</span>
-            <InlineCheck />
-            <span>THE</span>
-          </span>
-          <span style={{ display: "block" }}>NEW EUROPEAN</span>
-          <span style={{ display: "block" }}>WAY TO PAY.</span>
-        </Reveal>
+          <Airplane variant="pink" />
+        </m.div>
+        
+        <m.div
+          style={{
+            position: "absolute",
+            right: 0,
+            top: 0,
+            x: plane2X,
+            y: plane2Y,
+            width: "min(800px, 75vw)",
+            zIndex: 0,
+            willChange: "transform",
+          }}
+        >
+          <Airplane variant="green" />
+        </m.div>
+
+        <div className="relative z-[2] flex flex-col items-center justify-center w-full px-4">
+          <m.div 
+            className={styles.eyebrow + " mb-8"}
+            style={{ opacity: op1, y: y1 }}
+          >
+            But what is it actually?
+          </m.div>
+          <h2 className={styles.airplanesTitle}>
+            <m.span style={{ display: "block", opacity: op1, y: y1 }}>PLUGOH IS BECOMING</m.span>
+            
+            <m.span style={{ display: "inline-flex", alignItems: "center", gap: "0.3em", opacity: op2, y: y2 }}>
+              <span>THE</span>
+              <InlineCheck />
+              <span>CORE</span>
+            </m.span>
+
+            <m.span style={{ display: "block", opacity: op3, y: y3 }}>MARKETPLACE</m.span>
+            
+            <m.span style={{ display: "block", opacity: op4, y: y4 }}>FOR CREATORS.</m.span>
+          </h2>
+        </div>
       </div>
     </section>
   );

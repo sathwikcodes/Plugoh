@@ -4,8 +4,14 @@ import { m, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import styles from "../sowieso.module.css";
 import { Hands } from "./Hands";
+import { LinesAnimation } from "./LinesAnimation";
 
-const TITLE_LINES = ["iDEAL IS", "BECOMING", "WERO"];
+// Dynamic text lines mapping providing logic to the hero messaging
+const TITLE_LINES = [
+  { text: "the ultimate", size: "max(6vw, 40px)" },
+  { text: "CREATOR", size: "max(15vw, 100px)" },
+  { text: "marketplace", size: "max(6vw, 40px)" },
+];
 
 export function HeroSection() {
   const ref = useRef<HTMLElement>(null);
@@ -13,123 +19,144 @@ export function HeroSection() {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, -120]);
-  const handsScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
-  const handsY = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
+
+  // Title parallaxes up and fades as you scroll
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  // Hands: scale up slightly + slowly slide DOWN out of view on scroll
+  const handsScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+  const handsY = useTransform(scrollYProgress, [0, 1], ["0%", "80%"]);
 
   return (
     <section
       ref={ref}
-      className="relative flex items-center justify-center"
+      className="relative flex items-center justify-center overflow-hidden"
       style={{ height: "100svh" }}
     >
-      {/* decorative lines */}
-      <Lines />
-      {/* stars */}
-      <Stars />
+      {/* Lines animation explicitly centered with a radial mask to carve an empty radius over the hands */}
+      <div 
+        className="absolute pointer-events-none z-0 h-[100vh] w-[100vw] top-1/2 left-1/2 flex justify-center items-center"
+        style={{ 
+          transform: "translate(-50%, -50%) scale(1.1)",
+          WebkitMaskImage: "radial-gradient(circle, transparent 30%, black 45%)",
+          maskImage: "radial-gradient(circle, transparent 30%, black 45%)"
+        }}
+      >
+        <LinesAnimation />
+      </div>
 
-      {/* hands */}
-      <m.div
-        style={{
-          scale: handsScale,
-          y: handsY,
-          width: "86vw",
-          maxWidth: 1100,
-          aspectRatio: "1100/1088",
+      {/* Dynamic Background Effects: 3 rotating SVG Sparkles + Custom Outward Lines */}
+      <BackgroundEffects />
+
+      {/*
+        Hands animation holder
+        Original CSS:
+          aspect-ratio: 1100/1088 (mobile) | here we use 1527/736 (desktop)
+          width: 86vw; max-width: ~1100px
+          className="absolute w-[100vw] h-[100vh] pointer-events-none"
+      */}
+      <div className="absolute w-[100vw] h-[100vh] pointer-events-none">
+        {/*
+          Custom Lottie Hands Integration centered globally
+        */}
+        <div style={{
           position: "absolute",
           left: "50%",
           top: "50%",
-          translateX: "-50%",
-          translateY: "-45%",
+          transform: "translate(-50%, -30%) scale(1)",
+          width: "100%",
+          maxWidth: 1600,
+          aspectRatio: "1527/736",
+          overflow: "hidden",
           willChange: "transform",
           zIndex: 1,
-        }}
-      >
-        <Hands />
-      </m.div>
+        }}>
+          <Hands />
+        </div>
+      </div>
 
-      {/* title */}
-      <m.h1
-        className={styles.heroTitle}
-        style={{
-          y: titleY,
-          opacity: titleOpacity,
-          position: "relative",
-          zIndex: 2,
-          willChange: "transform",
-          marginTop: "-4vh",
-        }}
-      >
+      {/* 
+        Custom imported Fonts logic for GT Walsheim Wero mapped directly from the website dump.
+      */}
+      <style>{`
+        @font-face {
+          font-family: 'GT Walsheim Wero';
+          src: url('/sowieso/fonts/GT-Walsheim-wero-Black.woff2') format('woff2');
+          font-weight: 900;
+        }
+        @font-face {
+          font-family: 'GT Walsheim Wero';
+          src: url('/sowieso/fonts/GT-Walsheim-wero-Medium.woff2') format('woff2');
+          font-weight: 500;
+        }
+      `}</style>
+
+      {/*
+        Title layered on top, fading/moving up on scroll
+      */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 px-4">
         {TITLE_LINES.map((line, i) => (
           <m.span
-            key={line}
-            style={{ display: "block" }}
-            initial={{ y: 60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.35 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
+            key={i}
+            className={`text-[#1d1c1c] uppercase relative z-10 m-0 p-0 font-black`}
+            style={{
+              fontFamily: "'GT Walsheim Wero', sans-serif",
+              fontSize: line.size,
+              lineHeight: "0.9",
+              letterSpacing: i === 1 ? "-0.04em" : "-0.02em",
+              opacity: titleOpacity,
+              y: titleY,
+            }}
           >
-            {line}
+            {line.text}
+            
+            {/* Inject sticker precisely attached to the top-right ('e') of the first line */}
+            {i === 0 && (
+              <m.div
+                className="absolute"
+                style={{
+                  right: "-20px",  // offset visually past the 'e'
+                  top: "-30px",    // hover above the top-bound
+                  zIndex: 20,
+                  transform: "translateX(100%)", // push clearly outside the text
+                }}
+              >
+                <div
+                  className={`${styles.slowSpin} w-20 h-20 md:w-28 md:h-28 xl:w-32 xl:h-32 transform transition-transform hover:scale-110`}
+                >
+                  <img
+                    src="/sowieso/images/sticker-phase-1-en.png"
+                    alt="Now in phase 1"
+                    style={{ width: "100%", height: "auto", display: "block" }}
+                  />
+                </div>
+              </m.div>
+            )}
           </m.span>
         ))}
-      </m.h1>
+      </div>
 
-      {/* Sticker */}
-      <m.div
-        initial={{ scale: 0, rotate: -12, opacity: 0 }}
-        animate={{ scale: 1, rotate: 12, opacity: 1 }}
-        transition={{ delay: 1.1, type: "spring", stiffness: 140, damping: 12 }}
-        className={styles.slowSpin}
-        style={{
-          position: "absolute",
-          top: "18%",
-          right: "16%",
-          width: "clamp(5.5rem, 6.2vw + 2.5rem, 9.875rem)",
-          zIndex: 3,
-        }}
-      >
-        <img
-          src="/sowieso/images/sticker-phase-1-en.png"
-          alt="Now in phase 1"
-          style={{ width: "100%", height: "auto", display: "block" }}
-        />
-      </m.div>
-
-      {/* Scroll button */}
-      <m.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
-        className="fixed left-0 right-0 flex items-center justify-center z-20"
-        style={{ bottom: 25 }}
-      >
-        <button
-          className={styles.pill}
-          style={{
-            padding: "14px 22px 14px 18px",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 14,
-            fontSize: 15,
-          }}
-        >
-          <span>Scroll and discover what this means</span>
-          <span
-            className={styles.iconBadgeSm}
-            style={{ width: 28, height: 28, boxShadow: "0 2px 0 0 #1d1c1c" }}
-          >
-            <svg width="12" height="12" viewBox="0 0 17 18" fill="none">
-              <path d="M0.916 8.562l7.467 7.467 7.466-7.467" stroke="#1D1C1C" strokeWidth="1.5" />
-              <path d="M8.383 16.03V0.944" stroke="#1D1C1C" strokeWidth="1.5" />
-            </svg>
-          </span>
-        </button>
-      </m.div>
+      {/* Scroll button is managed by BottomNav */}
     </section>
   );
 }
 
-function Lines() {
+/**
+ * Dynamic background combination.
+ * 3 rotating custom SVG sparkles near the text.
+ */
+function BackgroundEffects() {
+  const elements = [
+    // --- 3 ROTATING SVG SPARKLES AROUND THE TEXT ---
+    // Overlaying 'M'
+    { type: "sparkle", cx: 35, cy: 35, size: 5, delay: 0 },
+    // Overlaying 'R'
+    { type: "sparkle", cx: 65, cy: 35, size: 4, delay: 0 },
+    // Overlaying 'A'
+    { type: "sparkle", cx: 50, cy: 50, size: 6, delay: 0 },
+  ];
+
   return (
     <svg
       aria-hidden
@@ -139,45 +166,41 @@ function Lines() {
         width: "100%",
         height: "100%",
         pointerEvents: "none",
-        zIndex: 0,
-      }}
-      viewBox="0 0 1440 900"
-      preserveAspectRatio="none"
-    >
-      <g stroke="#1d1c1c" strokeWidth="1.6" fill="none" strokeLinecap="round">
-        <path d="M120 160 L260 240" />
-        <path d="M1180 180 L1320 250" />
-        <path d="M80 720 L220 660" />
-        <path d="M1220 680 L1360 760" />
-        <path d="M200 860 L320 790" />
-        <path d="M1100 860 L1240 790" />
-        <path d="M60 440 L160 500" />
-        <path d="M1280 440 L1380 500" />
-      </g>
-    </svg>
-  );
-}
-
-function Stars() {
-  return (
-    <svg
-      aria-hidden
-      style={{
-        position: "absolute",
-        left: "4%",
-        top: "8%",
-        width: "14vw",
-        height: "auto",
-        pointerEvents: "none",
-        zIndex: 0,
+        zIndex: 20,
       }}
       viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid slice"
     >
-      <g fill="#1d1c1c">
-        <circle cx="20" cy="30" r="2" />
-        <circle cx="70" cy="20" r="1.5" />
-        <circle cx="45" cy="70" r="2.5" />
+      <g>
+        {elements.map((el, i) => (
+          <g
+            key={i}
+            style={{
+              transformOrigin: `${el.cx}px ${el.cy}px`,
+              animation: `sparkleOrbit 6s linear infinite`,
+              animationDelay: `${el.delay}s`,
+            }}
+          >
+            <path
+              fill="#ffffff"
+              d={`M ${el.cx} ${el.cy! - el.size!} 
+                 C ${el.cx} ${el.cy! - el.size!*0.2} ${el.cx! + el.size!*0.2} ${el.cy} ${el.cx! + el.size!} ${el.cy} 
+                 C ${el.cx! + el.size!*0.2} ${el.cy} ${el.cx} ${el.cy! + el.size!*0.2} ${el.cx} ${el.cy! + el.size!} 
+                 C ${el.cx} ${el.cy! + el.size!*0.2} ${el.cx! - el.size!*0.2} ${el.cy} ${el.cx! - el.size!} ${el.cy} 
+                 C ${el.cx! - el.size!*0.2} ${el.cy} ${el.cx} ${el.cy! - el.size!*0.2} ${el.cx} ${el.cy! - el.size!} Z`}
+            />
+          </g>
+        ))}
       </g>
+      <style>{`
+        @keyframes sparkleOrbit {
+          0%   { transform: rotate(0deg) scale(0.6); opacity: 0; }
+          30%  { transform: rotate(108deg) scale(0.6); opacity: 0; }
+          40%  { transform: rotate(144deg) scale(1); opacity: 1; }
+          80%  { transform: rotate(288deg) scale(1); opacity: 1; }
+          100% { transform: rotate(360deg) scale(0.6); opacity: 0; }
+        }
+      `}</style>
     </svg>
   );
 }
