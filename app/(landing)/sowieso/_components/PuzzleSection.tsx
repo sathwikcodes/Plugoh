@@ -1,92 +1,112 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import styles from "../sowieso.module.css";
 import { Reveal } from "./Reveal";
+import { FistBump } from "./FistBump";
+
+const TOTAL_FRAMES = 401;
 
 export function PuzzleSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const lottieRef = useRef<any>(null);
+  // float accumulator so tiny trackpad deltas don't get lost
+  const frameRef = useRef(0);
+
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      const section = sectionRef.current;
+      const anim = lottieRef.current;
+      if (!section || !anim) return;
+
+      // Only intercept when this section fills the viewport
+      const { top, bottom } = section.getBoundingClientRect();
+      const fills = top <= 2 && bottom >= window.innerHeight - 2;
+      if (!fills) return;
+
+      const goingDown = e.deltaY > 0;
+
+      // At the boundary in the direction of travel → let the page scroll naturally
+      if (goingDown && frameRef.current >= TOTAL_FRAMES - 1) return;
+      if (!goingDown && frameRef.current <= 0) return;
+
+      // Consume the scroll event — page doesn't move
+      e.preventDefault();
+
+      // Scale: a typical mouse-wheel click is ~100 px delta → ~17 frames
+      const next = frameRef.current + e.deltaY * 0.17;
+      frameRef.current = Math.max(0, Math.min(TOTAL_FRAMES - 1, next));
+      anim.goToAndStop(Math.round(frameRef.current), true);
+    };
+
+    let lastTouchY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      lastTouchY = e.touches[0].clientY;
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      const section = sectionRef.current;
+      const anim = lottieRef.current;
+      if (!section || !anim) return;
+
+      const { top, bottom } = section.getBoundingClientRect();
+      if (!(top <= 2 && bottom >= window.innerHeight - 2)) return;
+
+      const dy = lastTouchY - e.touches[0].clientY;
+      lastTouchY = e.touches[0].clientY;
+
+      const goingDown = dy > 0;
+      if (goingDown && frameRef.current >= TOTAL_FRAMES - 1) return;
+      if (!goingDown && frameRef.current <= 0) return;
+
+      e.preventDefault();
+      const next = frameRef.current + dy * 0.5;
+      frameRef.current = Math.max(0, Math.min(TOTAL_FRAMES - 1, next));
+      anim.goToAndStop(Math.round(frameRef.current), true);
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, []);
+
   return (
-    <section
-      className="relative mx-auto"
+    <div
+      ref={sectionRef}
+      className="relative flex flex-col items-center justify-center overflow-hidden"
       style={{
-        maxWidth: 1920,
-        padding:
-          "clamp(0rem,6.47vw - 1.52rem,6.25rem) clamp(1.875rem,8.41vw - 0.1rem,10rem)",
+        height: "100vh",
+        background: "linear-gradient(180deg, #ffe87a 0%, #ffd84a 100%)",
       }}
     >
-      <div className="relative lg:max-w-[680px]">
-        <Reveal className={styles.eyebrow + " mb-6 flex items-center gap-3"}>
-          <span className={styles.iconBadgeSm}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M7 17L17 7M17 7H9M17 7V15"
-                stroke="#1d1c1c"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            </svg>
-          </span>
-          Ambition without borders. Sowieso.
-        </Reveal>
-        <Reveal
-          as="h2"
-          className={styles.sectionTitle + " mb-6"}
-          delay={0.1}
-        >
-          <span style={{ display: "block" }}>iDEAL IS BECOMING</span>
-          <span style={{ display: "block" }}>WERO:</span>
-          <span style={{ display: "block" }}>THE NEW EUROPEAN</span>
-          <span style={{ display: "block" }}>PAYMENT SYSTEM</span>
-        </Reveal>
-        <Reveal className={styles.body + " max-w-[560px]"} delay={0.2}>
-          We&apos;re going international, baby! With a new platform and the
-          backing of all the banks, we&apos;re ready for the future as a payment
-          system. Wero offers the same safety and ease of use as iDEAL, but it
-          is available across Europe. Plus it offers new payment options and
-          services like purchase protection. Sounds good, right? Especially
-          since we&apos;re making the transition smooth. So you can focus on
-          running your business.
-        </Reveal>
+      {/* Fist bump Lottie: centered full-width, behind title */}
+      <div
+        className="pointer-events-none"
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "100vw",
+          aspectRatio: "2483/900",
+        }}
+      >
+        <FistBump lottieRef={lottieRef} />
       </div>
 
-      {/* Puzzle graphic */}
-      <Reveal
-        className="pointer-events-none"
-        amount={0.25}
-      >
-        <div
-          className={styles.floatY}
-          style={{
-            position: "absolute",
-            right: "3vw",
-            top: "-10%",
-            width: "min(40%, 520px)",
-            aspectRatio: "1/1",
-            filter: "drop-shadow(0 12px 0 rgba(29,28,28,0.18))",
-          }}
-        >
-          <PuzzleSvg />
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
-function PuzzleSvg() {
-  return (
-    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden style={{ width: "100%", height: "auto" }}>
-      <defs>
-        <linearGradient id="puz" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#7effc5" />
-          <stop offset="100%" stopColor="#4ad8a0" />
-        </linearGradient>
-      </defs>
-      <g stroke="#1d1c1c" strokeWidth="4" strokeLinejoin="round" fill="url(#puz)">
-        {/* isometric-looking two-piece puzzle */}
-        <path d="M60 200 L180 140 L180 210 Q210 210 210 240 Q210 270 180 270 L180 290 L60 230 Z" />
-        <path d="M180 210 Q210 210 210 240 Q210 270 180 270 L180 290 L340 210 L340 150 L180 140 Z" />
-        <path d="M60 230 L180 290 L180 320 L60 260 Z" fill="#1d1c1c" opacity="0.85" />
-        <path d="M180 290 L340 210 L340 240 L180 320 Z" fill="#1d1c1c" opacity="0.7" />
-      </g>
-    </svg>
+      {/* Title above fists */}
+      <div className="relative z-10 flex flex-col items-center w-full px-4">
+        <Reveal as="h2" className={styles.airplanesTitle + " text-center"} amount={0.3}>
+          <span style={{ display: "block" }}>iDEAL IS BECOMING</span>
+          <span style={{ display: "block" }}>THE CORE</span>
+          <span style={{ display: "block" }}>MARKETPLACE</span>
+        </Reveal>
+      </div>
+    </div>
   );
 }

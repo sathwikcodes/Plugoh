@@ -18,7 +18,7 @@ export function Airplane({
         </linearGradient>
         <linearGradient id="paperGreen" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#7effc5" />
-          <stop offset="100%" stopColor="#ff7ec8" />
+          <stop offset="100%" stopColor="#3dd6a0" />
         </linearGradient>
       </defs>
       <g stroke="#1d1c1c" strokeWidth="3" strokeLinejoin="round">
