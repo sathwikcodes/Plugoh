@@ -1,6 +1,6 @@
 "use client";
 
-import { m, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { m, useScroll, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import styles from "../sowieso.module.css";
 
@@ -10,7 +10,6 @@ export function BottomNav() {
 
   useEffect(() => {
     const unsub = scrollY.on("change", (y) => {
-      // Trigger down bar aggressively the exact instant the user begins to push down from the absolute top
       setPastHero(y > 30);
     });
     return unsub;
@@ -18,11 +17,10 @@ export function BottomNav() {
 
   return (
     <>
-      {/* Bottom center — toggles between scroll hint and nav links */}
-      <div className="fixed bottom-[22px] left-1/2 z-[1100] -translate-x-1/2">
+      {/* Bottom center — scroll hint → nav links */}
+      <div className="fixed bottom-[18px] sm:bottom-[22px] left-1/2 z-[1100] -translate-x-1/2">
         <AnimatePresence mode="wait">
           {!pastHero ? (
-            /* Hero state: "Scroll and discover" */
             <m.div
               key="scroll-hint"
               initial={{ opacity: 0, y: 8 }}
@@ -31,22 +29,23 @@ export function BottomNav() {
               transition={{ duration: 0.15 }}
             >
               <a
-                href="#puzzle"
+                href="#about"
                 className={styles.pill}
                 style={{
-                  padding: "14px 22px 14px 18px",
+                  padding: "11px 18px 11px 16px",
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: 14,
-                  fontSize: 15,
+                  gap: 12,
+                  fontSize: "clamp(0.8rem, 2vw, 0.9375rem)",
+                  whiteSpace: "nowrap",
                 }}
               >
                 <span>Scroll and discover</span>
                 <span
                   className={styles.iconBadgeSm}
-                  style={{ width: 28, height: 28, boxShadow: "0 2px 0 0 #1d1c1c" }}
+                  style={{ width: 26, height: 26, boxShadow: "0 2px 0 0 #1d1c1c", flexShrink: 0 }}
                 >
-                  <svg width="12" height="12" viewBox="0 0 17 18" fill="none">
+                  <svg width="11" height="11" viewBox="0 0 17 18" fill="none">
                     <path d="M0.916 8.562l7.467 7.467 7.466-7.467" stroke="#1D1C1C" strokeWidth="1.5" />
                     <path d="M8.383 16.03V0.944" stroke="#1D1C1C" strokeWidth="1.5" />
                   </svg>
@@ -54,7 +53,6 @@ export function BottomNav() {
               </a>
             </m.div>
           ) : (
-            /* Post-hero state: nav links */
             <m.nav
               key="nav-links"
               initial={{ opacity: 0, y: 8 }}
@@ -65,46 +63,42 @@ export function BottomNav() {
               <div
                 className={styles.pill}
                 style={{
-                  padding: "10px 18px",
+                  padding: "9px 16px",
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: 24,
-                  fontSize: 14,
+                  gap: "clamp(12px, 3vw, 24px)",
+                  fontSize: "clamp(0.75rem, 2vw, 0.875rem)",
+                  whiteSpace: "nowrap",
                 }}
               >
-                <a href="#puzzle">What is it?</a>
-                <a href="#cards">When?</a>
-                <a href="#faq">FAQ</a>
-                <a href="#psp-partners">Your PSP Partners</a>
+                <a href="#about" style={{ textDecoration: "none", color: "inherit" }}>What is it?</a>
+                <a href="#how-it-works" style={{ textDecoration: "none", color: "inherit" }}>How it works</a>
+                <a href="/faq" style={{ textDecoration: "none", color: "inherit" }}>FAQ</a>
               </div>
             </m.nav>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Bottom left utilities block: FAQ button matching source layout natively */}
-      <div className="fixed left-4 bottom-[22px] z-[1100] flex items-center gap-3">
-        <button
-          aria-label="Cookies"
-          className={styles.iconBadge}
-          style={{ background: "#1d1c1c", color: "#fff48d", fontWeight: 800, fontSize: 12, border: "1px solid #1d1c1c" }}
-        >
-          CO
-        </button>
+      {/* Bottom left — FAQ pill (appears after scrolling past hero) */}
+      <div className="fixed left-4 bottom-[18px] sm:bottom-[22px] z-[1100]">
         <AnimatePresence>
           {pastHero && (
             <m.a
-              href="#faq"
+              href="/faq"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.15 }}
               className={styles.pill}
               style={{
-                padding: "8px 16px",
-                fontSize: 14,
+                padding: "8px 14px",
+                fontSize: "clamp(0.75rem, 2vw, 0.875rem)",
                 fontWeight: 600,
                 cursor: "pointer",
+                textDecoration: "none",
+                color: "inherit",
+                display: "inline-block",
               }}
             >
               FAQ

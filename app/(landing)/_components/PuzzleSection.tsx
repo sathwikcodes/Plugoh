@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import styles from "../sowieso.module.css";
 import { Reveal } from "./Reveal";
 import { FistBump } from "./FistBump";
-import { m, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { useScroll, useMotionValueEvent } from "framer-motion";
 
 const TOTAL_FRAMES = 401;
 
@@ -14,13 +14,11 @@ export function PuzzleSection() {
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start start", "end end"],
   });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (!lottieRef.current) return;
-    
-    // Convert 0 -> 1 progress to 0 -> TOTAL_FRAMES
     const frame = latest * (TOTAL_FRAMES - 1);
     lottieRef.current.goToAndStop(Math.round(frame), true);
   });
@@ -30,15 +28,15 @@ export function PuzzleSection() {
       ref={containerRef}
       className="relative w-full"
       style={{
-        height: "350vh", // Extra scroll area for the locked animation
+        height: "350vh",
         background: "linear-gradient(180deg, #ffe87a 0%, #ffd84a 100%)",
       }}
     >
-      <div 
+      <div
         className="sticky top-0 w-full flex flex-col items-center justify-center overflow-hidden"
         style={{ height: "100vh" }}
       >
-        {/* Fist bump Lottie: centered full-width, behind title */}
+        {/* Fist bump — full width, vertically centered */}
         <div
           className="pointer-events-none"
           style={{
@@ -46,19 +44,26 @@ export function PuzzleSection() {
             left: "50%",
             top: "50%",
             transform: "translate(-50%, -50%)",
-            width: "100vw",
+            // On mobile the 2483/900 ratio would be too short in height.
+            // Use 100vw width always; height is naturally derived from ratio.
+            // But we want it to cover more on mobile so we scale it up.
+            width: "max(100vw, 140vh)",
             aspectRatio: "2483/900",
           }}
         >
           <FistBump lottieRef={lottieRef} />
         </div>
 
-        {/* Title above fists */}
+        {/* Title — sits above the fists */}
         <div className="relative z-10 flex flex-col items-center w-full px-4">
-          <Reveal as="h2" className={styles.airplanesTitle + " text-center"} amount={0.3}>
-            <span style={{ display: "block" }}>iDEAL IS BECOMING</span>
-            <span style={{ display: "block" }}>THE CORE</span>
-            <span style={{ display: "block" }}>MARKETPLACE</span>
+          <Reveal
+            as="h2"
+            className={styles.airplanesTitle + " text-center"}
+            amount={0.3}
+          >
+            <span style={{ display: "block" }}>EVERY GREAT</span>
+            <span style={{ display: "block" }}>COLLAB STARTS</span>
+            <span style={{ display: "block" }}>WITH A HANDSHAKE.</span>
           </Reveal>
         </div>
       </div>

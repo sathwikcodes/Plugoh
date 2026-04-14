@@ -3,33 +3,27 @@ import { ScrollProgress } from "./_components/ScrollProgress";
 import { SiteHeader } from "./_components/SiteHeader";
 import { HeroSection } from "./_components/HeroSection";
 import { AirplanesSection } from "./_components/AirplanesSection";
+import { HowItWorksSection } from "./_components/HowItWorksSection";
 import { PuzzleSection } from "./_components/PuzzleSection";
-import { PhaseCards } from "./_components/PhaseCards";
-import { FaqSection } from "./_components/FaqSection";
-import { PageTransition } from "./_components/PageTransition";
-import { PartnersSection } from "./_components/PartnersSection";
 import { SiteFooter } from "./_components/SiteFooter";
 import { BottomNav } from "./_components/BottomNav";
 
-export default function SowiesoMerchantPage() {
+export default function LandingPage() {
   return (
     <>
       <BackgroundGradient />
       <ScrollProgress />
       <SiteHeader />
       <HeroSection />
-      <section id="puzzle">
+      <section id="about">
         <AirplanesSection />
+      </section>
+      <section id="how-it-works">
+        <HowItWorksSection />
+      </section>
+      <section id="puzzle">
         <PuzzleSection />
       </section>
-      <section id="cards">
-        <PhaseCards />
-      </section>
-      <section id="faq">
-        <FaqSection />
-      </section>
-      <PageTransition />
-      <PartnersSection />
       <SiteFooter />
       <BottomNav />
     </>
