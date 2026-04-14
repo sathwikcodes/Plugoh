@@ -7,6 +7,7 @@ import { HowItWorksSection } from "./_components/HowItWorksSection";
 import { PuzzleSection } from "./_components/PuzzleSection";
 import { SiteFooter } from "./_components/SiteFooter";
 import { BottomNav } from "./_components/BottomNav";
+import { FaqDrawer } from "./_components/FaqDrawer";
 
 export default function LandingPage() {
   return (
@@ -26,6 +27,7 @@ export default function LandingPage() {
       </section>
       <SiteFooter />
       <BottomNav />
+      <FaqDrawer />
     </>
   );
 }

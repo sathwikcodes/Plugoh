@@ -123,10 +123,10 @@ export function SiteFooter() {
         <Reveal
           className={`${styles.surfaceCard} ${styles.faqTilePink} relative overflow-hidden h-full flex flex-col sm:col-span-2 lg:col-span-1`}
         >
-          <a
-            href="/faq"
-            className="block relative p-6 lg:p-8 flex-1 min-h-[220px] sm:min-h-[280px] lg:min-h-[380px]"
-            style={{ color: "#1d1c1c" }}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("open-faq"))}
+            className="block relative p-6 lg:p-8 flex-1 min-h-[220px] sm:min-h-[280px] lg:min-h-[380px] w-full text-left"
+            style={{ color: "#1d1c1c", background: "none", border: "none", cursor: "pointer" }}
           >
             <div className="font-[500] text-sm xl:text-base text-center" style={{ marginBottom: 24 }}>
               Frequently Asked Questions
@@ -150,7 +150,7 @@ export function SiteFooter() {
             >
               <ArrowShort />
             </span>
-          </a>
+          </button>
         </Reveal>
 
         {/* Tile 4: Social tile — row on mobile/sm, column on lg */}

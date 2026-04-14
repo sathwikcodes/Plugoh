@@ -73,7 +73,12 @@ export function BottomNav() {
               >
                 <a href="#about" style={{ textDecoration: "none", color: "inherit" }}>What is it?</a>
                 <a href="#how-it-works" style={{ textDecoration: "none", color: "inherit" }}>How it works</a>
-                <a href="/faq" style={{ textDecoration: "none", color: "inherit" }}>FAQ</a>
+                <button
+                  onClick={() => window.dispatchEvent(new CustomEvent("open-faq"))}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "inherit", font: "inherit", padding: 0 }}
+                >
+                  FAQ
+                </button>
               </div>
             </m.nav>
           )}
@@ -84,8 +89,8 @@ export function BottomNav() {
       <div className="fixed left-4 bottom-[18px] sm:bottom-[22px] z-[1100]">
         <AnimatePresence>
           {pastHero && (
-            <m.a
-              href="/faq"
+            <m.button
+              onClick={() => window.dispatchEvent(new CustomEvent("open-faq"))}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
@@ -96,13 +101,13 @@ export function BottomNav() {
                 fontSize: "clamp(0.75rem, 2vw, 0.875rem)",
                 fontWeight: 600,
                 cursor: "pointer",
-                textDecoration: "none",
                 color: "inherit",
-                display: "inline-block",
+                background: "none",
+                border: "none",
               }}
             >
               FAQ
-            </m.a>
+            </m.button>
           )}
         </AnimatePresence>
       </div>
