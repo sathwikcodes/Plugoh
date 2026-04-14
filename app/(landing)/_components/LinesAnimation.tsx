@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { RefObject } from "react";
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
-import linesData from "../../../public/sowieso/animations/lines.json";
+import linesData from "../../../public/landing/animations/lines.json";
 
 type LinesAnimationProps = {
   lottieRef?: RefObject<any>;

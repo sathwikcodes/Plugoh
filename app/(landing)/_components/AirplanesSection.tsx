@@ -2,7 +2,7 @@
 
 import { m, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
-import styles from "../sowieso.module.css";
+import styles from "../landing.module.css";
 import { Airplane } from "./Airplane";
 
 const CATEGORY_PILLS = ["Food & Bev", "Fashion", "Tech", "Beauty", "Lifestyle", "Gaming"];

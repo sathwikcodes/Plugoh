@@ -1,7 +1,7 @@
 "use client";
 
 import { m } from "framer-motion";
-import styles from "../sowieso.module.css";
+import styles from "../landing.module.css";
 
 export function SiteHeader() {
   return (

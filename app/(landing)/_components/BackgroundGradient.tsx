@@ -1,7 +1,7 @@
 "use client";
 
 import { m, useScroll, useTransform, MotionValue } from "framer-motion";
-import styles from "../sowieso.module.css";
+import styles from "../landing.module.css";
 
 export function BackgroundGradient() {
   const { scrollYProgress } = useScroll();

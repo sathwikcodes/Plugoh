@@ -7,7 +7,7 @@ export function Airplane({
 }) {
   return (
     <img
-      src="/sowieso/images/airplane1.png"
+      src="/landing/images/airplane1.png"
       alt={`${variant} airplane`}
       style={{
         display: "block",

@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "../sowieso.module.css";
+import styles from "../landing.module.css";
 import { Reveal } from "./Reveal";
 
 const ArrowShort = () => (
@@ -51,7 +51,7 @@ export function SiteFooter() {
               <ArrowShort />
             </span>
             <img
-              src="/sowieso/images/footer-banks.svg"
+              src="/landing/images/footer-banks.svg"
               alt=""
               aria-hidden
               style={{

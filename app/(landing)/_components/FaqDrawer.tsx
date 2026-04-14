@@ -2,7 +2,7 @@
 
 import { m, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import styles from "../sowieso.module.css";
+import styles from "../landing.module.css";
 
 const faqs = [
   {

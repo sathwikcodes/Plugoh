@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import styles from "../sowieso.module.css";
+import styles from "../landing.module.css";
 import { Reveal } from "./Reveal";
 import { FistBump } from "./FistBump";
 import { LinesAnimation } from "./LinesAnimation";

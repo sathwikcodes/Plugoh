@@ -1,14 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef } from "react";
 
 // Dynamically import to avoid SSR issues
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 // We'll load the JSON at runtime via fetch to keep the bundle lean,
 // but since Next.js can serve from /public we just import directly.
-import handsData from "../../../public/sowieso/animations/hands.json";
+import handsData from "../../../public/landing/animations/hands.json";
 
 export function Hands() {
   return (

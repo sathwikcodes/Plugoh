@@ -2,7 +2,7 @@
 
 import { m, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import styles from "../sowieso.module.css";
+import styles from "../landing.module.css";
 import { Hands } from "./Hands";
 import { LinesAnimation } from "./LinesAnimation";
 
@@ -92,7 +92,7 @@ export function HeroSection() {
               className={`${styles.slowSpin} w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 transform transition-transform hover:scale-110`}
             >
               <img
-                src="/sowieso/images/sticker-phase-1-en.png"
+                src="/landing/images/sticker-phase-1-en.png"
                 alt="Now in phase 1"
                 style={{ width: "100%", height: "auto", display: "block" }}
               />

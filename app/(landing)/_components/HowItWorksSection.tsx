@@ -2,7 +2,7 @@
 
 import { MotionValue, m, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import styles from "../sowieso.module.css";
+import styles from "../landing.module.css";
 import { Reveal } from "./Reveal";
 
 const phases = [
