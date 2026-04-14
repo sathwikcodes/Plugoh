@@ -176,7 +176,7 @@
     @apply border-border outline-ring/50;
   }
   html {
-    @apply font-sans overflow-x-hidden;
+    @apply font-sans overflow-x-clip;
     /* ── Premium rendering stack ── */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -189,7 +189,7 @@
     text-size-adjust: 100%;
   }
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    @apply bg-background text-foreground overflow-x-clip;
     font-synthesis: none;
   }
   /* Geometric precision for all SVG icons (Lucide, etc.) */

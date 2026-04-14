@@ -12,7 +12,7 @@
   font-family: var(--font-walsheim), ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   background: var(--surface);
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
   min-height: 100vh;
   position: relative;
@@ -195,10 +195,10 @@
 }
 
 .faqTileGreen {
-  background: linear-gradient(135deg, #7effc5 0%, #5ae8a8 100%);
+  background: linear-gradient(180deg, #7dfaab 0%, #6cd1ff 100%);
 }
 .faqTilePink {
-  background: linear-gradient(135deg, #ff7ec8 0%, #d06cff 100%);
+  background: linear-gradient(135deg, #ffa8eb 0%, #ffc47a 100%);
 }
 .faqTileOrange {
   background: linear-gradient(135deg, #ffb176 0%, #ff6a6a 100%);
@@ -215,7 +215,7 @@
 }
 
 .partnerTile {
-  background: linear-gradient(135deg, #a66cff 0%, #ff6aa2 100%);
+  background: linear-gradient(150deg, #7dfaab 45%, #a66cff 100%);
 }
 
 /* No-scrollbar for horizontal tracks */
@@ -246,4 +246,18 @@
 .revealHidden {
   opacity: 0;
   transform: translateY(24px);
+}
+
+@keyframes shakeAirplane {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-3px, 4px) rotate(-0.5deg); }
+  50% { transform: translate(4px, -3px) rotate(1deg); }
+  75% { transform: translate(-4px, 2px) rotate(0deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.shakeAirplane {
+  animation: shakeAirplane 0.3s ease-in-out infinite;
+  display: inline-block;
+  width: 100%;
 }

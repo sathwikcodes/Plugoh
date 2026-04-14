@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { RefObject } from "react";
-import fistsData from "../../../../public/sowieso/animations/fists.json";
+import fistsData from "../../../public/sowieso/animations/fists.json";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 

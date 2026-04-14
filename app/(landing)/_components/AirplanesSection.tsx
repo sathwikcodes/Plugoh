@@ -4,6 +4,7 @@ import { m, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
 import styles from "../sowieso.module.css";
 import { Airplane } from "./Airplane";
+import { LinesAnimation } from "./LinesAnimation";
 
 export function AirplanesSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -29,16 +30,17 @@ export function AirplanesSection() {
   const rawY4 = useTransform(scrollYProgress, [0.26, 0.36], [30, 0]);
   const y4 = useSpring(rawY4, { stiffness: 400, damping: 30 });
 
-  // Phase 2: planes animate after text is done (0.38+), anchored by sides so they're visible the whole flight
-  // Plane 1 (pink): enters from off-screen left, sweeps to off-screen right, drifts up
-  const plane1X = useTransform(scrollYProgress, [0.38, 0.75], ["-110%", "260%"]);
-  const plane1Y = useTransform(scrollYProgress, [0.38, 0.75], ["0%", "-90%"]);
-  const plane1Op = useTransform(scrollYProgress, [0.38, 0.44], [0, 1]);
+  // Phase 2: planes animate after text is done (0.36+)
+  // Plane 1 (pink, bigger): starts fully off-screen bottom-left, sweeps far top-right
+  const plane1X = useTransform(scrollYProgress, [0.36, 0.90], ["0vw", "120vw"]);
+  const plane1Y = useTransform(scrollYProgress, [0.36, 0.90], ["30vh", "-130vh"]);
+  const plane1Op = useTransform(scrollYProgress, [0.36, 0.38], [0, 1]);
 
-  // Plane 2 (green): enters from off-screen right, sweeps to off-screen left, drifts up
-  const plane2X = useTransform(scrollYProgress, [0.42, 0.78], ["110%", "-230%"]);
-  const plane2Y = useTransform(scrollYProgress, [0.42, 0.78], ["0%", "-80%"]);
-  const plane2Op = useTransform(scrollYProgress, [0.42, 0.48], [0, 1]);
+  // Plane 2 (green, smaller): starts fully off-screen bottom-right, sweeps far top-left
+  // Starts moving slightly after Plane 1
+  const plane2X = useTransform(scrollYProgress, [0.42, 0.98], ["0vw", "-120vw"]);
+  const plane2Y = useTransform(scrollYProgress, [0.42, 0.98], ["30vh", "-130vh"]);
+  const plane2Op = useTransform(scrollYProgress, [0.36, 0.40], [0, 1]);
 
   return (
     <section
@@ -47,38 +49,42 @@ export function AirplanesSection() {
       style={{ height: "300vh", width: "100%" }}
     >
       <div className="sticky top-0 left-0 w-full h-[100vh] overflow-hidden flex flex-col items-center justify-center">
-        {/* Plane 1: anchored left side at ~50% height, sweeps left→right */}
+        {/* Plane 1: Red/Pink, Bigger, Left to Right Diagonal */}
         <m.div
           style={{
             position: "absolute",
-            left: 0,
-            top: "45%",
+            left: "-10%",
+            top: "100%",
             x: plane1X,
             y: plane1Y,
             opacity: plane1Op,
-            width: "min(975px, 90vw)",
-            zIndex: 0,
+            width: "min(1200px, 110vw)",
+            zIndex: 10,
             willChange: "transform, opacity",
           }}
         >
-          <Airplane variant="pink" />
+          <div style={{ position: "relative", transform: "translate(-50%, -50%)" }}>
+            <Airplane variant="pink" />
+          </div>
         </m.div>
 
-        {/* Plane 2: anchored right side at ~65% height, sweeps right→left */}
+        {/* Plane 2: Green, Smaller, Right to Left Diagonal */}
         <m.div
           style={{
             position: "absolute",
-            right: 0,
-            top: "60%",
+            right: "-10%",
+            top: "100%",
             x: plane2X,
             y: plane2Y,
             opacity: plane2Op,
-            width: "min(800px, 75vw)",
-            zIndex: 0,
+            width: "min(600px, 50vw)",
+            zIndex: 10,
             willChange: "transform, opacity",
           }}
         >
-          <Airplane variant="green" />
+          <div style={{ position: "relative", transform: "translate(50%, -50%) scaleX(-1)" }}>
+            <Airplane variant="green" />
+          </div>
         </m.div>
 
         <div className="relative z-[2] flex flex-col items-center justify-center w-full px-4">
