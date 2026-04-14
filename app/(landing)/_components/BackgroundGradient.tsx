@@ -5,8 +5,16 @@ import styles from "../landing.module.css";
 
 export function BackgroundGradient() {
   const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0.6, 0.8], [1, 0]) as MotionValue<number>;
-  const yellow = useTransform(scrollYProgress, [0.6, 0.8], [0, 1]) as MotionValue<number>;
+  const opacity = useTransform(
+    scrollYProgress,
+    [0.6, 0.8],
+    [1, 0],
+  ) as MotionValue<number>;
+  const yellow = useTransform(
+    scrollYProgress,
+    [0.6, 0.8],
+    [0, 1],
+  ) as MotionValue<number>;
 
   return (
     <>

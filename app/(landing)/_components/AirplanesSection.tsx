@@ -5,7 +5,14 @@ import { useRef } from "react";
 import styles from "../landing.module.css";
 import { Airplane } from "./Airplane";
 
-const CATEGORY_PILLS = ["Food & Bev", "Fashion", "Tech", "Beauty", "Lifestyle", "Gaming"];
+const CATEGORY_PILLS = [
+  "Food & Bev",
+  "Fashion",
+  "Tech",
+  "Beauty",
+  "Lifestyle",
+  "Gaming",
+];
 
 export function AirplanesSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -29,12 +36,24 @@ export function AirplanesSection() {
 
   // Planes animate after text is done (0.36+)
   // On mobile use smaller travel distances to keep planes visible in frame
-  const plane1X = useTransform(scrollYProgress, [0.36, 0.90], ["0vw", "110vw"]);
-  const plane1Y = useTransform(scrollYProgress, [0.36, 0.90], ["20vh", "-110vh"]);
-  const plane1Op = useTransform(scrollYProgress, [0.36, 0.40], [0, 1]);
+  const plane1X = useTransform(scrollYProgress, [0.36, 0.9], ["0vw", "110vw"]);
+  const plane1Y = useTransform(
+    scrollYProgress,
+    [0.36, 0.9],
+    ["20vh", "-110vh"],
+  );
+  const plane1Op = useTransform(scrollYProgress, [0.36, 0.4], [0, 1]);
 
-  const plane2X = useTransform(scrollYProgress, [0.42, 0.98], ["0vw", "-110vw"]);
-  const plane2Y = useTransform(scrollYProgress, [0.42, 0.98], ["20vh", "-110vh"]);
+  const plane2X = useTransform(
+    scrollYProgress,
+    [0.42, 0.98],
+    ["0vw", "-110vw"],
+  );
+  const plane2Y = useTransform(
+    scrollYProgress,
+    [0.42, 0.98],
+    ["20vh", "-110vh"],
+  );
   const plane2Op = useTransform(scrollYProgress, [0.36, 0.42], [0, 1]);
 
   return (
@@ -44,7 +63,6 @@ export function AirplanesSection() {
       style={{ height: "300vh", width: "100%" }}
     >
       <div className="sticky top-0 left-0 w-full h-[100vh] overflow-hidden flex flex-col items-center justify-center">
-
         {/* Plane 1: Pink, left → top-right */}
         <m.div
           style={{
@@ -60,7 +78,9 @@ export function AirplanesSection() {
             willChange: "transform, opacity",
           }}
         >
-          <div style={{ position: "relative", transform: "translate(-50%, -50%)" }}>
+          <div
+            style={{ position: "relative", transform: "translate(-50%, -50%)" }}
+          >
             <Airplane variant="pink" />
           </div>
         </m.div>
@@ -79,7 +99,12 @@ export function AirplanesSection() {
             willChange: "transform, opacity",
           }}
         >
-          <div style={{ position: "relative", transform: "translate(50%, -50%) scaleX(-1)" }}>
+          <div
+            style={{
+              position: "relative",
+              transform: "translate(50%, -50%) scaleX(-1)",
+            }}
+          >
             <Airplane variant="green" />
           </div>
         </m.div>
@@ -93,7 +118,9 @@ export function AirplanesSection() {
           </m.div>
 
           <h2 className={styles.airplanesTitle} style={{ textAlign: "center" }}>
-            <m.span style={{ display: "block", opacity: op1, y: y1 }}>FOR BRANDS.</m.span>
+            <m.span style={{ display: "block", opacity: op1, y: y1 }}>
+              FOR BRANDS.
+            </m.span>
 
             <m.span
               style={{
@@ -119,7 +146,9 @@ export function AirplanesSection() {
               <span>CREATORS.</span>
             </m.span>
 
-            <m.span style={{ display: "block", opacity: op4, y: y4 }}>ONE PLATFORM.</m.span>
+            <m.span style={{ display: "block", opacity: op4, y: y4 }}>
+              ONE PLATFORM.
+            </m.span>
           </h2>
 
           {/* Category pills */}

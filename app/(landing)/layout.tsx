@@ -41,7 +41,10 @@ export default function LandingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`${walsheim.variable} ${styles.scope}`} data-theme="landing">
+    <div
+      className={`${walsheim.variable} ${styles.scope}`}
+      data-theme="landing"
+    >
       {children}
     </div>
   );

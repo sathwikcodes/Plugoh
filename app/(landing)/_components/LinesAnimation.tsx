@@ -11,7 +11,11 @@ type LinesAnimationProps = {
   loop?: boolean;
 };
 
-export function LinesAnimation({ lottieRef, autoplay = true, loop = true }: LinesAnimationProps) {
+export function LinesAnimation({
+  lottieRef,
+  autoplay = true,
+  loop = true,
+}: LinesAnimationProps) {
   return (
     <Lottie
       lottieRef={lottieRef}

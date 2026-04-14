@@ -221,7 +221,12 @@ function PhaseSlide({
 
 function StopwatchVisual() {
   return (
-    <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" aria-hidden style={{ width: "100%", height: "100%" }}>
+    <svg
+      viewBox="0 0 1000 700"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+      style={{ width: "100%", height: "100%" }}
+    >
       <defs>
         <linearGradient id="hwClockBg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#7af7f7" />
@@ -235,10 +240,38 @@ function StopwatchVisual() {
       <rect x="0" y="0" width="1000" height="700" fill="url(#hwClockBg)" />
       <g transform="translate(240,80)">
         <circle cx="260" cy="280" r="240" fill="#1d1c1c" />
-        <circle cx="260" cy="260" r="240" fill="#77dede" stroke="#1d1c1c" strokeWidth="6" />
-        <circle cx="260" cy="260" r="180" fill="#72ea95" stroke="#1d1c1c" strokeWidth="4" />
-        <circle cx="260" cy="260" r="130" fill="url(#hwClockFace)" stroke="#1d1c1c" strokeWidth="3" />
-        <circle cx="260" cy="260" r="54" fill="#ececec" stroke="#1d1c1c" strokeWidth="3" />
+        <circle
+          cx="260"
+          cy="260"
+          r="240"
+          fill="#77dede"
+          stroke="#1d1c1c"
+          strokeWidth="6"
+        />
+        <circle
+          cx="260"
+          cy="260"
+          r="180"
+          fill="#72ea95"
+          stroke="#1d1c1c"
+          strokeWidth="4"
+        />
+        <circle
+          cx="260"
+          cy="260"
+          r="130"
+          fill="url(#hwClockFace)"
+          stroke="#1d1c1c"
+          strokeWidth="3"
+        />
+        <circle
+          cx="260"
+          cy="260"
+          r="54"
+          fill="#ececec"
+          stroke="#1d1c1c"
+          strokeWidth="3"
+        />
         <g stroke="#1d1c1c" strokeWidth="3" strokeLinecap="round">
           <line x1="260" y1="260" x2="310" y2="185" />
           <line x1="260" y1="260" x2="350" y2="340" />
@@ -250,7 +283,12 @@ function StopwatchVisual() {
 
 function SpeedometerVisual() {
   return (
-    <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" aria-hidden style={{ width: "100%", height: "100%" }}>
+    <svg
+      viewBox="0 0 1000 700"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+      style={{ width: "100%", height: "100%" }}
+    >
       <defs>
         <linearGradient id="hwSpeedBg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ff9be5" />
@@ -258,7 +296,13 @@ function SpeedometerVisual() {
         </linearGradient>
       </defs>
       <rect x="0" y="0" width="1000" height="700" fill="url(#hwSpeedBg)" />
-      <g transform="translate(170,118)" stroke="#1d1c1c" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+      <g
+        transform="translate(170,118)"
+        stroke="#1d1c1c"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M90 360A260 260 0 0 1 610 360" fill="#fff4a0" />
         <path d="M120 360A230 230 0 0 1 580 360" fill="#fff" />
         <circle cx="350" cy="360" r="28" fill="#1d1c1c" />
@@ -276,7 +320,12 @@ function SpeedometerVisual() {
 
 function EuropeVisual() {
   return (
-    <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" aria-hidden style={{ width: "100%", height: "100%" }}>
+    <svg
+      viewBox="0 0 1000 700"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+      style={{ width: "100%", height: "100%" }}
+    >
       <defs>
         <linearGradient id="hwMapBg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ffc47a" />

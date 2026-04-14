@@ -8,11 +8,11 @@ const os = require("os");
 
 const srcFile = path.resolve(
   __dirname,
-  "../reference/site-dump/sowieso.wero-wallet.eu/_nuxt/Cd_iCvQE.js"
+  "../reference/site-dump/sowieso.wero-wallet.eu/_nuxt/Cd_iCvQE.js",
 );
 const outFile = path.resolve(
   __dirname,
-  "../public/sowieso/animations/fists.json"
+  "../public/sowieso/animations/fists.json",
 );
 
 const content = fs.readFileSync(srcFile, "utf8");
@@ -43,4 +43,6 @@ if (!M5 || !M5.layers) {
 }
 
 fs.writeFileSync(outFile, JSON.stringify(M5), "utf8");
-console.log(`Written ${outFile} (${(fs.statSync(outFile).size / 1024).toFixed(0)} KB)`);
+console.log(
+  `Written ${outFile} (${(fs.statSync(outFile).size / 1024).toFixed(0)} KB)`,
+);

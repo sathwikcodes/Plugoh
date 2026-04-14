@@ -1,10 +1,6 @@
 "use client";
 
-export function Airplane({
-  variant = "pink",
-}: {
-  variant?: "pink" | "green";
-}) {
+export function Airplane({ variant = "pink" }: { variant?: "pink" | "green" }) {
   return (
     <img
       src="/landing/images/airplane1.png"
@@ -13,7 +9,8 @@ export function Airplane({
         display: "block",
         width: "100%",
         height: "auto",
-        filter: variant === "green" ? "hue-rotate(180deg) saturate(1.2)" : "none"
+        filter:
+          variant === "green" ? "hue-rotate(180deg) saturate(1.2)" : "none",
       }}
     />
   );

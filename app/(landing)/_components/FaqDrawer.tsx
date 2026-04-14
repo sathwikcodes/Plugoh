@@ -69,8 +69,18 @@ function FaqItem({ q, a }: { q: string; a: string }) {
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
           }}
         >
-          <svg width="11" height="11" viewBox="0 0 17 18" fill="none" aria-hidden>
-            <path d="M0.916 8.562l7.467 7.467 7.466-7.467" stroke="#1D1C1C" strokeWidth="1.5" />
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 17 18"
+            fill="none"
+            aria-hidden
+          >
+            <path
+              d="M0.916 8.562l7.467 7.467 7.466-7.467"
+              stroke="#1D1C1C"
+              strokeWidth="1.5"
+            />
             <path d="M8.383 16.03V0.944" stroke="#1D1C1C" strokeWidth="1.5" />
           </svg>
         </span>
@@ -176,11 +186,30 @@ export function FaqDrawer() {
               Close
               <span
                 className={styles.iconBadgeSm}
-                style={{ width: 28, height: 28, background: "#fff", boxShadow: "0 2px 0 0 #1d1c1c" }}
+                style={{
+                  width: 28,
+                  height: 28,
+                  background: "#fff",
+                  boxShadow: "0 2px 0 0 #1d1c1c",
+                }}
               >
-                <svg width="11" height="11" viewBox="0 0 17 18" fill="none" aria-hidden>
-                  <path d="M0.916 8.562l7.467 7.467 7.466-7.467" stroke="#1D1C1C" strokeWidth="1.5" />
-                  <path d="M8.383 16.03V0.944" stroke="#1D1C1C" strokeWidth="1.5" />
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 17 18"
+                  fill="none"
+                  aria-hidden
+                >
+                  <path
+                    d="M0.916 8.562l7.467 7.467 7.466-7.467"
+                    stroke="#1D1C1C"
+                    strokeWidth="1.5"
+                  />
+                  <path
+                    d="M8.383 16.03V0.944"
+                    stroke="#1D1C1C"
+                    strokeWidth="1.5"
+                  />
                 </svg>
               </span>
             </button>
@@ -191,7 +220,8 @@ export function FaqDrawer() {
             style={{
               maxWidth: 880,
               margin: "0 auto",
-              padding: "clamp(24px, 4vw, 64px) clamp(16px, 5vw, 80px) clamp(48px, 8vw, 100px)",
+              padding:
+                "clamp(24px, 4vw, 64px) clamp(16px, 5vw, 80px) clamp(48px, 8vw, 100px)",
             }}
           >
             <div
@@ -202,10 +232,27 @@ export function FaqDrawer() {
                 marginBottom: "clamp(16px, 3vw, 32px)",
               }}
             >
-              <span className={styles.iconBadge} style={{ width: 36, height: 36, flexShrink: 0 }}>
-                <svg width="14" height="14" viewBox="0 0 17 18" fill="none" aria-hidden>
-                  <path d="M17 8.562L9.533 1.095 2.067 8.562" stroke="#1D1C1C" strokeWidth="1.5" />
-                  <path d="M9.533 1.095v16.085" stroke="#1D1C1C" strokeWidth="1.5" />
+              <span
+                className={styles.iconBadge}
+                style={{ width: 36, height: 36, flexShrink: 0 }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 17 18"
+                  fill="none"
+                  aria-hidden
+                >
+                  <path
+                    d="M17 8.562L9.533 1.095 2.067 8.562"
+                    stroke="#1D1C1C"
+                    strokeWidth="1.5"
+                  />
+                  <path
+                    d="M9.533 1.095v16.085"
+                    stroke="#1D1C1C"
+                    strokeWidth="1.5"
+                  />
                 </svg>
               </span>
               <span
@@ -262,7 +309,10 @@ export function FaqDrawer() {
               }}
             >
               Still have questions?{" "}
-              <a href="/login" style={{ fontWeight: 700, color: "#1d1c1c", opacity: 1 }}>
+              <a
+                href="/login"
+                style={{ fontWeight: 700, color: "#1d1c1c", opacity: 1 }}
+              >
                 Sign up and reach out →
               </a>
             </p>

@@ -17,7 +17,8 @@ export function SiteFooter() {
       className="relative"
       style={{
         background: "linear-gradient(180deg,#ffd94a 0%,#ffc930 100%)",
-        padding: "60px clamp(20px, 4vw, 80px) calc(120px + env(safe-area-inset-bottom))",
+        padding:
+          "60px clamp(20px, 4vw, 80px) calc(120px + env(safe-area-inset-bottom))",
       }}
     >
       <div
@@ -35,7 +36,9 @@ export function SiteFooter() {
             className="block relative p-4 sm:p-6 lg:p-8 flex-1 min-h-[320px] sm:min-h-[340px] lg:min-h-[460px]"
             style={{ color: "#1d1c1c" }}
           >
-            <div className={`font-[800] text-[1.65rem] sm:text-3xl xl:text-[2.2rem] uppercase leading-[0.95]`}>
+            <div
+              className={`font-[800] text-[1.65rem] sm:text-3xl xl:text-[2.2rem] uppercase leading-[0.95]`}
+            >
               South India&apos;s creator marketplace
             </div>
             <span
@@ -69,7 +72,10 @@ export function SiteFooter() {
         </Reveal>
 
         {/* Tile 2: Two stacked tiles (mirrors original iDEAL + Wero tiles) */}
-        <div className="grid gap-3 sm:gap-4 lg:gap-6 w-[min(100%,520px)] mx-auto sm:w-full sm:col-span-2 lg:col-span-1" style={{ gridTemplateRows: "1fr 1fr" }}>
+        <div
+          className="grid gap-3 sm:gap-4 lg:gap-6 w-[min(100%,520px)] mx-auto sm:w-full sm:col-span-2 lg:col-span-1"
+          style={{ gridTemplateRows: "1fr 1fr" }}
+        >
           <Reveal className={`${styles.surfaceCard} relative bg-white`}>
             <a
               href="/login"
@@ -141,9 +147,17 @@ export function SiteFooter() {
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("open-faq"))}
             className="block relative p-4 sm:p-6 lg:p-8 flex-1 min-h-[190px] sm:min-h-[340px] lg:min-h-[460px] w-full text-left"
-            style={{ color: "#1d1c1c", background: "none", border: "none", cursor: "pointer" }}
+            style={{
+              color: "#1d1c1c",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
-            <div className="font-[500] text-[0.75rem] sm:text-sm xl:text-base text-center" style={{ marginBottom: 14 }}>
+            <div
+              className="font-[500] text-[0.75rem] sm:text-sm xl:text-base text-center"
+              style={{ marginBottom: 14 }}
+            >
               Frequently Asked Questions
             </div>
             <div
@@ -161,7 +175,12 @@ export function SiteFooter() {
             </div>
             <span
               className={styles.iconBadge}
-              style={{ position: "absolute", bottom: 16, right: 16, background: "#ffd94a" }}
+              style={{
+                position: "absolute",
+                bottom: 16,
+                right: 16,
+                background: "#ffd94a",
+              }}
             >
               <ArrowShort />
             </span>
@@ -178,9 +197,27 @@ export function SiteFooter() {
               href: "https://www.instagram.com/",
               label: "Instagram",
               svg: (
-                <svg width="20" height="19" viewBox="0 0 24 23" fill="none" aria-hidden>
-                  <path d="M12 2c3 0 3.3 0 4.5.06 1.08.05 1.66.23 2.05.38.52.2.88.44 1.27.83.39.39.63.75.83 1.27.15.39.33.97.38 2.05.06 1.17.06 1.51.06 4.41s0 3.24-.06 4.41c-.05 1.08-.23 1.66-.38 2.05-.2.52-.44.88-.83 1.27-.39.39-.75.63-1.27.83-.39.15-.97.33-2.05.38-1.17.06-1.51.06-4.5.06s-3.24 0-4.41-.06c-1.08-.05-1.66-.23-2.05-.38-.52-.2-.88-.44-1.27-.83-.39-.39-.63-.75-.83-1.27-.15-.39-.33-.97-.38-2.05C3 14.3 3 13.96 3 11.06s0-3.24.06-4.41c.05-1.08.23-1.66.38-2.05.2-.52.44-.88.83-1.27.39-.39.75-.63 1.27-.83.39-.15.97-.33 2.05-.38C8.76 2.06 9.1 2 12 2Z" stroke="#1d1c1c" strokeWidth="1.8" fill="none" />
-                  <circle cx="12" cy="11" r="4" stroke="#1d1c1c" strokeWidth="1.8" fill="none" />
+                <svg
+                  width="20"
+                  height="19"
+                  viewBox="0 0 24 23"
+                  fill="none"
+                  aria-hidden
+                >
+                  <path
+                    d="M12 2c3 0 3.3 0 4.5.06 1.08.05 1.66.23 2.05.38.52.2.88.44 1.27.83.39.39.63.75.83 1.27.15.39.33.97.38 2.05.06 1.17.06 1.51.06 4.41s0 3.24-.06 4.41c-.05 1.08-.23 1.66-.38 2.05-.2.52-.44.88-.83 1.27-.39.39-.75.63-1.27.83-.39.15-.97.33-2.05.38-1.17.06-1.51.06-4.5.06s-3.24 0-4.41-.06c-1.08-.05-1.66-.23-2.05-.38-.52-.2-.88-.44-1.27-.83-.39-.39-.63-.75-.83-1.27-.15-.39-.33-.97-.38-2.05C3 14.3 3 13.96 3 11.06s0-3.24.06-4.41c.05-1.08.23-1.66.38-2.05.2-.52.44-.88.83-1.27.39-.39.75-.63 1.27-.83.39-.15.97-.33 2.05-.38C8.76 2.06 9.1 2 12 2Z"
+                    stroke="#1d1c1c"
+                    strokeWidth="1.8"
+                    fill="none"
+                  />
+                  <circle
+                    cx="12"
+                    cy="11"
+                    r="4"
+                    stroke="#1d1c1c"
+                    strokeWidth="1.8"
+                    fill="none"
+                  />
                   <circle cx="18" cy="5.5" r="1.2" fill="#1d1c1c" />
                 </svg>
               ),
@@ -189,8 +226,17 @@ export function SiteFooter() {
               href: "https://twitter.com/",
               label: "X",
               svg: (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.743l7.737-8.835L2.249 2.25H8.08l4.261 5.636 5.903-5.636Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" fill="#1d1c1c" />
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden
+                >
+                  <path
+                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.743l7.737-8.835L2.249 2.25H8.08l4.261 5.636 5.903-5.636Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"
+                    fill="#1d1c1c"
+                  />
                 </svg>
               ),
             },
@@ -198,10 +244,36 @@ export function SiteFooter() {
               href: "https://www.linkedin.com/",
               label: "LinkedIn",
               svg: (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="#1d1c1c" strokeWidth="1.8" fill="none" />
-                  <rect x="2" y="9" width="4" height="12" stroke="#1d1c1c" strokeWidth="1.8" fill="none" />
-                  <circle cx="4" cy="4" r="2" stroke="#1d1c1c" strokeWidth="1.8" fill="none" />
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden
+                >
+                  <path
+                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
+                    stroke="#1d1c1c"
+                    strokeWidth="1.8"
+                    fill="none"
+                  />
+                  <rect
+                    x="2"
+                    y="9"
+                    width="4"
+                    height="12"
+                    stroke="#1d1c1c"
+                    strokeWidth="1.8"
+                    fill="none"
+                  />
+                  <circle
+                    cx="4"
+                    cy="4"
+                    r="2"
+                    stroke="#1d1c1c"
+                    strokeWidth="1.8"
+                    fill="none"
+                  />
                 </svg>
               ),
             },
@@ -213,9 +285,18 @@ export function SiteFooter() {
               rel="noreferrer"
               aria-label={s.label}
               className={styles.iconBadge}
-              style={{ width: "52px", height: "52px", background: "#fff", transition: "transform 0.2s" }}
-              onMouseOver={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
-              onMouseOut={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+              style={{
+                width: "52px",
+                height: "52px",
+                background: "#fff",
+                transition: "transform 0.2s",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.transform = "translateY(-4px)")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.transform = "translateY(0)")
+              }
             >
               {s.svg}
             </a>
@@ -242,7 +323,10 @@ export function SiteFooter() {
         </div>
       </Reveal>
 
-      <div className="mt-15 text-center" style={{ fontSize: 14, color: "#1d1c1c" }}>
+      <div
+        className="mt-15 text-center"
+        style={{ fontSize: 14, color: "#1d1c1c" }}
+      >
         © 2026 Plugoh | All rights reserved.
       </div>
     </footer>
