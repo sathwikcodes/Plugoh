@@ -1,3 +1,35 @@
+@font-face {
+  font-display: swap;
+  font-family: "GT Walsheim Wero";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/sowieso/fonts/GT-Walsheim-wero-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "GT Walsheim Wero";
+  font-style: normal;
+  font-weight: 500;
+  src: url("/sowieso/fonts/GT-Walsheim-wero-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "GT Walsheim Wero";
+  font-style: normal;
+  font-weight: 700;
+  src: url("/sowieso/fonts/GT-Walsheim-wero-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "GT Walsheim Wero";
+  font-style: normal;
+  font-weight: 800;
+  src: url("/sowieso/fonts/GT-Walsheim-wero-Black.woff2") format("woff2");
+}
+
 .scope {
   --ink: #1d1c1c;
   --surface: #fff;
@@ -9,8 +41,10 @@
   --accent-purple: #a66cff;
 
   color: var(--ink);
-  font-family: var(--font-walsheim), ui-sans-serif, system-ui, sans-serif;
-  font-weight: 500;
+  font-family: "GT Walsheim Wero", "sans-serif";
+  font-feature-settings: "ss06" on;
+  font-style: normal;
+  font-weight: 400;
   background: var(--surface);
   overflow-x: clip;
   width: 100%;
@@ -21,6 +55,7 @@
 
 .scope * {
   box-sizing: border-box;
+  font-family: inherit;
 }
 
 .scope :global(.ink) {

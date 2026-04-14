@@ -162,7 +162,7 @@ export function FaqDrawer() {
               onClick={() => setIsOpen(false)}
               className={styles.pill}
               style={{
-                background: "var(--surface)",
+                background: "#fff48d",
                 padding: "10px 20px",
                 display: "inline-flex",
                 alignItems: "center",
@@ -176,7 +176,7 @@ export function FaqDrawer() {
               Close
               <span
                 className={styles.iconBadgeSm}
-                style={{ width: 28, height: 28, boxShadow: "0 2px 0 0 #1d1c1c" }}
+                style={{ width: 28, height: 28, background: "#fff", boxShadow: "0 2px 0 0 #1d1c1c" }}
               >
                 <svg width="11" height="11" viewBox="0 0 17 18" fill="none" aria-hidden>
                   <path d="M0.916 8.562l7.467 7.467 7.466-7.467" stroke="#1D1C1C" strokeWidth="1.5" />

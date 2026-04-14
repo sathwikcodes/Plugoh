@@ -105,7 +105,17 @@ export function AirplanesSection() {
               }}
             >
               <span>FOR</span>
-              <InlineCheck />
+              <img
+                src="/notifyheart.png"
+                alt=""
+                aria-hidden
+                style={{
+                  height: "0.95em",
+                  width: "auto",
+                  display: "block",
+                  flexShrink: 0,
+                }}
+              />
               <span>CREATORS.</span>
             </m.span>
 
@@ -138,41 +148,5 @@ export function AirplanesSection() {
         </div>
       </div>
     </section>
-  );
-}
-
-function InlineCheck() {
-  return (
-    <m.span
-      initial={{ width: 0, opacity: 0 }}
-      whileInView={{ width: "clamp(2.2rem, 4vw + 1.5rem, 5.5rem)", opacity: 1 }}
-      viewport={{ once: true, amount: 0.6 }}
-      transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      style={{
-        display: "inline-block",
-        height: "clamp(1.8rem, 3.5vw + 1.2rem, 5.6rem)",
-        position: "relative",
-        verticalAlign: "middle",
-        overflow: "hidden",
-        flexShrink: 0,
-      }}
-    >
-      <span
-        style={{
-          width: "100%",
-          height: "100%",
-          background: "#ff7ec8",
-          border: "2px solid #1d1c1c",
-          borderRadius: 14,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path d="M5 12.5L10 17L19 7.5" stroke="#1d1c1c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </span>
-    </m.span>
   );
 }

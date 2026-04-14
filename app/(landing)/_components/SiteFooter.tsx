@@ -17,7 +17,7 @@ export function SiteFooter() {
       className="relative"
       style={{
         background: "linear-gradient(180deg,#ffd94a 0%,#ffc930 100%)",
-        padding: "60px clamp(20px, 4vw, 80px) 60px",
+        padding: "60px clamp(20px, 4vw, 80px) calc(120px + env(safe-area-inset-bottom))",
       }}
     >
       <div
@@ -28,55 +28,58 @@ export function SiteFooter() {
       >
         {/* Tile 1: Brand tile — spans full width on sm grid */}
         <Reveal
-          className={`${styles.surfaceCard} ${styles.partnerTile} relative overflow-hidden h-full flex flex-col sm:col-span-2 lg:col-span-1`}
+          className={`${styles.surfaceCard} ${styles.partnerTile} relative overflow-hidden h-full flex flex-col w-[min(100%,520px)] mx-auto sm:w-full sm:col-span-2 lg:col-span-1`}
         >
           <a
             href="/login"
-            className="block relative p-6 lg:p-8 flex-1 min-h-[220px] sm:min-h-[280px] lg:min-h-[380px]"
+            className="block relative p-4 sm:p-6 lg:p-8 flex-1 min-h-[320px] sm:min-h-[340px] lg:min-h-[460px]"
             style={{ color: "#1d1c1c" }}
           >
-            <div className={`font-[800] text-3xl xl:text-[2.2rem] uppercase leading-[0.95]`}>
+            <div className={`font-[800] text-[1.65rem] sm:text-3xl xl:text-[2.2rem] uppercase leading-[0.95]`}>
               South India&apos;s creator marketplace
             </div>
             <span
               className={styles.iconBadge}
-              style={{ position: "absolute", top: "40%", right: 24, transform: "translateY(-50%)" }}
+              style={{
+                position: "absolute",
+                top: "38%",
+                right: 16,
+                transform: "translateY(-50%)",
+                background: "#ffd94a",
+              }}
             >
               <ArrowShort />
             </span>
-            <div
+            <img
+              src="/sowieso/images/footer-banks.svg"
+              alt=""
+              aria-hidden
               style={{
                 position: "absolute",
                 left: "50%",
-                bottom: 24,
+                bottom: 16,
                 transform: "translateX(-50%)",
-                fontFamily: "inherit",
-                fontWeight: 800,
-                fontSize: "clamp(4rem, 8vw, 9rem)",
-                letterSpacing: "-0.04em",
-                lineHeight: 0.85,
-                color: "rgba(29,28,28,0.08)",
-                whiteSpace: "nowrap",
+                width: "min(88%, 520px)",
+                height: "auto",
                 userSelect: "none",
+                pointerEvents: "none",
               }}
-            >
-              plugoh
-            </div>
+            />
           </a>
         </Reveal>
 
         {/* Tile 2: Two stacked tiles (mirrors original iDEAL + Wero tiles) */}
-        <div className="grid gap-4 lg:gap-6 sm:col-span-2 lg:col-span-1" style={{ gridTemplateRows: "1fr 1fr" }}>
+        <div className="grid gap-3 sm:gap-4 lg:gap-6 w-[min(100%,520px)] mx-auto sm:w-full sm:col-span-2 lg:col-span-1" style={{ gridTemplateRows: "1fr 1fr" }}>
           <Reveal className={`${styles.surfaceCard} relative bg-white`}>
             <a
               href="/login"
-              className="p-6 h-full min-h-[160px] flex items-center justify-start relative"
+              className="p-4 sm:p-6 h-full min-h-[118px] sm:min-h-[220px] lg:min-h-[218px] flex items-center justify-start relative"
               style={{ color: "#1d1c1c" }}
             >
               <span
                 style={{
                   fontWeight: 800,
-                  fontSize: "clamp(1.2rem, 1.5vw + 0.6rem, 1.8rem)",
+                  fontSize: "clamp(1rem, 1.5vw + 0.55rem, 1.8rem)",
                   letterSpacing: "-0.03em",
                   lineHeight: 1,
                   textTransform: "uppercase",
@@ -86,7 +89,13 @@ export function SiteFooter() {
               </span>
               <span
                 className={styles.iconBadge}
-                style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", right: 24 }}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  right: 16,
+                  background: "#ffd94a",
+                }}
               >
                 <ArrowShort />
               </span>
@@ -95,13 +104,13 @@ export function SiteFooter() {
           <Reveal className={`${styles.surfaceCard} relative bg-white`}>
             <a
               href="/login"
-              className="p-6 h-full min-h-[160px] flex items-center justify-start relative"
+              className="p-4 sm:p-6 h-full min-h-[118px] sm:min-h-[220px] lg:min-h-[218px] flex items-center justify-start relative"
               style={{ color: "#1d1c1c" }}
             >
               <span
                 style={{
                   fontWeight: 800,
-                  fontSize: "clamp(1.2rem, 1.5vw + 0.6rem, 1.8rem)",
+                  fontSize: "clamp(1rem, 1.5vw + 0.55rem, 1.8rem)",
                   letterSpacing: "-0.03em",
                   lineHeight: 1,
                   textTransform: "uppercase",
@@ -111,7 +120,13 @@ export function SiteFooter() {
               </span>
               <span
                 className={styles.iconBadge}
-                style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", right: 24 }}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  right: 16,
+                  background: "#ffd94a",
+                }}
               >
                 <ArrowShort />
               </span>
@@ -121,20 +136,20 @@ export function SiteFooter() {
 
         {/* Tile 3: FAQ tile */}
         <Reveal
-          className={`${styles.surfaceCard} ${styles.faqTilePink} relative overflow-hidden h-full flex flex-col sm:col-span-2 lg:col-span-1`}
+          className={`${styles.surfaceCard} ${styles.faqTilePink} relative overflow-hidden h-full flex flex-col w-[min(100%,520px)] mx-auto sm:w-full sm:col-span-2 lg:col-span-1`}
         >
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("open-faq"))}
-            className="block relative p-6 lg:p-8 flex-1 min-h-[220px] sm:min-h-[280px] lg:min-h-[380px] w-full text-left"
+            className="block relative p-4 sm:p-6 lg:p-8 flex-1 min-h-[190px] sm:min-h-[340px] lg:min-h-[460px] w-full text-left"
             style={{ color: "#1d1c1c", background: "none", border: "none", cursor: "pointer" }}
           >
-            <div className="font-[500] text-sm xl:text-base text-center" style={{ marginBottom: 24 }}>
+            <div className="font-[500] text-[0.75rem] sm:text-sm xl:text-base text-center" style={{ marginBottom: 14 }}>
               Frequently Asked Questions
             </div>
             <div
               className="font-[800] uppercase text-center"
               style={{
-                fontSize: "clamp(1.8rem, 2vw + 1rem, 3rem)",
+                fontSize: "clamp(1.35rem, 2vw + 0.8rem, 3rem)",
                 lineHeight: 0.85,
                 letterSpacing: "-0.02em",
               }}
@@ -146,7 +161,7 @@ export function SiteFooter() {
             </div>
             <span
               className={styles.iconBadge}
-              style={{ position: "absolute", bottom: 24, right: 24 }}
+              style={{ position: "absolute", bottom: 16, right: 16, background: "#ffd94a" }}
             >
               <ArrowShort />
             </span>
@@ -155,8 +170,8 @@ export function SiteFooter() {
 
         {/* Tile 4: Social tile — row on mobile/sm, column on lg */}
         <div
-          className={`${styles.surfaceCard} ${styles.faqTileGreen} flex flex-row lg:flex-col items-center justify-center gap-4 sm:gap-6 p-4 h-full sm:col-span-2 lg:col-span-1`}
-          style={{ minHeight: 80 }}
+          className={`${styles.surfaceCard} ${styles.faqTileGreen} flex flex-row lg:flex-col items-center justify-center gap-3 sm:gap-6 p-3 sm:p-4 h-full w-[min(100%,520px)] mx-auto sm:w-full sm:col-span-2 lg:col-span-1`}
+          style={{ minHeight: 120 }}
         >
           {[
             {
@@ -198,7 +213,7 @@ export function SiteFooter() {
               rel="noreferrer"
               aria-label={s.label}
               className={styles.iconBadge}
-              style={{ width: "64px", height: "64px", background: "#fff", transition: "transform 0.2s" }}
+              style={{ width: "52px", height: "52px", background: "#fff", transition: "transform 0.2s" }}
               onMouseOver={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
               onMouseOut={(e) => (e.currentTarget.style.transform = "translateY(0)")}
             >
@@ -223,12 +238,12 @@ export function SiteFooter() {
             width: "100%",
           }}
         >
-          plugoh
+          plugoh.
         </div>
       </Reveal>
 
-      <div className="mt-8 text-center" style={{ fontSize: 14, color: "#1d1c1c" }}>
-        © 2026 Plugoh
+      <div className="mt-15 text-center" style={{ fontSize: 14, color: "#1d1c1c" }}>
+        © 2026 Plugoh | All rights reserved.
       </div>
     </footer>
   );
