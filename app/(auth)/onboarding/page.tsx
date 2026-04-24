@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase/client";
 import { Loader2, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { m, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { useAuthTheme } from "@/components/auth/theme-context";
 import { cn } from "@/lib/utils";
@@ -340,12 +341,13 @@ function OnboardingInner() {
         className="space-y-8"
       >
         <m.div variants={fadeUp} className="lg:hidden mb-2 text-center">
-          <h2
-            className="brand-mark text-2xl font-medium"
-            style={{ color: "var(--auth-text)" }}
-          >
-            Plugoh
-          </h2>
+          <Image
+            src="/logo-gold.png"
+            alt="Plugoh"
+            height={36}
+            width={130}
+            style={{ objectFit: "contain" }}
+          />
         </m.div>
 
         <m.div variants={fadeUp} className="space-y-2 text-center">

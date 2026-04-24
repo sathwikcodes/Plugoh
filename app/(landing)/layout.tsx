@@ -29,12 +29,6 @@ const walsheim = localFont({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Plugoh - Wero",
-  description:
-    "iDEAL is becoming Wero — the new European way to pay. Always available with our PSP partners.",
-};
-
 export default function LandingLayout({
   children,
 }: {

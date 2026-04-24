@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase/client";
 import { Loader2, Mail, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { m, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { AuthShell } from "@/components/auth/auth-shell";
 
 const stagger = {
@@ -367,12 +368,13 @@ export default function Login() {
             className="space-y-8"
           >
             <m.div variants={fadeUp} className="lg:hidden mb-2">
-              <h2
-                className="brand-mark text-2xl font-medium"
-                style={{ color: "var(--auth-text)" }}
-              >
-                Plugoh
-              </h2>
+              <Image
+                src="/logo-gold.png"
+                alt="Plugoh"
+                height={36}
+                width={130}
+                style={{ objectFit: "contain" }}
+              />
             </m.div>
 
             <m.div variants={fadeUp} className="space-y-2">

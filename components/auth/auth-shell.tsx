@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
+import Image from "next/image";
 import { m } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useAuthTheme, type AuthTheme } from "./theme-context";
@@ -32,15 +33,20 @@ export function AuthShell({ children }: { children: ReactNode }) {
           {...gradientConfig}
         />
         <div className="relative z-10 text-center px-12">
-          <m.h1
-            className="brand-mark heading-premium mb-3 text-5xl font-medium"
-            style={{ color: "var(--auth-text)", opacity: 0.9 }}
+          <m.div
+            className="mb-3 flex justify-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 0.9, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Plugoh
-          </m.h1>
+            <Image
+              src="/logo-gold.png"
+              alt="Plugoh"
+              height={56}
+              width={180}
+              style={{ objectFit: "contain" }}
+            />
+          </m.div>
           <m.p
             key={theme}
             className="max-w-xs mx-auto text-lg"

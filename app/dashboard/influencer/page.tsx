@@ -1,6 +1,8 @@
 "use client";
 
 import { m } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { useMyInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import { fadeUp } from "@/lib/animations";
@@ -36,29 +38,50 @@ export default function InfluencerDashboard() {
         </div>
       </m.div>
 
-      <div className="flex min-h-0 flex-1 items-center justify-center">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-6">
         <m.div
           variants={fadeUp}
           initial="hidden"
           animate="visible"
           className="w-full max-w-3xl rounded-[28px] border border-white/12 bg-[linear-gradient(155deg,rgba(21,25,34,0.88)_0%,rgba(27,34,48,0.84)_100%)] px-6 py-8 text-center shadow-[0_20px_56px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:px-8"
         >
-          <p className="mx-auto max-w-2xl text-base leading-8 text-white/82 sm:text-lg">
-            Hey guys, this is{" "}
-            <span className="font-display text-xl italic text-white">
-              Plugoh
-            </span>
-            . We are one of the first platforms connecting brands and
-            influencers across{" "}
-            <span className="font-semibold text-white">South India</span>, and
-            we are building this with care to make every collaboration flow
-            easier, faster, and more human.
+          <p className="mx-auto max-w-2xl text-sm leading-7 text-white/60 sm:text-base">
+            Thank you for being part of{" "}
+            <Image
+              src="/logo-gold.png"
+              alt="Plugoh"
+              width={60}
+              height={24}
+              style={{
+                width: "3.2em",
+                height: "1.25em",
+                objectFit: "cover",
+                objectPosition: "center",
+                display: "inline-block",
+                verticalAlign: "middle",
+                marginTop: "-0.2em",
+                marginLeft: "0.15em",
+              }}
+            />
+            . We&rsquo;re building this thoughtfully, with a lot more to come,
+            and your feedback helps shape what we create next. If you have a
+            suggestion, improvement, or issue to share, we&rsquo;d truly value
+            hearing from you through the anonymous form below.
           </p>
-          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/60 sm:text-base">
-            If you have any bugs, improvements, or suggestions, please fill the
-            anonymous form below. We would really appreciate you sharing Plugoh
-            with others too, so we can grow together.
-          </p>
+        </m.div>
+
+        <m.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          className="flex w-full justify-center"
+        >
+          <Link
+            href="/dashboard/influencer/campaigns"
+            className="flex w-[80vw] max-w-xs items-center justify-center rounded-full bg-white px-8 py-3.5 text-base font-bold text-[#1d1c1c] shadow-[0_4px_16px_rgba(255,255,255,0.1)] transition-all hover:bg-neutral-200 active:scale-95"
+          >
+            Let&rsquo;s go
+          </Link>
         </m.div>
       </div>
     </div>

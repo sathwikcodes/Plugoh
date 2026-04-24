@@ -1,6 +1,7 @@
 "use client";
 
 import { m } from "framer-motion";
+import Image from "next/image";
 import styles from "../landing.module.css";
 
 export function SiteHeader() {
@@ -15,17 +16,27 @@ export function SiteHeader() {
         className={styles.pill}
         style={{
           marginTop: "clamp(1.4375rem, 1.458vw + 0.125rem, 1.875rem)",
-          padding: "10px 28px",
+          padding: "2px 18px",
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "clamp(1.1rem, 1.3vw + 0.5rem, 1.5rem)",
-          fontWeight: 800,
-          letterSpacing: "-0.03em",
-          lineHeight: 1,
+          backgroundColor: "var(--surface)",
         }}
       >
-        plugoh
+        <Image
+          src="/logo-gold.png"
+          alt="Plugoh"
+          height={48}
+          width={114}
+          quality={100}
+          priority
+          style={{
+            width: "114px",
+            height: "48px",
+            objectFit: "cover",
+            objectPosition: "center",
+          }}
+        />
       </div>
     </m.header>
   );

@@ -2,6 +2,7 @@
 
 import { m, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import styles from "../landing.module.css";
 
 const faqs = [
@@ -165,7 +166,13 @@ export function FaqDrawer() {
                 lineHeight: 1,
               }}
             >
-              plugoh
+              <Image
+                src="/logo-gold.png"
+                alt="Plugoh"
+                height={24}
+                width={100}
+                style={{ objectFit: "contain" }}
+              />
             </div>
 
             <button

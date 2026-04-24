@@ -21,7 +21,7 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   metadataBase: new URL("https://plugoh.com"),
   title: {
-    default: "Plugoh – Connect Brands with Creators",
+    default: "Plugoh",
     template: "%s | Plugoh",
   },
   description:
@@ -47,6 +47,13 @@ export const metadata: Metadata = {
     title: "Plugoh – Connect Brands with Creators",
     description:
       "The fastest way for businesses to discover and book Instagram influencers for reels, posts, and stories in India.",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
   },
 };
 

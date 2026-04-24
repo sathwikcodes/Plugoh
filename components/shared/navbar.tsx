@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
@@ -51,13 +52,14 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <span className="text-sm font-bold text-primary-foreground">R</span>
-          </div>
-          <span className="brand-mark text-[1.35rem] font-medium text-foreground">
-            Plugoh
-          </span>
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/logo-gold.png"
+            alt="Plugoh"
+            height={36}
+            width={120}
+            style={{ objectFit: "contain" }}
+          />
         </Link>
 
         {/* Desktop nav */}
