@@ -78,7 +78,7 @@ export default function InfluencerDashboard() {
         >
           <Link
             href="/dashboard/influencer/campaigns"
-            className="flex w-[80vw] max-w-xs items-center justify-center rounded-full bg-white px-8 py-3.5 text-base font-bold text-[#1d1c1c] shadow-[0_4px_16px_rgba(255,255,255,0.1)] transition-all hover:bg-neutral-200 active:scale-95"
+            className="flex w-[80vw] max-w-xs items-center justify-center rounded-full bg-primary px-8 py-3.5 text-base font-bold text-primary-foreground shadow-[0_4px_24px_rgba(229,185,74,0.28)] transition-all hover:brightness-105 active:scale-95"
           >
             Let&rsquo;s go
           </Link>

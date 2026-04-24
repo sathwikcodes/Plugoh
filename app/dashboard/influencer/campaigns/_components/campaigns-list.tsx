@@ -85,7 +85,7 @@ export function CampaignsList({
           </p>
           <Button
             asChild
-            className="mt-6 h-11 rounded-full bg-white text-black hover:bg-white/90"
+            className="mt-6 h-11 rounded-full bg-primary text-primary-foreground hover:brightness-105"
           >
             <Link href="/dashboard/influencer/profile">
               Complete profile

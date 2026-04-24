@@ -132,7 +132,7 @@ export const CAMPAIGN_STATUS_CONFIG = {
     badge: "bg-red-500/15 text-red-400 border-red-500/20",
     dot: "bg-red-400",
     border: "border-l-red-400",
-    cardBg: "from-red-500/8 to-rose-500/5",
+    cardBg: "from-red-500/8 to-red-400/5",
   },
   declined: {
     label: "Declined",
@@ -140,7 +140,7 @@ export const CAMPAIGN_STATUS_CONFIG = {
     badge: "bg-red-500/15 text-red-400 border-red-500/20",
     dot: "bg-red-400",
     border: "border-l-red-400",
-    cardBg: "from-red-500/8 to-rose-500/5",
+    cardBg: "from-red-500/8 to-red-400/5",
   },
   expired: {
     label: "Expired",
@@ -148,7 +148,7 @@ export const CAMPAIGN_STATUS_CONFIG = {
     badge: "bg-red-500/15 text-red-400 border-red-500/20",
     dot: "bg-red-400",
     border: "border-l-red-400",
-    cardBg: "from-red-500/8 to-rose-500/5",
+    cardBg: "from-red-500/8 to-red-400/5",
   },
   cancelled: {
     label: "Cancelled",
@@ -156,7 +156,7 @@ export const CAMPAIGN_STATUS_CONFIG = {
     badge: "bg-red-500/15 text-red-400 border-red-500/20",
     dot: "bg-red-400",
     border: "border-l-red-400",
-    cardBg: "from-red-500/8 to-rose-500/5",
+    cardBg: "from-red-500/8 to-red-400/5",
   },
   refunded: {
     label: "Refunded",
@@ -164,7 +164,7 @@ export const CAMPAIGN_STATUS_CONFIG = {
     badge: "bg-red-500/15 text-red-400 border-red-500/20",
     dot: "bg-red-400",
     border: "border-l-red-400",
-    cardBg: "from-red-500/8 to-rose-500/5",
+    cardBg: "from-red-500/8 to-red-400/5",
   },
   // Legacy aliases for backward compatibility with migrated data
   pending: {
@@ -189,7 +189,7 @@ export const CAMPAIGN_STATUS_CONFIG = {
     badge: "bg-red-500/15 text-red-400 border-red-500/20",
     dot: "bg-red-400",
     border: "border-l-red-400",
-    cardBg: "from-red-500/8 to-rose-500/5",
+    cardBg: "from-red-500/8 to-red-400/5",
   },
 } as const;
 
@@ -205,12 +205,12 @@ export const TIERS = [
     threshold: 0,
     next: 25000,
     emoji: "/star.png",
-    fromClass: "from-rose-400",
-    toClass: "to-pink-500",
-    borderClass: "border-rose-400/30",
-    bgClass: "from-rose-400/10 to-pink-500/10",
-    textClass: "text-rose-400",
-    barClass: "from-rose-400 to-pink-400",
+    fromClass: "from-amber-400",
+    toClass: "to-amber-500",
+    borderClass: "border-amber-400/30",
+    bgClass: "from-amber-400/10 to-amber-500/10",
+    textClass: "text-amber-400",
+    barClass: "from-amber-400 to-amber-500",
   },
   {
     name: "Creator",

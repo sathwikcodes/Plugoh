@@ -161,7 +161,7 @@ export default function CampaignsPage() {
             variants={stagger}
             initial="hidden"
             animate="visible"
-            className="flex h-full flex-col gap-4 md:h-auto md:gap-5"
+            className="flex h-full flex-col gap-4 md:gap-5"
           >
             <m.div
               variants={fadeUp}

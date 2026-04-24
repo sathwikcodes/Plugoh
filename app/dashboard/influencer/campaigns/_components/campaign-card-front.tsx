@@ -322,7 +322,7 @@ export function CampaignCardFront({
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={card.onDecline}
                 disabled={actionsDisabled}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-rose-400/18 bg-rose-400/10 text-rose-300/80 transition-transform duration-150 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-amber-400/18 bg-amber-400/10 text-amber-300/80 transition-transform duration-150 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {card.isDeclining ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -352,7 +352,7 @@ export function CampaignCardFront({
             <Link
               href={card.detailHref}
               onPointerDown={(e) => e.stopPropagation()}
-              className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-white text-[13px] font-semibold text-black shadow-[0_6px_20px_rgba(0,0,0,0.30)] transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
+              className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-[13px] font-semibold text-primary-foreground shadow-[0_6px_20px_rgba(229,185,74,0.25)] transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
             >
               <span>View</span>
               <ArrowRight className="h-3.5 w-3.5" />

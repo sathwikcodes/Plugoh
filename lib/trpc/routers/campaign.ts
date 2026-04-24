@@ -10,6 +10,203 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET!,
 });
 
+function formatPackageLabel(value: string | null): string {
+  if (!value) return "Not specified";
+  if (value === "reel") return "Reel";
+  if (value === "post") return "Post";
+  if (value === "story") return "Story";
+  return value
+    .split("_")
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+    .join(" ");
+}
+
+function buildDeliveryEmailHtml({
+  brandName,
+  influencerName,
+  campaignTitle,
+  packageType,
+  priceOffered,
+  contentUrl,
+  notes,
+  reviewUrl,
+}: {
+  brandName: string;
+  influencerName: string;
+  campaignTitle: string;
+  packageType: string;
+  priceOffered: string;
+  contentUrl: string;
+  notes?: string;
+  reviewUrl: string;
+}) {
+  return `
+    <div style="margin:0;padding:24px;background:#f8f5fb;font-family:Inter,Arial,sans-serif;color:#1f1530;line-height:1.55;">
+      <div style="max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #eadff5;border-radius:20px;overflow:hidden;box-shadow:0 20px 55px rgba(74,22,94,0.10);">
+        <div style="padding:22px 24px;background:linear-gradient(135deg,#2a1523 0%,#5f2559 55%,#8b367a 100%);color:#fff;">
+          <p style="margin:0 0 8px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.85;">Plugoh Notifications</p>
+          <h2 style="margin:0;font-size:26px;line-height:1.2;font-weight:700;">Delivery submitted</h2>
+          <p style="margin:8px 0 0;font-size:14px;opacity:0.92;">${influencerName} completed their delivery for ${campaignTitle}.</p>
+        </div>
+
+        <div style="padding:24px;">
+          <p style="margin:0 0 14px;font-size:16px;color:#2d1f43;">Hi ${brandName},</p>
+          <p style="margin:0 0 18px;font-size:14px;color:#4a3a64;">
+            <strong style="color:#2d1f43;">${influencerName}</strong> has submitted their content for <strong style="color:#2d1f43;">${campaignTitle}</strong>. Here's the delivery link:
+          </p>
+
+          <div style="margin:0 0 18px;border:1px solid #c4e8c4;border-radius:14px;background:#f4fbf4;padding:14px;">
+            <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#4a9a4a;">Delivered content</p>
+            <a href="${contentUrl}" style="font-size:14px;color:#1a7a3a;word-break:break-all;text-decoration:underline;">${contentUrl}</a>
+          </div>
+
+          ${
+            notes
+              ? `<div style="margin:0 0 18px;border:1px solid #eadff5;border-radius:14px;background:#fcfaff;padding:14px;">
+            <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#8a79a8;">Notes from influencer</p>
+            <p style="margin:0;font-size:14px;color:#4a3a64;">${notes}</p>
+          </div>`
+              : ""
+          }
+
+          <div style="margin:0 0 18px;border:1px solid #eadff5;border-radius:14px;background:#fcfaff;padding:14px 14px 10px;">
+            <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#8a79a8;">Campaign details</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;color:#4a3a64;">
+              <tr>
+                <td style="padding:0 0 8px;opacity:0.8;">Campaign</td>
+                <td style="padding:0 0 8px;text-align:right;color:#2d1f43;font-weight:600;">${campaignTitle}</td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 8px;opacity:0.8;">Package</td>
+                <td style="padding:0 0 8px;text-align:right;color:#2d1f43;font-weight:600;">${packageType}</td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 2px;opacity:0.8;">Creator earnings</td>
+                <td style="padding:0 0 2px;text-align:right;color:#2d1f43;font-weight:600;">₹${priceOffered}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="margin:0 0 22px;border:1px solid #fde8c4;border-radius:14px;background:#fffbf4;padding:14px;">
+            <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#a06010;">You have 24 hours to review and take action:</p>
+            <ul style="margin:0;padding:0 0 0 18px;font-size:13px;color:#6a4820;line-height:1.8;">
+              <li>Approve the delivery and release payment</li>
+              <li>Request a revision</li>
+              <li>Raise a dispute with Plugoh</li>
+            </ul>
+          </div>
+
+          <div style="margin-top:4px;">
+            <a href="${reviewUrl}" style="display:inline-block;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg,#7f2f7f 0%,#c2488f 100%);color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">
+              Review delivery →
+            </a>
+            <p style="margin:10px 0 0;font-size:12px;color:#8a79a8;">
+              Use the button to view the content and take action on your campaign.
+            </p>
+          </div>
+        </div>
+
+        <div style="padding:14px 24px;border-top:1px solid #f0e9f7;background:#fcfaff;">
+          <p style="margin:0;font-size:12px;color:#8a79a8;">Sent by Plugoh · plugoh.com</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function sendDeliveryNotificationEmail({
+  db,
+  campaign,
+  influencerId,
+  contentUrl,
+  notes,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  db: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  campaign: any;
+  influencerId: string;
+  contentUrl: string;
+  notes?: string;
+}) {
+  try {
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (!resendApiKey) return;
+
+    // Resolve brand email
+    let brandEmail: string | null =
+      (campaign.business_contact_email as string | null) ?? null;
+
+    const [{ data: brandProfile }, { data: influencerProfile }] =
+      await Promise.all([
+        db
+          .from("profiles")
+          .select("email, full_name, business_name")
+          .eq("id", campaign.business_id)
+          .single(),
+        db.from("profiles").select("full_name").eq("id", influencerId).single(),
+      ]);
+
+    if (!brandEmail) {
+      brandEmail = brandProfile?.email ?? null;
+    }
+    if (!brandEmail) {
+      const { data: authUser } = await db.auth.admin.getUserById(
+        campaign.business_id,
+      );
+      brandEmail = authUser?.user?.email ?? null;
+    }
+    if (!brandEmail) return;
+
+    const brandName =
+      (brandProfile?.business_name as string | null)?.trim() ||
+      (brandProfile?.full_name as string | null)?.trim() ||
+      "there";
+    const influencerName =
+      (influencerProfile?.full_name as string | null)?.trim() ||
+      "The influencer";
+    const campaignTitle =
+      (campaign.title as string | null)?.trim() || "your campaign";
+    const packageType = formatPackageLabel(
+      campaign.package_type as string | null,
+    );
+    const priceOffered = campaign.price_offered
+      ? (campaign.price_offered as number).toLocaleString("en-IN")
+      : "—";
+
+    const appUrl =
+      (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "") ||
+      "https://plugoh.com";
+    const reviewUrl = `${appUrl}/dashboard/business/campaigns/${campaign.id}`;
+    const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: `Plugoh <${fromEmail}>`,
+        to: [brandEmail],
+        subject: `Delivery submitted — ${campaignTitle}`,
+        html: buildDeliveryEmailHtml({
+          brandName,
+          influencerName,
+          campaignTitle,
+          packageType,
+          priceOffered,
+          contentUrl,
+          notes,
+          reviewUrl,
+        }),
+      }),
+    });
+  } catch {
+    // Non-fatal — delivery is already recorded
+  }
+}
+
 export const campaignRouter = router({
   getCampaigns: protectedProcedure
     .input(
@@ -564,6 +761,15 @@ export const campaignRouter = router({
           content: `Content delivered! Review and approve within 7 days — payment auto-releases after that.`,
         }),
       ]);
+
+      // Fire-and-forget: send delivery notification email to brand
+      void sendDeliveryNotificationEmail({
+        db,
+        campaign,
+        influencerId: user.id,
+        contentUrl: input.contentUrl,
+        notes: input.notes,
+      });
 
       return { success: true };
     }),

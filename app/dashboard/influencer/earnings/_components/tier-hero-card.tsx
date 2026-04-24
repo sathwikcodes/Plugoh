@@ -20,7 +20,7 @@ const TIER_BADGE_MAP: Record<string, { type: AwardBadgeType; place?: number }> =
 
 // Maps tier name → its brand color hex for the shimmer gradient
 const TIER_SHIMMER_COLOR: Record<string, string> = {
-  "Rising Star": "#fb7185", // rose-400
+  "Rising Star": "#e5b94a", // champagne gold
   Creator: "#fbbf24", // amber-400
   "Pro Creator": "#fb923c", // orange-400
   "Elite Creator": "#a78bfa", // violet-400

@@ -33,11 +33,11 @@
 .scope {
   --ink: #1d1c1c;
   --surface: #fff;
-  --grad-pink: #ff158a;
+  --grad-pink: #e5b94a;
   --grad-yellow: #fff48d;
   --accent-green: #7effc5;
   --accent-cyan: #8bd8ff;
-  --accent-pink: #ff7ec8;
+  --accent-pink: #e5b94a;
   --accent-purple: #a66cff;
 
   color: var(--ink);
@@ -66,7 +66,7 @@
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(121deg, #ff158a -20.66%, #fff48d 65.83%);
+  background: linear-gradient(121deg, #e5b94a -20.66%, #fff48d 65.83%);
   background-size: 120% 120%;
   background-position: 50% 50%;
   animation: gradientPan 10s ease infinite;

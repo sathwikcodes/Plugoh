@@ -35,8 +35,8 @@ function StatusTimeline({ status }: { status: string }) {
       refunded: "Refunded",
     };
     return (
-      <div className="flex items-center gap-3 rounded-2xl border border-rose-300/20 bg-rose-300/8 px-4 py-3">
-        <CircleDot className="h-4 w-4 shrink-0 text-rose-300/70" />
+      <div className="flex items-center gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/8 px-4 py-3">
+        <CircleDot className="h-4 w-4 shrink-0 text-amber-300/70" />
         <div>
           <p className="text-sm font-medium capitalize text-white">{status}</p>
           <p className="text-xs text-white/50">

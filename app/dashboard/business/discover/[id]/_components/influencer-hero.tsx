@@ -148,7 +148,7 @@ export function InfluencerHero({
                     size="lg"
                     disabled={!availablePackages.length}
                     onClick={onBook}
-                    className="h-12 w-full rounded-full bg-white text-slate-900 hover:bg-slate-100 disabled:bg-slate-800 disabled:text-slate-500"
+                    className="h-12 w-full rounded-full bg-primary text-primary-foreground hover:brightness-105 disabled:bg-muted disabled:text-muted-foreground"
                   >
                     {availablePackages.length
                       ? "Book now"

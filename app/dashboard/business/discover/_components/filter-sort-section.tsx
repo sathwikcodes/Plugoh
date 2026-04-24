@@ -52,7 +52,7 @@ export function SortSelector({
                   className={cn(
                     "flex h-5 w-5 items-center justify-center rounded-full border",
                     active
-                      ? "border-white bg-white text-black"
+                      ? "border-primary bg-primary text-primary-foreground"
                       : "border-white/12 text-transparent",
                   )}
                 >

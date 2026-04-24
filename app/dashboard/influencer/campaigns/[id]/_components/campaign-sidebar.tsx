@@ -150,7 +150,7 @@ export function CampaignSidebar({
       {/* Chat button */}
       <Link
         href={`/dashboard/influencer/inbox?chat=${campaign.id}`}
-        className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white text-[13px] font-semibold text-black shadow-[0_6px_20px_rgba(0,0,0,0.28)] transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary text-[13px] font-semibold text-primary-foreground shadow-[0_6px_20px_rgba(229,185,74,0.25)] transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
       >
         <MessageSquare className="h-[15px] w-[15px]" />
         Open in inbox

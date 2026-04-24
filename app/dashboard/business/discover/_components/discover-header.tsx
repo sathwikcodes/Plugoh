@@ -63,7 +63,7 @@ export function DiscoverHeader({
               {activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
             </span>
             {activeFilterCount > 0 ? (
-              <span className="absolute right-0 top-0 flex h-5 min-w-5 translate-x-[28%] -translate-y-[28%] items-center justify-center rounded-full border border-[#0F1115]/70 bg-white px-1 text-[9px] font-semibold leading-none text-black shadow-[0_8px_20px_rgba(0,0,0,0.28)] ring-2 ring-[#151922] sm:hidden">
+              <span className="absolute right-0 top-0 flex h-5 min-w-5 translate-x-[28%] -translate-y-[28%] items-center justify-center rounded-full border border-[#0F1115]/70 bg-primary px-1 text-[9px] font-semibold leading-none text-primary-foreground shadow-[0_8px_20px_rgba(229,185,74,0.28)] ring-2 ring-[#151922] sm:hidden">
                 {activeFilterCount}
               </span>
             ) : null}

@@ -95,7 +95,7 @@ export function CampaignSortPanel({
                 className={cn(
                   "rounded-[18px] px-4 py-2.5 text-sm font-medium capitalize transition-colors",
                   activeTab === tab
-                    ? "bg-white text-black shadow-[0_10px_20px_rgba(0,0,0,0.18)]"
+                    ? "bg-primary text-primary-foreground shadow-[0_10px_20px_rgba(229,185,74,0.18)]"
                     : "text-white/58 hover:text-white",
                 )}
               >
@@ -151,7 +151,7 @@ export function CampaignSortPanel({
                         className={cn(
                           "flex min-w-8 items-center justify-center rounded-full border px-2 py-1 text-[11px]",
                           active
-                            ? "border-white bg-white text-black"
+                            ? "border-primary bg-primary text-primary-foreground"
                             : isUrgent
                               ? "border-yellow-300/30 bg-yellow-300/12 text-yellow-200"
                               : "border-white/12 text-white/45",
@@ -195,7 +195,7 @@ export function CampaignSortPanel({
                         className={cn(
                           "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
                           active
-                            ? "border-white bg-white text-black"
+                            ? "border-primary bg-primary text-primary-foreground"
                             : "border-white/12 text-transparent",
                         )}
                       >
@@ -229,7 +229,7 @@ export function CampaignSortPanel({
             <m.div
               key="sort-sheet-mobile"
               ref={panelRef}
-              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[88dvh] flex-col rounded-t-[32px] border-t border-white/10 bg-[#241e30] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)]"
+              className="fixed bottom-0 left-0 right-0 z-50 flex max-h-[88dvh] flex-col rounded-t-[32px] border-t border-white/10 bg-[#141414] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)]"
               style={{ height: "min(88dvh, 760px)" }}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
@@ -248,7 +248,7 @@ export function CampaignSortPanel({
             <m.div
               key="sort-panel-desktop"
               ref={panelRef}
-              className="fixed bottom-0 right-0 top-0 z-50 flex w-105 flex-col border-l border-white/10 bg-[#241e30] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
+              className="fixed bottom-0 right-0 top-0 z-50 flex w-105 flex-col border-l border-white/10 bg-[#141414] text-white shadow-[-28px_0_90px_rgba(0,0,0,0.5)]"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}

@@ -191,7 +191,7 @@ export function FilterPanelContent({
       </div>
 
       <div
-        className="shrink-0 border-t border-white/8 bg-[#241e30]/96 px-5 py-4 backdrop-blur-xl"
+        className="shrink-0 border-t border-white/8 bg-[#141414]/96 px-5 py-4 backdrop-blur-xl"
         style={{
           paddingBottom: isMobile
             ? "calc(env(safe-area-inset-bottom, 0px) + 28px)"

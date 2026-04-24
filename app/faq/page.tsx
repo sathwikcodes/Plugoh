@@ -100,7 +100,7 @@ export default function FaqPage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(121deg, #ff158a -20.66%, #fff48d 65.83%)",
+        background: "linear-gradient(121deg, #e5b94a -20.66%, #fff48d 65.83%)",
         padding: "clamp(40px, 8vw, 100px) clamp(20px, 5vw, 80px)",
       }}
     >

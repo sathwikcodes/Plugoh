@@ -71,8 +71,8 @@ export function CampaignDeliverySection({
             Submit delivery
           </p>
           <p className="mb-4 text-[12.5px] text-white/50 sm:text-[13px]">
-            Share the final Instagram URL once the content is live so the brand
-            can review and release payment.
+            Upload your content to Google Drive, Dropbox, or similar and share
+            the link here so the brand can review and release payment.
           </p>
           {!showDeliveryForm ? (
             <Button
@@ -92,7 +92,7 @@ export function CampaignDeliverySection({
                   htmlFor="content-url"
                   className="text-sm font-medium text-white"
                 >
-                  Instagram post URL <span className="text-rose-400">*</span>
+                  Content Drive URL <span className="text-amber-400">*</span>
                 </Label>
                 <div className="relative">
                   <ExternalLink className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
@@ -101,7 +101,7 @@ export function CampaignDeliverySection({
                     type="url"
                     value={contentUrl}
                     onChange={(e) => setContentUrl(e.target.value)}
-                    placeholder="https://www.instagram.com/p/..."
+                    placeholder="https://drive.google.com/file/..."
                     className="h-10 rounded-full border-white/10 bg-white/5 pl-10 text-white"
                     required
                   />

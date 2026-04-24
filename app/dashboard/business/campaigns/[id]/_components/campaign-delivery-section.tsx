@@ -123,7 +123,7 @@ export function CampaignDeliverySection({
           <Button
             variant="outline"
             onClick={() => setShowDisputeForm(true)}
-            className="h-10 w-full rounded-full border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-sm px-4 sm:w-auto"
+            className="h-10 w-full rounded-full border-amber-500/30 text-amber-400 hover:bg-amber-500/10 text-sm px-4 sm:w-auto"
           >
             <AlertTriangle className="mr-1.5 h-3.5 w-3.5" />
             Dispute
@@ -148,7 +148,7 @@ export function CampaignDeliverySection({
                 })
               }
               disabled={disputeDelivery.isPending || disputeReason.length < 10}
-              className="h-10 w-full rounded-full bg-rose-500 text-white hover:bg-rose-600 sm:flex-1"
+              className="h-10 w-full rounded-full bg-amber-500 text-white hover:bg-amber-600 sm:flex-1"
             >
               {disputeDelivery.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

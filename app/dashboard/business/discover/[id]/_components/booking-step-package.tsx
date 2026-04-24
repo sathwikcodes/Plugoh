@@ -156,12 +156,12 @@ export function BookingStepPackage({
                   onClick={() => onPackageChange(item.key)}
                   className={`rounded-2xl border px-3 py-3 text-center transition ${
                     active
-                      ? "border-white/30 bg-white text-black"
+                      ? "border-primary/50 bg-primary text-primary-foreground"
                       : "border-white/10 bg-white/3 text-white hover:bg-white/6"
                   }`}
                 >
                   <p
-                    className={`text-sm font-medium ${active ? "text-black" : "text-white"}`}
+                    className={`text-sm font-medium ${active ? "text-primary-foreground" : "text-white"}`}
                   >
                     {item.label}
                   </p>

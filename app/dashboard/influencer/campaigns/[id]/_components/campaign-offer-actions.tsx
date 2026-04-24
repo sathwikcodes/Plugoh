@@ -51,7 +51,7 @@ export function CampaignOfferActions({
           type="button"
           onClick={onDecline}
           disabled={actionsDisabled}
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-rose-400/18 bg-rose-400/10 text-rose-300/80 transition-transform duration-150 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-amber-400/18 bg-amber-400/10 text-amber-300/80 transition-transform duration-150 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isDeclining ? (
             <Loader2 className="h-4 w-4 animate-spin" />

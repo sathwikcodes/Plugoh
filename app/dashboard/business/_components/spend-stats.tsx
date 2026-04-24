@@ -74,7 +74,7 @@ export function SpendStats({ stats, hasCampaigns }: SpendStatsProps) {
                   ? "bg-linear-to-r from-green-500 to-emerald-400"
                   : stats.acceptanceRate >= 40
                     ? "bg-linear-to-r from-yellow-500 to-orange-400"
-                    : "bg-linear-to-r from-red-500 to-rose-400",
+                    : "bg-linear-to-r from-red-500 to-red-400",
               )}
               style={{ width: `${stats.acceptanceRate}%` }}
             />

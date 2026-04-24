@@ -15,8 +15,8 @@ export function makeDockIcon(nodes: IconNode): string {
     })
     .join("");
 
-  // Pink rounded-square background (#ec4899 = Tailwind pink-500) with white icon
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#ec4899"/><g transform="translate(12,12)" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none">${children}</g></svg>`;
+  // Champagne gold rounded-square background with dark ink icon
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#e5b94a"/><g transform="translate(12,12)" stroke="#0d0b0f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none">${children}</g></svg>`;
 
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
