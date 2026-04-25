@@ -8,6 +8,7 @@ type ThreeDButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
   label?: string;
   hoverLabel?: string;
+  hideIcon?: boolean;
 };
 
 type ChildProps = {
@@ -34,9 +35,11 @@ function LetterState({ label, state }: { label: string; state: "state-1" | "stat
 function ButtonChrome({
   label,
   hoverLabel,
+  hideIcon,
 }: {
   label: string;
   hoverLabel: string;
+  hideIcon?: boolean;
 }) {
   return (
     <>
@@ -76,9 +79,11 @@ function ButtonChrome({
         <div className="outline" />
         <div className="content">
           <LetterState label={label} state="state-1" />
-          <div className="icon" aria-hidden="true">
-            <div />
-          </div>
+          {!hideIcon && (
+            <div className="icon" aria-hidden="true">
+              <div />
+            </div>
+          )}
           <LetterState label={hoverLabel} state="state-2" />
         </div>
       </div>
@@ -95,13 +100,14 @@ const ThreeDButton = React.forwardRef<HTMLButtonElement, ThreeDButtonProps>(
       children,
       label = "Book Now",
       hoverLabel = label,
+      hideIcon = false,
       type = "button",
       ...props
     },
     ref,
   ) => {
     const rootClassName = cn("three-d-button", className);
-    const chrome = <ButtonChrome label={label} hoverLabel={hoverLabel} />;
+    const chrome = <ButtonChrome label={label} hoverLabel={hoverLabel} hideIcon={hideIcon} />;
 
     if (asChild && React.isValidElement<ChildProps>(children)) {
       return React.cloneElement(children, {

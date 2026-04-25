@@ -223,12 +223,14 @@ export function CampaignCardFront({
       {/* ── Content section ────────────────────────────────────────────────── */}
       <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080609] px-3 pb-3 pt-2.5 @[340px]:px-4 @[340px]:pb-4 @[340px]:pt-3">
         {/* Title — scales from 17px on tiny cards to 25px on wide cards */}
-        <h2
-          className="line-clamp-2 font-semibold leading-[1.15] tracking-[-0.04em] text-white"
-          style={{ fontSize: "clamp(17px, 5.5cqw, 25px)" }}
-        >
-          {card.title || "Untitled Campaign"}
-        </h2>
+        <div className="hidden md:block">
+          <h2
+            className="line-clamp-2 font-semibold leading-[1.15] tracking-[-0.04em] text-white"
+            style={{ fontSize: "clamp(17px, 5.5cqw, 25px)" }}
+          >
+            {card.title || "Untitled Campaign"}
+          </h2>
+        </div>
 
         {/* Payout box — coin + price left, payment-progress pill right */}
         <div className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-3 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3.5">
@@ -276,7 +278,7 @@ export function CampaignCardFront({
                   ink: "#f0ece4",
                   glow: "rgba(107,100,87,0.18)",
                 }}
-                className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate"
+                className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate [&_.pill-label]:max-w-full"
               />
             ) : null}
             {card.location ? (
@@ -299,7 +301,7 @@ export function CampaignCardFront({
                     className="h-3.5 w-3.5 shrink-0 object-contain"
                   />
                 }
-                className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate"
+                className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate [&_.pill-label]:max-w-full"
               />
             ) : null}
           </div>
@@ -310,7 +312,7 @@ export function CampaignCardFront({
           <ThreeDPill
             label={deliveryLabel}
             color="slate"
-            className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate"
+            className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate [&_.pill-label]:max-w-full"
           />
         </div>
 

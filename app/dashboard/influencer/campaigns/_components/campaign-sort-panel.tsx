@@ -5,6 +5,7 @@ import { AnimatePresence, m } from "framer-motion";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { ThreeDButton } from "@/components/ui/3d-button";
 import {
   SORT_OPTIONS,
   STATUS_FILTERS,
@@ -86,21 +87,18 @@ export function CampaignSortPanel({
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5">
         <div className="space-y-5 pb-6">
-          <div className="grid grid-cols-2 gap-2 rounded-[22px] border border-white/10 bg-white/[0.035] p-1">
+          <div className="grid grid-cols-2 gap-4 px-2 pb-3">
             {(["status", "sort"] as const).map((tab) => (
-              <button
+              <ThreeDButton
                 key={tab}
-                type="button"
+                label={tab === "status" ? "Status" : "Sort"}
+                hideIcon={true}
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  "rounded-[18px] px-4 py-2.5 text-sm font-medium capitalize transition-colors",
-                  activeTab === tab
-                    ? "bg-primary text-primary-foreground shadow-[0_10px_20px_rgba(229,185,74,0.18)]"
-                    : "text-white/58 hover:text-white",
+                  "three-d-button--sm transition-all duration-300",
+                  activeTab !== tab && "three-d-button--neutral"
                 )}
-              >
-                {tab === "status" ? "Status" : "Sort"}
-              </button>
+              />
             ))}
           </div>
           {activeTab === "status" ? (

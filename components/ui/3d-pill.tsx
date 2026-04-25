@@ -49,7 +49,7 @@ const ThreeDPill = React.forwardRef<HTMLSpanElement, ThreeDPillProps>(
       >
         <div className="pill-bg" />
         <div className="pill-outline" />
-        <span className="pill-label">
+        <span className="pill-label min-w-0">
           {icon}
           <span className="pill-text">{label}</span>
         </span>

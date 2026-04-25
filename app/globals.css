@@ -519,13 +519,13 @@ input.range-thumb::-moz-range-track {
       135deg,
       var(--button-gold-light) 0%,
       var(--button-gold) 45%,
-      #c49030 74%,
+      var(--button-mid, #c49030) 74%,
       var(--button-gold-dark) 100%
     );
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -10px 16px rgba(78, 48, 0, 0.28),
-    0 8px 0 #7b5614,
+    inset 0 -10px 16px var(--button-shadow-inner, rgba(78, 48, 0, 0.28)),
+    0 8px 0 var(--button-edge, #7b5614),
     0 18px 34px var(--button-glow);
   color: var(--button-ink);
   font-size: 1rem;
@@ -541,14 +541,67 @@ input.range-thumb::-moz-range-track {
   -webkit-tap-highlight-color: transparent;
 }
 
+.three-d-button--neutral {
+  --button-gold: #38383a;
+  --button-gold-light: #6e6e73;
+  --button-gold-dark: #1d1d1f;
+  --button-mid: #2d2d2f;
+  --button-ink: #ffffff;
+  --button-glow: rgba(0, 0, 0, 0.35);
+  --button-shadow-inner: rgba(0, 0, 0, 0.4);
+  --button-edge: #151515;
+}
+
+.three-d-button--sm {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 2.5rem !important;
+  font-size: 0.875rem !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -6px 10px var(--button-shadow-inner, rgba(78, 48, 0, 0.28)),
+    0 4px 0 var(--button-edge, #7b5614),
+    0 10px 20px var(--button-glow);
+}
+
+.three-d-button--sm .content {
+  padding-inline: 0.5rem !important;
+}
+
+.three-d-button--sm .char {
+  min-width: 0 !important;
+}
+
+.three-d-button--sm .path {
+  height: 1.8rem !important;
+}
+
+.three-d-button--sm:hover {
+  transform: translateY(-1px) translateZ(0);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -7px 12px var(--button-shadow-hover, rgba(78, 48, 0, 0.3)),
+    0 5px 0 var(--button-edge, #7b5614),
+    0 14px 28px var(--button-glow-hover, rgba(229, 185, 74, 0.52));
+}
+
+.three-d-button--sm:active {
+  transform: translateY(3px) translateZ(0);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    inset 0 -3px 6px var(--button-shadow-inner, rgba(78, 48, 0, 0.28)),
+    0 2px 0 var(--button-edge, #7b5614),
+    0 6px 12px var(--button-glow-active, rgba(229, 185, 74, 0.34));
+}
+
 .three-d-button:hover {
   filter: saturate(1.08) brightness(1.05);
   transform: translateY(-2px) translateZ(0);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.78),
-    inset 0 -11px 18px rgba(78, 48, 0, 0.3),
-    0 10px 0 #7b5614,
-    0 24px 46px rgba(229, 185, 74, 0.52);
+    inset 0 -11px 18px var(--button-shadow-hover, rgba(78, 48, 0, 0.3)),
+    0 10px 0 var(--button-edge, #7b5614),
+    0 24px 46px var(--button-glow-hover, rgba(229, 185, 74, 0.52));
 }
 
 .three-d-button:focus-visible {
@@ -560,9 +613,9 @@ input.range-thumb::-moz-range-track {
   transform: translateY(5px) translateZ(0);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.56),
-    inset 0 -5px 10px rgba(78, 48, 0, 0.28),
-    0 3px 0 #7b5614,
-    0 12px 24px rgba(229, 185, 74, 0.34);
+    inset 0 -5px 10px var(--button-shadow-inner, rgba(78, 48, 0, 0.28)),
+    0 3px 0 var(--button-edge, #7b5614),
+    0 12px 24px var(--button-glow-active, rgba(229, 185, 74, 0.34));
 }
 
 .three-d-button .bg {
