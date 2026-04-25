@@ -566,6 +566,20 @@ input.range-thumb::-moz-range-track {
   --button-glow-active: rgba(52, 211, 153, 0.28);
 }
 
+.three-d-button--rose {
+  --button-gold: #fb7185;
+  --button-gold-light: #fecdd3;
+  --button-gold-dark: #9f1239;
+  --button-mid: #e11d48;
+  --button-ink: #ffffff;
+  --button-glow: rgba(251, 113, 133, 0.38);
+  --button-shadow-inner: rgba(80, 0, 20, 0.38);
+  --button-edge: #9f1239;
+  --button-shadow-hover: rgba(80, 0, 20, 0.44);
+  --button-glow-hover: rgba(251, 113, 133, 0.52);
+  --button-glow-active: rgba(251, 113, 133, 0.28);
+}
+
 .three-d-button--sm {
   width: 100% !important;
   min-width: 0 !important;

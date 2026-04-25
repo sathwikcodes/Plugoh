@@ -60,9 +60,6 @@ function DeliveryWidget({
 
   return (
     <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
-      <p className="mb-1 text-[10px] uppercase tracking-[0.22em] text-white/35">
-        Submit delivery
-      </p>
       <p className="mb-4 text-[12px] text-white/45 leading-[1.6]">
         Upload to Drive / Dropbox and share the link so the brand can release payment.
       </p>
@@ -118,13 +115,15 @@ function DeliveryWidget({
               type="submit"
               disabled={isSubmittingDelivery || !contentUrl.trim()}
             />
-            <button
+            {/* Red 3D cancel */}
+            <ThreeDButton
+              label="Cancel"
+              hoverLabel="Cancel"
+              hideIcon
+              className="!w-full !min-w-0 !h-10 three-d-button--rose"
               type="button"
               onClick={handleCancel}
-              className="w-full rounded-full py-2 text-[12px] text-white/40 hover:text-white/60 transition-colors"
-            >
-              Cancel
-            </button>
+            />
           </div>
         </form>
       )}
@@ -177,9 +176,6 @@ export function CampaignSidebar({
       {showContactInfo &&
       (campaign.business_contact_email || campaign.business_contact_phone) ? (
         <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
-          <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
-            Brand contact
-          </p>
           <div className="space-y-2.5">
             {campaign.business_contact_email ? (
               <div className="flex items-start gap-2.5">
