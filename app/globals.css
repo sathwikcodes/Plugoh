@@ -585,6 +585,20 @@ input.range-thumb::-moz-range-track {
   --button-glow: transparent;
   --button-glow-hover: transparent;
   --button-glow-active: transparent;
+  /* Also allow the button to shrink in flex layouts */
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Allow the letter spans to wrap/shrink — removes the 7rem floor */
+.three-d-button--no-glow .char {
+  min-width: 0 !important;
+  width: auto !important;
+}
+
+/* Tighten horizontal padding so short labels ("Submit", "Cancel") fit */
+.three-d-button--no-glow .content {
+  padding-inline: 0.75rem !important;
 }
 
 .three-d-button--sm {

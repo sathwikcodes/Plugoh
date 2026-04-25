@@ -74,7 +74,7 @@ function DeliveryWidget({
           onClick={() => setShowForm(true)}
         />
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-3.5 rounded-[18px] border border-white/[0.08] bg-[rgba(22,18,25,0.70)] p-3.5 backdrop-blur-sm">
+        <form onSubmit={handleSubmit} className="w-full min-w-0 space-y-3.5 rounded-[18px] border border-white/[0.08] bg-[rgba(22,18,25,0.70)] p-3.5 backdrop-blur-sm overflow-hidden">
           <div className="space-y-1.5">
             <Label htmlFor="sidebar-content-url" className="text-xs font-medium text-white/70">
               Content URL <span className="text-amber-400">*</span>
@@ -105,7 +105,7 @@ function DeliveryWidget({
               className="resize-none border-white/10 bg-white/5 text-sm"
             />
           </div>
-          <div className="flex flex-row gap-2 pt-0.5">
+          <div className="flex w-full min-w-0 flex-row gap-2 pt-0.5 overflow-hidden">
             {/* Red 3D cancel — left */}
             <ThreeDButton
               label="Cancel"
