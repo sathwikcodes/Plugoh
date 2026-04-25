@@ -145,6 +145,38 @@ export function CampaignCardFront({
   const isOffer = OFFER_STATUSES.has(card.status);
   const actionsDisabled = card.isAccepting || card.isDeclining;
 
+  const pkgName = card.package_type ? formatPackage(card.package_type) : "content";
+  let deliveryLabel = `Brand requests a ${pkgName} ASAP`;
+
+  if (card.brief) {
+    const timelineMatch = card.brief.match(/Timeline:\s*(.*)/);
+    if (timelineMatch) {
+      const t = timelineMatch[1].trim();
+      if (t === "Instant") {
+        deliveryLabel = `Brand requests a ${pkgName} ASAP`;
+      } else {
+        const dateMatch = t.match(/\((.*)\)/);
+        if (dateMatch) {
+          const rawDate = dateMatch[1];
+          const [year, month, day] = rawDate.split("-").map(Number);
+          if (year && month && day) {
+            const localDate = new Date(year, month - 1, day);
+            const formattedDate = localDate.toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            });
+            deliveryLabel = `Brand requests a ${pkgName} by ${formattedDate}`;
+          } else {
+            deliveryLabel = `Brand requests a ${pkgName} by ${rawDate}`;
+          }
+        } else {
+          deliveryLabel = `Brand requests a ${pkgName} (${t})`;
+        }
+      }
+    }
+  }
+
   return (
     <m.div
       style={{ opacity: overlayOpacity }}
@@ -197,16 +229,6 @@ export function CampaignCardFront({
         >
           {card.title || "Untitled Campaign"}
         </h2>
-
-        {/* Format line */}
-        {card.package_type ? (
-          <div className="mt-1 flex items-center gap-1.5">
-            <FileText className="h-3 w-3 shrink-0 text-white/35 @[340px]:h-3.5 @[340px]:w-3.5" />
-            <span className="text-[12px] text-white/55 @[340px]:text-[13px]">
-              {formatPackage(card.package_type)}
-            </span>
-          </div>
-        ) : null}
 
         {/* Payout box — coin + price left, payment-progress pill right */}
         <div className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-3 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3.5">
@@ -282,6 +304,15 @@ export function CampaignCardFront({
             ) : null}
           </div>
         ) : null}
+
+        {/* Delivery / Package Pill */}
+        <div className="mt-2.5 flex @[340px]:mt-3">
+          <ThreeDPill
+            label={deliveryLabel}
+            color="slate"
+            className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate"
+          />
+        </div>
 
         {/* Push action to bottom */}
         <div className="flex-1" />
