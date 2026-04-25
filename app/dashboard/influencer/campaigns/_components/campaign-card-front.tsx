@@ -146,14 +146,9 @@ export function CampaignCardFront({
   const actionsDisabled = card.isAccepting || card.isDeclining;
 
   return (
-    /*
-     * absolute inset-0: fills the card container in both the mobile stack
-     * (m.li with absolute inset-0) and the desktop tile (div with relative).
-     * This gives flex-1 a real height to grow into.
-     */
     <m.div
       style={{ opacity: overlayOpacity }}
-      className="absolute inset-0 flex flex-col overflow-hidden"
+      className="absolute inset-0 flex flex-col overflow-hidden @container"
     >
       {/* ── Image section ──────────────────────────────────────────────────── */}
       {/*
@@ -162,7 +157,6 @@ export function CampaignCardFront({
        * own width — not the parent's height — so this works in any layout ctx.
        */}
       <div className="relative w-full flex-none" style={{ paddingBottom: "58%" }}>
-        {/* Bg fills the padding-box absolutely */}
         <div className="absolute inset-0 overflow-hidden">
           {card.brandAvatarUrl ? (
             <Image
@@ -180,13 +174,10 @@ export function CampaignCardFront({
               }}
             />
           )}
-
-          {/* Gradient + blur dissolve into dark card body — no hard line */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#080609] via-[#080609]/70 to-transparent" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 backdrop-blur-md" style={{ maskImage: 'linear-gradient(to top, black 40%, transparent 100%)' }} />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 backdrop-blur-md" style={{ maskImage: "linear-gradient(to top, black 40%, transparent 100%)" }} />
         </div>
 
-        {/* Pills — z-10 so they sit above the gradient overlay */}
         <div className="absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
           <BrandPill
             brandName={card.brandName}
@@ -198,33 +189,43 @@ export function CampaignCardFront({
       </div>
 
       {/* ── Content section ────────────────────────────────────────────────── */}
-      <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080609] px-4 pb-4 pt-3">
-        {/* Title */}
-        <h2 className="line-clamp-2 text-[25px] font-semibold leading-[1.15] tracking-[-0.04em] text-white">
+      <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080609] px-3 pb-3 pt-2.5 @[340px]:px-4 @[340px]:pb-4 @[340px]:pt-3">
+        {/* Title — scales from 17px on tiny cards to 25px on wide cards */}
+        <h2
+          className="line-clamp-2 font-semibold leading-[1.15] tracking-[-0.04em] text-white"
+          style={{ fontSize: "clamp(17px, 5.5cqw, 25px)" }}
+        >
           {card.title || "Untitled Campaign"}
         </h2>
 
         {/* Format line */}
         {card.package_type ? (
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <FileText className="h-3.5 w-3.5 shrink-0 text-white/35" />
-            <span className="text-[13px] text-white/55">
+          <div className="mt-1 flex items-center gap-1.5">
+            <FileText className="h-3 w-3 shrink-0 text-white/35 @[340px]:h-3.5 @[340px]:w-3.5" />
+            <span className="text-[12px] text-white/55 @[340px]:text-[13px]">
               {formatPackage(card.package_type)}
             </span>
           </div>
         ) : null}
 
-        {/* Payout box */}
-        <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/[0.05] px-4 py-4">
-          <div className="flex items-center gap-2">
+        {/* Payout box — coin + price left, payment-progress pill right */}
+        <div className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-3 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3.5">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
             <Image
               src="/coin.png"
               alt=""
-              width={42}
-              height={42}
-              className="h-10 w-10 shrink-0 object-contain"
+              width={36}
+              height={36}
+              className="shrink-0 object-contain"
+              style={{
+                width: "clamp(20px, 6cqw, 36px)",
+                height: "clamp(20px, 6cqw, 36px)",
+              }}
             />
-            <span className="text-[42px] font-bold leading-none tracking-[-0.05em] text-amber-400">
+            <span
+              className="font-bold leading-none tracking-[-0.05em] text-amber-400"
+              style={{ fontSize: "clamp(19px, 6cqw, 32px)" }}
+            >
               {card.price_offered
                 ? card.price_offered.toLocaleString("en-IN")
                 : "—"}
@@ -234,13 +235,14 @@ export function CampaignCardFront({
             <ThreeDPill
               label={PAYMENT_PROGRESS[card.status].label}
               color={PAYMENT_PROGRESS[card.status].color}
+              className="shrink-0"
             />
           ) : null}
         </div>
 
-        {/* Info tags */}
+        {/* Info tags — two pills splitting the full card width */}
         {(card.businessType || card.location) ? (
-          <div className="mt-3 flex gap-2">
+          <div className="mt-2.5 flex gap-2 @[340px]:mt-3">
             {card.businessType ? (
               <ThreeDPill
                 label={card.businessType}
