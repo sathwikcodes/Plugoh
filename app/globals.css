@@ -774,6 +774,183 @@ input.range-thumb::-moz-range-track {
   }
 }
 
+/* ── 3D Pill ─────────────────────────────────────────────────────────────── */
+.three-d-pill {
+  --pill-base: #e5b94a;
+  --pill-light: #fff4a8;
+  --pill-mid: #c49030;
+  --pill-dark: #7b5614;
+  --pill-ink: #0d0b0f;
+  --pill-glow: rgba(229, 185, 74, 0.35);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.875rem;
+  overflow: visible;
+  border: 0;
+  border-radius: 9999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 44%),
+    linear-gradient(
+      135deg,
+      var(--pill-light) 0%,
+      var(--pill-base) 45%,
+      var(--pill-mid) 74%,
+      var(--pill-dark) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.22),
+    0 4px 0 var(--pill-dark),
+    0 10px 20px var(--pill-glow);
+  color: var(--pill-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: default;
+  transform: translateZ(0);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.three-d-pill:hover {
+  filter: saturate(1.08) brightness(1.05);
+  transform: translateY(-1px) translateZ(0);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -7px 12px rgba(0, 0, 0, 0.24),
+    0 5px 0 var(--pill-dark),
+    0 14px 28px var(--pill-glow);
+}
+
+.three-d-pill:active {
+  transform: translateY(3px) translateZ(0);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.18),
+    0 1px 0 var(--pill-dark),
+    0 6px 12px var(--pill-glow);
+}
+
+.three-d-pill .pill-bg {
+  position: absolute;
+  inset: 0.15rem;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.55), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0));
+  opacity: 0.84;
+  pointer-events: none;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.three-d-pill:hover .pill-bg {
+  opacity: 1;
+  transform: translateY(-0.5px);
+}
+
+.three-d-pill:active .pill-bg {
+  transform: translateY(0.5px);
+}
+
+.three-d-pill .pill-outline {
+  position: absolute;
+  inset: 0.15rem;
+  z-index: 1;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px rgba(13, 11, 15, 0.08),
+    inset 0 8px 12px rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.three-d-pill .pill-label {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* Color presets */
+.three-d-pill--emerald {
+  --pill-base: #34d399;
+  --pill-light: #a7f3d0;
+  --pill-mid: #10b981;
+  --pill-dark: #065f46;
+  --pill-ink: #022c22;
+  --pill-glow: rgba(52, 211, 153, 0.3);
+}
+
+.three-d-pill--amber {
+  --pill-base: #f59e0b;
+  --pill-light: #fde68a;
+  --pill-mid: #d97706;
+  --pill-dark: #92400e;
+  --pill-ink: #1c0e00;
+  --pill-glow: rgba(245, 158, 11, 0.3);
+}
+
+.three-d-pill--rose {
+  --pill-base: #fb7185;
+  --pill-light: #fecdd3;
+  --pill-mid: #e11d48;
+  --pill-dark: #9f1239;
+  --pill-ink: #fff;
+  --pill-glow: rgba(251, 113, 133, 0.3);
+}
+
+.three-d-pill--sky {
+  --pill-base: #38bdf8;
+  --pill-light: #bae6fd;
+  --pill-mid: #0284c7;
+  --pill-dark: #075985;
+  --pill-ink: #041019;
+  --pill-glow: rgba(56, 189, 248, 0.28);
+}
+
+.three-d-pill--violet {
+  --pill-base: #a78bfa;
+  --pill-light: #ede9fe;
+  --pill-mid: #7c3aed;
+  --pill-dark: #4c1d95;
+  --pill-ink: #fff;
+  --pill-glow: rgba(167, 139, 250, 0.28);
+}
+
+.three-d-pill--slate {
+  --pill-base: #94a3b8;
+  --pill-light: #e2e8f0;
+  --pill-mid: #64748b;
+  --pill-dark: #334155;
+  --pill-ink: #0f172a;
+  --pill-glow: rgba(148, 163, 184, 0.22);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .three-d-pill,
+  .three-d-pill *,
+  .three-d-pill *::before,
+  .three-d-pill *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

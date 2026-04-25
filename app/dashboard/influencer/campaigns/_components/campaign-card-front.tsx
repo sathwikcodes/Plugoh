@@ -3,12 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { m, type MotionValue } from "framer-motion";
-import { ArrowRight, Check, Loader2, MessageCircle, X } from "lucide-react";
+import { Check, FileText, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatCurrency, formatPackage, getInitials } from "@/lib/format";
+import { formatPackage, getInitials } from "@/lib/format";
 import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
-import FlipClock from "@/components/ui/flip-clock";
 import { ThreeDButton } from "@/components/ui/3d-button";
+import { ThreeDPill, type PillPreset } from "@/components/ui/3d-pill";
 
 // ─── Status glow (also used by campaign-card-back) ───────────────────────────
 export const STATUS_GLOW: Record<string, string> = {
@@ -51,107 +51,85 @@ export interface CampaignCardData {
   isDeclining?: boolean;
 }
 
-// ─── State derivation ─────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
 const OFFER_STATUSES = new Set(["pre_authorized", "requested", "pending"]);
-const CLOSED_STATUSES = new Set([
-  "declined",
-  "rejected",
-  "expired",
-  "cancelled",
-  "refunded",
-]);
 
-type CardVariant = "offer-timer" | "offer-no-timer" | "non-offer";
-
-function deriveCardState(status: string, expiresAt?: string | null) {
-  const isOffer = OFFER_STATUSES.has(status);
-  const isClosed = CLOSED_STATUSES.has(status);
-  const hasTimer = isOffer && !!expiresAt;
-  const variant: CardVariant = hasTimer
-    ? "offer-timer"
-    : isOffer
-      ? "offer-no-timer"
-      : "non-offer";
-  return { isOffer, isClosed, hasTimer, variant };
-}
-
-const PRICE_LABEL: Record<string, string> = {
-  in_escrow: "in escrow",
-  accepted: "in escrow",
-  payment_pending: "awaiting payment",
-  delivery_submitted: "pending payout",
-  completed: "earned",
+const STATUS_PILL_COLOR: Record<string, PillPreset> = {
+  pre_authorized: "amber",
+  requested: "amber",
+  pending: "amber",
+  payment_pending: "amber",
+  in_escrow: "amber",
+  delivery_submitted: "amber",
+  accepted: "emerald",
+  completed: "emerald",
+  disputed: "rose",
+  declined: "rose",
+  rejected: "rose",
+  cancelled: "rose",
+  expired: "rose",
+  refunded: "rose",
 };
 
-// ─── Local sub-components ─────────────────────────────────────────────────────
-function Avatar({
-  imageUrl,
-  displayName,
-  fallbackLabel,
-}: {
-  imageUrl: string | null;
-  displayName: string;
-  fallbackLabel?: string | null;
-}) {
-  if (imageUrl) {
-    return (
-      <Image
-        src={imageUrl}
-        alt={displayName}
-        width={32}
-        height={32}
-        className="h-8 w-8 shrink-0 rounded-full object-cover"
-      />
-    );
-  }
-  return (
-    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-[9px] font-bold text-white/60">
-      {getInitials(fallbackLabel || displayName)}
-    </div>
-  );
-}
+const PAYMENT_PROGRESS: Record<string, { label: string; color: PillPreset }> = {
+  pre_authorized:    { label: "Awaiting",  color: "slate"   },
+  requested:         { label: "Awaiting",  color: "slate"   },
+  pending:           { label: "Awaiting",  color: "slate"   },
+  payment_pending:   { label: "Pay Now",   color: "amber"   },
+  in_escrow:         { label: "On Hold",   color: "amber"   },
+  accepted:          { label: "On Hold",   color: "amber"   },
+  delivery_submitted:{ label: "On Hold",   color: "amber"   },
+  completed:         { label: "Paid",      color: "emerald" },
+  disputed:          { label: "Disputed",  color: "rose"    },
+  declined:          { label: "Cancelled", color: "rose"    },
+  rejected:          { label: "Cancelled", color: "rose"    },
+  cancelled:         { label: "Cancelled", color: "rose"    },
+  expired:           { label: "Expired",   color: "rose"    },
+  refunded:          { label: "Refunded",  color: "rose"    },
+};
 
-function Label({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/28">
-      {children}
-    </p>
-  );
-}
-
+// ─── Sub-components ───────────────────────────────────────────────────────────
 function StatusPill({ status }: { status: string }) {
   const cfg = CAMPAIGN_STATUS_CONFIG[status as CampaignStatus];
   if (!cfg) return null;
   return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-[5px] text-[11px] font-medium",
-        cfg.badge,
-      )}
-    >
-      <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", cfg.dot)} />
-      {cfg.shortLabel}
-    </span>
+    <ThreeDPill
+      label={cfg.shortLabel}
+      color={STATUS_PILL_COLOR[status] ?? "slate"}
+    />
   );
 }
 
-function PackagePill({
-  packageType,
-  muted,
+function BrandPill({
+  brandName,
+  avatarUrl,
+  fallbackLabel,
 }: {
-  packageType?: string | null;
-  muted?: boolean;
+  brandName: string;
+  avatarUrl: string | null;
+  fallbackLabel?: string | null;
 }) {
-  if (!packageType) return null;
-  return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center rounded-full border border-white/[0.09] bg-white/[0.06] px-2.5 py-[5px] text-[11px] font-medium",
-        muted ? "text-white/22" : "text-white/70",
-      )}
-    >
-      {formatPackage(packageType)}
+  const avatar = avatarUrl ? (
+    <Image
+      src={avatarUrl}
+      alt={brandName}
+      width={16}
+      height={16}
+      className="h-4 w-4 shrink-0 rounded-full object-cover"
+    />
+  ) : (
+    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-black/30 text-[7px] font-bold">
+      {getInitials(fallbackLabel || brandName)}
     </span>
+  );
+
+  return (
+    <ThreeDPill
+      label={brandName}
+      color="slate"
+      icon={avatar}
+      className="[&_.pill-text]:max-w-[110px] [&_.pill-text]:truncate"
+    />
   );
 }
 
@@ -164,160 +142,152 @@ export function CampaignCardFront({
   overlayOpacity?: MotionValue<number> | number;
 }) {
   const glow = STATUS_GLOW[card.status] ?? "rgba(255,255,255,0.06)";
-  const { isOffer, isClosed, hasTimer, variant } = deriveCardState(
-    card.status,
-    card.expires_at,
-  );
+  const isOffer = OFFER_STATUSES.has(card.status);
   const actionsDisabled = card.isAccepting || card.isDeclining;
-  const priceLabel = PRICE_LABEL[card.status] ?? null;
-  const isCompleted = card.status === "completed";
-  const hasBrief = !!card.brief?.trim();
 
   return (
-    <m.div style={{ opacity: overlayOpacity }} className="h-full w-full">
-      {/* Backgrounds */}
-      <div className="absolute inset-0 bg-[#080609]" />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse 80% 50% at 50% -8%, ${glow}, transparent)`,
-        }}
-      />
-      <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]" />
-
-      <div className="relative flex h-full flex-col px-5 pb-5 pt-5">
-        {/* ── Title ── */}
-        <h2
-          className={cn(
-            "line-clamp-2 text-[22px] font-semibold leading-[1.2] tracking-[-0.04em]",
-            isClosed ? "text-white/45" : "text-white",
+    /*
+     * absolute inset-0: fills the card container in both the mobile stack
+     * (m.li with absolute inset-0) and the desktop tile (div with relative).
+     * This gives flex-1 a real height to grow into.
+     */
+    <m.div
+      style={{ opacity: overlayOpacity }}
+      className="absolute inset-0 flex flex-col overflow-hidden"
+    >
+      {/* ── Image section ──────────────────────────────────────────────────── */}
+      {/*
+       * padding-bottom: 58% creates the image area height.
+       * CSS spec guarantees padding % is always relative to the element's
+       * own width — not the parent's height — so this works in any layout ctx.
+       */}
+      <div className="relative w-full flex-none" style={{ paddingBottom: "58%" }}>
+        {/* Bg fills the padding-box absolutely */}
+        <div className="absolute inset-0 overflow-hidden">
+          {card.brandAvatarUrl ? (
+            <Image
+              src={card.brandAvatarUrl}
+              alt={card.brandName}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 400px"
+            />
+          ) : (
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `radial-gradient(ellipse 120% 120% at 50% -10%, ${glow} 0%, #111116 60%, #080609 100%)`,
+              }}
+            />
           )}
-        >
+
+          {/* Gradient + blur dissolve into dark card body — no hard line */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#080609] via-[#080609]/70 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 backdrop-blur-md" style={{ maskImage: 'linear-gradient(to top, black 40%, transparent 100%)' }} />
+        </div>
+
+        {/* Pills — z-10 so they sit above the gradient overlay */}
+        <div className="absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
+          <BrandPill
+            brandName={card.brandName}
+            avatarUrl={card.brandAvatarUrl}
+            fallbackLabel={card.avatarFallbackLabel}
+          />
+          <StatusPill status={card.status} />
+        </div>
+      </div>
+
+      {/* ── Content section ────────────────────────────────────────────────── */}
+      <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080609] px-4 pb-4 pt-3">
+        {/* Title */}
+        <h2 className="line-clamp-2 text-[25px] font-semibold leading-[1.15] tracking-[-0.04em] text-white">
           {card.title || "Untitled Campaign"}
         </h2>
 
-        {/* ── Brand row ── */}
-        <div
-          className={cn(
-            "mt-3 flex items-center gap-2.5 rounded-2xl border px-3 py-2",
-            isClosed
-              ? "border-white/6 bg-white/[0.025]"
-              : "border-white/8 bg-white/4",
-          )}
-        >
-          <Avatar
-            imageUrl={card.brandAvatarUrl}
-            displayName={card.brandName}
-            fallbackLabel={card.avatarFallbackLabel}
-          />
-          <div className="min-w-0 flex-1">
-            <p
-              className={cn(
-                "truncate text-[13px] font-semibold leading-tight",
-                isClosed ? "text-white/38" : "text-white",
-              )}
-            >
-              {card.brandName}
-            </p>
-            {!hasTimer && card.businessType ? (
-              <p className="mt-0.5 truncate text-[11px] text-white/35">
-                {card.businessType}
-              </p>
-            ) : null}
+        {/* Format line */}
+        {card.package_type ? (
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <FileText className="h-3.5 w-3.5 shrink-0 text-white/35" />
+            <span className="text-[13px] text-white/55">
+              {formatPackage(card.package_type)}
+            </span>
           </div>
+        ) : null}
+
+        {/* Payout box */}
+        <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/[0.05] px-4 py-4">
+          <div className="flex items-center gap-2">
+            <Image
+              src="/coin.png"
+              alt=""
+              width={42}
+              height={42}
+              className="h-10 w-10 shrink-0 object-contain"
+            />
+            <span className="text-[42px] font-bold leading-none tracking-[-0.05em] text-amber-400">
+              {card.price_offered
+                ? card.price_offered.toLocaleString("en-IN")
+                : "—"}
+            </span>
+          </div>
+          {PAYMENT_PROGRESS[card.status] ? (
+            <ThreeDPill
+              label={PAYMENT_PROGRESS[card.status].label}
+              color={PAYMENT_PROGRESS[card.status].color}
+            />
+          ) : null}
         </div>
 
-        {/* ── Middle section: flex-1, top content + brief pinned to bottom ── */}
-        <div className="mt-3 flex min-h-0 flex-1 flex-col justify-between">
-          {/* Top content */}
-          <div className="space-y-3">
-            {/* Offer + timer */}
-            {variant === "offer-timer" && (
-              <div className="rounded-[16px] border border-amber-500/20 bg-amber-500/[0.07] px-4 py-3.5">
-                <p className="mb-3 text-center text-[9px] font-semibold uppercase tracking-[0.22em] text-amber-300/50">
-                  Offer expires soon
-                </p>
-                <FlipClock
-                  compact
-                  expiresAt={card.expires_at}
-                  className="w-full justify-center"
-                />
-              </div>
-            )}
-
-            {/* Package — shown for all offer variants */}
-            {isOffer && card.package_type && (
-              <div className="space-y-1.5">
-                <Label>Package</Label>
-                <PackagePill packageType={card.package_type} />
-              </div>
-            )}
-
-            {/* Status + Package — shown for all non-offer variants */}
-            {!isOffer && (
-              <div className="space-y-1.5">
-                <Label>Status</Label>
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <StatusPill status={card.status} />
-                  {card.package_type ? (
-                    <PackagePill
-                      packageType={card.package_type}
-                      muted={isClosed}
-                    />
-                  ) : null}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Brief — pinned to bottom of flex-1, right above divider */}
-          {hasBrief && (
-            <div className="space-y-1.5">
-              <Label>Brief</Label>
-              <p
-                className={cn(
-                  "leading-[1.55] text-white/40",
-                  hasTimer
-                    ? "line-clamp-2 text-[11.5px]"
-                    : "line-clamp-3 text-[12px]",
-                )}
-              >
-                {card.brief!.trim()}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* ── Divider ── */}
-        {!isClosed ? <div className="mt-3 h-px bg-white/[0.07]" /> : null}
-
-        {/* ── Price + Actions ── */}
-        <div className="flex items-center justify-between gap-3 pt-3.5">
-          {/* Price */}
-          <div className="min-w-0">
-            <p
-              className={cn(
-                "text-[26px] font-bold leading-none tracking-[-0.05em]",
-                isCompleted
-                  ? "text-emerald-300"
-                  : isClosed
-                    ? "text-white/25"
-                    : "text-white",
-              )}
-            >
-              {formatCurrency(card.price_offered)}
-            </p>
-            {priceLabel ? (
-              <p className="mt-1 text-[10px] tracking-wide text-white/35">
-                {priceLabel}
-              </p>
+        {/* Info tags */}
+        {(card.businessType || card.location) ? (
+          <div className="mt-3 flex gap-2">
+            {card.businessType ? (
+              <ThreeDPill
+                label={card.businessType}
+                color={{
+                  base: "#6b6457",
+                  light: "#9c9183",
+                  mid: "#504840",
+                  dark: "#28241e",
+                  ink: "#f0ece4",
+                  glow: "rgba(107,100,87,0.18)",
+                }}
+                className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate"
+              />
+            ) : null}
+            {card.location ? (
+              <ThreeDPill
+                label={card.location}
+                color={{
+                  base: "#566070",
+                  light: "#8090a0",
+                  mid: "#404c5c",
+                  dark: "#202830",
+                  ink: "#e4eaf0",
+                  glow: "rgba(86,96,112,0.18)",
+                }}
+                icon={
+                  <Image
+                    src="/map.png"
+                    alt=""
+                    width={14}
+                    height={14}
+                    className="h-3.5 w-3.5 shrink-0 object-contain"
+                  />
+                }
+                className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate"
+              />
             ) : null}
           </div>
+        ) : null}
 
-          {/* Actions */}
+        {/* Push action to bottom */}
+        <div className="flex-1" />
+
+        {/* Action */}
+        <div className="mt-3">
           {isOffer ? (
-            <div className="flex shrink-0 items-center gap-2">
-              {/* Decline */}
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onPointerDown={(e) => e.stopPropagation()}
@@ -331,7 +301,6 @@ export function CampaignCardFront({
                   <X className="h-4 w-4" />
                 )}
               </button>
-              {/* Accept — wide primary */}
               <button
                 type="button"
                 onPointerDown={(e) => e.stopPropagation()}
@@ -349,42 +318,15 @@ export function CampaignCardFront({
                 )}
               </button>
             </div>
-          ) : isCompleted ? (
+          ) : (
             <ThreeDButton
               asChild
               label="View"
-              className="!h-11 !min-w-0 !w-auto flex-1 text-[13px]"
+              className="!w-full mx-auto"
+              onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
             >
-              <Link
-                href={card.detailHref}
-                onPointerDown={(e) => e.stopPropagation()}
-              />
+              <Link href={card.detailHref} />
             </ThreeDButton>
-          ) : isClosed ? (
-            <Link
-              href={card.detailHref}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/8 bg-white/5 transition-transform duration-150 hover:scale-105 active:scale-95"
-            >
-              <ArrowRight className="h-4 w-4 text-white/40" />
-            </Link>
-          ) : (
-            <div className="flex shrink-0 items-center gap-2">
-              <Link
-                href={card.chatHref}
-                onPointerDown={(e) => e.stopPropagation()}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-[0_6px_20px_rgba(0,0,0,0.28)] transition-transform duration-150 hover:scale-105 active:scale-95"
-              >
-                <MessageCircle className="h-4.5 w-4.5 text-black" />
-              </Link>
-              <Link
-                href={card.detailHref}
-                onPointerDown={(e) => e.stopPropagation()}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-[0_6px_20px_rgba(0,0,0,0.28)] transition-transform duration-150 hover:scale-105 active:scale-95"
-              >
-                <ArrowRight className="h-4.5 w-4.5 text-black" />
-              </Link>
-            </div>
           )}
         </div>
       </div>
