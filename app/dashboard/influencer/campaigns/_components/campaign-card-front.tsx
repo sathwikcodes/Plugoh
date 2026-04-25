@@ -200,11 +200,31 @@ export function CampaignCardFront({
             />
           ) : (
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 flex items-center justify-center"
               style={{
                 background: `radial-gradient(ellipse 120% 120% at 50% -10%, ${glow} 0%, #111116 60%, #080609 100%)`,
               }}
-            />
+            >
+              {/* Large brand initials fallback */}
+              <span
+                className="select-none"
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: "clamp(64px, 18cqw, 110px)",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  lineHeight: 1,
+                  letterSpacing: "-0.03em",
+                  color: "rgba(255,255,255,0.13)",
+                  textShadow: "0 2px 24px rgba(0,0,0,0.35)",
+                  userSelect: "none",
+                  pointerEvents: "none",
+                }}
+                aria-hidden="true"
+              >
+                {getInitials(card.avatarFallbackLabel || card.brandName)}
+              </span>
+            </div>
           )}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#080609] via-[#080609]/70 to-transparent" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 backdrop-blur-md" style={{ maskImage: "linear-gradient(to top, black 40%, transparent 100%)" }} />
@@ -357,7 +377,7 @@ export function CampaignCardFront({
             <ThreeDButton
               asChild
               label="View"
-              className="!w-full mx-auto"
+              className="!w-full mx-auto three-d-button--cq-responsive"
               onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
             >
               <Link href={card.detailHref} />

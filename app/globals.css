@@ -594,6 +594,56 @@ input.range-thumb::-moz-range-track {
     0 6px 12px var(--button-glow-active, rgba(229, 185, 74, 0.34));
 }
 
+/* ── Container-query responsive 3D button ──────────────────────────────────
+   Applies compact sizing on narrow cards (mobile) and normal sizing on wide
+   cards (desktop). The card's root element must be a @container context.    */
+.three-d-button--cq-responsive {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+@container (max-width: 419px) {
+  .three-d-button--cq-responsive {
+    height: 2.5rem !important;
+    font-size: 0.875rem !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      inset 0 -6px 10px var(--button-shadow-inner, rgba(78, 48, 0, 0.28)),
+      0 4px 0 var(--button-edge, #7b5614),
+      0 10px 20px var(--button-glow);
+  }
+
+  .three-d-button--cq-responsive .content {
+    padding-inline: 0.5rem !important;
+  }
+
+  .three-d-button--cq-responsive .char {
+    min-width: 0 !important;
+  }
+
+  .three-d-button--cq-responsive .path {
+    height: 1.8rem !important;
+  }
+
+  .three-d-button--cq-responsive:hover {
+    transform: translateY(-1px) translateZ(0);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.78),
+      inset 0 -7px 12px var(--button-shadow-hover, rgba(78, 48, 0, 0.3)),
+      0 5px 0 var(--button-edge, #7b5614),
+      0 14px 28px var(--button-glow-hover, rgba(229, 185, 74, 0.52));
+  }
+
+  .three-d-button--cq-responsive:active {
+    transform: translateY(3px) translateZ(0);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.56),
+      inset 0 -3px 6px var(--button-shadow-inner, rgba(78, 48, 0, 0.28)),
+      0 2px 0 var(--button-edge, #7b5614),
+      0 6px 12px var(--button-glow-active, rgba(229, 185, 74, 0.34));
+  }
+}
+
 .three-d-button:hover {
   filter: saturate(1.08) brightness(1.05);
   transform: translateY(-2px) translateZ(0);
