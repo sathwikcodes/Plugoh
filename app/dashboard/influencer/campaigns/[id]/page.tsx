@@ -17,7 +17,6 @@ import { CampaignStatusSection } from "./_components/campaign-status-section";
 import { CampaignProgressSection } from "./_components/campaign-progress-section";
 import { CampaignBrandSection } from "./_components/campaign-brand-section";
 import { CampaignBriefSection } from "./_components/campaign-brief-section";
-import { CampaignDeliverySection } from "./_components/campaign-delivery-section";
 import { CampaignSidebar } from "./_components/campaign-sidebar";
 import type { Campaign } from "./_components/campaign-types";
 import { useInfluencerCampaignActions } from "../_hooks/use-influencer-campaign-actions";
@@ -144,16 +143,13 @@ export default function InfluencerCampaignDetail() {
             profilesLoading={profilesLoading}
           />
           <CampaignBriefSection campaign={campaign} />
-          <CampaignDeliverySection
-            campaign={campaign}
-            onSubmitDelivery={submitDelivery}
-            isSubmittingDelivery={isSubmittingDelivery}
-          />
         </div>
 
         <CampaignSidebar
           campaign={campaign}
           showContactInfo={showContactInfo}
+          onSubmitDelivery={submitDelivery}
+          isSubmittingDelivery={isSubmittingDelivery}
         />
       </m.div>
     </m.div>

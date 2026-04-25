@@ -552,6 +552,20 @@ input.range-thumb::-moz-range-track {
   --button-edge: #151515;
 }
 
+.three-d-button--emerald {
+  --button-gold: #34d399;
+  --button-gold-light: #a7f3d0;
+  --button-gold-dark: #065f46;
+  --button-mid: #10b981;
+  --button-ink: #022c22;
+  --button-glow: rgba(52, 211, 153, 0.38);
+  --button-shadow-inner: rgba(0, 60, 30, 0.35);
+  --button-edge: #065f46;
+  --button-shadow-hover: rgba(0, 60, 30, 0.40);
+  --button-glow-hover: rgba(52, 211, 153, 0.52);
+  --button-glow-active: rgba(52, 211, 153, 0.28);
+}
+
 .three-d-button--sm {
   width: 100% !important;
   min-width: 0 !important;
@@ -1041,6 +1055,40 @@ input.range-thumb::-moz-range-track {
   --pill-dark: #334155;
   --pill-ink: #0f172a;
   --pill-glow: rgba(148, 163, 184, 0.22);
+}
+
+/* ── Circle variant — icon-only circular node ─────────────────────────────── */
+.three-d-pill--circle {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  flex-shrink: 0;
+  /* Remove the bottom-edge bar + colored glow — they break the circular shape.
+     Keep only the inset highlights that give the 3-D face sheen. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+.three-d-pill--circle:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.28) !important;
+}
+
+.three-d-pill--circle:active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.50),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.20) !important;
+}
+
+.three-d-pill--circle .pill-text {
+  display: none !important;
+}
+
+.three-d-pill--circle .pill-label {
+  gap: 0 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

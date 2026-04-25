@@ -1,124 +1,177 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { Mail, MessageSquare, Phone } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { ExternalLink, Mail, Phone } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { ThreeDButton } from "@/components/ui/3d-button";
 import type { Campaign } from "./campaign-types";
 
 interface CampaignSidebarProps {
   campaign: Campaign;
   showContactInfo: boolean;
+  onSubmitDelivery: (input: {
+    campaignId: string;
+    contentUrl: string;
+    notes?: string;
+  }) => Promise<unknown>;
+  isSubmittingDelivery: boolean;
 }
 
-const EARNINGS_CONFIG: Record<
-  string,
-  { label: string; note: string; color: string }
-> = {
-  pre_authorized: {
-    label: "Offer Value",
-    note: "Accept to lock this deal",
-    color: "text-amber-300",
-  },
-  requested: {
-    label: "Offer Value",
-    note: "Accept to lock this deal",
-    color: "text-amber-300",
-  },
-  pending: {
-    label: "Offer Value",
-    note: "Accept to lock this deal",
-    color: "text-amber-300",
-  },
-  payment_pending: {
-    label: "Accepted",
-    note: "Waiting for brand to pay",
-    color: "text-white",
-  },
-  in_escrow: {
-    label: "In Escrow",
-    note: "Released on brand approval",
-    color: "text-emerald-300",
-  },
-  accepted: {
-    label: "In Escrow",
-    note: "Released on brand approval",
-    color: "text-emerald-300",
-  },
-  delivery_submitted: {
-    label: "Pending Payout",
-    note: "Auto-releases in 7 days if brand doesn't act",
-    color: "text-yellow-300",
-  },
-  completed: {
-    label: "Earned",
-    note: "Paid out to your account",
-    color: "text-emerald-300",
-  },
-};
-
-const DEFAULT_EARNINGS = {
-  label: "Amount",
-  note: "Campaign did not proceed",
-  color: "text-white/40",
-};
-
 const OFFER_STATUSES = new Set(["pre_authorized", "requested", "pending"]);
+
+// ── Inline delivery form ──────────────────────────────────────────────────────
+
+function DeliveryWidget({
+  campaign,
+  onSubmitDelivery,
+  isSubmittingDelivery,
+}: {
+  campaign: Campaign;
+  onSubmitDelivery: (input: {
+    campaignId: string;
+    contentUrl: string;
+    notes?: string;
+  }) => Promise<unknown>;
+  isSubmittingDelivery: boolean;
+}) {
+  const [contentUrl, setContentUrl] = useState("");
+  const [deliveryNotes, setDeliveryNotes] = useState("");
+  const [showForm, setShowForm] = useState(false);
+
+  const handleCancel = () => {
+    setShowForm(false);
+    setContentUrl("");
+    setDeliveryNotes("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contentUrl.trim()) return;
+    await onSubmitDelivery({
+      campaignId: campaign.id,
+      contentUrl: contentUrl.trim(),
+      notes: deliveryNotes.trim() || undefined,
+    });
+    handleCancel();
+  };
+
+  return (
+    <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
+      <p className="mb-1 text-[10px] uppercase tracking-[0.22em] text-white/35">
+        Submit delivery
+      </p>
+      <p className="mb-4 text-[12px] text-white/45 leading-[1.6]">
+        Upload to Drive / Dropbox and share the link so the brand can release payment.
+      </p>
+
+      {!showForm ? (
+        /* ── Green 3D trigger button ── */
+        <ThreeDButton
+          label="Submit delivery"
+          hoverLabel="Submit delivery"
+          hideIcon
+          className="!w-full !min-w-0 !h-11 three-d-button--emerald"
+          onClick={() => setShowForm(true)}
+        />
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-3.5 rounded-[18px] border border-white/[0.08] bg-[rgba(22,18,25,0.70)] p-3.5 backdrop-blur-sm">
+          <div className="space-y-1.5">
+            <Label htmlFor="sidebar-content-url" className="text-xs font-medium text-white/70">
+              Content URL <span className="text-amber-400">*</span>
+            </Label>
+            <div className="relative">
+              <ExternalLink className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" />
+              <Input
+                id="sidebar-content-url"
+                type="url"
+                value={contentUrl}
+                onChange={(e) => setContentUrl(e.target.value)}
+                placeholder="https://drive.google.com/..."
+                className="h-9 rounded-full border-white/10 bg-white/5 pl-9 text-sm text-white"
+                required
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="sidebar-delivery-notes" className="text-xs font-medium text-white/50">
+              Notes to brand
+            </Label>
+            <Textarea
+              id="sidebar-delivery-notes"
+              value={deliveryNotes}
+              onChange={(e) => setDeliveryNotes(e.target.value)}
+              placeholder="Anything the brand should know…"
+              rows={2}
+              className="resize-none border-white/10 bg-white/5 text-sm"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            {/* Green 3D submit */}
+            <ThreeDButton
+              label={isSubmittingDelivery ? "Submitting…" : "Submit"}
+              hoverLabel="Submit"
+              hideIcon
+              className="!w-full !min-w-0 !h-10 three-d-button--emerald"
+              type="submit"
+              disabled={isSubmittingDelivery || !contentUrl.trim()}
+            />
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="w-full rounded-full py-2 text-[12px] text-white/40 hover:text-white/60 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
+// ── Main sidebar ──────────────────────────────────────────────────────────────
 
 export function CampaignSidebar({
   campaign,
   showContactInfo,
+  onSubmitDelivery,
+  isSubmittingDelivery,
 }: CampaignSidebarProps) {
-  const earnings = EARNINGS_CONFIG[campaign.status] ?? DEFAULT_EARNINGS;
   const isOffer = OFFER_STATUSES.has(campaign.status);
-
-  const formattedReceived = new Date(campaign.created_at).toLocaleDateString(
-    "en-IN",
-    { day: "numeric", month: "short", year: "numeric" },
-  );
-
-  const formattedExpiry = campaign.expires_at
-    ? new Date(campaign.expires_at).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : null;
+  const showDelivery = campaign.status === "in_escrow";
+  const hasDeliveryUrl = !!campaign.delivery_url;
 
   return (
     <div className="space-y-3">
-      {/* Earnings */}
-      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-white/35">
-          {earnings.label}
-        </p>
-        <p
-          className={`mt-1.5 text-[34px] font-bold leading-none tracking-[-0.04em] ${earnings.color}`}
-        >
-          {formatCurrency(campaign.price_offered)}
-        </p>
-        <p className="mt-1.5 text-[11px] text-white/40">{earnings.note}</p>
-      </div>
-
-      {/* Details */}
-      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
-        <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
-          Details
-        </p>
-        <div className="space-y-2 text-[13px]">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-white/45">Received</span>
-            <span className="text-right text-white">{formattedReceived}</span>
-          </div>
-          {formattedExpiry && isOffer && (
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-white/45">Expires</span>
-              <span className="text-right text-amber-300/80">
-                {formattedExpiry}
-              </span>
-            </div>
-          )}
+      {/* Delivered content link */}
+      {hasDeliveryUrl && (
+        <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] px-4 py-3.5">
+          <p className="mb-2 text-[10px] uppercase tracking-[0.22em] text-white/35">
+            Delivered content
+          </p>
+          <a
+            href={campaign.delivery_url!}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-emerald-400 transition-colors hover:text-emerald-400/80"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            View delivery
+          </a>
         </div>
-      </div>
+      )}
+
+      {/* Submit delivery widget */}
+      {showDelivery && (
+        <DeliveryWidget
+          campaign={campaign}
+          onSubmitDelivery={onSubmitDelivery}
+          isSubmittingDelivery={isSubmittingDelivery}
+        />
+      )}
 
       {/* Brand contact */}
       {showContactInfo &&
