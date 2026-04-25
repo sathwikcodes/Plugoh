@@ -70,7 +70,7 @@ function DeliveryWidget({
           label="Submit delivery"
           hoverLabel="Submit delivery"
           hideIcon
-          className="!w-full !min-w-0 !h-11 three-d-button--emerald"
+          className="!w-full !min-w-0 !h-11 three-d-button--emerald three-d-button--no-glow"
           onClick={() => setShowForm(true)}
         />
       ) : (
@@ -105,24 +105,24 @@ function DeliveryWidget({
               className="resize-none border-white/10 bg-white/5 text-sm"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            {/* Green 3D submit */}
-            <ThreeDButton
-              label={isSubmittingDelivery ? "Submitting…" : "Submit"}
-              hoverLabel="Submit"
-              hideIcon
-              className="!w-full !min-w-0 !h-10 three-d-button--emerald"
-              type="submit"
-              disabled={isSubmittingDelivery || !contentUrl.trim()}
-            />
-            {/* Red 3D cancel */}
+          <div className="flex flex-row gap-2 pt-0.5">
+            {/* Red 3D cancel — left */}
             <ThreeDButton
               label="Cancel"
               hoverLabel="Cancel"
               hideIcon
-              className="!w-full !min-w-0 !h-10 three-d-button--rose"
+              className="!flex-1 !min-w-0 !h-10 three-d-button--rose three-d-button--no-glow"
               type="button"
               onClick={handleCancel}
+            />
+            {/* Green 3D submit — right */}
+            <ThreeDButton
+              label={isSubmittingDelivery ? "Submitting…" : "Submit"}
+              hoverLabel="Submit"
+              hideIcon
+              className="!flex-1 !min-w-0 !h-10 three-d-button--emerald three-d-button--no-glow"
+              type="submit"
+              disabled={isSubmittingDelivery || !contentUrl.trim()}
             />
           </div>
         </form>

@@ -115,11 +115,11 @@ function StatusTimeline({ status }: { status: string }) {
               label=""
               color={nodeColor(state)}
               icon={step.icon}
-              className={cn(
-                "three-d-pill--circle",
-                current && "ring-2 ring-offset-2 ring-offset-[#080609]",
-                current && state === "active" && "ring-amber-400/50",
-              )}
+              className="three-d-pill--circle"
+              style={current ? {
+                outline: "2px solid rgba(245,158,11,0.65)",
+                outlineOffset: "3px",
+              } : undefined}
             />
             {i < steps.length - 1 && <Connector filled={i < currentIndex} />}
           </div>

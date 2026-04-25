@@ -580,6 +580,13 @@ input.range-thumb::-moz-range-track {
   --button-glow-active: rgba(251, 113, 133, 0.28);
 }
 
+/* ── No-glow modifier — kills the spread glow without touching anything else ─ */
+.three-d-button--no-glow {
+  --button-glow: transparent;
+  --button-glow-hover: transparent;
+  --button-glow-active: transparent;
+}
+
 .three-d-button--sm {
   width: 100% !important;
   min-width: 0 !important;
