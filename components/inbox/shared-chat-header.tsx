@@ -5,6 +5,14 @@ import { ArrowLeft } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
+import { ThreeDPill, type PillPreset } from "@/components/ui/3d-pill";
+
+function getStatusPillColor(status: string): PillPreset {
+  if (["completed", "accepted"].includes(status)) return "emerald";
+  if (["disputed", "declined", "rejected", "expired", "cancelled", "refunded"].includes(status)) return "rose";
+  if (["in_escrow", "delivery_submitted"].includes(status)) return "sky";
+  return "gold";
+}
 
 interface SharedChatHeaderProps {
   participantName: string;
@@ -64,14 +72,11 @@ export function SharedChatHeader({
 
       <div className="flex items-center gap-2 shrink-0">
         {actions}
-        <span
-          className={cn(
-            "text-[10px] font-semibold px-2.5 py-1 rounded-full border shrink-0",
-            st.classes,
-          )}
-        >
-          {st.label}
-        </span>
+        <ThreeDPill
+          label={st.label}
+          color={getStatusPillColor(status)}
+          className="!h-[22px] !px-2.5 !text-[10px] !font-semibold shrink-0"
+        />
       </div>
     </div>
   );

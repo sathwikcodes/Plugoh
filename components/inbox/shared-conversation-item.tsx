@@ -3,7 +3,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
+import { ThreeDPill, type PillPreset } from "@/components/ui/3d-pill";
 export { formatConversationTime } from "@/lib/format";
+
+function getStatusPillColor(status: string): PillPreset {
+  if (["completed", "accepted"].includes(status)) return "emerald";
+  if (["disputed", "declined", "rejected", "expired", "cancelled", "refunded"].includes(status)) return "rose";
+  if (["in_escrow", "delivery_submitted"].includes(status)) return "sky";
+  return "gold";
+}
 
 interface SharedConversationItemProps {
   name: string;
@@ -29,6 +37,7 @@ export function buildConversationPreview(
 export function SharedConversationItem({
   name,
   avatarUrl,
+  campaignTitle,
   preview,
   timeLabel,
   status,
@@ -72,21 +81,25 @@ export function SharedConversationItem({
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 min-w-0">
-          <p className="shrink-0 text-[13px] font-semibold text-white/95">
+          <p className="shrink-0 text-[13px] font-semibold text-white/95 truncate">
             {name}
           </p>
-          <span
-            className={cn(
-              "text-[9px] font-medium px-1.5 py-px rounded-full border shrink-0",
-              cfg.badge,
-            )}
-          >
-            {cfg.shortLabel}
-          </span>
-          <span className="ml-auto shrink-0 text-[11px] tabular-nums text-white/60">
-            {timeLabel}
-          </span>
+          <ThreeDPill
+            label={cfg.shortLabel}
+            color={getStatusPillColor(status)}
+            className="!h-4 !px-1 !text-[7px] !font-medium shrink-0"
+          />
+          <div className="ml-auto shrink-0">
+            <ThreeDPill
+              label={timeLabel}
+              color="slate"
+              className="!h-5 !px-2 !text-[8px] !font-medium"
+            />
+          </div>
         </div>
+        <p className="mt-0.5 truncate text-[12px] font-medium text-white/80">
+          {campaignTitle}
+        </p>
         <p className="mt-0.5 truncate text-xs leading-tight text-white/62">
           {isOwn ? "You: " : ""}
           {preview}
