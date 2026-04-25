@@ -1,28 +1,8 @@
-"use client";
-
 import { Skeleton } from "@/components/ui/skeleton";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-} from "@/lib/animations";
 
 export default function InfluencerDetailLoading() {
   return (
     <div className="relative min-h-dvh overflow-hidden text-slate-100">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={125}
-          breathingRange={2.2}
-          animationSpeed={0.008}
-          containerStyle={GRADIENT_STYLE}
-        />
-      </div>
-
       <div className="relative z-10 container max-w-6xl space-y-6 py-6">
         <div className="flex flex-wrap items-center gap-3">
           <Skeleton className="h-9 w-9 rounded-full bg-white/10" />

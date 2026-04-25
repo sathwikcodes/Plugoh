@@ -3,21 +3,17 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { useMyAvatar, useMyProfile } from "@/hooks/queries/use-my-identity";
 import { useMyBusinessProfile } from "@/hooks/queries/use-business-profiles";
+import { useHasMounted } from "@/hooks/use-has-mounted";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
 import { useInstagramMedia } from "@/hooks/queries/use-instagram-media";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc/client";
 import { m } from "framer-motion";
-import {
-  stagger,
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-} from "@/lib/animations";
+import { stagger } from "@/lib/animations";
 import { toast } from "sonner";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import BusinessProfileCardHeader from "./_components/profile-card-header";
 import BusinessInstagramTab from "./_components/tabs/instagram-tab";
 import AnalyticsTab from "./_components/tabs/analytics-tab";
@@ -33,10 +29,13 @@ import BusinessProfileLoading from "./loading";
 type TabValue = "instagram" | "analytics" | "spending" | "settings";
 
 function BusinessProfilePageInner() {
-  const { user, profile, avatarUrl, loading: authLoading, signOut } = useAuth();
+  const { user, authReady, signOut } = useAuth();
+  const { data: profile } = useMyProfile();
+  const avatarUrl = useMyAvatar();
   const searchParams = useSearchParams();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+  const hasMounted = useHasMounted();
   const fromUrl = searchParams.get("source") === "onboarding";
   const [hasPendingAi, setHasPendingAi] = useState(false);
   const isOnboarding = fromUrl || hasPendingAi;
@@ -44,19 +43,23 @@ function BusinessProfilePageInner() {
   const [activeTab, setActiveTab] = useState<TabValue>("spending");
   const [aiStatus, setAiStatus] = useState<
     "idle" | "running" | "done" | "failed"
-  >(fromUrl ? "running" : "idle");
+  >("idle");
+
+  useEffect(() => {
+    if (fromUrl && aiStatus === "idle") setAiStatus("running");
+  }, [fromUrl, aiStatus]);
   const aiTriggeredRef = useRef(false);
   const aiTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!hasMounted || !user?.id) return;
     const pending =
       sessionStorage.getItem("plugoh_business_ai_pending") === user.id;
     if (pending) {
       setHasPendingAi(true);
       setAiStatus((prev) => (prev === "idle" ? "running" : prev));
     }
-  }, [user?.id]);
+  }, [hasMounted, user?.id]);
 
   const { data: identity, isLoading: identityLoading } = useMyBusinessProfile(
     user?.id,
@@ -69,7 +72,7 @@ function BusinessProfilePageInner() {
   const { data: influencerProfiles = [] } = useInfluencerProfiles();
   const { data: media = [] } = useInstagramMedia(user?.id);
 
-  const loading = authLoading || campaignsLoading || identityLoading;
+  const loading = !authReady || campaignsLoading || identityLoading;
 
   useEffect(() => {
     if (isOnboarding && user?.id) {
@@ -134,17 +137,6 @@ function BusinessProfilePageInner() {
 
   return (
     <div className="relative min-h-[calc(100dvh-4rem)]">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={125}
-          breathingRange={2.2}
-          animationSpeed={0.008}
-          containerStyle={GRADIENT_STYLE}
-        />
-      </div>
       <div className="relative z-10 container max-w-2xl py-6">
         <m.div
           variants={stagger}

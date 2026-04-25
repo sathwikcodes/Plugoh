@@ -5,30 +5,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { useMyBusinessProfile } from "@/hooks/queries/use-business-profiles";
+import { useMyProfile } from "@/hooks/queries/use-my-identity";
 import { getBusinessDisplayName } from "@/lib/business-profile";
 import { fadeUp } from "@/lib/animations";
 import { parseLocation } from "@/lib/location-time";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import { ThreeDButton } from "@/components/ui/3d-button";
 import { LocationTag } from "@/components/ui/location-tag";
 import BusinessDashboardLoading from "./loading";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-} from "@/lib/animations";
 
 export default function BusinessDashboard() {
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, authReady } = useAuth();
+  const { data: profile } = useMyProfile();
   const { data: identity, isLoading: identityLoading } = useMyBusinessProfile(
     user?.id,
   );
 
-  if (authLoading || identityLoading) {
+  if (!authReady || identityLoading) {
     return <BusinessDashboardLoading />;
   }
 
   const displayName = getBusinessDisplayName(
-    identity ?? { basicProfile: profile, businessProfile: null },
+    identity ?? { basicProfile: profile ?? null, businessProfile: null },
   );
 
   const storedLocation =
@@ -40,19 +37,6 @@ export default function BusinessDashboard() {
 
   return (
     <div className="relative h-dvh overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={125}
-          breathingRange={2.2}
-          animationSpeed={0.008}
-          topOffset={0}
-          containerStyle={GRADIENT_STYLE}
-        />
-      </div>
-
       <div className="relative z-10 container flex h-full flex-col py-4 md:py-6">
         <m.div
           variants={fadeUp}
@@ -107,12 +91,9 @@ export default function BusinessDashboard() {
             animate="visible"
             className="flex w-full justify-center"
           >
-            <Link
-              href="/dashboard/business/discover"
-              className="flex w-[80vw] max-w-xs items-center justify-center rounded-full bg-primary px-8 py-3.5 text-base font-bold text-primary-foreground shadow-[0_4px_24px_rgba(229,185,74,0.28)] transition-all hover:brightness-105 active:scale-95"
-            >
-              Book Now
-            </Link>
+            <ThreeDButton asChild label="Book Now">
+              <Link href="/dashboard/business/discover">Book Now</Link>
+            </ThreeDButton>
           </m.div>
         </div>
       </div>

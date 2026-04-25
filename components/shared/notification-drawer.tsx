@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
+import { useCurrentTime } from "@/hooks/use-current-time";
 import { Bell, Check, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -76,12 +77,7 @@ export function NotificationDrawer() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 60_000);
-    return () => clearInterval(id);
-  }, []);
+  const now = useCurrentTime(60_000);
 
   const timeAgo = (date: string, currentNow: number) => {
     const diff = currentNow - new Date(date).getTime();

@@ -17,7 +17,6 @@ import {
 import { LogOut, Loader2, Save, Pencil, X } from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 import { BUSINESS_TYPES } from "@/lib/constants";
 import type { BusinessIdentity } from "@/lib/business-profile";
@@ -36,7 +35,6 @@ export default function BusinessSettingsTab({
   const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const { refreshUserData } = useAuth();
   const profile = identity.basicProfile;
   const businessProfile = identity.businessProfile;
 
@@ -63,13 +61,14 @@ export default function BusinessSettingsTab({
   const upsertProfile = useMutation(
     trpc.profile.upsertBusinessProfile.mutationOptions({
       onSuccess: async () => {
-        await refreshUserData();
-        queryClient.invalidateQueries({
-          queryKey: trpc.profile.getMyBusinessProfile.queryKey(),
-        });
-        queryClient.invalidateQueries({
-          queryKey: trpc.profile.getMyProfile.queryKey(),
-        });
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: trpc.profile.getMyBusinessProfile.queryKey(),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: trpc.profile.getMyProfile.queryKey(),
+          }),
+        ]);
         toast.success("Profile updated successfully");
       },
       onError: (err) => {

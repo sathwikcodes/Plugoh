@@ -2,13 +2,7 @@
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { m } from "framer-motion";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-  stagger,
-} from "@/lib/animations";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import { stagger } from "@/lib/animations";
 import { useInfluencerProfiles } from "@/hooks/queries/use-influencer-profiles";
 import { FilterPanel, type DiscoverFilters } from "./_components/filter-panel";
 import { DiscoverHeader } from "./_components/discover-header";
@@ -161,18 +155,6 @@ export default function InfluencerDiscovery() {
   return (
     <>
       <div className="relative overflow-hidden h-dvh md:min-h-dvh md:h-auto">
-        <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-          <AnimatedGradientBackground
-            Breathing
-            gradientColors={GRADIENT_COLORS}
-            gradientStops={GRADIENT_STOPS}
-            startingGap={125}
-            breathingRange={2.2}
-            animationSpeed={0.008}
-            containerStyle={GRADIENT_STYLE}
-          />
-        </div>
-
         <div className="relative z-10 container h-full py-4 pb-[calc(96px+env(safe-area-inset-bottom,0px))] md:h-auto md:py-6 md:pb-6">
           <m.div
             variants={stagger}

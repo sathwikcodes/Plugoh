@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
+import { useCurrentTime } from "@/hooks/use-current-time";
 import {
   Bell,
   ClipboardCheck,
@@ -51,7 +52,7 @@ export function NotificationInboxPopover() {
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [tab, setTab] = useState("all");
-  const [now, setNow] = useState(() => Date.now());
+  const now = useCurrentTime(60_000);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
@@ -85,11 +86,6 @@ export function NotificationInboxPopover() {
       supabase.removeChannel(channel);
     };
   }, [user]);
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 60_000);
-    return () => clearInterval(id);
-  }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const filtered =

@@ -3,7 +3,42 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   experimental: {
-    optimizePackageImports: ["lucide-react", "recharts", "framer-motion"],
+    optimizePackageImports: [
+      "lucide-react",
+      "recharts",
+      "framer-motion",
+      "motion",
+      "date-fns",
+      "lottie-react",
+      "@radix-ui/react-icons",
+      "sonner",
+      "cmdk",
+      "vaul",
+      "react-aria-components",
+      "@base-ui/react",
+    ],
+  },
+  async headers() {
+    return [
+      {
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/fonts/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
   },
   images: {
     remotePatterns: [
@@ -64,11 +99,9 @@ export default withSentryConfig(nextConfig, {
   // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
 
-  // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  // This can increase your server load as well as your hosting bill.
-  // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-  // side errors will fail.
-  tunnelRoute: "/monitoring",
+  // tunnelRoute removed: it proxied every browser error report through the Next.js
+  // server, adding latency and load. Direct browser→Sentry is faster; the cost is
+  // some ad-blocker drops, which is acceptable.
 
   webpack: {
     // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)

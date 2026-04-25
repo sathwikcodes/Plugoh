@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { useMyAvatar, useMyProfile } from "@/hooks/queries/use-my-identity";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,7 +29,9 @@ import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useTheme } from "next-themes";
 
 export function Navbar() {
-  const { user, profile, role, avatarUrl, signOut } = useAuth();
+  const { user, role, signOut } = useAuth();
+  const { data: profile } = useMyProfile();
+  const avatarUrl = useMyAvatar();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, setTheme } = useTheme();

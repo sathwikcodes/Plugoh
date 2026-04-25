@@ -9,6 +9,8 @@ const dmSans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  preload: true,
 });
 
 const instrumentSerif = Instrument_Serif({
@@ -16,6 +18,8 @@ const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: ["400"],
   style: ["normal", "italic"],
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {

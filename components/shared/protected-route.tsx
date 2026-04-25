@@ -5,19 +5,20 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading, needsOnboarding } = useAuth();
+  const { user, authReady, needsOnboarding } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authReady) return;
+    if (!user) {
       router.replace("/login");
-    } else if (!loading && needsOnboarding && pathname !== "/onboarding") {
+    } else if (needsOnboarding && pathname !== "/onboarding") {
       router.replace("/onboarding");
     }
-  }, [loading, user, needsOnboarding, pathname, router]);
+  }, [authReady, user, needsOnboarding, pathname, router]);
 
-  if (!loading && (!user || needsOnboarding)) return null;
+  if (authReady && (!user || needsOnboarding)) return null;
 
   return <>{children}</>;
 }

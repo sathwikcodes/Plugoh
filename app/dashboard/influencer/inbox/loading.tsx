@@ -1,17 +1,6 @@
-"use client";
-
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-const MOBILE_VIEWPORT_STYLE = {
-  height: "100dvh",
-  minHeight: "100dvh",
-} as const;
-
-const MOBILE_DOCK_INSET_STYLE = {
-  paddingBottom: "calc(104px + env(safe-area-inset-bottom, 0px))",
-} as const;
 
 function ConversationRowSkeleton() {
   return (
@@ -26,13 +15,8 @@ function ConversationRowSkeleton() {
 }
 
 export default function InboxLoading() {
-  const isMobile = useIsMobile();
-
   return (
-    <div
-      className="relative h-dvh overflow-hidden bg-background"
-      style={isMobile ? MOBILE_VIEWPORT_STYLE : undefined}
-    >
+    <div className="relative h-dvh overflow-hidden">
       <div className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6">
         <div className="flex h-full flex-col gap-4 md:gap-5">
           <div className="flex shrink-0 items-center justify-center">
@@ -48,14 +32,15 @@ export default function InboxLoading() {
           <div className="shrink-0">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
-              <Skeleton className="h-12 w-full rounded-full border border-white/10 bg-white/5" />
+              <Input
+                readOnly
+                placeholder="Search"
+                className="h-12 rounded-full border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/35"
+              />
             </div>
           </div>
 
-          <div
-            className="min-h-0 flex-1 md:flex-none md:h-[calc(100dvh-14rem)]"
-            style={isMobile ? MOBILE_DOCK_INSET_STYLE : undefined}
-          >
+          <div className="min-h-0 flex-1 pb-[calc(104px+env(safe-area-inset-bottom,0px))] md:flex-none md:h-[calc(100dvh-14rem)] md:pb-0">
             <div className="flex h-full min-h-0 flex-col gap-4 md:flex-row">
               <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] border border-white/14 bg-[linear-gradient(160deg,rgba(22,18,25,0.96)_0%,rgba(22,18,25,0.94)_46%,rgba(30,24,41,0.92)_100%)] shadow-[0_24px_70px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-2xl md:w-70 md:shrink-0 md:flex-none">
                 <div className="min-h-0 flex-1 overflow-hidden space-y-2 py-4">

@@ -1,13 +1,5 @@
-"use client";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search } from "lucide-react";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-} from "@/lib/animations";
 
 export function InfluencerCardSkeleton() {
   return (
@@ -29,19 +21,7 @@ export function InfluencerCardSkeleton() {
 
 export default function DiscoverLoading() {
   return (
-    <div className="relative overflow-hidden min-h-dvh bg-background">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={125}
-          breathingRange={2.2}
-          animationSpeed={0.008}
-          containerStyle={GRADIENT_STYLE}
-        />
-      </div>
-
+    <div className="relative overflow-hidden min-h-dvh">
       <div className="relative z-10 container h-full py-4 md:h-auto md:py-6">
         <div className="flex h-full flex-col gap-3 md:h-auto md:gap-6">
           <div className="shrink-0 flex items-center justify-center gap-3 md:justify-start">

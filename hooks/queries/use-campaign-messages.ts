@@ -20,7 +20,9 @@ export function useCampaignMessages(campaignId: string | undefined) {
   const query = useQuery({
     ...queryOpts,
     enabled: !!campaignId,
-    refetchOnMount: true,
+    // Realtime channel is the source of truth — do not refetch on remount.
+    staleTime: Infinity,
+    refetchOnMount: false,
   });
 
   useEffect(() => {

@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { useMyAvatar, useMyProfile } from "@/hooks/queries/use-my-identity";
 import { useMyInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
+import { useHasMounted } from "@/hooks/use-has-mounted";
 import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc/client";
@@ -24,21 +26,27 @@ import {
 type TabValue = "pricing" | "instagram" | "settings";
 
 function InfluencerProfilePageInner() {
-  const { user, profile, avatarUrl, loading: authLoading, signOut } = useAuth();
+  const { user, authReady, signOut } = useAuth();
+  const { data: profile } = useMyProfile();
+  const avatarUrl = useMyAvatar();
   const searchParams = useSearchParams();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+  const hasMounted = useHasMounted();
 
-  // Detect first-load from onboarding (survives refresh via sessionStorage)
-  const isOnboarding =
-    searchParams.get("source") === "onboarding" ||
-    (typeof window !== "undefined" &&
-      sessionStorage.getItem("plugoh_ai_pending") === user?.id);
+  // Detect first-load from onboarding. Search-param check is SSR-safe;
+  // sessionStorage read is gated behind hasMounted to avoid hydration mismatch.
+  const sourceFromQuery = searchParams.get("source") === "onboarding";
+  const sourceFromSession =
+    hasMounted && typeof window !== "undefined"
+      ? sessionStorage.getItem("plugoh_ai_pending") === user?.id
+      : false;
+  const isOnboarding = sourceFromQuery || sourceFromSession;
 
   const [activeTab, setActiveTab] = useState<TabValue>("pricing");
   const [aiStatus, setAiStatus] = useState<
     "idle" | "running" | "done" | "failed"
-  >(isOnboarding ? "running" : "idle");
+  >("idle");
   const aiTriggeredRef = useRef(false);
 
   const { data: ip, isLoading: profileLoading } = useMyInfluencerProfile(
@@ -47,7 +55,23 @@ function InfluencerProfilePageInner() {
   );
   useCampaigns(user?.id, "influencer");
 
-  const loading = authLoading || profileLoading;
+  const loading = !authReady || profileLoading;
+
+  // Flip aiStatus to "running" only after mount, when we know if we're onboarding.
+  useEffect(() => {
+    if (isOnboarding && aiStatus === "idle") setAiStatus("running");
+  }, [isOnboarding, aiStatus]);
+
+  // Cap AI polling at 60s — bail out so a silently-failing API can't
+  // pin the UI on the "AI analyzing" state forever.
+  useEffect(() => {
+    if (aiStatus !== "running") return;
+    const id = window.setTimeout(() => {
+      setAiStatus((prev) => (prev === "running" ? "failed" : prev));
+      sessionStorage.removeItem("plugoh_ai_pending");
+    }, 60_000);
+    return () => window.clearTimeout(id);
+  }, [aiStatus]);
 
   // Persist onboarding state across refreshes
   useEffect(() => {

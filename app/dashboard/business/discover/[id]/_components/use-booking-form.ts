@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context";
+import { useMyProfile } from "@/hooks/queries/use-my-identity";
 import { useToast } from "@/hooks/use-toast";
 import { PLATFORM_FEE_RATE } from "@/lib/constants";
 import {
@@ -35,7 +35,7 @@ export function useBookingForm(
 ) {
   const router = useRouter();
   const { toast } = useToast();
-  const { profile: businessProfile } = useAuth();
+  const { data: businessProfile } = useMyProfile();
   const availablePackages = useMemo(
     () => getAvailablePackages(creator),
     [creator],

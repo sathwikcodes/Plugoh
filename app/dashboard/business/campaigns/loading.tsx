@@ -1,13 +1,6 @@
-"use client";
-
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search } from "lucide-react";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-} from "@/lib/animations";
+import { Input } from "@/components/ui/input";
+import { Search, SlidersHorizontal } from "lucide-react";
 
 function CampaignCardSkeleton() {
   return (
@@ -50,18 +43,6 @@ function CampaignCardSkeleton() {
 export default function CampaignsLoading() {
   return (
     <div className="relative h-dvh overflow-hidden">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={125}
-          breathingRange={2.2}
-          animationSpeed={0.008}
-          containerStyle={GRADIENT_STYLE}
-        />
-      </div>
-
       <div className="relative z-10 container h-full py-4 pb-[calc(96px+env(safe-area-inset-bottom,0px))] md:flex md:h-full md:flex-col md:py-6 md:pb-6">
         <div className="flex h-full flex-col gap-4 md:h-auto md:gap-5">
           <div className="shrink-0 flex items-center justify-center gap-3 md:justify-start">
@@ -78,10 +59,20 @@ export default function CampaignsLoading() {
           <div className="shrink-0 space-y-3">
             <div className="flex items-center gap-3">
               <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35 z-10" />
-                <Skeleton className="h-12 w-full rounded-full border border-white/10 bg-white/5 pl-11 flex items-center" />
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
+                <Input
+                  readOnly
+                  placeholder="Search"
+                  className="h-12 rounded-full border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/35"
+                />
               </div>
-              <Skeleton className="relative flex h-12 w-12 shrink-0 rounded-full border border-white/25 bg-white/12 sm:w-25" />
+              <button
+                type="button"
+                className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-visible rounded-full border border-primary/20 bg-primary/[0.07] text-sm font-medium text-white shadow-[0_12px_32px_rgba(15,17,21,0.35)] backdrop-blur-md transition-all duration-200 sm:w-auto sm:gap-2 sm:px-5"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                <span className="hidden sm:inline">Sort</span>
+              </button>
             </div>
           </div>
 

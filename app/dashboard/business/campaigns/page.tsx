@@ -8,11 +8,7 @@ import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { supabase } from "@/lib/supabase/client";
 import { trpcClient } from "@/lib/trpc/client";
 import type { Database } from "@/lib/supabase/types";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
   fadeUp,
   stagger,
 } from "@/lib/animations";
@@ -174,17 +170,6 @@ export default function CampaignsPage() {
   return (
     <>
       <div className="relative h-dvh overflow-hidden">
-        <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-          <AnimatedGradientBackground
-            Breathing
-            gradientColors={GRADIENT_COLORS}
-            gradientStops={GRADIENT_STOPS}
-            startingGap={125}
-            breathingRange={2.2}
-            animationSpeed={0.008}
-            containerStyle={GRADIENT_STYLE}
-          />
-        </div>
         <div className="relative z-10 container h-full py-4 pb-[calc(96px+env(safe-area-inset-bottom,0px))] md:flex md:h-full md:flex-col md:py-6 md:pb-6">
           <m.div
             variants={stagger}

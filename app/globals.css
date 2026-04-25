@@ -495,3 +495,392 @@ input.range-thumb::-moz-range-track {
     background-position: 200% center;
   }
 }
+
+.three-d-button {
+  --button-gold: #e5b94a;
+  --button-gold-light: #fff4a8;
+  --button-gold-dark: #a6761b;
+  --button-ink: #0d0b0f;
+  --button-glow: rgba(229, 185, 74, 0.42);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  width: min(19rem, 80vw);
+  min-width: 13.75rem;
+  height: 3.75rem;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  border: 0;
+  border-radius: 9999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 44%),
+    linear-gradient(
+      135deg,
+      var(--button-gold-light) 0%,
+      var(--button-gold) 45%,
+      #c49030 74%,
+      var(--button-gold-dark) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -10px 16px rgba(78, 48, 0, 0.28),
+    0 8px 0 #7b5614,
+    0 18px 34px var(--button-glow);
+  color: var(--button-ink);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transform: translateZ(0);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.three-d-button:hover {
+  filter: saturate(1.08) brightness(1.05);
+  transform: translateY(-2px) translateZ(0);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -11px 18px rgba(78, 48, 0, 0.3),
+    0 10px 0 #7b5614,
+    0 24px 46px rgba(229, 185, 74, 0.52);
+}
+
+.three-d-button:focus-visible {
+  outline: 2px solid var(--button-gold-light);
+  outline-offset: 5px;
+}
+
+.three-d-button:active {
+  transform: translateY(5px) translateZ(0);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    inset 0 -5px 10px rgba(78, 48, 0, 0.28),
+    0 3px 0 #7b5614,
+    0 12px 24px rgba(229, 185, 74, 0.34);
+}
+
+.three-d-button .bg {
+  position: absolute;
+  inset: 0.18rem;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.55), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0));
+  opacity: 0.84;
+  pointer-events: none;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.three-d-button:hover .bg {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.three-d-button:active .bg {
+  transform: translateY(1px);
+}
+
+.three-d-button .splash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  width: 21.375rem;
+  max-width: calc(100vw - 2rem);
+  height: auto;
+  pointer-events: none;
+  stroke: var(--button-gold-light);
+  stroke-dasharray: 12 12;
+  stroke-dashoffset: 0;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.62);
+}
+
+.three-d-button:hover .splash {
+  opacity: 1;
+  animation: splash 650ms ease-out forwards;
+}
+
+.three-d-button .wrap {
+  position: relative;
+  display: flex;
+  z-index: 1;
+  width: calc(100% - 0.5rem);
+  height: calc(100% - 0.5rem);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.three-d-button .path {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 2;
+  width: calc(100% - 1.05rem);
+  height: 2.65rem;
+  pointer-events: none;
+  stroke: rgba(255, 255, 255, 0);
+  stroke-dasharray: 120 480;
+  stroke-dashoffset: 120;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+}
+
+.three-d-button:hover .path {
+  opacity: 0;
+}
+
+.three-d-button .outline {
+  position: absolute;
+  inset: 0.2rem;
+  z-index: 1;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px rgba(13, 11, 15, 0.08),
+    inset 0 12px 18px rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.three-d-button .content {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding-inline: 3.25rem;
+}
+
+.three-d-button .char {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: inline-flex;
+  min-width: 7rem;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+  white-space: nowrap;
+}
+
+.three-d-button .char span {
+  display: inline-block;
+  transform: translateY(0);
+  opacity: 1;
+  filter: blur(0);
+  transition: color 180ms ease;
+}
+
+.three-d-button .state-2 {
+  pointer-events: none;
+}
+
+.three-d-button .state-2 span {
+  transform: translateY(70%);
+  opacity: 0;
+  filter: blur(10px);
+}
+
+.three-d-button:hover .state-1 span {
+  transform: translateY(0);
+  opacity: 1;
+  filter: blur(0);
+}
+
+.three-d-button:hover .state-2 span {
+  transform: translateY(70%);
+  opacity: 0;
+  filter: blur(10px);
+}
+
+.three-d-button .icon {
+  position: absolute;
+  right: 1.35rem;
+  top: 50%;
+  width: 1.55rem;
+  height: 1.05rem;
+  overflow: hidden;
+  transform: translateY(-50%);
+}
+
+.three-d-button .icon div {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1rem;
+  height: 0.16rem;
+  border-radius: 9999px;
+  background: var(--button-ink);
+  transform: translateY(-50%);
+}
+
+.three-d-button .icon div::before,
+.three-d-button .icon div::after {
+  position: absolute;
+  right: -0.05rem;
+  width: 0.58rem;
+  height: 0.16rem;
+  border-radius: 9999px;
+  background: var(--button-ink);
+  content: "";
+  transform-origin: right center;
+}
+
+.three-d-button .icon div::before {
+  transform: rotate(45deg);
+}
+
+.three-d-button .icon div::after {
+  transform: rotate(-45deg);
+}
+
+.three-d-button:hover .icon {
+  transform: translateY(-50%);
+}
+
+.three-d-button:hover .icon div {
+  transform: translateY(-50%) translateX(0);
+  opacity: 1;
+}
+
+.three-d-button:hover .icon div::before {
+  transform: rotate(45deg);
+}
+
+.three-d-button:hover .icon div::after {
+  transform: rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .three-d-button,
+  .three-d-button *,
+  .three-d-button *::before,
+  .three-d-button *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes charAppear {
+  0% {
+    transform: translateY(50%);
+    opacity: 0;
+    filter: blur(20px);
+  }
+  20% {
+    transform: translateY(70%);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-15%);
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes charDisappear {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-70%);
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+@keyframes arrow {
+  0% {
+    transform: translateY(-50%) translateX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50%) translateX(60px);
+    opacity: 0;
+  }
+  51% {
+    transform: translateY(-50%) translateX(-60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(-50%) translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes swingArrow {
+  50% {
+    transform: translateY(-50%) translateX(5px) scale(0.9);
+  }
+}
+
+@keyframes rotateArrowLine {
+  50% {
+    transform: rotate(30deg);
+  }
+  80% {
+    transform: rotate(55deg);
+  }
+}
+
+@keyframes rotateArrowLine2 {
+  50% {
+    transform: rotate(330deg);
+  }
+  80% {
+    transform: rotate(300deg);
+  }
+}
+
+@keyframes resetArrow {
+  0% {
+    transform: translateY(-50%) translateX(0);
+  }
+  100% {
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+@keyframes path {
+  from {
+    stroke: white;
+  }
+  to {
+    stroke-dashoffset: -480;
+    stroke: #fff4a8;
+  }
+}
+
+@keyframes splash {
+  to {
+    stroke-dasharray: 2 60;
+    stroke-dashoffset: -60;
+  }
+}

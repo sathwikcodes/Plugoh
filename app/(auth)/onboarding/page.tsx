@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { useMyProfile } from "@/hooks/queries/use-my-identity";
+import { useQueryClient } from "@tanstack/react-query";
+import { useTRPC } from "@/lib/trpc/client";
 import { supabase } from "@/lib/supabase/client";
 import { Loader2, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -53,13 +56,11 @@ const stagger = {
 };
 
 function OnboardingInner() {
-  const {
-    user,
-    role,
-    profile,
-    loading: authLoading,
-    refreshUserData,
-  } = useAuth();
+  const { user, role, authReady, refreshRole } = useAuth();
+  const { data: profile } = useMyProfile();
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const authLoading = !authReady;
   const { toast } = useToast();
   const router = useRouter();
   const { setTheme } = useAuthTheme();
@@ -280,7 +281,15 @@ function OnboardingInner() {
       await upsertBusinessProfile();
 
       toast({ title: "Profile set up!", description: "Welcome to Plugoh." });
-      await refreshUserData();
+      await Promise.all([
+        refreshRole(),
+        queryClient.invalidateQueries({
+          queryKey: trpc.profile.getMyProfile.queryKey(),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: trpc.profile.getMyBusinessProfile.queryKey(),
+        }),
+      ]);
       router.replace("/dashboard/business/profile?source=onboarding");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Setup failed";

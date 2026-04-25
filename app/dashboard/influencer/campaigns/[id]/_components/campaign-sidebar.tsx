@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Mail, MessageSquare, Phone } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
+import { ThreeDButton } from "@/components/ui/3d-button";
 import type { Campaign } from "./campaign-types";
 
 interface CampaignSidebarProps {
@@ -148,13 +149,13 @@ export function CampaignSidebar({
       ) : null}
 
       {/* Chat button */}
-      <Link
-        href={`/dashboard/influencer/inbox?chat=${campaign.id}`}
-        className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary text-[13px] font-semibold text-primary-foreground shadow-[0_6px_20px_rgba(229,185,74,0.25)] transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
+      <ThreeDButton
+        asChild
+        label="Open in inbox"
+        className="!h-11 !w-full !min-w-0 text-[13px]"
       >
-        <MessageSquare className="h-[15px] w-[15px]" />
-        Open in inbox
-      </Link>
+        <Link href={`/dashboard/influencer/inbox?chat=${campaign.id}`} />
+      </ThreeDButton>
     </div>
   );
 }

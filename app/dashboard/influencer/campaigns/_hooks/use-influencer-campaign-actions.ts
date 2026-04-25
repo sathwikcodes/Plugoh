@@ -23,25 +23,38 @@ export function useInfluencerCampaignActions(
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const invalidateCampaignQueries = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: trpc.campaign.getCampaigns.queryKey(),
-    });
-    queryClient.invalidateQueries({
-      queryKey: trpc.campaign.getCampaign.queryKey(),
-    });
-    queryClient.invalidateQueries({
-      queryKey: trpc.inbox.getInboxConversations.queryKey(),
-    });
-    queryClient.invalidateQueries({
-      queryKey: trpc.inbox.getBusinessInboxConversations.queryKey(),
-    });
-  }, [queryClient, trpc]);
+  const invalidateCampaignQueries = useCallback(
+    (campaignId?: string) => {
+      queryClient.invalidateQueries({
+        queryKey: trpc.campaign.getCampaigns.queryKey(),
+      });
+      if (campaignId) {
+        queryClient.invalidateQueries({
+          queryKey: trpc.campaign.getCampaign.queryKey({
+            id: campaignId,
+            filterBusinessId: false,
+          }),
+          exact: false,
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: trpc.campaign.getCampaign.queryKey(),
+        });
+      }
+      queryClient.invalidateQueries({
+        queryKey: trpc.inbox.getInboxConversations.queryKey(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: trpc.inbox.getBusinessInboxConversations.queryKey(),
+      });
+    },
+    [queryClient, trpc],
+  );
 
   const acceptMutation = useMutation(
     trpc.campaign.acceptBooking.mutationOptions({
       onSuccess: (_data, variables) => {
-        invalidateCampaignQueries();
+        invalidateCampaignQueries(variables.campaignId);
         options.onAcceptSuccess?.(variables.campaignId);
         toast({
           title: "Booking accepted!",
@@ -64,7 +77,7 @@ export function useInfluencerCampaignActions(
   const declineMutation = useMutation(
     trpc.campaign.declineBooking.mutationOptions({
       onSuccess: (_data, variables) => {
-        invalidateCampaignQueries();
+        invalidateCampaignQueries(variables.campaignId);
         options.onDeclineSuccess?.(variables.campaignId);
         toast({ title: "Offer declined" });
       },
@@ -81,7 +94,7 @@ export function useInfluencerCampaignActions(
   const deliveryMutation = useMutation(
     trpc.campaign.submitDelivery.mutationOptions({
       onSuccess: (_data, variables) => {
-        invalidateCampaignQueries();
+        invalidateCampaignQueries(variables.campaignId);
         options.onDeliverySuccess?.(variables.campaignId);
         toast({
           title: "Delivery submitted!",

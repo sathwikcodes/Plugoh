@@ -7,14 +7,7 @@ import { AnimatePresence, m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
 import { useBusinessInboxConversations } from "@/hooks/queries/use-business-inbox-conversations";
 import { Input } from "@/components/ui/input";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-  fadeUp,
-  stagger,
-} from "@/lib/animations";
+import { fadeUp, stagger } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useHasMounted } from "@/hooks/use-has-mounted";
@@ -80,18 +73,6 @@ export default function BusinessInboxPage() {
 
   return (
     <div className="relative h-dvh overflow-hidden">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={125}
-          breathingRange={2.2}
-          animationSpeed={0.008}
-          containerStyle={GRADIENT_STYLE}
-        />
-      </div>
-
       <div className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6">
         <AnimatePresence mode="wait">
           {showMobileChat ? (

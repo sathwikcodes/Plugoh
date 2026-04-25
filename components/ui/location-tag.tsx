@@ -9,8 +9,8 @@ interface LocationTagProps {
 }
 
 export function LocationTag({
-  city = "San Francisco",
-  country = "USA",
+  city = "Vijaywada",
+  country = "India",
 }: LocationTagProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [currentTime, setCurrentTime] = useState("");

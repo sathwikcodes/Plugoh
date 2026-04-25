@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Diamond, Pencil, X, Loader2, Check } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShinyButton } from "@/components/ui/shiny-button";
+import { ThreeDButton } from "@/components/ui/3d-button";
 import { cn } from "@/lib/utils";
 import { useUpdateInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import { toast } from "sonner";
@@ -367,38 +368,32 @@ function PricingSliderCard({
       <div className="px-5 pb-5">
         {isEditing ? (
           <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex-1 border border-white/10"
+            <ThreeDButton
+              label="Cancel"
               onClick={handleCancel}
               disabled={isSaving}
-            >
-              <X className="mr-1.5 h-3 w-3" /> Cancel
-            </Button>
-            <Button
-              size="sm"
-              className="flex-1"
+              className="flex-1 !h-9 !w-auto !min-w-0 text-xs [&_.icon]:hidden"
+              style={{
+                "--button-gold": "#52525b",
+                "--button-gold-light": "#a1a1aa",
+                "--button-gold-dark": "#27272a",
+                "--button-ink": "#fff",
+                "--button-glow": "rgba(255,255,255,0.05)",
+              } as React.CSSProperties}
+            />
+            <ThreeDButton
+              label={isSaving ? "Saving..." : "Save"}
               onClick={() => onSave(draft)}
               disabled={isSaving}
-            >
-              {isSaving ? (
-                <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
-              ) : (
-                <Check className="mr-1.5 h-3 w-3" />
-              )}
-              Save
-            </Button>
+              className="flex-1 !h-9 !w-auto !min-w-0 text-xs [&_.icon]:hidden"
+            />
           </div>
         ) : (
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full border-white/10 bg-white/5 hover:bg-white/10"
+          <ThreeDButton
+            label="Edit Price"
             onClick={handleEdit}
-          >
-            <Pencil className="mr-1.5 h-3 w-3" /> Edit Price
-          </Button>
+            className="w-full !h-9 !w-full !min-w-0 text-xs"
+          />
         )}
       </div>
     </m.div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { m, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -25,11 +25,12 @@ const MAX_SIZE = 64; // px — max icon size when cursor is directly over it
 const DIST = 140; // px — magnification influence radius
 
 function useIsTouchDevice() {
-  const [isTouch] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(pointer: coarse)").matches,
-  );
+  const [isTouch, setIsTouch] = useState(false);
+
+  useEffect(() => {
+    setIsTouch(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
+
   return isTouch;
 }
 

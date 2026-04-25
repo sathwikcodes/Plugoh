@@ -1,13 +1,6 @@
-"use client";
-
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import {
-  GRADIENT_COLORS,
-  GRADIENT_STOPS,
-  GRADIENT_STYLE,
-} from "@/lib/animations";
 
 function ConversationRowSkeleton() {
   return (
@@ -23,19 +16,7 @@ function ConversationRowSkeleton() {
 
 export default function InboxLoading() {
   return (
-    <div className="relative h-dvh overflow-hidden bg-background">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden md:absolute">
-        <AnimatedGradientBackground
-          Breathing
-          gradientColors={GRADIENT_COLORS}
-          gradientStops={GRADIENT_STOPS}
-          startingGap={125}
-          breathingRange={2.2}
-          animationSpeed={0.008}
-          containerStyle={GRADIENT_STYLE}
-        />
-      </div>
-
+    <div className="relative h-dvh overflow-hidden">
       <div className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6">
         <div className="flex h-full flex-col gap-4 md:gap-5">
           <div className="flex shrink-0 items-center justify-center">
@@ -51,7 +32,11 @@ export default function InboxLoading() {
           <div className="shrink-0">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
-              <Skeleton className="h-12 w-full rounded-full border border-white/10 bg-white/5" />
+              <Input
+                readOnly
+                placeholder="Search"
+                className="h-12 rounded-full border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/35"
+              />
             </div>
           </div>
 

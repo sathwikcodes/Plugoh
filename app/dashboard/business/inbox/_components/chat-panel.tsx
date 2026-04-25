@@ -62,7 +62,10 @@ function formatRemaining(ms: number): string {
 export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
   const { user, session } = useAuth();
   const [requestingCall, setRequestingCall] = useState(false);
-  const [nowMs, setNowMs] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState(0);
+  useEffect(() => {
+    setNowMs(Date.now());
+  }, []);
   const { data: myIdentity } = useMyBusinessProfile(user?.id);
   const trpc = useTRPC();
   const { campaign, influencerProfile } = conversation;

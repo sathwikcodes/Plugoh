@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { formatCurrency, formatPackage, getInitials } from "@/lib/format";
 import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
 import FlipClock from "@/components/ui/flip-clock";
+import { ThreeDButton } from "@/components/ui/3d-button";
 
 // ─── Status glow (also used by campaign-card-back) ───────────────────────────
 export const STATUS_GLOW: Record<string, string> = {
@@ -349,14 +350,16 @@ export function CampaignCardFront({
               </button>
             </div>
           ) : isCompleted ? (
-            <Link
-              href={card.detailHref}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary text-[13px] font-semibold text-primary-foreground shadow-[0_6px_20px_rgba(229,185,74,0.25)] transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
+            <ThreeDButton
+              asChild
+              label="View"
+              className="!h-11 !min-w-0 !w-auto flex-1 text-[13px]"
             >
-              <span>View</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+              <Link
+                href={card.detailHref}
+                onPointerDown={(e) => e.stopPropagation()}
+              />
+            </ThreeDButton>
           ) : isClosed ? (
             <Link
               href={card.detailHref}
