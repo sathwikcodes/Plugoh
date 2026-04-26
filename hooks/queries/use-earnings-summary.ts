@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { TIERS, MILESTONES } from "@/lib/constants";
 import type { Database } from "@/lib/supabase/types";
+import type { PillPreset } from "@/components/ui/3d-pill";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 
@@ -42,6 +43,8 @@ export interface MilestoneInfo {
   bestMonth: MonthlyDataPoint;
 }
 
+export type BadgePillPreset = PillPreset;
+
 export interface BadgeDef {
   id: string;
   label: string;
@@ -50,6 +53,7 @@ export interface BadgeDef {
   earned: boolean;
   earnedGradient: string;
   earnedBorder: string;
+  pillPreset: PillPreset;
 }
 
 // ── Hooks ────────────────────────────────────────────────────────────────────
@@ -179,6 +183,7 @@ export function useBadges(
         earned: completed.length >= 1,
         earnedGradient: "from-sky-500/20 to-blue-500/20",
         earnedBorder: "border-sky-500/30",
+        pillPreset: "sky" as const,
       },
       {
         id: "10k_club",
@@ -188,6 +193,7 @@ export function useBadges(
         earned: totalEarned >= 10000,
         earnedGradient: "from-green-500/20 to-emerald-500/20",
         earnedBorder: "border-green-500/30",
+        pillPreset: "emerald" as const,
       },
       {
         id: "1l_club",
@@ -197,6 +203,7 @@ export function useBadges(
         earned: totalEarned >= 100000,
         earnedGradient: "from-amber-500/20 to-yellow-500/20",
         earnedBorder: "border-amber-500/30",
+        pillPreset: "amber" as const,
       },
       {
         id: "brand_collector",
@@ -206,6 +213,7 @@ export function useBadges(
         earned: uniqueBrands >= 5,
         earnedGradient: "from-[#FF7A59]/20 to-[#FF7A59]/10",
         earnedBorder: "border-[#FF7A59]/30",
+        pillPreset: "rose" as const,
       },
       {
         id: "high_roller",
@@ -215,6 +223,7 @@ export function useBadges(
         earned: maxSingle >= 15000,
         earnedGradient: "from-violet-500/20 to-purple-500/20",
         earnedBorder: "border-violet-500/30",
+        pillPreset: "violet" as const,
       },
       {
         id: "consistent",
@@ -224,6 +233,7 @@ export function useBadges(
         earned: activeMonths >= 3,
         earnedGradient: "from-teal-500/20 to-cyan-500/20",
         earnedBorder: "border-teal-500/30",
+        pillPreset: "sky" as const,
       },
       {
         id: "veteran",
@@ -233,6 +243,7 @@ export function useBadges(
         earned: completed.length >= 10,
         earnedGradient: "from-orange-500/20 to-red-500/20",
         earnedBorder: "border-orange-500/30",
+        pillPreset: "amber" as const,
       },
       {
         id: "hot_streak",
@@ -242,6 +253,7 @@ export function useBadges(
         earned: hasHotStreak,
         earnedGradient: "from-red-500/20 to-orange-500/20",
         earnedBorder: "border-red-500/30",
+        pillPreset: "rose" as const,
       },
     ];
   }, [completed, totalEarned, monthlyData]);
