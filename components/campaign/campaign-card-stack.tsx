@@ -10,6 +10,7 @@ import {
   AnimatePresence,
   type MotionValue,
 } from "framer-motion";
+import { Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { formatPackage, getInitials } from "@/lib/format";
@@ -105,6 +106,15 @@ export interface CampaignCardData {
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────
+const PINK_COLOR = {
+  base: "#f4a7c3",
+  light: "#fce4ec",
+  mid: "#e991b6",
+  dark: "#b5617f",
+  ink: "#2d1220",
+  glow: "rgba(244,167,195,0.28)",
+};
+
 function InfluencerPill({
   name,
   avatarUrl,
@@ -129,7 +139,7 @@ function InfluencerPill({
   return (
     <ThreeDPill
       label={name}
-      color="slate"
+      color={PINK_COLOR}
       icon={icon}
       className="[&_.pill-text]:max-w-[110px] [&_.pill-text]:truncate"
     />
@@ -161,13 +171,42 @@ function CampaignCardFront({
     !!card.expires_at;
   const detailHref = card.href ?? `/dashboard/business/campaigns/${card.id}`;
 
+  const pkgName = card.package_type ? formatPackage(card.package_type) : "content";
+  let deliveryLabel = `Deliver ${pkgName} ASAP`;
+  if (card.brief) {
+    const timelineMatch = card.brief.match(/Timeline:\s*(.*)/);
+    if (timelineMatch) {
+      const t = timelineMatch[1].trim();
+      if (t !== "Instant") {
+        const dateMatch = t.match(/\((.*)\)/);
+        if (dateMatch) {
+          const rawDate = dateMatch[1];
+          const [year, month, day] = rawDate.split("-").map(Number);
+          if (year && month && day) {
+            const localDate = new Date(year, month - 1, day);
+            const formattedDate = localDate.toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            });
+            deliveryLabel = `${pkgName} by ${formattedDate}`;
+          } else {
+            deliveryLabel = `${pkgName} by ${rawDate}`;
+          }
+        } else {
+          deliveryLabel = `${pkgName} (${t})`;
+        }
+      }
+    }
+  }
+
   return (
     <m.div
       style={{ opacity: overlayOpacity }}
       className="absolute inset-0 flex flex-col overflow-hidden @container"
     >
       {/* ── Image section ────────────────────────────────────────────── */}
-      <div className="relative w-full flex-none" style={{ paddingBottom: "30%" }}>
+      <div className="relative w-full flex-none" style={{ paddingBottom: showTimer ? "28%" : "58%" }}>
         <div className="absolute inset-0 overflow-hidden">
           {card.influencerAvatarUrl ? (
             <Image
@@ -227,14 +266,14 @@ function CampaignCardFront({
       <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080609] px-3 pb-3 pt-2.5 @[340px]:px-4 @[340px]:pb-4 @[340px]:pt-3">
         {/* Title */}
         <h2
-          className="line-clamp-2 font-semibold leading-[1.15] tracking-[-0.04em] text-white"
+          className="line-clamp-2 shrink-0 font-semibold leading-[1.15] tracking-[-0.04em] text-white"
           style={{ fontSize: "clamp(15px, 5cqw, 22px)" }}
         >
           {card.title || "Untitled Campaign"}
         </h2>
 
         {/* Payout box */}
-        <div className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-3 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3.5">
+        <div className="mt-2.5 shrink-0 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-3 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3.5">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <Image
               src="/coin.png"
@@ -267,7 +306,7 @@ function CampaignCardFront({
 
         {/* Info pills — category + package type */}
         {(card.influencerCategory || card.package_type) ? (
-          <div className="mt-2.5 flex gap-2 @[340px]:mt-3">
+          <div className="mt-2.5 shrink-0 flex gap-2 @[340px]:mt-3">
             {card.influencerCategory ? (
               <ThreeDPill
                 label={card.influencerCategory}
@@ -299,29 +338,55 @@ function CampaignCardFront({
           </div>
         ) : null}
 
-        {/* Timer (pending/requested only) */}
+        {/* Delivery pill */}
+        <div className="mt-2.5 shrink-0 flex @[340px]:mt-3">
+          <ThreeDPill
+            label={deliveryLabel}
+            color="slate"
+            className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate [&_.pill-label]:max-w-full"
+          />
+        </div>
+
+        {/* Booking window timer (pending/requested only) */}
         {showTimer && (
           <div className="mt-2.5 shrink-0 rounded-[14px] border border-amber-500/22 bg-amber-500/8 px-3 py-2.5 @[340px]:mt-3">
-            <p className="mb-1.5 text-[9px] uppercase tracking-[0.22em] text-amber-300/55">
-              Offer expires in
+            <p className="mb-1.5 text-center text-[9px] uppercase tracking-[0.22em] text-amber-300/55">
+              Booking window closes
             </p>
-            <FlipClock className="justify-start" expiresAt={card.expires_at} />
+            <FlipClock className="justify-center" expiresAt={card.expires_at} />
           </div>
         )}
 
-        {/* Push CTA to bottom */}
-        <div className="flex-1" />
+        {/* Push CTA to bottom — capped so dead space stays minimal */}
+        <div className="min-h-0 max-h-6 flex-1" />
 
-        {/* CTA */}
-        <div className="mt-3">
-          <ThreeDButton
-            asChild
-            label="View"
-            className="!w-full mx-auto three-d-button--cq-responsive"
-            onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
-          >
-            <Link href={detailHref} />
-          </ThreeDButton>
+        {/* Two-button CTA */}
+        <div className="mt-3 flex items-center gap-2">
+          {/* View — flex-1 wrapper so width:100% on the button resolves to remaining space */}
+          <div className="min-w-0 flex-1">
+            <ThreeDButton
+              asChild
+              label="View"
+              hideIcon
+              className="three-d-button--sm"
+              onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
+            >
+              <Link href={detailHref} />
+            </ThreeDButton>
+          </div>
+          {/* Chat — fixed-width wrapper so the button becomes a square */}
+          <div className="w-11 shrink-0">
+            <ThreeDButton
+              asChild
+              label=""
+              hideIcon
+              customIcon={<Inbox className="h-4 w-4" />}
+              className="three-d-button--sm three-d-button--emerald [&_.char-icon]:mr-0"
+              onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
+            >
+              <Link href={`/dashboard/business/inbox?chat=${card.id}`} />
+            </ThreeDButton>
+          </div>
         </div>
       </div>
     </m.div>

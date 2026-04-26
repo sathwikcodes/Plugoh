@@ -24,6 +24,7 @@ function mapCardProps(
   return {
     id: campaign.id,
     title: campaign.title,
+    brief: campaign.brief || null,
     status: campaign.status,
     package_type: campaign.package_type,
     price_offered: campaign.price_offered,
