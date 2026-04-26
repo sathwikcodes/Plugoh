@@ -118,7 +118,7 @@ const STEPS = [
 
 export function BookingStepPayment() {
   return (
-    <div className="space-y-3 rounded-xl border border-white/8 bg-black/20 p-4">
+    <>
       <p className="text-[11px] uppercase tracking-[0.22em] text-white/40">
         How it works
       </p>
@@ -138,6 +138,6 @@ export function BookingStepPayment() {
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 }

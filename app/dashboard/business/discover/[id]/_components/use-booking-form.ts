@@ -16,7 +16,7 @@ import {
 import { processBookingPayment } from "./booking-step-payment";
 
 const DEFAULT_OBJECTIVE: BookingObjective = "feature_product";
-const DEFAULT_TIMING: BookingTimingMode = "asap";
+const DEFAULT_TIMING: BookingTimingMode = "choose_date";
 
 function getInitialPackage(
   packageSeed: BookablePackage | null,

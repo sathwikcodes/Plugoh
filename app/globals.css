@@ -1136,6 +1136,20 @@ input.range-thumb::-moz-range-track {
     0 8px 16px var(--pill-glow) !important;
 }
 
+/* Remove outer glow only; keep 3D face and edge depth. */
+.three-d-pill--no-glow {
+  --pill-glow: transparent !important;
+}
+
+.three-d-pill--no-glow,
+.three-d-pill--no-glow:hover,
+.three-d-pill--no-glow:active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.22),
+    0 4px 0 var(--pill-dark) !important;
+}
+
 /* ── Circle variant — icon-only circular node ─────────────────────────────── */
 .three-d-pill--circle {
   width: 2.25rem !important;

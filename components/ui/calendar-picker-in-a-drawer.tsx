@@ -145,9 +145,11 @@ export function Calendar32({
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <Label htmlFor={id} className="px-1">
-        {label}
-      </Label>
+      {label ? (
+        <Label htmlFor={id} className="px-1">
+          {label}
+        </Label>
+      ) : null}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           id={id}

@@ -2,8 +2,16 @@ import { useState, type ReactNode } from "react";
 import { Check, ChevronDown, CircleAlert } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { m } from "framer-motion";
 import { getAvailablePackages, type BookablePackage } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const PACKAGE_IMAGES: Record<BookablePackage, string> = {
+  reel: "/reel.png",
+  post: "/image.png",
+  story: "/play.png",
+};
 
 export interface BookingSelectItem {
   id: string;
@@ -137,49 +145,61 @@ export function BookingStepPackage({
         </div>
       ) : null}
       {canStart ? (
-        <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/45">
-            What you need
-          </h2>
-          <div
-            className="grid gap-2"
-            style={{
-              gridTemplateColumns: `repeat(${Math.min(availablePackages.length, 3)}, 1fr)`,
-            }}
-          >
+        <section className="space-y-4">
+          <div className="grid w-full grid-cols-3 items-start gap-4 sm:gap-5">
             {availablePackages.map((item) => {
               const active = selectedPackage === item.key;
               return (
-                <button
+                <m.button
                   key={item.key}
                   type="button"
                   onClick={() => onPackageChange(item.key)}
-                  className={`rounded-2xl border px-3 py-3 text-center transition ${
-                    active
-                      ? "border-primary/50 bg-primary text-primary-foreground"
-                      : "border-white/10 bg-white/3 text-white hover:bg-white/6"
-                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className="flex min-h-[132px] w-full min-w-0 flex-col items-center gap-2 px-1 py-2 text-center outline-none cursor-pointer sm:min-h-[146px] sm:py-3"
                 >
-                  <p
-                    className={`text-sm font-medium ${active ? "text-primary-foreground" : "text-white"}`}
+                  <div
+                    className={cn(
+                      "relative h-12 w-12 overflow-hidden rounded-full transition-all duration-200 sm:h-14 sm:w-14",
+                      active
+                        ? "ring-2 ring-primary ring-offset-2 ring-offset-[#141414]"
+                        : "opacity-50"
+                    )}
+                  >
+                    <img
+                      src={PACKAGE_IMAGES[item.key]}
+                      alt={item.label}
+                      className={cn(
+                        "w-full h-full object-cover transition-all duration-200",
+                        !active && "grayscale"
+                      )}
+                    />
+                  </div>
+                  <span
+                    className={cn(
+                      "text-xs font-medium transition-colors duration-200 sm:text-sm",
+                      active ? "text-white" : "text-white/50"
+                    )}
                   >
                     {item.label}
-                  </p>
-                  <p
-                    className={`mt-1 text-lg font-semibold ${active ? "text-black" : "text-white"}`}
+                  </span>
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1 text-xs font-semibold transition-colors duration-200 sm:text-sm",
+                      active ? "text-white" : "text-white/40"
+                    )}
                   >
-                    <span className="inline-flex items-center gap-2">
-                      <Image
-                        src="/coin.png"
-                        alt="Price"
-                        width={18}
-                        height={18}
-                        className="h-4.5 w-4.5 object-contain"
-                      />
-                      {item.price.toLocaleString("en-IN")}
-                    </span>
-                  </p>
-                </button>
+                    <Image
+                      src="/coin.png"
+                      alt="Price"
+                      width={12}
+                      height={12}
+                      className="h-3 w-3 object-contain sm:h-3.5 sm:w-3.5"
+                    />
+                    {item.price.toLocaleString("en-IN")}
+                  </span>
+                </m.button>
               );
             })}
           </div>

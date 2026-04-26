@@ -73,16 +73,6 @@ function BookingDrawerContent({
                     <ArrowLeft className="h-4 w-4" />
                   </button>
                 ) : null}
-                <div className="min-w-0 text-left">
-                  <DrawerTitle className="text-left text-xl font-semibold text-white">
-                    {form.step === 1 ? "Book creator" : "Confirm & pay"}
-                  </DrawerTitle>
-                  <DrawerDescription className="mt-1 truncate text-left text-sm text-white/55">
-                    {form.step === 1
-                      ? `${creator.display_name || "Creator"} · no charge until they accept`
-                      : "Review your booking details"}
-                  </DrawerDescription>
-                </div>
               </div>
               <Button
                 type="button"
@@ -95,6 +85,17 @@ function BookingDrawerContent({
                 <X className="h-4 w-4" />
               </Button>
             </div>
+            <DrawerTitle className="sr-only">
+              {form.step === 1 ? "Book creator" : "Confirm & pay"}
+            </DrawerTitle>
+            <DrawerDescription className="sr-only">
+              {form.step === 1
+                ? `${creator.display_name || "Creator"} · no charge until they accept`
+                : "Review your booking details"}
+            </DrawerDescription>
+            <DrawerTitle className="mt-3 text-left text-xl font-semibold text-white">
+              {form.step === 1 ? "Book this influencer" : "Confirm & pay"}
+            </DrawerTitle>
             <div className="mt-3 flex items-center gap-2">
               <div
                 className={`h-1 flex-1 rounded-full transition-colors ${form.step >= 1 ? "bg-white/40" : "bg-white/10"}`}
@@ -105,7 +106,7 @@ function BookingDrawerContent({
             </div>
           </DrawerHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="min-h-0 flex-1 overflow-hidden">
             {form.step === 1 ? (
               <div className="space-y-5 p-5 pb-28 md:p-6 md:pb-32">
                 <BookingStepPackage

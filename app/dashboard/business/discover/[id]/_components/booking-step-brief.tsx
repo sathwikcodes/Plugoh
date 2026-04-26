@@ -2,16 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, MapPin, Pencil, X } from "lucide-react";
 import {
   BOOKING_OBJECTIVES,
-  BOOKING_TIMING_OPTIONS,
   shouldShowEventName,
   type BookingObjective,
-  type BookingTimingMode,
 } from "@/lib/booking";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar32 } from "@/components/ui/calendar-picker-in-a-drawer";
+import { BookingPurposeTimingSelector } from "@/components/ui/booking-purpose-timing-selector";
 import type { BookingForm } from "./use-booking-form";
-import { BookingSelect } from "./booking-step-package";
 
 interface BookingStepBriefProps {
   form: BookingForm;
@@ -27,44 +25,35 @@ export function BookingStepBrief({ form }: BookingStepBriefProps) {
       })),
     [],
   );
-  const timingItems = useMemo(
-    () =>
-      BOOKING_TIMING_OPTIONS.map((t) => ({
-        id: t.value,
-        name: t.label,
-        description: t.description,
-      })),
-    [],
-  );
-
   return (
     <>
-      <BookingSelect
-        heading="What's this for?"
-        items={objectiveItems}
-        selectedId={form.objective}
-        onSelect={(id) => form.setObjective(id as BookingObjective)}
+      <BookingPurposeTimingSelector
+        purposes={objectiveItems.map((item) => ({
+          id: item.id,
+          label: item.name,
+          description: item.description,
+        }))}
+        selectedPurposeId={form.objective}
+        onPurposeSelect={(id) => form.setObjective(id as BookingObjective)}
+        times={[]}
+        selectedTimeId={form.timingMode}
+        onTimeSelect={() => {}}
+        timeChildren={
+          <Calendar32
+            id="due-date"
+            label="Select date"
+            value={form.dueDate}
+            className="pt-1"
+            onChange={(nextDate) => {
+              form.setTimingMode("choose_date");
+              form.setDueDate(nextDate);
+            }}
+          />
+        }
       />
       {shouldShowEventName(form.objective) ? (
         <VenueAddressCard form={form} />
       ) : null}
-      <BookingSelect
-        heading="When do you need it?"
-        items={timingItems}
-        selectedId={form.timingMode}
-        onSelect={(id) => form.setTimingMode(id as BookingTimingMode)}
-      >
-        {form.timingMode === "choose_date" ? (
-          <div className="space-y-2 rounded-2xl border border-white/10 bg-white/3 p-4">
-            <Calendar32
-              id="due-date"
-              label="Select date"
-              value={form.dueDate}
-              onChange={form.setDueDate}
-            />
-          </div>
-        ) : null}
-      </BookingSelect>
       {form.requiresContactInput || form.requiresPhoneInput ? (
         <section className="space-y-3 rounded-2xl border border-white/10 bg-white/3 p-4">
           <div>
