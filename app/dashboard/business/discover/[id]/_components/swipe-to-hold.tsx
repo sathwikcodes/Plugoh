@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { m, useMotionValue, useTransform, useAnimation } from "framer-motion";
+import { m, useMotionValue, useTransform, useAnimation, animate } from "framer-motion";
 import { Lock, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,73 +22,94 @@ export function SwipeToHold({
   className,
 }: SwipeToHoldProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [maxDrag, setMaxDrag] = React.useState(0);
+  const maxDragRef = React.useRef(0);
+  const isDragging = React.useRef(false);
+  const startX = React.useRef(0);
+
   const x = useMotionValue(0);
-  const controls = useAnimation();
-  
-  // Controls for the text opacity
   const textOpacity = useTransform(x, [0, 150], [1, 0]);
   const arrowOpacity = useTransform(x, [0, 50], [1, 0.4]);
+  const progressWidth = useTransform(x, (val) => val + 44);
 
-  const updateConstraints = React.useCallback(() => {
-    if (containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const handleWidth = 44; // h-11
-      const padding = 12; // p-1.5 = 6px each side
-      const calculatedMax = containerWidth - handleWidth - padding;
-      if (calculatedMax > 0) setMaxDrag(calculatedMax);
-    }
+  const getMaxDrag = React.useCallback(() => {
+    if (!containerRef.current) return 0;
+    const containerWidth = containerRef.current.offsetWidth;
+    const handleWidth = 44;
+    const padding = 12;
+    return Math.max(0, containerWidth - handleWidth - padding);
   }, []);
 
-  React.useLayoutEffect(() => {
-    updateConstraints();
-    window.addEventListener("resize", updateConstraints);
-    return () => window.removeEventListener("resize", updateConstraints);
-  }, [updateConstraints]);
-
-  const handleDragEnd = async () => {
-    const threshold = maxDrag * 0.8; // slightly lower threshold for better mobile feel
-
-    if (x.get() >= threshold) {
-      // Trigger confirmation
-      await controls.start({ x: maxDrag, transition: { type: "spring", stiffness: 300, damping: 30 } });
-      onConfirm();
-    } else {
-      // Snap back
-      controls.start({ x: 0, transition: { type: "spring", stiffness: 400, damping: 40 } });
-    }
-  };
-
+  // Reset x when loading state clears
   React.useEffect(() => {
     if (!isLoading) {
-      controls.start({ x: 0 });
+      animate(x, 0, { type: "spring", stiffness: 400, damping: 40 });
     }
-  }, [isLoading, controls]);
+  }, [isLoading, x]);
+
+  const handlePointerDown = React.useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (disabled || isLoading) return;
+      e.preventDefault();
+      e.stopPropagation();
+      // Capture the pointer so all subsequent move/up events come to this element,
+      // bypassing Vaul's pointer capture entirely.
+      (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+      maxDragRef.current = getMaxDrag();
+      isDragging.current = true;
+      startX.current = e.clientX - x.get();
+    },
+    [disabled, isLoading, getMaxDrag, x]
+  );
+
+  const handlePointerMove = React.useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDragging.current) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const newX = Math.max(0, Math.min(e.clientX - startX.current, maxDragRef.current));
+      x.set(newX);
+    },
+    [x]
+  );
+
+  const handlePointerUp = React.useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDragging.current) return;
+      isDragging.current = false;
+      e.stopPropagation();
+
+      const threshold = maxDragRef.current * 0.8;
+      if (x.get() >= threshold) {
+        animate(x, maxDragRef.current, {
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+          onComplete: onConfirm,
+        });
+      } else {
+        animate(x, 0, { type: "spring", stiffness: 400, damping: 40 });
+      }
+    },
+    [x, onConfirm]
+  );
 
   return (
     <div
       ref={containerRef}
       data-vaul-no-drag
-      onPointerDown={(e) => {
-        updateConstraints();
-        e.stopPropagation();
-      }}
       className={cn(
-        "relative h-14 w-full overflow-hidden rounded-full bg-white/5 p-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] backdrop-blur-sm transition-opacity duration-200 touch-none",
+        "relative h-14 w-full overflow-hidden rounded-full bg-white/5 p-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] backdrop-blur-sm transition-opacity duration-200 touch-none select-none",
         (disabled || isLoading) && "pointer-events-none opacity-60",
         className
       )}
     >
-      {/* Dynamic Progress Fill (Champagne Gold Gradient) */}
+      {/* Progress fill */}
       <m.div
-        style={{ 
-          width: useTransform(x, (val) => val + 44),
-          touchAction: "none" 
-        }}
+        style={{ width: progressWidth, touchAction: "none" }}
         className="absolute bottom-1.5 left-1.5 top-1.5 z-0 rounded-full bg-gradient-to-r from-[#a6761b] via-[#e5b94a] to-[#fff4a8] opacity-20 shadow-[0_0_20px_rgba(229,185,74,0.4)] pointer-events-none"
       />
 
-      {/* Background Track Text */}
+      {/* Track label */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <m.div
           style={{ opacity: textOpacity }}
@@ -108,25 +129,19 @@ export function SwipeToHold({
         </m.div>
       </div>
 
-      {/* The 3D Handle */}
+      {/* Handle */}
       <m.div
-        drag="x"
-        dragConstraints={{ left: 0, right: maxDrag || 300 }}
-        dragElastic={0.05}
-        dragMomentum={false}
-        onDragEnd={handleDragEnd}
-        onPointerDown={(e) => {
-          updateConstraints();
-          e.stopPropagation();
-        }}
-        animate={controls}
+        data-vaul-no-drag
         style={{ x, touchAction: "none" }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         className="relative z-10 flex h-11 w-11 cursor-grab items-center justify-center rounded-full active:cursor-grabbing"
       >
-        {/* 3D Visual Layers (similar to ThreeDButton) */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-b from-[#fff4a8] via-[#e5b94a] to-[#a6761b] shadow-[0_4px_0_#7b5614,0_8px_16px_rgba(229,185,74,0.3)] pointer-events-none" />
         <div className="absolute inset-[2px] rounded-full bg-gradient-to-b from-white/40 to-transparent pointer-events-none" />
-        
+
         {isLoading ? (
           <m.div
             animate={{ rotate: 360 }}
@@ -140,7 +155,7 @@ export function SwipeToHold({
         )}
       </m.div>
 
-      {/* Animated Arrow Indicators */}
+      {/* Arrow hints */}
       {!isLoading && (
         <m.div
           style={{ opacity: arrowOpacity }}
@@ -153,4 +168,3 @@ export function SwipeToHold({
     </div>
   );
 }
-

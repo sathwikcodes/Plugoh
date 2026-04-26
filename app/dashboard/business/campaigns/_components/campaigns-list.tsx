@@ -32,6 +32,7 @@ function mapCardProps(
     influencerName: influencer?.display_name || "Creator",
     influencerHandle: influencer?.ig_username || null,
     influencerAvatarUrl: influencer?.ig_profile_picture_url || null,
+    influencerCategory: influencer?.category || null,
   };
 }
 

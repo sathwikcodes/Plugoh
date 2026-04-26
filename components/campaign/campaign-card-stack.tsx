@@ -10,18 +10,13 @@ import {
   AnimatePresence,
   type MotionValue,
 } from "framer-motion";
-import { ArrowRight, BarChart3, Lock, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ShinyButton } from "@/components/ui/shiny-button";
-import {
-  formatCurrency,
-  formatPackage,
-  getInitials,
-  timeAgo,
-} from "@/lib/format";
+import { formatPackage, getInitials } from "@/lib/format";
 import FlipClock from "@/components/ui/flip-clock";
-import { CAMPAIGN_STATUS_CONFIG } from "@/lib/constants";
-import type { CampaignStatus } from "@/lib/constants";
+import { ThreeDPill, type PillPreset } from "@/components/ui/3d-pill";
+import { ThreeDButton } from "@/components/ui/3d-button";
+import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
 
 // ── Constants ─────────────────────────────────────────────────────────────
 const VISIBLE_COUNT = 3;
@@ -39,20 +34,54 @@ const SPRING = {
 
 // ── Status colour tokens ───────────────────────────────────────────────────
 const STATUS_GLOW: Record<string, string> = {
-  pre_authorized: "rgba(245,158,11,0.20)",
-  requested: "rgba(245,158,11,0.20)",
-  pending: "rgba(245,158,11,0.20)",
-  payment_pending: "rgba(234,179,8,0.22)",
-  in_escrow: "rgba(234,179,8,0.18)",
-  accepted: "rgba(34,197,94,0.15)",
-  delivery_submitted: "rgba(234,179,8,0.18)",
-  completed: "rgba(34,197,94,0.15)",
+  pre_authorized: "rgba(245,158,11,0.22)",
+  requested: "rgba(245,158,11,0.22)",
+  pending: "rgba(245,158,11,0.22)",
+  payment_pending: "rgba(34,197,94,0.18)",
+  in_escrow: "rgba(34,197,94,0.18)",
+  accepted: "rgba(34,197,94,0.18)",
+  delivery_submitted: "rgba(34,197,94,0.16)",
+  completed: "rgba(34,197,94,0.18)",
   disputed: "rgba(239,68,68,0.18)",
   declined: "rgba(239,68,68,0.18)",
   rejected: "rgba(239,68,68,0.18)",
   cancelled: "rgba(239,68,68,0.18)",
   expired: "rgba(239,68,68,0.18)",
   refunded: "rgba(239,68,68,0.18)",
+};
+
+const STATUS_PILL_COLOR: Record<string, PillPreset> = {
+  pre_authorized: "amber",
+  requested: "amber",
+  pending: "amber",
+  payment_pending: "amber",
+  in_escrow: "amber",
+  delivery_submitted: "amber",
+  accepted: "emerald",
+  completed: "emerald",
+  disputed: "rose",
+  declined: "rose",
+  rejected: "rose",
+  cancelled: "rose",
+  expired: "rose",
+  refunded: "rose",
+};
+
+const PAYMENT_PROGRESS: Record<string, { label: string; color: PillPreset }> = {
+  pre_authorized:     { label: "Awaiting",  color: "slate"   },
+  requested:          { label: "Awaiting",  color: "slate"   },
+  pending:            { label: "Awaiting",  color: "slate"   },
+  payment_pending:    { label: "Pay Now",   color: "amber"   },
+  in_escrow:          { label: "On Hold",   color: "amber"   },
+  accepted:           { label: "On Hold",   color: "amber"   },
+  delivery_submitted: { label: "On Hold",   color: "amber"   },
+  completed:          { label: "Paid",      color: "emerald" },
+  disputed:           { label: "Disputed",  color: "rose"    },
+  declined:           { label: "Cancelled", color: "rose"    },
+  rejected:           { label: "Cancelled", color: "rose"    },
+  cancelled:          { label: "Cancelled", color: "rose"    },
+  expired:            { label: "Expired",   color: "rose"    },
+  refunded:           { label: "Refunded",  color: "rose"    },
 };
 
 // ── Data interface ────────────────────────────────────────────────────────
@@ -68,10 +97,54 @@ export interface CampaignCardData {
   influencerName: string;
   influencerHandle: string | null;
   influencerAvatarUrl: string | null;
+  influencerCategory?: string | null;
   chartUrl?: string | null;
   chartLocked?: boolean | null;
   /** Detail page href. Defaults to /dashboard/business/campaigns/:id */
   href?: string;
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────
+function InfluencerPill({
+  name,
+  avatarUrl,
+}: {
+  name: string;
+  avatarUrl: string | null;
+}) {
+  const icon = avatarUrl ? (
+    <Image
+      src={avatarUrl}
+      alt={name}
+      width={16}
+      height={16}
+      className="h-4 w-4 shrink-0 rounded-full object-cover"
+    />
+  ) : (
+    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-black/30 text-[7px] font-bold">
+      {getInitials(name)}
+    </span>
+  );
+
+  return (
+    <ThreeDPill
+      label={name}
+      color="slate"
+      icon={icon}
+      className="[&_.pill-text]:max-w-[110px] [&_.pill-text]:truncate"
+    />
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const cfg = CAMPAIGN_STATUS_CONFIG[status as CampaignStatus];
+  if (!cfg) return null;
+  return (
+    <ThreeDPill
+      label={cfg.shortLabel}
+      color={STATUS_PILL_COLOR[status] ?? "slate"}
+    />
+  );
 }
 
 // ── Front card ────────────────────────────────────────────────────────────
@@ -82,149 +155,173 @@ function CampaignCardFront({
   card: CampaignCardData;
   overlayOpacity?: MotionValue<number> | number;
 }) {
-  const cfg =
-    CAMPAIGN_STATUS_CONFIG[card.status as CampaignStatus] ??
-    CAMPAIGN_STATUS_CONFIG.requested;
   const glow = STATUS_GLOW[card.status] ?? "rgba(255,255,255,0.06)";
-
   const showTimer =
     ["pre_authorized", "requested", "pending"].includes(card.status) &&
     !!card.expires_at;
-  const isChartLocked = card.chartLocked ?? !card.chartUrl;
-  const chartHref =
-    card.chartUrl ||
-    `${card.href ?? `/dashboard/business/campaigns/${card.id}`}#chart`;
   const detailHref = card.href ?? `/dashboard/business/campaigns/${card.id}`;
 
   return (
-    <m.div style={{ opacity: overlayOpacity }} className="h-full w-full">
-      {/* Dark base */}
-      <div className="absolute inset-0 bg-[#080a0d]" />
-
-      {/* Status glow from top */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 80% 55% at 50% -10%, ${glow}, transparent)`,
-        }}
-      />
-
-      {/* Subtle inner border shimmer */}
-      <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]" />
-
-      {/* Content */}
-      <div className="relative flex h-full flex-col px-5 pb-5 pt-6">
-        {/* ── Row 1: status badge + package ── */}
-        <div className="flex shrink-0 items-center justify-between gap-2">
-          <span
-            className={cn(
-              "inline-flex items-center rounded-full border px-2.5 py-0.75 text-[10px] font-semibold uppercase tracking-[0.18em] leading-none",
-              cfg.badge,
-            )}
-          >
-            {cfg.label}
-          </span>
-          <span className="rounded-full border border-white/10 bg-white/6 px-2.5 py-0.75 text-[10px] font-medium uppercase tracking-[0.16em] leading-none text-white/50">
-            {formatPackage(card.package_type)}
-          </span>
-        </div>
-
-        {/* ── Row 2: campaign title (hero) ── */}
-        <div className="min-h-0 flex-1 flex flex-col justify-start pb-1 pt-2">
-          <h2 className="line-clamp-4 text-[26px] font-semibold leading-[1.22] tracking-[-0.04em] text-white">
-            {card.title || "Untitled Campaign"}
-          </h2>
-
-          {/* ── Creator card ── */}
-          <div className="mb-3 mt-3 flex items-center gap-3 rounded-[16px] border border-white/10 bg-white/4 px-3 py-2">
-            {card.influencerAvatarUrl ? (
-              <Image
-                src={card.influencerAvatarUrl}
-                alt={card.influencerName}
-                width={36}
-                height={36}
-                className="h-9 w-9 rounded-full object-cover"
-              />
-            ) : (
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/12 text-[10px] font-bold text-white/70">
+    <m.div
+      style={{ opacity: overlayOpacity }}
+      className="absolute inset-0 flex flex-col overflow-hidden @container"
+    >
+      {/* ── Image section ────────────────────────────────────────────── */}
+      <div className="relative w-full flex-none" style={{ paddingBottom: "30%" }}>
+        <div className="absolute inset-0 overflow-hidden">
+          {card.influencerAvatarUrl ? (
+            <Image
+              src={card.influencerAvatarUrl}
+              alt={card.influencerName}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 400px"
+            />
+          ) : (
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{
+                background: `radial-gradient(ellipse 120% 120% at 50% -10%, ${glow} 0%, #111116 60%, #080609 100%)`,
+              }}
+            >
+              <span
+                className="select-none"
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: "clamp(48px, 14cqw, 90px)",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  lineHeight: 1,
+                  letterSpacing: "-0.03em",
+                  color: "rgba(255,255,255,0.13)",
+                  textShadow: "0 2px 24px rgba(0,0,0,0.35)",
+                  userSelect: "none",
+                  pointerEvents: "none",
+                }}
+                aria-hidden="true"
+              >
                 {getInitials(card.influencerName)}
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-white">
-                {card.influencerName}
-              </p>
-              <p className="truncate text-[11px] text-white/45">
-                {card.influencerHandle ? `@${card.influencerHandle}` : "—"}
-                {" · "}
-                {timeAgo(card.created_at)}
-              </p>
+              </span>
             </div>
-          </div>
-
-          {card.brief?.trim() && (
-            <p className="line-clamp-2 text-[13px] leading-[1.55] text-white/42">
-              {card.brief.trim()}
-            </p>
           )}
+          {/* Bottom gradient fade */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#080609] via-[#080609]/70 to-transparent" />
+          {/* Backdrop blur strip */}
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-10 backdrop-blur-md"
+            style={{ maskImage: "linear-gradient(to top, black 40%, transparent 100%)" }}
+          />
         </div>
 
-        {/* ── Timer (pre-auth / requested only) ── */}
+        {/* Pills overlaid on image */}
+        <div className="absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
+          <InfluencerPill
+            name={card.influencerName}
+            avatarUrl={card.influencerAvatarUrl}
+          />
+          <StatusPill status={card.status} />
+        </div>
+      </div>
+
+      {/* ── Content section ──────────────────────────────────────────── */}
+      <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080609] px-3 pb-3 pt-2.5 @[340px]:px-4 @[340px]:pb-4 @[340px]:pt-3">
+        {/* Title */}
+        <h2
+          className="line-clamp-2 font-semibold leading-[1.15] tracking-[-0.04em] text-white"
+          style={{ fontSize: "clamp(15px, 5cqw, 22px)" }}
+        >
+          {card.title || "Untitled Campaign"}
+        </h2>
+
+        {/* Payout box */}
+        <div className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-3 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3.5">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <Image
+              src="/coin.png"
+              alt=""
+              width={32}
+              height={32}
+              className="shrink-0 object-contain"
+              style={{
+                width: "clamp(18px, 5.5cqw, 32px)",
+                height: "clamp(18px, 5.5cqw, 32px)",
+              }}
+            />
+            <span
+              className="font-bold leading-none tracking-[-0.05em] text-amber-400"
+              style={{ fontSize: "clamp(17px, 5.5cqw, 28px)" }}
+            >
+              {card.price_offered
+                ? card.price_offered.toLocaleString("en-IN")
+                : "—"}
+            </span>
+          </div>
+          {PAYMENT_PROGRESS[card.status] ? (
+            <ThreeDPill
+              label={PAYMENT_PROGRESS[card.status].label}
+              color={PAYMENT_PROGRESS[card.status].color}
+              className="shrink-0"
+            />
+          ) : null}
+        </div>
+
+        {/* Info pills — category + package type */}
+        {(card.influencerCategory || card.package_type) ? (
+          <div className="mt-2.5 flex gap-2 @[340px]:mt-3">
+            {card.influencerCategory ? (
+              <ThreeDPill
+                label={card.influencerCategory}
+                color={{
+                  base: "#6b6457",
+                  light: "#9c9183",
+                  mid: "#504840",
+                  dark: "#28241e",
+                  ink: "#f0ece4",
+                  glow: "rgba(107,100,87,0.18)",
+                }}
+                className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate [&_.pill-label]:max-w-full"
+              />
+            ) : null}
+            {card.package_type ? (
+              <ThreeDPill
+                label={formatPackage(card.package_type)}
+                color={{
+                  base: "#566070",
+                  light: "#8090a0",
+                  mid: "#404c5c",
+                  dark: "#202830",
+                  ink: "#e4eaf0",
+                  glow: "rgba(86,96,112,0.18)",
+                }}
+                className="flex-1 min-w-0 justify-center [&_.pill-text]:truncate [&_.pill-label]:max-w-full"
+              />
+            ) : null}
+          </div>
+        ) : null}
+
+        {/* Timer (pending/requested only) */}
         {showTimer && (
-          <div className="mb-4 shrink-0 rounded-[16px] border border-amber-500/22 bg-amber-500/8 px-4 py-3">
-            <p className="mb-2 text-[9px] uppercase tracking-[0.22em] text-amber-300/55">
+          <div className="mt-2.5 shrink-0 rounded-[14px] border border-amber-500/22 bg-amber-500/8 px-3 py-2.5 @[340px]:mt-3">
+            <p className="mb-1.5 text-[9px] uppercase tracking-[0.22em] text-amber-300/55">
               Offer expires in
             </p>
             <FlipClock className="justify-start" expiresAt={card.expires_at} />
           </div>
         )}
 
-        {/* ── Divider ── */}
-        <div className="shrink-0 h-px bg-white/8" />
+        {/* Push CTA to bottom */}
+        <div className="flex-1" />
 
-        {/* ── Footer ── */}
-        <div className="shrink-0 flex items-center justify-between gap-3 pt-4">
-          {/* Left: price + secondary info */}
-          <div className="min-w-0">
-            <p className="text-[30px] font-bold leading-none tracking-[-0.05em] text-white">
-              {formatCurrency(card.price_offered)}
-              <span className="ml-2 text-[14px] font-medium tracking-[0.01em] text-white/55">
-                spent
-              </span>
-            </p>
-          </div>
-
-          {/* Right: chart + arrow */}
-          <div className="flex shrink-0 items-center gap-2">
-            {isChartLocked ? (
-              <button
-                type="button"
-                disabled
-                aria-disabled="true"
-                className="relative flex h-12 w-12 items-center justify-center rounded-full border border-white/16 bg-white/6 text-white/45 shadow-[0_8px_24px_rgba(0,0,0,0.2)]"
-              >
-                <MessageCircle className="h-5 w-5 opacity-70" />
-                <span className="absolute -right-0.5 -top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-white/20 bg-[#0d0b0f]">
-                  <Lock className="h-2.5 w-2.5 text-white/75" />
-                </span>
-              </button>
-            ) : (
-              <Link
-                href={chartHref}
-                onClick={(e) => e.stopPropagation()}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:scale-105 active:scale-95"
-              >
-                <BarChart3 className="h-5 w-5 text-black" />
-              </Link>
-            )}
-            <Link
-              href={detailHref}
-              onClick={(e) => e.stopPropagation()}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:scale-105 active:scale-95"
-            >
-              <ArrowRight className="h-5 w-5 text-black" />
-            </Link>
-          </div>
+        {/* CTA */}
+        <div className="mt-3">
+          <ThreeDButton
+            asChild
+            label="View"
+            className="!w-full mx-auto three-d-button--cq-responsive"
+            onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
+          >
+            <Link href={detailHref} />
+          </ThreeDButton>
         </div>
       </div>
     </m.div>
@@ -250,7 +347,7 @@ export function CampaignCardTile({
   );
 }
 
-// ── Back card (non-front, simplified) ────────────────────────────────────
+// ── Back card ─────────────────────────────────────────────────────────────
 function CampaignCardBack({ card }: { card: CampaignCardData }) {
   const glow = STATUS_GLOW[card.status] ?? "rgba(255,255,255,0.06)";
 
@@ -263,7 +360,6 @@ function CampaignCardBack({ card }: { card: CampaignCardData }) {
           background: `radial-gradient(ellipse 80% 55% at 50% -10%, ${glow}, transparent)`,
         }}
       />
-      {/* Blurred title peek at bottom */}
       <div className="absolute inset-x-5 bottom-5 rounded-[20px] border border-white/8 bg-white/4 px-4 py-3 backdrop-blur-[10px]">
         <p className="truncate text-[14px] font-semibold text-white/50">
           {card.title || "Untitled Campaign"}
@@ -296,9 +392,7 @@ export function CampaignCardStack({ campaigns, className }: Props) {
     [0.72, 0.88, 1, 0.88, 0.72],
   );
 
-  // Reset to card 1 whenever campaigns list changes (filter/sort)
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCards(campaigns);
     setCurrentIndex(0);
   }, [campaigns]);
@@ -372,7 +466,6 @@ export function CampaignCardStack({ campaigns, className }: Props) {
 
   return (
     <div className={cn("flex flex-col", className)}>
-      {/* Stage — flex-1 fills all available vertical space */}
       <div
         ref={stageRef}
         className="min-h-0 flex-1 w-full flex justify-center items-start"
