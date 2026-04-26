@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTRPC } from "@/lib/trpc/client";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { formatCurrency, formatPackage } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 import type { Campaign } from "./campaign-types";
 
 interface CampaignPaymentSectionProps {
@@ -131,17 +131,9 @@ export function CampaignPaymentSection({
             </p>
           </div>
         </div>
-        <div className="rounded-xl border border-white/[0.07] bg-black/20 px-4 py-3 text-xs space-y-1.5">
-          <div className="flex justify-between text-white/55">
-            <span>{formatPackage(campaign.package_type)}</span>
-            <span>{formatCurrency(campaign.price_offered)}</span>
-          </div>
-          <div className="flex justify-between text-white/55">
-            <span>Platform fee (12%)</span>
-            <span>{formatCurrency(platformFee)}</span>
-          </div>
-          <div className="flex justify-between border-t border-white/8 pt-1.5 font-semibold text-white">
-            <span>Total</span>
+        <div className="rounded-xl border border-white/[0.07] bg-black/20 px-4 py-3 text-xs">
+          <div className="flex justify-between font-semibold text-white">
+            <span>Money spent</span>
             <span>{formatCurrency(totalCharged)}</span>
           </div>
         </div>

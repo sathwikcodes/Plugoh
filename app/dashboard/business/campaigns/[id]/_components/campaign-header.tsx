@@ -7,10 +7,9 @@ import type { Campaign } from "./campaign-types";
 
 interface CampaignHeaderProps {
   campaign: Campaign;
-  platformFee: number;
 }
 
-export function CampaignHeader({ campaign, platformFee }: CampaignHeaderProps) {
+export function CampaignHeader({ campaign }: CampaignHeaderProps) {
   return (
     <>
       <div className="flex items-center gap-3">
@@ -65,8 +64,7 @@ export function CampaignHeader({ campaign, platformFee }: CampaignHeaderProps) {
               Campaign completed
             </p>
             <p className="text-xs text-white/50">
-              {formatCurrency(campaign.price_offered)} released · Platform fee{" "}
-              {formatCurrency(platformFee)}
+              {formatCurrency(campaign.price_offered)} released
             </p>
           </div>
         </div>

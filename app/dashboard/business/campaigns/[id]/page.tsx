@@ -56,7 +56,7 @@ export default function BusinessCampaignDetail() {
       className="container max-w-5xl space-y-5 py-6"
     >
       <m.div variants={fadeUp}>
-        <CampaignHeader campaign={campaign} platformFee={platformFee} />
+        <CampaignHeader campaign={campaign} />
       </m.div>
 
       <m.div variants={fadeUp}>
@@ -80,7 +80,6 @@ export default function BusinessCampaignDetail() {
         <CampaignChatSection
           campaign={campaign}
           influencerProfile={influencerProfile}
-          platformFee={platformFee}
           totalCharged={totalCharged}
         />
       </m.div>

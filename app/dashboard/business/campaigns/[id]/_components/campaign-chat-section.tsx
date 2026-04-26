@@ -17,14 +17,12 @@ interface InfluencerProfile {
 interface CampaignChatSectionProps {
   campaign: Campaign;
   influencerProfile?: InfluencerProfile | null;
-  platformFee: number;
   totalCharged: number;
 }
 
 export function CampaignChatSection({
   campaign,
   influencerProfile,
-  platformFee,
   totalCharged,
 }: CampaignChatSectionProps) {
   const handle =
@@ -79,15 +77,7 @@ export function CampaignChatSection({
       <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
         <div className="space-y-2 text-[13px]">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-white/50">Creator fee</span>
-            <span className="font-medium text-white">{formatCurrency(campaign.price_offered)}</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-white/50">Platform (12%)</span>
-            <span className="font-medium text-white">{formatCurrency(platformFee)}</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/8 pt-2">
-            <span className="font-medium text-white/70">Total</span>
+            <span className="text-white/50">Money spent</span>
             <span className="font-semibold text-white">{formatCurrency(totalCharged)}</span>
           </div>
         </div>

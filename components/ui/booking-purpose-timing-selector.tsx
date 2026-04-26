@@ -126,7 +126,7 @@ export function BookingPurposeTimingSelector({
                   <CarouselItem key={item.id} className="pl-2.5 basis-full">
                     <div
                       className={cn(
-                        "flex flex-col rounded-2xl border p-4 transition-all",
+                        "flex h-52 flex-col rounded-2xl border p-4 transition-all",
                         isSelected
                           ? "border-white/55 bg-white/12"
                           : "border-white/10 bg-white/3",
@@ -137,10 +137,12 @@ export function BookingPurposeTimingSelector({
                         {item.label}
                       </p>
                       {item.description ? (
-                        <p className="mt-1.5 text-xs leading-relaxed text-white/55 line-clamp-3">
+                        <p className="mt-1.5 flex-1 overflow-hidden text-xs leading-relaxed text-white/55 line-clamp-3">
                           {item.description}
                         </p>
-                      ) : null}
+                      ) : (
+                        <div className="flex-1" />
+                      )}
                       <button
                         type="button"
                         onClick={() => handleSelect(item.id)}
