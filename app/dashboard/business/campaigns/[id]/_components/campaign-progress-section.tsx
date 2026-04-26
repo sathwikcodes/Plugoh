@@ -75,7 +75,7 @@ function StatusTimeline({ status }: { status: string }) {
           label=""
           color="rose"
           icon={<XCircle className={ICO} />}
-          className="three-d-pill--circle"
+          className="three-d-pill--circle three-d-pill--no-glow"
         />
         <div>
           <p className="text-[13px] font-semibold capitalize text-white">
@@ -110,7 +110,7 @@ function StatusTimeline({ status }: { status: string }) {
               label=""
               color={nodeColor(state)}
               icon={step.icon}
-              className="three-d-pill--circle"
+              className="three-d-pill--circle three-d-pill--no-glow"
               style={
                 current
                   ? {

@@ -6,6 +6,7 @@ import { m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
 import { useCampaign } from "@/hooks/queries/use-campaigns";
 import { useInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
+import CampaignDetailLoading from "./loading";
 import { fadeUp, stagger } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import type { Campaign } from "./_components/campaign-types";
@@ -19,31 +20,16 @@ import { CampaignChatSection } from "./_components/campaign-chat-section";
 export default function BusinessCampaignDetail() {
   const params = useParams();
   const id = params?.id as string;
-  const { user } = useAuth();
+  const { user, authReady } = useAuth();
 
-  const { data: rawCampaign, isLoading } = useCampaign(id, user?.id);
+  const { data: rawCampaign, isLoading } = useCampaign(id, { userId: user?.id });
   const campaign = rawCampaign as Campaign | undefined;
   const { data: influencerProfile } = useInfluencerProfile(
     campaign?.influencer_profile_id ?? undefined,
   );
 
-  if (isLoading) {
-    return (
-      <div className="container max-w-5xl space-y-5 py-6">
-        <div className="h-9 w-36 animate-pulse rounded-full bg-[#211b2c]" />
-        <div className="h-28 w-full animate-pulse rounded-2xl bg-[#211b2c]" />
-        <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
-          <div className="space-y-4">
-            <div className="h-16 animate-pulse rounded-2xl bg-[#211b2c]" />
-            <div className="h-40 animate-pulse rounded-2xl bg-[#211b2c]" />
-          </div>
-          <div className="space-y-4">
-            <div className="h-32 animate-pulse rounded-2xl bg-[#211b2c]" />
-            <div className="h-24 animate-pulse rounded-2xl bg-[#211b2c]" />
-          </div>
-        </div>
-      </div>
-    );
+  if (!authReady || isLoading) {
+    return <CampaignDetailLoading />;
   }
 
   if (!campaign) {
