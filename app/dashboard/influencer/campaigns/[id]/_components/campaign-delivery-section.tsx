@@ -123,27 +123,27 @@ export function CampaignDeliverySection({
                   className="resize-none border-white/10 bg-white/5 text-sm"
                 />
               </div>
-              <div className="flex flex-col gap-2.5 sm:flex-row">
-                <Button
-                  type="submit"
-                  className="h-10 flex-1 rounded-full text-sm"
-                  disabled={isSubmittingDelivery || !contentUrl.trim()}
-                >
-                  {isSubmittingDelivery ? (
-                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Send className="mr-2 h-3.5 w-3.5" />
-                  )}
-                  Submit
-                </Button>
-                <Button
+                <div className="grid grid-cols-2 gap-2.5">
+                <button
                   type="button"
-                  variant="ghost"
-                  className="h-10 rounded-full text-sm"
                   onClick={handleCancel}
+                  disabled={isSubmittingDelivery}
+                  className="flex h-11 w-full items-center justify-center rounded-full border border-rose-500/40 bg-rose-500/15 text-sm font-semibold text-rose-300 transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
                 >
                   Cancel
-                </Button>
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingDelivery || !contentUrl.trim()}
+                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-emerald-400 text-sm font-semibold text-black shadow-[0_4px_16px_rgba(52,211,153,0.30)] transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
+                >
+                  {isSubmittingDelivery ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Send className="h-3.5 w-3.5" />
+                  )}
+                  Submit
+                </button>
               </div>
             </form>
           )}

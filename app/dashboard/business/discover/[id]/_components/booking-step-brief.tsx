@@ -39,21 +39,23 @@ export function BookingStepBrief({ form }: BookingStepBriefProps) {
         selectedTimeId={form.timingMode}
         onTimeSelect={() => {}}
         timeChildren={
-          <Calendar32
-            id="due-date"
-            label="Select date"
-            value={form.dueDate}
-            className="pt-1"
-            onChange={(nextDate) => {
-              form.setTimingMode("choose_date");
-              form.setDueDate(nextDate);
-            }}
-          />
+          <>
+            {shouldShowEventName(form.objective) ? (
+              <VenueAddressCard form={form} />
+            ) : null}
+            <Calendar32
+              id="due-date"
+              label="Select date"
+              value={form.dueDate}
+              className="pt-1"
+              onChange={(nextDate) => {
+                form.setTimingMode("choose_date");
+                form.setDueDate(nextDate);
+              }}
+            />
+          </>
         }
       />
-      {shouldShowEventName(form.objective) ? (
-        <VenueAddressCard form={form} />
-      ) : null}
       {form.requiresContactInput || form.requiresPhoneInput ? (
         <section className="space-y-3 rounded-2xl border border-white/10 bg-white/3 p-4">
           <div>

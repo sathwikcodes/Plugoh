@@ -3,12 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { m, type MotionValue } from "framer-motion";
-import { Check, FileText, Loader2, X } from "lucide-react";
+import { FileText, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPackage, getInitials } from "@/lib/format";
 import { CAMPAIGN_STATUS_CONFIG, type CampaignStatus } from "@/lib/constants";
 import { ThreeDButton } from "@/components/ui/3d-button";
 import { ThreeDPill, type PillPreset } from "@/components/ui/3d-pill";
+import FlipClock from "@/components/ui/flip-clock";
 
 // ─── Status glow (also used by campaign-card-back) ───────────────────────────
 export const STATUS_GLOW: Record<string, string> = {
@@ -144,6 +145,7 @@ export function CampaignCardFront({
   const glow = STATUS_GLOW[card.status] ?? "rgba(255,255,255,0.06)";
   const isOffer = OFFER_STATUSES.has(card.status);
   const actionsDisabled = card.isAccepting || card.isDeclining;
+  const hasTimer = isOffer && !!card.expires_at;
 
   const pkgName = card.package_type ? formatPackage(card.package_type) : "content";
   let deliveryLabel = `Brand requests a ${pkgName} ASAP`;
@@ -188,7 +190,7 @@ export function CampaignCardFront({
        * CSS spec guarantees padding % is always relative to the element's
        * own width — not the parent's height — so this works in any layout ctx.
        */}
-      <div className="relative w-full flex-none" style={{ paddingBottom: "58%" }}>
+      <div className="relative w-full flex-none" style={{ paddingBottom: hasTimer ? "44%" : "58%" }}>
         <div className="absolute inset-0 overflow-hidden">
           {card.brandAvatarUrl ? (
             <Image
@@ -339,39 +341,36 @@ export function CampaignCardFront({
         {/* Push action to bottom */}
         <div className="flex-1" />
 
+        {/* Offer expiry timer */}
+        {hasTimer ? (
+          <div className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2.5 @[340px]:mt-3">
+            <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-white/40">
+              Offer expires in
+            </p>
+            <FlipClock expiresAt={card.expires_at} compact />
+          </div>
+        ) : null}
+
         {/* Action */}
         <div className="mt-3">
           {isOffer ? (
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
+            <div className="grid grid-cols-2 gap-2">
+              <ThreeDButton
+                label={card.isDeclining ? "…" : "Cancel"}
+                hideIcon
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={card.onDecline}
                 disabled={actionsDisabled}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-amber-400/18 bg-amber-400/10 text-amber-300/80 transition-transform duration-150 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {card.isDeclining ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <X className="h-4 w-4" />
-                )}
-              </button>
-              <button
-                type="button"
+                className="three-d-button--rose three-d-button--no-glow three-d-button--sm w-full"
+              />
+              <ThreeDButton
+                label={card.isAccepting ? "…" : "Accept"}
+                hideIcon
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={card.onAccept}
                 disabled={actionsDisabled}
-                className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-emerald-400 text-[13px] font-semibold text-black shadow-[0_6px_20px_rgba(52,211,153,0.30)] transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {card.isAccepting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <Check className="h-3.5 w-3.5" />
-                    <span>Accept</span>
-                  </>
-                )}
-              </button>
+                className="three-d-button--emerald three-d-button--no-glow three-d-button--sm w-full"
+              />
             </div>
           ) : (
             <ThreeDButton

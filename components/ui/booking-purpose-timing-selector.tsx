@@ -1,7 +1,13 @@
 import { useState, type ReactNode } from "react";
-import { Check, Clock3 } from "lucide-react";
+import { Check, Clock3, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThreeDPill } from "@/components/ui/3d-pill";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 export interface PurposeOption {
   id: string;
@@ -25,6 +31,14 @@ interface BookingPurposeTimingSelectorProps {
   timeChildren?: ReactNode;
 }
 
+const PURPOSE_ICONS: Record<string, string> = {
+  visit_place: "📍",
+  feature_product: "📦",
+  showcase_service: "✨",
+  promote_offer: "🎯",
+  brand_shoutout: "📣",
+};
+
 export function BookingPurposeTimingSelector({
   purposes,
   selectedPurposeId,
@@ -35,6 +49,26 @@ export function BookingPurposeTimingSelector({
   timeChildren,
 }: BookingPurposeTimingSelectorProps) {
   const [tab, setTab] = useState<"purpose" | "time">("purpose");
+  const [api, setApi] = useState<CarouselApi>();
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleApiChange = (newApi: CarouselApi) => {
+    setApi(newApi);
+    newApi?.on("select", () => {
+      setCurrentIndex(newApi.selectedScrollSnap());
+    });
+  };
+
+  const scrollPrev = () => api?.scrollPrev();
+  const scrollNext = () => api?.scrollNext();
+
+  const canScrollPrev = currentIndex > 0;
+  const canScrollNext = currentIndex < purposes.length - 1;
+
+  const handleSelect = (id: string) => {
+    onPurposeSelect(id);
+    setTab("time");
+  };
 
   return (
     <section className="space-y-3">
@@ -78,36 +112,102 @@ export function BookingPurposeTimingSelector({
       </div>
 
       {tab === "purpose" ? (
-        <div className="max-h-[36dvh] space-y-2 overflow-y-auto pr-1 sm:max-h-none sm:overflow-visible sm:pr-0">
-          {purposes.map((item) => {
-            const isActive = selectedPurposeId === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  onPurposeSelect(item.id);
-                  setTab("time");
-                }}
-                className={cn(
-                  "flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition",
-                  isActive
-                    ? "border-white/55 bg-white/12"
-                    : "border-white/10 bg-white/3 hover:bg-white/7",
-                )}
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white">{item.label}</p>
-                  {item.description ? (
-                    <p className="mt-0.5 text-xs text-white/55">{item.description}</p>
-                  ) : null}
-                </div>
-                <div className="grid h-5 w-5 shrink-0 place-items-center rounded-full transition" style={isActive ? { background: "white" } : { border: "1px solid rgba(255,255,255,0.35)" }}>
-                  {isActive ? <Check className="h-3 w-3 text-black" /> : null}
-                </div>
-              </button>
-            );
-          })}
+        <div className="space-y-3">
+          <Carousel
+            setApi={handleApiChange}
+            opts={{ align: "start", loop: false }}
+            className="w-full overflow-hidden"
+          >
+            <CarouselContent className="-ml-2.5">
+              {purposes.map((item) => {
+                const isSelected = selectedPurposeId === item.id;
+                const icon = PURPOSE_ICONS[item.id] ?? "🎯";
+                return (
+                  <CarouselItem key={item.id} className="pl-2.5 basis-full">
+                    <div
+                      className={cn(
+                        "flex flex-col rounded-2xl border p-4 transition-all",
+                        isSelected
+                          ? "border-white/55 bg-white/12"
+                          : "border-white/10 bg-white/3",
+                      )}
+                    >
+                      <span className="text-2xl leading-none">{icon}</span>
+                      <p className="mt-3 text-[15px] font-semibold leading-snug text-white">
+                        {item.label}
+                      </p>
+                      {item.description ? (
+                        <p className="mt-1.5 text-xs leading-relaxed text-white/55 line-clamp-3">
+                          {item.description}
+                        </p>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => handleSelect(item.id)}
+                        className={cn(
+                          "mt-4 inline-flex h-9 w-full shrink-0 items-center justify-center gap-1.5 rounded-full text-sm font-semibold transition-all",
+                          isSelected
+                            ? "bg-white text-black"
+                            : "border border-white/20 bg-white/8 text-white active:bg-white/20",
+                        )}
+                      >
+                        {isSelected ? (
+                          <>
+                            <Check className="h-3.5 w-3.5" />
+                            Selected
+                          </>
+                        ) : (
+                          "Select"
+                        )}
+                      </button>
+                    </div>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+          </Carousel>
+
+          {/* Dot indicators + nav */}
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={scrollPrev}
+              disabled={!canScrollPrev}
+              className="grid h-7 w-7 place-items-center rounded-full border border-white/15 text-white/50 transition hover:bg-white/8 hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <div className="flex gap-1.5">
+              {purposes.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => api?.scrollTo(i)}
+                  className={cn(
+                    "h-1.5 rounded-full transition-all",
+                    i === currentIndex
+                      ? "w-4 bg-white"
+                      : "w-1.5 bg-white/25 hover:bg-white/45",
+                  )}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={scrollNext}
+              disabled={!canScrollNext}
+              className="grid h-7 w-7 place-items-center rounded-full border border-white/15 text-white/50 transition hover:bg-white/8 hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Hint if nothing selected */}
+          {!selectedPurposeId ? (
+            <p className="text-center text-xs text-white/35">
+              Swipe to browse · tap Select to continue
+            </p>
+          ) : null}
         </div>
       ) : (
         <div className="max-h-[36dvh] space-y-2 overflow-y-auto pr-1 sm:max-h-none sm:overflow-visible sm:pr-0">

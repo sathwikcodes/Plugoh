@@ -5,6 +5,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useTRPC } from "@/lib/trpc/client";
 import { useToast } from "@/hooks/use-toast";
+import type { Database } from "@/lib/supabase/types";
+
+type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 
 interface UseInfluencerCampaignActionsOptions {
   acceptRedirectTo?: (campaignId: string) => string | null;
@@ -22,6 +25,19 @@ export function useInfluencerCampaignActions(
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  const listKey = trpc.campaign.getCampaigns.queryOptions({
+    role: "influencer",
+  }).queryKey;
+
+  const patchList = useCallback(
+    (campaignId: string, patch: Partial<Campaign>) => {
+      queryClient.setQueryData<Campaign[]>(listKey, (old) =>
+        old?.map((c) => (c.id === campaignId ? { ...c, ...patch } : c)),
+      );
+    },
+    [queryClient, listKey],
+  );
 
   const invalidateCampaignQueries = useCallback(
     (campaignId?: string) => {
@@ -53,6 +69,15 @@ export function useInfluencerCampaignActions(
 
   const acceptMutation = useMutation(
     trpc.campaign.acceptBooking.mutationOptions({
+      onMutate: async ({ campaignId }) => {
+        await queryClient.cancelQueries({ queryKey: listKey });
+        const previous = queryClient.getQueryData<Campaign[]>(listKey);
+        const current = previous?.find((c) => c.id === campaignId);
+        const optimisticStatus =
+          current?.status === "pre_authorized" ? "in_escrow" : "payment_pending";
+        patchList(campaignId, { status: optimisticStatus });
+        return { previous };
+      },
       onSuccess: (_data, variables) => {
         invalidateCampaignQueries(variables.campaignId);
         options.onAcceptSuccess?.(variables.campaignId);
@@ -64,7 +89,10 @@ export function useInfluencerCampaignActions(
         const href = options.acceptRedirectTo?.(variables.campaignId);
         if (href) router.push(href);
       },
-      onError: (err) => {
+      onError: (err, _variables, context) => {
+        if (context?.previous) {
+          queryClient.setQueryData(listKey, context.previous);
+        }
         toast({
           title: "Error",
           description: err.message,
@@ -76,12 +104,21 @@ export function useInfluencerCampaignActions(
 
   const declineMutation = useMutation(
     trpc.campaign.declineBooking.mutationOptions({
+      onMutate: async ({ campaignId }) => {
+        await queryClient.cancelQueries({ queryKey: listKey });
+        const previous = queryClient.getQueryData<Campaign[]>(listKey);
+        patchList(campaignId, { status: "declined" });
+        return { previous };
+      },
       onSuccess: (_data, variables) => {
         invalidateCampaignQueries(variables.campaignId);
         options.onDeclineSuccess?.(variables.campaignId);
         toast({ title: "Offer declined" });
       },
-      onError: (err) => {
+      onError: (err, _variables, context) => {
+        if (context?.previous) {
+          queryClient.setQueryData(listKey, context.previous);
+        }
         toast({
           title: "Error",
           description: err.message,

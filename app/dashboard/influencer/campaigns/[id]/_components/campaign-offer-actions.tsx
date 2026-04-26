@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle, Loader2, X } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 import FlipClock from "@/components/ui/flip-clock";
 import type { Campaign } from "./campaign-types";
 
@@ -46,32 +46,29 @@ export function CampaignOfferActions({
           />
         </div>
       )}
-      <div className="flex gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
           onClick={onDecline}
           disabled={actionsDisabled}
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-amber-400/18 bg-amber-400/10 text-amber-300/80 transition-transform duration-150 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-rose-500/40 bg-rose-500/15 text-[14px] font-semibold text-rose-300 transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
         >
           {isDeclining ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <X className="h-4 w-4" />
+            <><X className="h-4 w-4" />Cancel</>
           )}
         </button>
         <button
           type="button"
           onClick={onAccept}
           disabled={actionsDisabled}
-          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-emerald-400 text-[14px] font-semibold text-black shadow-[0_6px_20px_rgba(52,211,153,0.30)] transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-400 text-[14px] font-semibold text-black shadow-[0_6px_20px_rgba(52,211,153,0.30)] transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
         >
           {isAccepting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <>
-              <CheckCircle className="h-4 w-4" />
-              <span>Accept Campaign</span>
-            </>
+            <><Check className="h-4 w-4" />Accept</>
           )}
         </button>
       </div>

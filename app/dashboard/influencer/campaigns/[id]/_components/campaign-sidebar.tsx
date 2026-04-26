@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ExternalLink, Mail, Phone } from "lucide-react";
+import { ExternalLink, Loader2, Mail, Phone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -105,25 +105,25 @@ function DeliveryWidget({
               className="resize-none border-white/10 bg-white/5 text-sm"
             />
           </div>
-          <div className="flex w-full min-w-0 flex-row gap-2 pt-0.5 overflow-hidden">
-            {/* Red 3D cancel — left */}
-            <ThreeDButton
-              label="Cancel"
-              hoverLabel="Cancel"
-              hideIcon
-              className="!flex-1 !min-w-0 !h-10 three-d-button--rose three-d-button--no-glow"
+          <div className="grid grid-cols-2 gap-2 pt-0.5">
+            <button
               type="button"
               onClick={handleCancel}
-            />
-            {/* Green 3D submit — right */}
-            <ThreeDButton
-              label={isSubmittingDelivery ? "Submitting…" : "Submit"}
-              hoverLabel="Submit"
-              hideIcon
-              className="!flex-1 !min-w-0 !h-10 three-d-button--emerald three-d-button--no-glow"
+              disabled={isSubmittingDelivery}
+              className="flex h-10 w-full items-center justify-center rounded-full border border-rose-500/40 bg-rose-500/15 text-sm font-semibold text-rose-300 transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
               type="submit"
               disabled={isSubmittingDelivery || !contentUrl.trim()}
-            />
+              className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-emerald-400 text-sm font-semibold text-black shadow-[0_4px_14px_rgba(52,211,153,0.30)] transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
+            >
+              {isSubmittingDelivery ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : null}
+              Submit
+            </button>
           </div>
         </form>
       )}
