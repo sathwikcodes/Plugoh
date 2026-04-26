@@ -5,9 +5,12 @@ import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ShinyButton } from "@/components/ui/shiny-button";
+import { ThreeDPill } from "@/components/ui/3d-pill";
 import {
   InfluencerCardArtwork,
   InfluencerCardInfoPanel,
+  isProInfluencer,
+  getInstagramHandle,
   type InfluencerProfile,
 } from "./influencer-card";
 import { useCardStackDrag } from "./use-card-stack-drag";
@@ -174,6 +177,49 @@ export function InfluencerCardStack({ profiles, className }: Props) {
                           <InfluencerCardInfoPanel profile={profile} />
                         </m.div>
                         <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]" />
+
+                        {/* Pro / Fresh badge — top-left */}
+                        <div className="absolute left-4 top-4 z-20 pointer-events-none">
+                          <ThreeDPill
+                            label={isProInfluencer(profile) ? "Pro" : "Fresh"}
+                            color={isProInfluencer(profile) ? "amber" : "emerald"}
+                            icon={
+                              <Image
+                                src={isProInfluencer(profile) ? "/fire.png" : "/leaf.png"}
+                                alt=""
+                                width={14}
+                                height={14}
+                                className="h-3.5 w-3.5 shrink-0 object-contain"
+                              />
+                            }
+                          />
+                        </div>
+
+                        {/* Instagram handle pill — top-right */}
+                        {getInstagramHandle(profile) ? (
+                          <div className="absolute right-4 top-4 z-20 pointer-events-none">
+                            <ThreeDPill
+                              label={`${getInstagramHandle(profile)}`}
+                              color={{
+                                base: "#f4a7c3",
+                                light: "#fce4ec",
+                                mid: "#e991b6",
+                                dark: "#b5617f",
+                                ink: "#2d1220",
+                                glow: "rgba(244, 167, 195, 0.28)",
+                              }}
+                              icon={
+                                <Image
+                                  src="/instagram_3d.png"
+                                  alt=""
+                                  width={14}
+                                  height={14}
+                                  className="h-3.5 w-3.5 shrink-0 object-contain"
+                                />
+                              }
+                            />
+                          </div>
+                        ) : null}
                       </div>
                     ) : (
                       <>

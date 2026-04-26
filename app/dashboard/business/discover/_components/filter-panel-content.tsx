@@ -1,12 +1,12 @@
 "use client";
 
 import { ArrowLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import type { DiscoverFilters, FilterStep } from "./filter-types";
 import { summarizePrice } from "./filter-types";
 import { OptionList } from "./option-list";
 import { SortSelector } from "./filter-sort-section";
 import { PriceRangePicker } from "./filter-price-range";
+import { ThreeDButton } from "@/components/ui/3d-button";
 
 const STEP_TITLES: Record<FilterStep, string> = {
   root: "Filter",
@@ -199,25 +199,25 @@ export function FilterPanelContent({
         }}
       >
         <div className="grid grid-cols-2 gap-3">
-          <Button
+          <ThreeDButton
             type="button"
-            variant="outline"
+            label={`Clear${filterCount > 0 ? ` (${filterCount})` : ""}`}
+            hoverLabel={`Clear${filterCount > 0 ? ` (${filterCount})` : ""}`}
+            hideIcon
             onClick={onClearAll}
-            className="h-12 rounded-full border-white/12 bg-white/4 text-[15px] font-medium text-white hover:bg-white/8"
-          >
-            Clear
-            {filterCount > 0 ? ` (${filterCount})` : ""}
-          </Button>
-          <Button
+            className="three-d-button--neutral three-d-button--no-glow three-d-button--sm w-full"
+          />
+          <ThreeDButton
             type="button"
+            label={`Show [${resultCount}]`}
+            hoverLabel={`Show [${resultCount}]`}
+            hideIcon
             onClick={() => {
               onApply();
               onClose();
             }}
-            className="h-12 rounded-full bg-white text-[15px] font-medium text-black hover:bg-white/90"
-          >
-            Show [{resultCount}]
-          </Button>
+            className="three-d-button--no-glow three-d-button--sm w-full"
+          />
         </div>
       </div>
     </div>

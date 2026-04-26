@@ -9,6 +9,7 @@ type ThreeDButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   label?: string;
   hoverLabel?: string;
   hideIcon?: boolean;
+  customIcon?: React.ReactNode;
 };
 
 type ChildProps = {
@@ -16,9 +17,22 @@ type ChildProps = {
   children?: React.ReactNode;
 };
 
-function LetterState({ label, state }: { label: string; state: "state-1" | "state-2" }) {
+function LetterState({
+  label,
+  state,
+  customIcon,
+}: {
+  label: string;
+  state: "state-1" | "state-2";
+  customIcon?: React.ReactNode;
+}) {
   return (
     <span className={cn("char", state)} aria-hidden="true">
+      {customIcon ? (
+        <span className="char-icon mr-1.5 flex shrink-0 items-center justify-center">
+          {customIcon}
+        </span>
+      ) : null}
       {[...label].map((char, index) => (
         <span
           key={`${state}-${char}-${index}`}
@@ -36,10 +50,12 @@ function ButtonChrome({
   label,
   hoverLabel,
   hideIcon,
+  customIcon,
 }: {
   label: string;
   hoverLabel: string;
   hideIcon?: boolean;
+  customIcon?: React.ReactNode;
 }) {
   return (
     <>
@@ -78,13 +94,17 @@ function ButtonChrome({
         </svg>
         <div className="outline" />
         <div className="content">
-          <LetterState label={label} state="state-1" />
+          <LetterState label={label} state="state-1" customIcon={customIcon} />
           {!hideIcon && (
             <div className="icon" aria-hidden="true">
               <div />
             </div>
           )}
-          <LetterState label={hoverLabel} state="state-2" />
+          <LetterState
+            label={hoverLabel}
+            state="state-2"
+            customIcon={customIcon}
+          />
         </div>
       </div>
       <span className="sr-only">{label}</span>
@@ -101,13 +121,21 @@ const ThreeDButton = React.forwardRef<HTMLButtonElement, ThreeDButtonProps>(
       label = "Book Now",
       hoverLabel = label,
       hideIcon = false,
+      customIcon,
       type = "button",
       ...props
     },
     ref,
   ) => {
     const rootClassName = cn("three-d-button", className);
-    const chrome = <ButtonChrome label={label} hoverLabel={hoverLabel} hideIcon={hideIcon} />;
+    const chrome = (
+      <ButtonChrome
+        label={label}
+        hoverLabel={hoverLabel}
+        hideIcon={hideIcon}
+        customIcon={customIcon}
+      />
+    );
 
     if (asChild && React.isValidElement<ChildProps>(children)) {
       return React.cloneElement(children, {

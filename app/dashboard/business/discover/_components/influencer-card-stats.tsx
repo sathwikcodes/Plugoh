@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ThreeDButton } from "@/components/ui/3d-button";
 
 export function VerificationBadge() {
   return (
@@ -93,30 +94,31 @@ interface PriceButtonProps {
 }
 
 export function PriceButton({ profileId, label, className }: PriceButtonProps) {
-  const isOnRequest = label === "On request";
+  const isNumeric = label !== "On request";
 
   return (
-    <Link
-      href={`/dashboard/business/discover/${profileId}`}
-      className={cn(
-        "group/price flex w-full items-stretch overflow-hidden rounded-[16px] border border-white/22 bg-[linear-gradient(180deg,rgba(54,60,72,0.62)_0%,rgba(20,24,31,0.74)_100%)] text-white shadow-[0_10px_24px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(255,255,255,0.06)] backdrop-blur-[11px] transition-transform duration-200 hover:scale-[1.02] hover:border-white/28",
-        className,
-      )}
-    >
-      <div className="flex min-w-0 flex-1 items-center justify-center gap-1.5 px-2.5 py-2.5 sm:gap-2 sm:px-3 sm:py-3">
-        {isOnRequest ? null : (
+    <ThreeDButton
+      asChild
+      label={label}
+      hoverLabel={label}
+      hideIcon
+      customIcon={
+        isNumeric ? (
           <Image
             src="/coin.png"
             alt=""
-            width={24}
-            height={24}
-            className="h-5 w-5 shrink-0 object-contain sm:h-6 sm:w-6"
+            width={16}
+            height={16}
+            className="h-4 w-4 shrink-0 object-contain"
           />
-        )}
-        <p className="truncate text-[20px] font-bold leading-none tracking-[-0.045em] text-white sm:text-[24px]">
-          {label}
-        </p>
-      </div>
-    </Link>
+        ) : null
+      }
+      className={cn(
+        "three-d-button--no-glow three-d-button--sm w-full",
+        className,
+      )}
+    >
+      <Link href={`/dashboard/business/discover/${profileId}`} />
+    </ThreeDButton>
   );
 }

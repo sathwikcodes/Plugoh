@@ -5,6 +5,7 @@ import { ArrowLeft, Loader2, Lock, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { type BookablePackage, type InfluencerProfile } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
+import { ThreeDButton } from "@/components/ui/3d-button";
 import {
   Drawer,
   DrawerContent,
@@ -18,6 +19,8 @@ import { BookingStepPackage } from "./booking-step-package";
 import { BookingStepBrief } from "./booking-step-brief";
 import { BookingStepReview } from "./booking-step-review";
 import { BookingStepPayment } from "./booking-step-payment";
+
+import { SwipeToHold } from "./swipe-to-hold";
 
 interface BookingDrawerProps {
   creator: InfluencerProfile;
@@ -56,8 +59,8 @@ function BookingDrawerContent({
           onOpenChange(nextOpen);
         }}
       >
-        <DrawerContent className="ml-auto flex h-[88dvh] max-h-[88dvh] min-h-0 flex-col overflow-hidden rounded-t-[32px] border-t border-white/10 bg-[#141414] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)] md:h-dvh md:max-h-dvh md:w-105 md:max-w-none md:rounded-none md:border-t-0 md:border-l md:border-white/10 md:shadow-[-28px_0_90px_rgba(0,0,0,0.5)]">
-          <DrawerHeader className="shrink-0 border-b border-white/8 px-5 py-4 text-left md:px-6">
+        <DrawerContent className="ml-auto flex !h-[94dvh] !max-h-[94dvh] min-h-0 flex-col overflow-hidden rounded-t-[32px] border-t border-white/10 bg-[#141414] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)] md:!h-dvh md:!max-h-dvh md:w-105 md:max-w-none md:rounded-none md:border-t-0 md:border-l md:border-white/10 md:shadow-[-28px_0_90px_rgba(0,0,0,0.5)]">
+          <DrawerHeader className="shrink-0 border-b border-white/8 px-5 pb-4 pt-[calc(env(safe-area-inset-top)+1rem)] text-left md:px-6 md:pt-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
                 {form.step === 2 ? (
@@ -131,48 +134,24 @@ function BookingDrawerContent({
             ) : null}
           </div>
 
-          <DrawerFooter className="shrink-0 border-t border-white/8 bg-[#141414]/96 px-5 py-4 backdrop-blur-xl md:px-6">
+          <DrawerFooter className="shrink-0 border-t border-white/8 bg-[#141414]/96 px-5 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4 backdrop-blur-xl md:px-6 md:pb-4">
             {form.canStartBooking && form.selectedPackageData ? (
               <div className="space-y-3">
                 {form.step === 1 ? (
-                  <Button
+                  <ThreeDButton
                     type="submit"
                     form="booking-drawer-form"
-                    size="lg"
-                    className="h-12 w-full rounded-full bg-white text-black hover:bg-white/90"
-                  >
-                    Continue
-                  </Button>
+                    label="Continue"
+                    hideIcon
+                    className="three-d-button--no-glow three-d-button--sm w-full"
+                  />
                 ) : (
-                  <>
-                    <Button
-                      type="button"
-                      size="lg"
-                      disabled={form.isPaying}
-                      onClick={form.handlePay}
-                      className="h-12 w-full rounded-full bg-white text-black hover:bg-white/90"
-                    >
-                      {form.isPaying ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Opening payment…
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="mr-2 h-4 w-4" />
-                          Hold
-                          <Image
-                            src="/coin.png"
-                            alt="Amount"
-                            width={16}
-                            height={16}
-                            className="mx-1 h-4 w-4 object-contain"
-                          />
-                          {form.totalIfAccepted.toLocaleString("en-IN")}
-                        </>
-                      )}
-                    </Button>
-                  </>
+                  <SwipeToHold
+                    amount={form.totalIfAccepted}
+                    onConfirm={form.handlePay}
+                    isLoading={form.isPaying}
+                    disabled={form.isPaying}
+                  />
                 )}
               </div>
             ) : (

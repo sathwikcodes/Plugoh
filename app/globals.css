@@ -1092,6 +1092,36 @@ input.range-thumb::-moz-range-track {
   --pill-glow: rgba(148, 163, 184, 0.22);
 }
 
+/* Medium variant — 40px height to match 3d-button--sm */
+.three-d-pill--md {
+  height: 2.5rem !important;
+  font-size: 0.75rem !important;
+  padding: 0 1.125rem !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -8px 12px rgba(0, 0, 0, 0.22),
+    0 5px 0 var(--pill-dark),
+    0 12px 24px var(--pill-glow) !important;
+}
+
+.three-d-pill--md:hover {
+  transform: translateY(-1.5px) translateZ(0) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -9px 14px rgba(0, 0, 0, 0.24),
+    0 6px 0 var(--pill-dark),
+    0 16px 32px var(--pill-glow) !important;
+}
+
+.three-d-pill--md:active {
+  transform: translateY(2px) translateZ(0) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.18),
+    0 2px 0 var(--pill-dark),
+    0 8px 16px var(--pill-glow) !important;
+}
+
 /* ── Circle variant — icon-only circular node ─────────────────────────────── */
 .three-d-pill--circle {
   width: 2.25rem !important;

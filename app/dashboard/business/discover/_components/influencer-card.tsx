@@ -5,10 +5,9 @@ import { cn } from "@/lib/utils";
 import { compactNumber } from "@/lib/format";
 import { INSTAGRAM_GRADIENT } from "@/lib/animations";
 import type { Database } from "@/lib/supabase/types";
+import { ThreeDPill } from "@/components/ui/3d-pill";
 import {
   VerificationBadge,
-  ExperiencePill,
-  MetricPill,
   PriceButton,
 } from "./influencer-card-stats";
 
@@ -35,14 +34,6 @@ export function getProfileInitials(name: string | null): string {
     .join("");
 }
 
-function getEngagementRate(
-  likes: number | null,
-  followers: number | null,
-): number {
-  if (!likes || !followers || followers <= 0) return 0;
-  return (likes / followers) * 100;
-}
-
 function getDisplayName(profile: InfluencerProfile) {
   return profile.display_name?.trim() || "Creator";
 }
@@ -64,22 +55,13 @@ function getPriceLabel(profile: InfluencerProfile) {
   if (!startsAt) return "On request";
   return new Intl.NumberFormat("en-IN").format(startsAt);
 }
-
-function getEngagementLabel(profile: InfluencerProfile) {
-  const engagementRate = getEngagementRate(
-    profile.avg_likes_per_reel,
-    profile.follower_count,
-  );
-  return engagementRate > 0 ? `${engagementRate.toFixed(1)}%` : "New";
-}
-
-function isProInfluencer(profile: InfluencerProfile) {
+export function isProInfluencer(profile: InfluencerProfile) {
   return (
     Array.isArray(profile.previous_brands) && profile.previous_brands.length > 0
   );
 }
 
-function getInstagramHandle(profile: InfluencerProfile) {
+export function getInstagramHandle(profile: InfluencerProfile) {
   return profile.ig_username?.trim() || profile.instagram_handle?.trim() || "";
 }
 
@@ -166,56 +148,52 @@ export function InfluencerCardInfoPanel({
           <VerificationBadge />
         </div>
 
-        {instagramHandle ? (
-          <div className="mt-1 flex min-w-0 items-center gap-2">
-            <Image
-              src="/instagram_3d.png"
-              alt=""
-              width={14}
-              height={14}
-              className="h-3 w-3 shrink-0 object-contain"
-            />
-            <p className="truncate text-[12px] font-medium tracking-[0.08em] text-[#f7a3c8]/95">
-              {instagramHandle}
-            </p>
-            {locationLabel ? (
-              <div className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-white/70">
+        <div className="mt-0.5 flex items-center gap-1.5 text-[11px] font-medium text-white/50">
+          {locationLabel ? (
+            <>
+              <div className="flex min-w-0 items-center gap-1">
                 <Image
                   src="/map.png"
                   alt=""
                   width={14}
                   height={14}
-                  className="h-3.5 w-3.5 shrink-0 object-contain"
+                  className="h-3 w-3 shrink-0 object-contain opacity-60"
                 />
-                <span className="max-w-23 truncate sm:max-w-33">
-                  {locationLabel}
-                </span>
+                <span className="truncate">{locationLabel}</span>
               </div>
-            ) : null}
-          </div>
-        ) : null}
+              {profile.category ? (
+                <span className="text-white/20">•</span>
+              ) : null}
+            </>
+          ) : null}
+          {profile.category ? (
+            <span className="truncate text-[#f7a3c8]/90">{profile.category}</span>
+          ) : null}
+        </div>
 
         <p className="mt-2 line-clamp-2 max-w-[92%] text-[12px] leading-[1.45] text-white/62 sm:text-[12.5px]">
           {getShortBio(profile)}
         </p>
 
-        <div className="mt-4 flex items-center justify-between gap-2.5 sm:gap-3">
-          <div className="flex w-fit shrink-0 flex-col justify-center gap-2.5 sm:grid sm:grid-cols-2 sm:gap-3">
-            <MetricPill kind="followers" value={getFollowerLabel(profile)} />
-            <div className="sm:hidden">
-              <ExperiencePill isPro={isProInfluencer(profile)} />
-            </div>
-            <div className="hidden sm:block">
-              <MetricPill
-                kind="engagement"
-                value={getEngagementLabel(profile)}
+        <div className="mt-4 flex items-center gap-2.5 sm:gap-3">
+          <ThreeDPill
+            label={getFollowerLabel(profile)}
+            color="sky"
+            className="three-d-pill--md shrink-0"
+            icon={
+              <Image
+                src="/people_insta.png"
+                alt=""
+                width={16}
+                height={16}
+                className="h-4 w-4 shrink-0 object-contain"
               />
-            </div>
-          </div>
+            }
+          />
           <PriceButton
             profileId={profile.id}
             label={getPriceLabel(profile)}
-            className="min-w-0 flex-[0.88] sm:flex-1"
+            className="min-w-0 flex-1"
           />
         </div>
       </div>
@@ -229,6 +207,19 @@ interface InfluencerCardProps {
 }
 
 export function InfluencerCard({ profile, className }: InfluencerCardProps) {
+  const isPro = isProInfluencer(profile);
+  const igHandle = getInstagramHandle(profile);
+
+  // Custom Instagram pink-purple palette
+  const igColor = {
+    base: "#f4a7c3",
+    light: "#fce4ec",
+    mid: "#e991b6",
+    dark: "#b5617f",
+    ink: "#2d1220",
+    glow: "rgba(244, 167, 195, 0.28)",
+  };
+
   return (
     <div className={cn("group block", className)}>
       <div
@@ -241,6 +232,42 @@ export function InfluencerCard({ profile, className }: InfluencerCardProps) {
         <InfluencerCardArtwork profile={profile} />
         <InfluencerCardInfoPanel profile={profile} />
         <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]" />
+
+        {/* Pro / Fresh badge — top-left */}
+        <div className="absolute left-4 top-4 z-20">
+          <ThreeDPill
+            label={isPro ? "Pro" : "Fresh"}
+            color={isPro ? "amber" : "emerald"}
+            icon={
+              <Image
+                src={isPro ? "/fire.png" : "/leaf.png"}
+                alt=""
+                width={14}
+                height={14}
+                className="h-3.5 w-3.5 shrink-0 object-contain"
+              />
+            }
+          />
+        </div>
+
+        {/* Instagram handle pill — top-right */}
+        {igHandle ? (
+          <div className="absolute right-4 top-4 z-20">
+            <ThreeDPill
+              label={`${igHandle}`}
+              color={igColor}
+              icon={
+                <Image
+                  src="/instagram_3d.png"
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="h-3.5 w-3.5 shrink-0 object-contain"
+                />
+              }
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

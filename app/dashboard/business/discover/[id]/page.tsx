@@ -10,6 +10,7 @@ import {
 } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThreeDButton } from "@/components/ui/3d-button";
 import { useInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import {
   usePortfolioMedia,
@@ -192,10 +193,11 @@ export default function InfluencerProfileView() {
 
                 {handle ? (
                   <div className="flex justify-center">
-                    <Button
-                      variant="outline"
-                      className="h-11 rounded-full border-slate-700/80 text-slate-200"
+                    <ThreeDButton
                       asChild
+                      label="Show more"
+                      hideIcon
+                      className="three-d-button--neutral three-d-button--no-glow three-d-button--sm w-[160px] scale-90"
                     >
                       <a
                         href={
@@ -207,7 +209,7 @@ export default function InfluencerProfileView() {
                       >
                         Show more
                       </a>
-                    </Button>
+                    </ThreeDButton>
                   </div>
                 ) : null}
 

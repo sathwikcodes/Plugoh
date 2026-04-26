@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ThreeDButton } from "@/components/ui/3d-button";
 import { compactNumber } from "@/lib/format";
 import {
   getProfileInitials,
@@ -142,41 +143,40 @@ export function InfluencerHero({
                 Fixed pricing, faster bookings.
               </p>
 
-              <div className="mt-4 grid gap-2">
+              <div className="mt-4 grid gap-3.5">
                 {isProfileComplete ? (
-                  <Button
-                    size="lg"
+                  <ThreeDButton
+                    label={availablePackages.length ? "Book now" : "Pricing unavailable"}
                     disabled={!availablePackages.length}
                     onClick={onBook}
-                    className="h-12 w-full rounded-full bg-primary text-primary-foreground hover:brightness-105 disabled:bg-muted disabled:text-muted-foreground"
-                  >
-                    {availablePackages.length
-                      ? "Book now"
-                      : "Pricing unavailable"}
-                  </Button>
+                    hideIcon
+                    className="three-d-button--no-glow three-d-button--sm w-full"
+                  />
                 ) : (
-                  <div className="space-y-3 rounded-2xl border border-amber-300/60 bg-amber-900/20 p-4">
+                  <div className="space-y-3 rounded-2xl border border-amber-300/60 bg-amber-900/20 p-4 text-center">
                     <p className="text-sm font-medium text-amber-200">
                       Complete your business profile to book this creator
                     </p>
-                    <Button
-                      variant="outline"
+                    <ThreeDButton
                       asChild
-                      className="w-full border-amber-300/60 text-amber-200"
+                      label="Complete profile"
+                      hideIcon
+                      className="three-d-button--amber three-d-button--no-glow three-d-button--sm w-full"
                     >
                       <Link href="/dashboard/business/profile">
-                        Complete business profile
+                        Complete profile
                       </Link>
-                    </Button>
+                    </ThreeDButton>
                   </div>
                 )}
-                <Button
-                  variant="outline"
-                  className="h-11 w-full rounded-full border-slate-700/80 text-slate-200"
+                <ThreeDButton
                   asChild
+                  label="View packages"
+                  hideIcon
+                  className="three-d-button--neutral three-d-button--no-glow three-d-button--sm w-full"
                 >
                   <Link href="#packages">View packages</Link>
-                </Button>
+                </ThreeDButton>
               </div>
             </div>
           </div>
