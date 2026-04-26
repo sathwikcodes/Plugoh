@@ -5,6 +5,7 @@ import { m, AnimatePresence } from "framer-motion";
 import { SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ThreeDPill, type PillPreset } from "@/components/ui/3d-pill";
 import {
   STATUS_FILTERS,
   STATUS_PILL_LABELS,
@@ -12,6 +13,14 @@ import {
   type StatusFilter,
   type SortMode,
 } from "./campaign-constants";
+
+const STATUS_ACTIVE_COLOR: Record<StatusFilter, PillPreset> = {
+  All: "gold",
+  requested: "amber",
+  in_escrow: "emerald",
+  completed: "emerald",
+  closed: "rose",
+};
 
 interface CampaignSortPanelProps {
   open: boolean;
@@ -86,21 +95,15 @@ export function CampaignSortPanel({
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5">
         <div className="space-y-5 pb-6">
-          <div className="grid grid-cols-2 gap-2 rounded-[22px] border border-white/10 bg-white/[0.035] p-1">
+          <div className="flex justify-center gap-2">
             {(["status", "sort"] as const).map((tab) => (
-              <button
+              <ThreeDPill
                 key={tab}
-                type="button"
+                label={tab === "status" ? "Status" : "Sort"}
+                color={activeTab === tab ? "gold" : "slate"}
                 onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "rounded-[18px] px-4 py-2.5 text-sm font-medium capitalize transition-colors",
-                  activeTab === tab
-                    ? "bg-primary text-primary-foreground shadow-[0_10px_20px_rgba(229,185,74,0.18)]"
-                    : "text-white/58 hover:text-white",
-                )}
-              >
-                {tab === "status" ? "Status" : "Sort"}
-              </button>
+                className="cursor-pointer select-none flex-1 justify-center"
+              />
             ))}
           </div>
           {activeTab === "status" ? (
