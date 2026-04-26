@@ -1,14 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  timeAgo,
-  formatCurrency,
-  formatPackage,
-  getInitials,
-} from "@/lib/format";
+import { getInitials, formatCurrency, formatPackage, timeAgo } from "@/lib/format";
 import { INSTAGRAM_GRADIENT } from "@/lib/animations";
+import { ThreeDButton } from "@/components/ui/3d-button";
 import type { Campaign } from "./campaign-types";
 
 interface InfluencerProfile {
@@ -38,10 +32,8 @@ export function CampaignChatSection({
 
   return (
     <div className="space-y-3">
-      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
-        <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
-          Creator
-        </p>
+      {/* Creator card */}
+      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
         <div className="flex items-center gap-3">
           {influencerProfile?.ig_profile_picture_url ? (
             <Image
@@ -70,59 +62,47 @@ export function CampaignChatSection({
           </div>
         </div>
         {influencerProfile && (
-          <Button
-            variant="outline"
-            asChild
-            size="sm"
-            className="mt-3 h-9 w-full rounded-full border-white/12 text-xs hover:bg-white/8"
-          >
-            <Link href={`/dashboard/business/discover/${influencerProfile.id}`}>
-              View creator profile
-            </Link>
-          </Button>
+          <div className="mt-3">
+            <ThreeDButton
+              asChild
+              label="View creator profile"
+              hideIcon
+              className="three-d-button--sm three-d-button--no-glow three-d-button--pink w-full"
+            >
+              <Link href={`/dashboard/business/discover/${influencerProfile.id}`} />
+            </ThreeDButton>
+          </div>
         )}
       </div>
 
-      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
-        <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
-          Payment
-        </p>
+      {/* Payment summary */}
+      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
         <div className="space-y-2 text-[13px]">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-white/50">Creator fee</span>
-            <span className="font-medium text-white text-right">
-              {formatCurrency(campaign.price_offered)}
-            </span>
+            <span className="font-medium text-white">{formatCurrency(campaign.price_offered)}</span>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-white/50">Platform (12%)</span>
-            <span className="font-medium text-white text-right">
-              {formatCurrency(platformFee)}
-            </span>
+            <span className="font-medium text-white">{formatCurrency(platformFee)}</span>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/8 pt-2">
-            <span className="text-white/70 font-medium">Total</span>
-            <span className="font-semibold text-white text-right">
-              {formatCurrency(totalCharged)}
-            </span>
+            <span className="font-medium text-white/70">Total</span>
+            <span className="font-semibold text-white">{formatCurrency(totalCharged)}</span>
           </div>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
-        <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/35">
-          Details
-        </p>
+      {/* Details */}
+      <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
         <div className="space-y-2 text-[13px]">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-white/50">Package</span>
-            <span className="text-white text-right">
-              {formatPackage(campaign.package_type)}
-            </span>
+            <span className="text-white">{formatPackage(campaign.package_type)}</span>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-white/50">Booked</span>
-            <span className="text-white text-right">
+            <span className="text-white">
               {new Date(campaign.created_at).toLocaleDateString("en-IN", {
                 day: "numeric",
                 month: "short",
@@ -133,24 +113,20 @@ export function CampaignChatSection({
           {campaign.updated_at && (
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-white/50">Updated</span>
-              <span className="text-white text-right">
-                {timeAgo(campaign.updated_at)}
-              </span>
+              <span className="text-white">{timeAgo(campaign.updated_at)}</span>
             </div>
           )}
         </div>
       </div>
 
-      <Button
-        variant="outline"
+      {/* Inbox CTA */}
+      <ThreeDButton
         asChild
-        className="h-10 w-full rounded-full border-white/12 text-sm hover:bg-white/8"
+        label="Open in inbox"
+        className="!h-11 !w-full !min-w-0 text-[13px]"
       >
-        <Link href={`/dashboard/business/inbox?chat=${campaign.id}`}>
-          <MessageSquare className="mr-2 h-3.5 w-3.5" />
-          Open in inbox
-        </Link>
-      </Button>
+        <Link href={`/dashboard/business/inbox?chat=${campaign.id}`} />
+      </ThreeDButton>
     </div>
   );
 }

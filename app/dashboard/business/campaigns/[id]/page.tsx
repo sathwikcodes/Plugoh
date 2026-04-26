@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
 import { useCampaign } from "@/hooks/queries/use-campaigns";
 import { useInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
+import { fadeUp, stagger } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import type { Campaign } from "./_components/campaign-types";
 import { CampaignHeader } from "./_components/campaign-header";
+import { CampaignProgressSection } from "./_components/campaign-progress-section";
 import { CampaignBriefSection } from "./_components/campaign-brief-section";
 import { CampaignDeliverySection } from "./_components/campaign-delivery-section";
 import { CampaignPaymentSection } from "./_components/campaign-payment-section";
@@ -25,7 +28,22 @@ export default function BusinessCampaignDetail() {
   );
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="container max-w-5xl space-y-5 py-6">
+        <div className="h-9 w-36 animate-pulse rounded-full bg-[#211b2c]" />
+        <div className="h-28 w-full animate-pulse rounded-2xl bg-[#211b2c]" />
+        <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
+          <div className="space-y-4">
+            <div className="h-16 animate-pulse rounded-2xl bg-[#211b2c]" />
+            <div className="h-40 animate-pulse rounded-2xl bg-[#211b2c]" />
+          </div>
+          <div className="space-y-4">
+            <div className="h-32 animate-pulse rounded-2xl bg-[#211b2c]" />
+            <div className="h-24 animate-pulse rounded-2xl bg-[#211b2c]" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!campaign) {
@@ -45,15 +63,33 @@ export default function BusinessCampaignDetail() {
     campaign.total_charged_amount ?? (campaign.price_offered ?? 0) * 1.12;
 
   return (
-    <div className="container max-w-5xl space-y-5 py-6">
-      <CampaignHeader campaign={campaign} platformFee={platformFee} />
-      <CampaignPaymentSection
-        campaign={campaign}
-        platformFee={platformFee}
-        totalCharged={totalCharged}
-      />
-      <CampaignDeliverySection campaign={campaign} />
-      <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
+    <m.div
+      variants={stagger}
+      initial="hidden"
+      animate="visible"
+      className="container max-w-5xl space-y-5 py-6"
+    >
+      <m.div variants={fadeUp}>
+        <CampaignHeader campaign={campaign} platformFee={platformFee} />
+      </m.div>
+
+      <m.div variants={fadeUp}>
+        <CampaignPaymentSection
+          campaign={campaign}
+          platformFee={platformFee}
+          totalCharged={totalCharged}
+        />
+      </m.div>
+
+      <m.div variants={fadeUp}>
+        <CampaignDeliverySection campaign={campaign} />
+      </m.div>
+
+      <m.div variants={fadeUp}>
+        <CampaignProgressSection status={campaign.status} />
+      </m.div>
+
+      <m.div variants={fadeUp} className="grid gap-5 lg:grid-cols-[1fr_300px]">
         <CampaignBriefSection campaign={campaign} />
         <CampaignChatSection
           campaign={campaign}
@@ -61,7 +97,7 @@ export default function BusinessCampaignDetail() {
           platformFee={platformFee}
           totalCharged={totalCharged}
         />
-      </div>
-    </div>
+      </m.div>
+    </m.div>
   );
 }

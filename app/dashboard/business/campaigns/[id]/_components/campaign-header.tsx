@@ -30,7 +30,7 @@ export function CampaignHeader({ campaign, platformFee }: CampaignHeaderProps) {
       </div>
 
       {campaign.status === "pre_authorized" && (
-        <div className="rounded-2xl border border-amber-500/25 bg-amber-500/[0.08] p-4 sm:p-5">
+        <div className="mt-3 rounded-2xl border border-amber-500/25 bg-amber-500/[0.08] p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300/80" />

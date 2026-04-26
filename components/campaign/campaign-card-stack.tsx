@@ -206,7 +206,7 @@ function CampaignCardFront({
       className="absolute inset-0 flex flex-col overflow-hidden @container"
     >
       {/* ── Image section ────────────────────────────────────────────── */}
-      <div className="relative w-full flex-none" style={{ paddingBottom: showTimer ? "28%" : "58%" }}>
+      <div className="relative w-full flex-none" style={{ paddingBottom: showTimer ? "28%" : "50%" }}>
         <div className="absolute inset-0 overflow-hidden">
           {card.influencerAvatarUrl ? (
             <Image

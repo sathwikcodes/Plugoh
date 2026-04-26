@@ -580,6 +580,20 @@ input.range-thumb::-moz-range-track {
   --button-glow-active: rgba(251, 113, 133, 0.28);
 }
 
+.three-d-button--pink {
+  --button-gold: #f4a7c3;
+  --button-gold-light: #fce4ec;
+  --button-gold-dark: #b5617f;
+  --button-mid: #e991b6;
+  --button-ink: #2d1220;
+  --button-glow: rgba(244, 167, 195, 0.28);
+  --button-shadow-inner: rgba(60, 10, 30, 0.32);
+  --button-edge: #b5617f;
+  --button-shadow-hover: rgba(60, 10, 30, 0.38);
+  --button-glow-hover: rgba(244, 167, 195, 0.42);
+  --button-glow-active: rgba(244, 167, 195, 0.20);
+}
+
 /* ── No-glow modifier — kills the spread glow without touching anything else ─ */
 .three-d-button--no-glow {
   --button-glow: transparent;
