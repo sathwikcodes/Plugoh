@@ -179,7 +179,7 @@ export function InfluencerCardInfoPanel({
           <ThreeDPill
             label={getFollowerLabel(profile)}
             color="sky"
-            className="three-d-pill--md shrink-0"
+            className="three-d-pill--md three-d-pill--no-glow shrink-0"
             icon={
               <Image
                 src="/people_insta.png"
@@ -238,6 +238,7 @@ export function InfluencerCard({ profile, className }: InfluencerCardProps) {
           <ThreeDPill
             label={isPro ? "Pro" : "Fresh"}
             color={isPro ? "amber" : "emerald"}
+            className="three-d-pill--no-glow"
             icon={
               <Image
                 src={isPro ? "/fire.png" : "/leaf.png"}
@@ -256,6 +257,7 @@ export function InfluencerCard({ profile, className }: InfluencerCardProps) {
             <ThreeDPill
               label={`${igHandle}`}
               color={igColor}
+              className="three-d-pill--no-glow"
               icon={
                 <Image
                   src="/instagram_3d.png"

@@ -146,7 +146,7 @@ export function BookingStepPackage({
       ) : null}
       {canStart ? (
         <section className="space-y-4">
-          <div className="grid w-full grid-cols-3 items-start gap-4 sm:gap-5">
+          <div className="grid w-full grid-cols-3 items-start gap-2 sm:gap-3">
             {availablePackages.map((item) => {
               const active = selectedPackage === item.key;
               return (
@@ -157,11 +157,11 @@ export function BookingStepPackage({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  className="flex min-h-[132px] w-full min-w-0 flex-col items-center gap-2 px-1 py-2 text-center outline-none cursor-pointer sm:min-h-[146px] sm:py-3"
+                  className="flex min-h-[140px] w-full min-w-0 flex-col items-center gap-2 px-1 py-2 text-center outline-none cursor-pointer sm:min-h-[152px] sm:py-3"
                 >
                   <div
                     className={cn(
-                      "relative h-12 w-12 overflow-hidden rounded-full transition-all duration-200 sm:h-14 sm:w-14",
+                      "relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full transition-all duration-200 sm:h-[4.5rem] sm:w-[4.5rem]",
                       active
                         ? "ring-2 ring-primary ring-offset-2 ring-offset-[#141414]"
                         : "opacity-50"
@@ -171,7 +171,7 @@ export function BookingStepPackage({
                       src={PACKAGE_IMAGES[item.key]}
                       alt={item.label}
                       className={cn(
-                        "w-full h-full object-cover transition-all duration-200",
+                        "h-[72%] w-[72%] object-contain transition-all duration-200",
                         !active && "grayscale"
                       )}
                     />

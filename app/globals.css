@@ -657,6 +657,14 @@ input.range-thumb::-moz-range-track {
     0 6px 12px var(--button-glow-active, rgba(229, 185, 74, 0.34));
 }
 
+.three-d-button--sm-tall {
+  height: 3rem !important;
+}
+
+.three-d-button--sm-tall .path {
+  height: 2.1rem !important;
+}
+
 /* ── Container-query responsive 3D button ──────────────────────────────────
    Applies compact sizing on narrow cards (mobile) and normal sizing on wide
    cards (desktop). The card's root element must be a @container context.    */

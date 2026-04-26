@@ -35,6 +35,7 @@ import {
 import { InfluencerInstagramTab } from "./_components/influencer-instagram-tab";
 import { MediaShowcase } from "./_components/media-showcase";
 import { SHOWCASE_FALLBACK } from "./_components/showcase-constants";
+import InfluencerDetailLoading from "./loading";
 
 function normalizePackage(value: string | null): BookablePackage | null {
   if (value === "reel" || value === "post" || value === "story") return value;
@@ -79,7 +80,7 @@ export default function InfluencerProfileView() {
       : [];
 
   if (isLoading) {
-    return null;
+    return <InfluencerDetailLoading />;
   }
   if (!profile) {
     return (

@@ -114,7 +114,7 @@ export function PriceButton({ profileId, label, className }: PriceButtonProps) {
         ) : null
       }
       className={cn(
-        "three-d-button--no-glow three-d-button--sm w-full",
+        "three-d-button--no-glow three-d-button--sm three-d-button--sm-tall w-full",
         className,
       )}
     >

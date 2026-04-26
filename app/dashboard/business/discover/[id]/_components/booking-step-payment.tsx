@@ -1,4 +1,5 @@
-import { Check, Clock, Lock } from "lucide-react";
+import { useState } from "react";
+import { Check, ChevronDown, Clock, Lock } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 import {
   getPackageLabel,
@@ -101,43 +102,65 @@ export async function processBookingPayment(
 const STEPS = [
   {
     icon: Lock,
-    title: "We place a temporary hold",
-    desc: "Amount is blocked now, not charged.",
+    title: "We place a temporary hold on your payment",
+    accent: "text-yellow-300",
+    ring: "border-yellow-500/30 bg-yellow-500/10",
+    line: "bg-white/10",
   },
   {
     icon: Clock,
-    title: "Creator gets 24h to accept",
-    desc: "If they decline or miss it, the hold auto-releases.",
+    title: "Creator has 24 hours to accept or decline",
+    accent: "text-sky-300",
+    ring: "border-sky-500/30 bg-sky-500/10",
+    line: "bg-white/10",
   },
   {
     icon: Check,
-    title: "Accepted means payment is secured",
-    desc: "Then it moves to escrow until delivery approval.",
+    title: "On acceptance, funds move to secure escrow",
+    accent: "text-emerald-300",
+    ring: "border-emerald-500/30 bg-emerald-500/10",
+    line: null,
   },
 ] as const;
 
 export function BookingStepPayment() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <>
-      <p className="text-[11px] uppercase tracking-[0.22em] text-white/40">
-        How it works
-      </p>
-      <div className="space-y-2">
-        {STEPS.map(({ icon: Icon, title, desc }) => (
-          <div
-            key={title}
-            className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/3 p-3"
-          >
-            <div className="mt-0.5 shrink-0 text-white/75">
-              <Icon className="h-4 w-4" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-white">{title}</p>
-              <p className="text-xs text-white/55">{desc}</p>
-            </div>
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-white/4"
+      >
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
+          How it works
+        </p>
+        <ChevronDown
+          className={`h-3.5 w-3.5 shrink-0 text-white/30 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open ? (
+        <div className="border-t border-white/8 px-4 pb-5 pt-4">
+          <div className="space-y-0">
+            {STEPS.map(({ icon: Icon, title, accent, ring, line }, i) => (
+              <div key={title} className="relative flex gap-3.5 pb-5 last:pb-0">
+                {/* Connecting line to next step */}
+                {line ? (
+                  <div className={`absolute left-[13px] top-7 bottom-0 w-px ${line}`} />
+                ) : null}
+                {/* Icon */}
+                <div className={`relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border ${ring}`}>
+                  <Icon className={`h-3 w-3 ${accent}`} />
+                </div>
+                {/* Text — single line, no wrap issues */}
+                <p className="flex-1 pt-1 text-sm leading-snug text-white/65">{title}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </>
+        </div>
+      ) : null}
+    </div>
   );
 }

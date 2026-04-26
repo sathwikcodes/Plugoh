@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC, trpcClient } from "@/lib/trpc/client";
 import type { Database } from "@/lib/supabase/types";
+import { useMemo } from "react";
 
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
@@ -15,9 +16,28 @@ export function useInfluencerProfiles() {
 
 export function useInfluencerProfile(id: string | undefined) {
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  const queryOptions = useMemo(
+    () => trpc.profile.getInfluencerProfile.queryOptions({ id: id! }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id],
+  );
+
   return useQuery({
-    ...trpc.profile.getInfluencerProfile.queryOptions({ id: id! }),
+    ...queryOptions,
     enabled: !!id,
+    staleTime: 60_000,
+    initialData: () => {
+      if (!id) return undefined;
+      const list = queryClient.getQueryData<InfluencerProfile[]>(
+        trpc.profile.getInfluencerProfiles.queryKey(),
+      );
+      return list?.find((p) => p.id === id) ?? undefined;
+    },
+    initialDataUpdatedAt: () =>
+      queryClient.getQueryState(trpc.profile.getInfluencerProfiles.queryKey())
+        ?.dataUpdatedAt,
   });
 }
 

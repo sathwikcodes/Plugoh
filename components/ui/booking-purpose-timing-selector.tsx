@@ -37,7 +37,7 @@ export function BookingPurposeTimingSelector({
   const [tab, setTab] = useState<"purpose" | "time">("purpose");
 
   return (
-    <section className="space-y-3 rounded-[24px] border border-white/10 bg-white/[0.04] p-3 shadow-[0_16px_32px_rgba(0,0,0,0.18)] sm:p-4">
+    <section className="space-y-3">
       <div className="rounded-full border border-white/10 bg-white/5 p-1.5">
         <div className="grid grid-cols-2 gap-2">
           <button
@@ -90,35 +90,20 @@ export function BookingPurposeTimingSelector({
                   setTab("time");
                 }}
                 className={cn(
-                  "flex w-full items-start gap-3 rounded-2xl border px-3 py-3 text-left transition",
+                  "flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition",
                   isActive
                     ? "border-white/55 bg-white/12"
                     : "border-white/10 bg-white/3 hover:bg-white/7",
                 )}
               >
-                <div
-                  className={cn(
-                    "mt-0.5 grid shrink-0 place-items-center transition",
-                    isActive
-                      ? "h-9 w-9"
-                      : "h-5 w-5 rounded-full border border-white/35 text-transparent",
-                  )}
-                >
-                  {isActive ? (
-                    <ThreeDPill
-                      label="selected"
-                      icon={<Check className="h-3.5 w-3.5 text-[#0d0b0f]" />}
-                      className="three-d-pill--circle"
-                    />
-                  ) : (
-                    <Check className="h-3.5 w-3.5" />
-                  )}
-                </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-white">{item.label}</p>
                   {item.description ? (
                     <p className="mt-0.5 text-xs text-white/55">{item.description}</p>
                   ) : null}
+                </div>
+                <div className="grid h-5 w-5 shrink-0 place-items-center rounded-full transition" style={isActive ? { background: "white" } : { border: "1px solid rgba(255,255,255,0.35)" }}>
+                  {isActive ? <Check className="h-3 w-3 text-black" /> : null}
                 </div>
               </button>
             );

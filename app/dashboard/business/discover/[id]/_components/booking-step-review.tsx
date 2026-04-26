@@ -4,7 +4,6 @@ import {
   shouldShowEventName,
   type InfluencerProfile,
 } from "@/lib/booking";
-import { PLATFORM_FEE_RATE } from "@/lib/constants";
 import type { BookingForm } from "./use-booking-form";
 
 interface BookingStepReviewProps {
@@ -16,13 +15,31 @@ function formatDueDate(value: string) {
   if (!value) return "ASAP";
   const [year, month, day] = value.split("-").map(Number);
   if (!year || !month || !day) return value;
-
   const localDate = new Date(year, month - 1, day);
   return localDate.toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4 py-2.5">
+      <span className="text-xs text-white/35">{label}</span>
+      <span className="text-right text-xs font-medium text-white/80">{value}</span>
+    </div>
+  );
+}
+
+function Perforation() {
+  return (
+    <div className="relative flex items-center">
+      <div className="-ml-6 h-5 w-5 shrink-0 rounded-full bg-[#0d0b0f]" />
+      <div className="flex-1 border-t border-dashed border-white/10" />
+      <div className="-mr-6 h-5 w-5 shrink-0 rounded-full bg-[#0d0b0f]" />
+    </div>
+  );
 }
 
 export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
@@ -33,82 +50,80 @@ export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
       ? formatDueDate(form.dueDate)
       : "ASAP";
 
-  return (
-    <div className="space-y-4 rounded-[20px] border border-white/10 bg-white/4 p-5">
-      <div className="space-y-2 rounded-xl border border-white/8 bg-black/20 p-4">
-        <p className="text-[11px] uppercase tracking-[0.22em] text-white/40">
-          Booking details
-        </p>
-        <div className="space-y-2 text-sm text-white/65">
-          <div className="flex items-start justify-between gap-3">
-            <span className="text-white/45">Creator</span>
-            <span className="text-right">
-              {creator.display_name ?? "Creator"}
-            </span>
-          </div>
-          <div className="flex items-start justify-between gap-3">
-            <span className="text-white/45">Package</span>
-            <span className="text-right">
-              {getPackageLabel(form.selectedPackageData.key)}
-            </span>
-          </div>
-          <div className="flex items-start justify-between gap-3">
-            <span className="text-white/45">Objective</span>
-            <span className="text-right">{form.objectiveLabel}</span>
-          </div>
-          {shouldShowEventName(form.objective) && form.venueAddress ? (
-            <div className="flex items-start justify-between gap-3">
-              <span className="text-white/45">Venue</span>
-              <span className="text-right">{form.venueAddress}</span>
-            </div>
-          ) : null}
-          <div className="flex items-start justify-between gap-3">
-            <span className="text-white/45">Need by</span>
-            <span className="text-right">{timingValue}</span>
-          </div>
-        </div>
-      </div>
+  const avatarUrl = creator.ig_profile_picture_url;
+  const initial = (creator.display_name ?? "C").charAt(0).toUpperCase();
+  const handle = creator.instagram_handle ?? creator.ig_username;
 
-      <div className="space-y-2 rounded-xl border border-white/8 bg-black/20 p-4">
-        <div className="flex justify-between text-sm text-white/60">
-          <span>{getPackageLabel(form.selectedPackageData.key)}</span>
-          <span className="inline-flex items-center gap-1.5">
+  return (
+    <div className="relative">
+      {/* Stacked layers for 3D depth */}
+      <div className="absolute inset-x-4 -bottom-2 h-full rounded-[20px] border border-white/5 bg-white/[0.015]" />
+      <div className="absolute inset-x-2 -bottom-1 h-full rounded-[22px] border border-white/6 bg-white/[0.025]" />
+
+      {/* Main receipt card */}
+      <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#161616] shadow-[0_20px_50px_rgba(0,0,0,0.7)]">
+
+        {/* Creator header */}
+        <div className="flex items-center gap-3.5 px-6 py-5">
+          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-1 ring-white/12">
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt={creator.display_name ?? "Creator"}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-white/8 text-sm font-bold text-white/50">
+                {initial}
+              </div>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-white">
+              {creator.display_name ?? "Creator"}
+            </p>
+            {handle ? (
+              <p className="text-xs text-white/35">@{handle}</p>
+            ) : null}
+          </div>
+        </div>
+
+        <Perforation />
+
+        {/* Booking rows */}
+        <div className="divide-y divide-white/[0.06] px-6">
+          <Row label="Package" value={getPackageLabel(form.selectedPackageData.key)} />
+          <Row label="Objective" value={form.objectiveLabel} />
+          {shouldShowEventName(form.objective) && form.venueAddress ? (
+            <Row label="Venue" value={form.venueAddress} />
+          ) : null}
+          <Row label="Need by" value={timingValue} />
+          {form.contactEmail ? (
+            <Row label="Booked by" value={form.contactEmail} />
+          ) : null}
+        </div>
+
+        <Perforation />
+
+        {/* Amount */}
+        <div className="flex items-center justify-between gap-3 px-6 py-5">
+          <p className="text-sm text-white/45">Pre-authorised hold</p>
+          <div className="flex items-center gap-1.5">
             <Image
               src="/coin.png"
-              alt="Price"
-              width={14}
-              height={14}
-              className="h-3.5 w-3.5 object-contain"
+              alt="Amount"
+              width={16}
+              height={16}
+              className="h-4 w-4 object-contain"
             />
-            {form.selectedPackageData.price.toLocaleString("en-IN")}
-          </span>
+            <span className="text-2xl font-bold tabular-nums text-white">
+              {form.totalIfAccepted.toLocaleString("en-IN")}
+            </span>
+          </div>
         </div>
-        <div className="flex justify-between text-sm text-white/60">
-          <span>Platform fee ({Math.round(PLATFORM_FEE_RATE * 100)}%)</span>
-          <span className="inline-flex items-center gap-1.5">
-            <Image
-              src="/coin.png"
-              alt="Platform fee"
-              width={14}
-              height={14}
-              className="h-3.5 w-3.5 object-contain"
-            />
-            {form.platformFee.toLocaleString("en-IN")}
-          </span>
-        </div>
-        <div className="flex justify-between border-t border-white/10 pt-2 text-sm font-semibold text-white">
-          <span>Pre-authorization amount</span>
-          <span className="inline-flex items-center gap-1.5">
-            <Image
-              src="/coin.png"
-              alt="Pre-authorization amount"
-              width={14}
-              height={14}
-              className="h-3.5 w-3.5 object-contain"
-            />
-            {form.totalIfAccepted.toLocaleString("en-IN")}
-          </span>
-        </div>
+
       </div>
     </div>
   );
