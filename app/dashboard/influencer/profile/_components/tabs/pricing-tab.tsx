@@ -392,6 +392,7 @@ function PricingSliderCard({
           <ThreeDButton
             label="Edit Price"
             onClick={handleEdit}
+            hideIcon
             className="w-full !h-9 !w-full !min-w-0 text-xs"
           />
         )}

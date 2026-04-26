@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ThreeDButton } from "@/components/ui/3d-button";
 import type { Campaign } from "./campaign-types";
 
 interface CampaignDeliverySectionProps {
@@ -123,27 +124,49 @@ export function CampaignDeliverySection({
                   className="resize-none border-white/10 bg-white/5 text-sm"
                 />
               </div>
-                <div className="grid grid-cols-2 gap-2.5">
-                <button
+              <div className="flex gap-2">
+                <ThreeDButton
                   type="button"
+                  label="Cancel"
+                  hideIcon
                   onClick={handleCancel}
                   disabled={isSubmittingDelivery}
-                  className="flex h-11 w-full items-center justify-center rounded-full border border-rose-500/40 bg-rose-500/15 text-sm font-semibold text-rose-300 transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
+                  className="flex-1 !h-9 !w-auto !min-w-0 text-xs [&_.icon]:hidden"
+                  style={{
+                    "--button-gold": "#e11d48",
+                    "--button-gold-light": "#fb7185",
+                    "--button-gold-dark": "#9f1239",
+                    "--button-mid": "#e11d48",
+                    "--button-ink": "#fff",
+                    "--button-glow": "rgba(251,113,133,0.38)",
+                    "--button-edge": "#9f1239",
+                    "--button-shadow-inner": "rgba(80,0,20,0.38)",
+                  } as React.CSSProperties}
+                />
+                <ThreeDButton
                   type="submit"
+                  label={isSubmittingDelivery ? "Sending…" : "Submit"}
+                  hideIcon
+                  customIcon={
+                    isSubmittingDelivery ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Send className="h-3.5 w-3.5" />
+                    )
+                  }
                   disabled={isSubmittingDelivery || !contentUrl.trim()}
-                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-emerald-400 text-sm font-semibold text-black shadow-[0_4px_16px_rgba(52,211,153,0.30)] transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50"
-                >
-                  {isSubmittingDelivery ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Send className="h-3.5 w-3.5" />
-                  )}
-                  Submit
-                </button>
+                  className="flex-1 !h-9 !w-auto !min-w-0 text-xs [&_.icon]:hidden"
+                  style={{
+                    "--button-gold": "#34d399",
+                    "--button-gold-light": "#a7f3d0",
+                    "--button-gold-dark": "#065f46",
+                    "--button-mid": "#10b981",
+                    "--button-ink": "#022c22",
+                    "--button-glow": "rgba(52,211,153,0.38)",
+                    "--button-edge": "#065f46",
+                    "--button-shadow-inner": "rgba(0,60,30,0.35)",
+                  } as React.CSSProperties}
+                />
               </div>
             </form>
           )}
