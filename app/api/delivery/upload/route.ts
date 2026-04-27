@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
   const db = createServiceClient();
 
-  const { data: campaign } = await db
+  const { data: campaign, error: campaignError } = await db
     .from("campaigns")
     .select("id")
     .eq("id", campaignId)
@@ -74,6 +74,9 @@ export async function POST(request: NextRequest) {
     .eq("status", "in_escrow")
     .maybeSingle();
 
+  if (campaignError) {
+    return NextResponse.json({ error: campaignError.message }, { status: 500 });
+  }
   if (!campaign) {
     return NextResponse.json(
       { error: "Campaign not found or not eligible for delivery" },

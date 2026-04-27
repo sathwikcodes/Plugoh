@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTRPC } from "@/lib/trpc/client";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
+import { RazorpayScript } from "@/components/shared/razorpay-script";
 import { formatCurrency } from "@/lib/format";
 import type { Campaign } from "./campaign-types";
 
@@ -120,6 +121,7 @@ export function CampaignPaymentSection({
 
   return (
     <>
+      <RazorpayScript />
       <div className="rounded-2xl border border-yellow-500/25 bg-yellow-500/8 p-4 sm:p-5 space-y-4">
         <div className="flex items-start gap-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-yellow-300/80" />

@@ -80,6 +80,9 @@ export function useCampaignMessages(campaignId: string | undefined) {
 }
 
 export function useSendMessage() {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({
       campaignId,
@@ -123,10 +126,23 @@ export function useSendMessage() {
 
       return data as CampaignMessage;
     },
+    onSuccess: () => {
+      // Bump conversation lists so the just-sent thread re-orders to the top
+      // immediately, without waiting for the realtime debounce.
+      queryClient.invalidateQueries({
+        queryKey: trpc.inbox.getInboxConversations.queryKey(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: trpc.inbox.getBusinessInboxConversations.queryKey(),
+      });
+    },
   });
 }
 
 export function useMarkNotificationsReadForCampaign() {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({
       campaignId,
@@ -142,6 +158,14 @@ export function useMarkNotificationsReadForCampaign() {
         .eq("type", "new_message")
         .eq("read", false)
         .contains("data", { campaign_id: campaignId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: trpc.inbox.getInboxConversations.queryKey(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: trpc.inbox.getBusinessInboxConversations.queryKey(),
+      });
     },
   });
 }

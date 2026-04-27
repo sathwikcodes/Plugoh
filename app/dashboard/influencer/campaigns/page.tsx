@@ -42,14 +42,13 @@ export default function CampaignsPage() {
   const [sortPanelTab, setSortPanelTab] = useState<"status" | "sort">("status");
 
   useEffect(() => {
-    if (!campaigns.length) return;
-    campaigns.forEach((campaign) => {
-      trpcClient.campaign.markNotificationsRead.mutate({
-        campaignId: campaign.id,
-        notificationType: "new_booking",
-      });
+    if (!user?.id) return;
+    // Bulk-mark every unread booking notification for this user in one call,
+    // replacing the previous per-campaign loop.
+    trpcClient.campaign.markAllNotificationsRead.mutate({
+      notificationType: "new_booking",
     });
-  }, [campaigns]);
+  }, [user?.id]);
 
   const businessIds = useMemo(
     () => [...new Set(campaigns.map((campaign) => campaign.business_id))],

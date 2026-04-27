@@ -282,6 +282,30 @@ export const campaignRouter = router({
       return { success: true };
     }),
 
+  // Bulk-marks every unread notification of `notificationType` for the user
+  // as read in a single round-trip — replaces the per-campaign loop on the
+  // campaigns landing pages.
+  markAllNotificationsRead: protectedProcedure
+    .input(
+      z.object({
+        notificationType: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { error } = await ctx.db
+        .from("notifications")
+        .update({ read: true })
+        .eq("user_id", ctx.user.id)
+        .eq("type", input.notificationType)
+        .eq("read", false);
+      if (error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      return { success: true };
+    }),
+
   submitBookingRequest: protectedProcedure
     .input(
       z.object({
@@ -364,28 +388,32 @@ export const campaignRouter = router({
         });
       }
 
-      await db.from("notifications").insert({
-        user_id: input.influencer_id,
-        type: "new_booking",
-        data: { title: campaign.title ?? "Untitled", campaign_id: campaign.id },
-      });
-
-      await db.from("campaign_messages").insert({
-        campaign_id: campaign.id,
-        sender_id: user.id,
-        message_type: "booking_card",
-        content: brief,
-        metadata: {
-          title,
-          package_type: input.package_type,
-          price_offered: input.price_offered,
-          platform_fee: platformFee,
-          total_charged: totalCharged,
-          objective: input.objective,
-          timing_mode: input.timing_mode,
-          event_name: input.event_name ?? "",
-        },
-      });
+      await Promise.all([
+        db.from("notifications").insert({
+          user_id: input.influencer_id,
+          type: "new_booking",
+          data: {
+            title: campaign.title ?? "Untitled",
+            campaign_id: campaign.id,
+          },
+        }),
+        db.from("campaign_messages").insert({
+          campaign_id: campaign.id,
+          sender_id: user.id,
+          message_type: "booking_card",
+          content: brief,
+          metadata: {
+            title,
+            package_type: input.package_type,
+            price_offered: input.price_offered,
+            platform_fee: platformFee,
+            total_charged: totalCharged,
+            objective: input.objective,
+            timing_mode: input.timing_mode,
+            event_name: input.event_name ?? "",
+          },
+        }),
+      ]);
 
       return { success: true, campaignId: campaign.id };
     }),

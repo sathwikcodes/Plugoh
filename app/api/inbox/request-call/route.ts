@@ -152,9 +152,15 @@ export async function POST(request: NextRequest) {
         "id, business_id, influencer_id, title, status, package_type, price_offered, created_at",
       )
       .eq("id", campaignId)
-      .single();
+      .maybeSingle();
 
-    if (campaignError || !campaign) {
+    if (campaignError) {
+      return NextResponse.json(
+        { error: campaignError.message },
+        { status: 500 },
+      );
+    }
+    if (!campaign) {
       return NextResponse.json(
         { error: "Campaign not found" },
         { status: 404 },
@@ -206,12 +212,12 @@ export async function POST(request: NextRequest) {
           .from("profiles")
           .select("email, full_name")
           .eq("id", campaign.influencer_id)
-          .single(),
+          .maybeSingle(),
         supabase
           .from("profiles")
           .select("email, full_name, business_name, phone")
           .eq("id", campaign.business_id)
-          .single(),
+          .maybeSingle(),
       ]);
 
     let influencerEmail = influencerProfile?.email ?? null;

@@ -31,10 +31,7 @@ export default function SettingsTab({ userId, onSignOut }: SettingsTabProps) {
 
   const handleToggleActive = async (active: boolean) => {
     try {
-      await updateProfile.mutateAsync({
-        userId,
-        data: { is_active: active },
-      });
+      await updateProfile.mutateAsync({ isActive: active });
       toast.success(
         active
           ? "Profile is now visible to brands"

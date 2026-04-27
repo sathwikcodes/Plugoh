@@ -566,15 +566,14 @@ export default function PricingTab({
     price: number,
   ) => {
     setSavingCard(card);
-    const field = `price_per_${card}` as
-      | "price_per_reel"
-      | "price_per_post"
-      | "price_per_story";
+    const field =
+      card === "reel"
+        ? "pricePerReel"
+        : card === "post"
+          ? "pricePerPost"
+          : "pricePerStory";
     try {
-      await updateProfile.mutateAsync({
-        userId,
-        data: { [field]: price },
-      });
+      await updateProfile.mutateAsync({ [field]: price });
       toast.success("Price updated");
       setEditingCard(null);
     } catch {

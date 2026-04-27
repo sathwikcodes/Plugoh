@@ -23,30 +23,33 @@ async function syncInstagramMedia(
   accessToken: string,
   mediaItems: Awaited<ReturnType<typeof fetchIGMedia>>,
 ) {
-  for (const item of mediaItems) {
-    const insights = await fetchMediaInsights(item.id, accessToken);
-    await db.from("instagram_media").upsert(
-      {
-        user_id: userId,
-        ig_media_id: item.id,
-        media_type: item.media_type,
-        caption: item.caption ?? null,
-        media_url: item.media_url ?? null,
-        thumbnail_url: item.thumbnail_url ?? null,
-        permalink: item.permalink,
-        timestamp: item.timestamp,
-        like_count: item.like_count ?? null,
-        comments_count: item.comments_count ?? null,
-        impressions: insights?.impressions ?? null,
-        reach: insights?.reach ?? null,
-        engagement: (item.like_count ?? 0) + (item.comments_count ?? 0),
-        saves: insights?.saves ?? null,
-        video_views: insights?.video_views ?? null,
-        synced_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id,ig_media_id" },
-    );
-  }
+  // Fan out: insights fetch + upsert per item run in parallel.
+  await Promise.all(
+    mediaItems.map(async (item) => {
+      const insights = await fetchMediaInsights(item.id, accessToken);
+      await db.from("instagram_media").upsert(
+        {
+          user_id: userId,
+          ig_media_id: item.id,
+          media_type: item.media_type,
+          caption: item.caption ?? null,
+          media_url: item.media_url ?? null,
+          thumbnail_url: item.thumbnail_url ?? null,
+          permalink: item.permalink,
+          timestamp: item.timestamp,
+          like_count: item.like_count ?? null,
+          comments_count: item.comments_count ?? null,
+          impressions: insights?.impressions ?? null,
+          reach: insights?.reach ?? null,
+          engagement: (item.like_count ?? 0) + (item.comments_count ?? 0),
+          saves: insights?.saves ?? null,
+          video_views: insights?.video_views ?? null,
+          synced_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,ig_media_id" },
+      );
+    }),
+  );
 }
 
 export async function GET(request: NextRequest) {

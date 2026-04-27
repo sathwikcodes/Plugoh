@@ -455,6 +455,15 @@ export function CampaignCardStack({ campaigns, className }: Props) {
   const [cards, setCards] = useState<CampaignCardData[]>(campaigns);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dragDir, setDragDir] = useState<"left" | "right" | null>(null);
+  // Reset local reorder state when the upstream campaigns array identity
+  // changes — this is the "store last props" pattern, evaluated during render
+  // so we skip an effect + extra re-render.
+  const [prevCampaigns, setPrevCampaigns] = useState(campaigns);
+  if (campaigns !== prevCampaigns) {
+    setPrevCampaigns(campaigns);
+    setCards(campaigns);
+    setCurrentIndex(0);
+  }
   const stageRef = useRef<HTMLDivElement>(null);
   const [cardViewport, setCardViewport] = useState({ width: 320, height: 432 });
   const total = campaigns.length;
@@ -466,13 +475,6 @@ export function CampaignCardStack({ campaigns, className }: Props) {
     [-220, -80, 0, 80, 220],
     [0.72, 0.88, 1, 0.88, 0.72],
   );
-
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    setCards(campaigns);
-    setCurrentIndex(0);
-  }, [campaigns]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   const moveToEnd = () => {
     setCards((prev) => [...prev.slice(1), prev[0]]);

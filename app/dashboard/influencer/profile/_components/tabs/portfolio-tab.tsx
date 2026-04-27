@@ -51,11 +51,8 @@ export default function PortfolioTab({
   const handleSave = async () => {
     try {
       await updateProfile.mutateAsync({
-        userId,
-        data: {
-          portfolio_media_ids: selectedIds,
-          previous_brands: brands,
-        },
+        portfolioMediaIds: selectedIds,
+        previousBrands: brands,
       });
       toast.success("Portfolio updated");
       setIsEditing(false);

@@ -44,9 +44,6 @@ export function useDockAutoHide() {
     }
   }, [hasChatOpen]);
 
-  useEffect(() => () => clearHideTimer(), [clearHideTimer]);
-  useEffect(() => () => clearScrollTimer(), [clearScrollTimer]);
-
   useEffect(() => {
     if (typeof document === "undefined") return;
 
@@ -90,8 +87,10 @@ export function useDockAutoHide() {
       capture: true,
       passive: true,
     });
-    return () =>
+    return () => {
       document.removeEventListener("scroll", handleScroll, { capture: true });
+      clearScrollTimer();
+    };
   }, [clearScrollTimer, isInboxPage]);
 
   const onTriggerEnter = useCallback(() => {
@@ -104,8 +103,9 @@ export function useDockAutoHide() {
   }, [clearHideTimer]);
 
   const onDockLeave = useCallback(() => {
+    clearHideTimer();
     hideTimerRef.current = setTimeout(() => setIsHovered(false), HIDE_DELAY_MS);
-  }, []);
+  }, [clearHideTimer]);
 
   let shouldHideDock = false;
   let showTriggerZone = false;

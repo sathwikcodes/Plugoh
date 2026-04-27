@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { m } from "framer-motion";
 import { useAuth } from "@/contexts/auth-context";
@@ -41,18 +41,14 @@ export default function CampaignsPage() {
   const [sortPanelOpen, setSortPanelOpen] = useState(false);
   const [sortPanelTab, setSortPanelTab] = useState<"status" | "sort">("status");
 
-  const markedReadRef = useRef<Set<string>>(new Set());
   useEffect(() => {
-    if (!campaigns.length) return;
-    for (const c of campaigns) {
-      if (markedReadRef.current.has(c.id)) continue;
-      markedReadRef.current.add(c.id);
-      trpcClient.campaign.markNotificationsRead.mutate({
-        campaignId: c.id,
-        notificationType: "new_booking",
-      });
-    }
-  }, [campaigns]);
+    if (!user?.id) return;
+    // Bulk-mark every unread booking notification for this user in one call,
+    // replacing the previous per-campaign loop.
+    trpcClient.campaign.markAllNotificationsRead.mutate({
+      notificationType: "new_booking",
+    });
+  }, [user?.id]);
 
   const influencerProfileIds = useMemo(
     () =>
