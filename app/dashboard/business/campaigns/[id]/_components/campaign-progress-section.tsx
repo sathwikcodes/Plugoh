@@ -19,37 +19,42 @@ interface Step {
 }
 
 const STEPS_STANDARD: Step[] = [
-  { key: "pre_authorized",     icon: <Sparkles      className={ICO} /> },
-  { key: "in_escrow",          icon: <LockKeyhole   className={ICO} /> },
+  { key: "pre_authorized", icon: <Sparkles className={ICO} /> },
+  { key: "in_escrow", icon: <LockKeyhole className={ICO} /> },
   { key: "delivery_submitted", icon: <SendHorizonal className={ICO} /> },
-  { key: "completed",          icon: <CheckCheck    className={ICO} /> },
+  { key: "completed", icon: <CheckCheck className={ICO} /> },
 ];
 
 const STEPS_LEGACY: Step[] = [
-  { key: "requested",          icon: <Sparkles      className={ICO} /> },
-  { key: "payment_pending",    icon: <Banknote      className={ICO} /> },
-  { key: "in_escrow",          icon: <LockKeyhole   className={ICO} /> },
+  { key: "requested", icon: <Sparkles className={ICO} /> },
+  { key: "payment_pending", icon: <Banknote className={ICO} /> },
+  { key: "in_escrow", icon: <LockKeyhole className={ICO} /> },
   { key: "delivery_submitted", icon: <SendHorizonal className={ICO} /> },
-  { key: "completed",          icon: <CheckCheck    className={ICO} /> },
+  { key: "completed", icon: <CheckCheck className={ICO} /> },
 ];
 
 const TERMINAL_STATUSES = new Set([
-  "declined", "expired", "cancelled", "refunded", "rejected", "disputed",
+  "declined",
+  "expired",
+  "cancelled",
+  "refunded",
+  "rejected",
+  "disputed",
 ]);
 
 const TERMINAL_LABELS: Record<string, string> = {
-  declined:  "Creator declined your offer",
-  rejected:  "Creator declined your offer",
-  expired:   "Booking window expired",
+  declined: "Influencer declined your offer",
+  rejected: "Influencer declined your offer",
+  expired: "Booking window expired",
   cancelled: "Booking cancelled",
-  refunded:  "Payment refunded",
-  disputed:  "Under dispute — our team is reviewing",
+  refunded: "Payment refunded",
+  disputed: "Under dispute — our team is reviewing",
 };
 
 type NodeState = "done" | "active" | "inactive";
 
 function nodeColor(state: NodeState): PillPreset {
-  if (state === "done")   return "emerald";
+  if (state === "done") return "emerald";
   if (state === "active") return "amber";
   return "slate";
 }
@@ -104,7 +109,10 @@ function StatusTimeline({ status }: { status: string }) {
         return (
           <div
             key={step.key}
-            className={cn("flex items-center", i < steps.length - 1 ? "flex-1" : "")}
+            className={cn(
+              "flex items-center",
+              i < steps.length - 1 ? "flex-1" : "",
+            )}
           >
             <ThreeDPill
               label=""

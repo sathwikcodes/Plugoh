@@ -182,10 +182,16 @@ export function InfluencerCardStack({ profiles, className }: Props) {
                         <div className="absolute left-4 top-4 z-20 pointer-events-none">
                           <ThreeDPill
                             label={isProInfluencer(profile) ? "Pro" : "Fresh"}
-                            color={isProInfluencer(profile) ? "amber" : "emerald"}
+                            color={
+                              isProInfluencer(profile) ? "amber" : "emerald"
+                            }
                             icon={
                               <Image
-                                src={isProInfluencer(profile) ? "/fire.png" : "/leaf.png"}
+                                src={
+                                  isProInfluencer(profile)
+                                    ? "/fire.png"
+                                    : "/leaf.png"
+                                }
                                 alt=""
                                 width={14}
                                 height={14}
@@ -246,7 +252,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
         >
           <Image
             src="/back.png"
-            alt="Previous creator"
+            alt="Previous influencer"
             width={22}
             height={22}
             className="h-5.5 w-5.5 shrink-0 object-contain"
@@ -267,7 +273,7 @@ export function InfluencerCardStack({ profiles, className }: Props) {
         >
           <Image
             src="/next.png"
-            alt="Next creator"
+            alt="Next influencer"
             width={22}
             height={22}
             className="h-5.5 w-5.5 shrink-0 object-contain"

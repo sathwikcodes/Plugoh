@@ -21,7 +21,7 @@ export default function InfluencerDashboard() {
     return <PageLoadingSpinner />;
   }
 
-  const displayName = ip?.display_name || profile?.full_name || "Creator";
+  const displayName = ip?.display_name || profile?.full_name || "Influencer";
   const storedLocation = profile?.location || ip?.city || null;
   const { city, country } = parseLocation(storedLocation);
 

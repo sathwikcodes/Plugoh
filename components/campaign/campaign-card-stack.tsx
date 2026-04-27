@@ -69,20 +69,20 @@ const STATUS_PILL_COLOR: Record<string, PillPreset> = {
 };
 
 const PAYMENT_PROGRESS: Record<string, { label: string; color: PillPreset }> = {
-  pre_authorized:     { label: "Awaiting",  color: "slate"   },
-  requested:          { label: "Awaiting",  color: "slate"   },
-  pending:            { label: "Awaiting",  color: "slate"   },
-  payment_pending:    { label: "Pay Now",   color: "amber"   },
-  in_escrow:          { label: "On Hold",   color: "amber"   },
-  accepted:           { label: "On Hold",   color: "amber"   },
-  delivery_submitted: { label: "On Hold",   color: "amber"   },
-  completed:          { label: "Paid",      color: "emerald" },
-  disputed:           { label: "Disputed",  color: "rose"    },
-  declined:           { label: "Cancelled", color: "rose"    },
-  rejected:           { label: "Cancelled", color: "rose"    },
-  cancelled:          { label: "Cancelled", color: "rose"    },
-  expired:            { label: "Expired",   color: "rose"    },
-  refunded:           { label: "Refunded",  color: "rose"    },
+  pre_authorized: { label: "Awaiting", color: "slate" },
+  requested: { label: "Awaiting", color: "slate" },
+  pending: { label: "Awaiting", color: "slate" },
+  payment_pending: { label: "Pay Now", color: "amber" },
+  in_escrow: { label: "On Hold", color: "amber" },
+  accepted: { label: "On Hold", color: "amber" },
+  delivery_submitted: { label: "On Hold", color: "amber" },
+  completed: { label: "Paid", color: "emerald" },
+  disputed: { label: "Disputed", color: "rose" },
+  declined: { label: "Cancelled", color: "rose" },
+  rejected: { label: "Cancelled", color: "rose" },
+  cancelled: { label: "Cancelled", color: "rose" },
+  expired: { label: "Expired", color: "rose" },
+  refunded: { label: "Refunded", color: "rose" },
 };
 
 // ── Data interface ────────────────────────────────────────────────────────
@@ -93,6 +93,8 @@ export interface CampaignCardData {
   status: string;
   package_type: string | null;
   price_offered: number | null;
+  /** Business UI: total charged (influencer price + fee). Omit for influencer-facing cards. */
+  brand_display_amount?: number | null;
   expires_at: string | null;
   created_at: string;
   influencerName: string;
@@ -171,7 +173,9 @@ function CampaignCardFront({
     !!card.expires_at;
   const detailHref = card.href ?? `/dashboard/business/campaigns/${card.id}`;
 
-  const pkgName = card.package_type ? formatPackage(card.package_type) : "content";
+  const pkgName = card.package_type
+    ? formatPackage(card.package_type)
+    : "content";
   let deliveryLabel = `Deliver ${pkgName} ASAP`;
   if (card.brief) {
     const timelineMatch = card.brief.match(/Timeline:\s*(.*)/);
@@ -206,7 +210,10 @@ function CampaignCardFront({
       className="absolute inset-0 flex flex-col overflow-hidden @container"
     >
       {/* ── Image section ────────────────────────────────────────────── */}
-      <div className="relative w-full flex-none" style={{ paddingBottom: showTimer ? "28%" : "50%" }}>
+      <div
+        className="relative w-full flex-none"
+        style={{ paddingBottom: showTimer ? "28%" : "50%" }}
+      >
         <div className="absolute inset-0 overflow-hidden">
           {card.influencerAvatarUrl ? (
             <Image
@@ -248,7 +255,9 @@ function CampaignCardFront({
           {/* Backdrop blur strip */}
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0 h-10 backdrop-blur-md"
-            style={{ maskImage: "linear-gradient(to top, black 40%, transparent 100%)" }}
+            style={{
+              maskImage: "linear-gradient(to top, black 40%, transparent 100%)",
+            }}
           />
         </div>
 
@@ -290,9 +299,10 @@ function CampaignCardFront({
               className="font-bold leading-none tracking-[-0.05em] text-amber-400"
               style={{ fontSize: "clamp(17px, 5.5cqw, 28px)" }}
             >
-              {card.price_offered
-                ? card.price_offered.toLocaleString("en-IN")
-                : "—"}
+              {(() => {
+                const n = card.brand_display_amount ?? card.price_offered;
+                return n ? n.toLocaleString("en-IN") : "—";
+              })()}
             </span>
           </div>
           {PAYMENT_PROGRESS[card.status] ? (
@@ -305,7 +315,7 @@ function CampaignCardFront({
         </div>
 
         {/* Info pills — category + package type */}
-        {(card.influencerCategory || card.package_type) ? (
+        {card.influencerCategory || card.package_type ? (
           <div className="mt-2.5 shrink-0 flex gap-2 @[340px]:mt-3">
             {card.influencerCategory ? (
               <ThreeDPill
@@ -457,10 +467,12 @@ export function CampaignCardStack({ campaigns, className }: Props) {
     [0.72, 0.88, 1, 0.88, 0.72],
   );
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setCards(campaigns);
     setCurrentIndex(0);
   }, [campaigns]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const moveToEnd = () => {
     setCards((prev) => [...prev.slice(1), prev[0]]);

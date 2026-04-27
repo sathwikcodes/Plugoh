@@ -2,14 +2,36 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, CheckCircle, Download, Loader2, Timer } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle,
+  Download,
+  Loader2,
+  Timer,
+} from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { formatCurrency } from "@/lib/format";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 import type { Campaign } from "./campaign-types";
+
+function patchBusinessCampaignDetailCache(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  campaignId: string,
+  patch: Partial<Campaign>,
+) {
+  const key = trpc.campaign.getCampaign.queryOptions({
+    id: campaignId,
+    filterBusinessId: true,
+  }).queryKey;
+  queryClient.setQueryData<Campaign>(key, (old) =>
+    old ? { ...old, ...patch } : old,
+  );
+}
 
 function daysRemaining(from: string, totalDays: number): number {
   const deadline = new Date(from).getTime() + totalDays * 86_400_000;
@@ -40,11 +62,16 @@ export function CampaignDeliverySection({
 
   const approveDelivery = useMutation(
     trpc.campaign.approveDelivery.mutationOptions({
-      onSuccess: () => {
+      onSuccess: (_data, { campaignId }) => {
+        const now = new Date().toISOString();
+        patchBusinessCampaignDetailCache(queryClient, trpc, campaignId, {
+          status: "completed",
+          completed_at: now,
+        });
         invalidate();
         toast({
           title: "Delivery approved",
-          description: "Payment is being released to the creator.",
+          description: "Payment is being released to the influencer.",
         });
       },
       onError: (err) => {
@@ -59,7 +86,10 @@ export function CampaignDeliverySection({
 
   const disputeDelivery = useMutation(
     trpc.campaign.disputeDelivery.mutationOptions({
-      onSuccess: () => {
+      onSuccess: (_data, { campaignId }) => {
+        patchBusinessCampaignDetailCache(queryClient, trpc, campaignId, {
+          status: "disputed",
+        });
         invalidate();
         setShowDisputeForm(false);
         setDisputeReason("");
@@ -79,7 +109,9 @@ export function CampaignDeliverySection({
   );
 
   const downloadQuery = useQuery({
-    ...trpc.campaign.getDeliveryDownloadUrl.queryOptions({ campaignId: campaign.id }),
+    ...trpc.campaign.getDeliveryDownloadUrl.queryOptions({
+      campaignId: campaign.id,
+    }),
     enabled: false,
   });
 
@@ -90,7 +122,9 @@ export function CampaignDeliverySection({
     } else if (result.error) {
       toast({
         title: "Download failed",
-        description: (result.error as { message?: string })?.message ?? "Could not generate download link.",
+        description:
+          (result.error as { message?: string })?.message ??
+          "Could not generate download link.",
         variant: "destructive",
       });
     }
@@ -150,7 +184,7 @@ export function CampaignDeliverySection({
                 Releasing…
               </>
             ) : (
-              `Approve & release ${formatCurrency(campaign.price_offered)}`
+              `Approve & release ${formatCurrency(brandDisplayAmountFromCampaign(campaign))}`
             )}
           </Button>
           <Button

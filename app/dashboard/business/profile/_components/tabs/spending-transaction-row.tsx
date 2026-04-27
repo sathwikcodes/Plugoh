@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CAMPAIGN_STATUS_CONFIG } from "@/lib/constants";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 import type { Database } from "@/lib/supabase/types";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
@@ -16,6 +17,7 @@ export function SpendingTransactionRow({
   campaign: c,
   influencerProfile: ip,
 }: SpendingTransactionRowProps) {
+  const displayAmount = brandDisplayAmountFromCampaign(c);
   const statusCfg =
     CAMPAIGN_STATUS_CONFIG[c.status as keyof typeof CAMPAIGN_STATUS_CONFIG];
   const date = new Date(c.created_at).toLocaleDateString("en-IN", {
@@ -40,7 +42,7 @@ export function SpendingTransactionRow({
         </div>
         <div className="text-right shrink-0 space-y-1">
           <p className="text-sm font-semibold">
-            ₹{(c.price_offered || 0).toLocaleString()}
+            ₹{displayAmount.toLocaleString()}
           </p>
           <Badge
             variant="outline"
@@ -64,7 +66,7 @@ export function SpendingTransactionRow({
           {c.package_type ?? "—"}
         </p>
         <p className="text-sm font-semibold text-right">
-          ₹{(c.price_offered || 0).toLocaleString()}
+          ₹{displayAmount.toLocaleString()}
         </p>
         <Badge
           variant="outline"

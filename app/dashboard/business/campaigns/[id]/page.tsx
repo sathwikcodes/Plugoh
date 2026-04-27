@@ -9,6 +9,10 @@ import { useInfluencerProfile } from "@/hooks/queries/use-influencer-profiles";
 import CampaignDetailLoading from "./loading";
 import { fadeUp, stagger } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
+import {
+  brandDisplayAmountFromCampaign,
+  platformFeeFromInfluencerPrice,
+} from "@/lib/brand-pricing";
 import type { Campaign } from "./_components/campaign-types";
 import { CampaignHeader } from "./_components/campaign-header";
 import { CampaignProgressSection } from "./_components/campaign-progress-section";
@@ -22,17 +26,27 @@ export default function BusinessCampaignDetail() {
   const id = params?.id as string;
   const { user, authReady } = useAuth();
 
-  const { data: rawCampaign, isLoading } = useCampaign(id, { userId: user?.id });
+  const {
+    data: rawCampaign,
+    isLoading,
+    isPending,
+    isFetching,
+    isFetched,
+  } = useCampaign(id, { userId: user?.id });
   const campaign = rawCampaign as Campaign | undefined;
   const { data: influencerProfile } = useInfluencerProfile(
     campaign?.influencer_profile_id ?? undefined,
   );
 
-  if (!authReady || isLoading) {
+  if (!authReady || !user?.id) {
     return <CampaignDetailLoading />;
   }
 
-  if (!campaign) {
+  if (!campaign && (isPending || isFetching || isLoading)) {
+    return <CampaignDetailLoading />;
+  }
+
+  if (!campaign && isFetched && !isFetching) {
     return (
       <div className="container py-12 text-center">
         <p className="text-white/50">Campaign not found.</p>
@@ -43,10 +57,14 @@ export default function BusinessCampaignDetail() {
     );
   }
 
+  if (!campaign) {
+    return <CampaignDetailLoading />;
+  }
+
   const platformFee =
-    campaign.platform_fee_amount ?? (campaign.price_offered ?? 0) * 0.12;
-  const totalCharged =
-    campaign.total_charged_amount ?? (campaign.price_offered ?? 0) * 1.12;
+    campaign.platform_fee_amount ??
+    platformFeeFromInfluencerPrice(campaign.price_offered ?? 0);
+  const totalCharged = brandDisplayAmountFromCampaign(campaign);
 
   return (
     <m.div

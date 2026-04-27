@@ -120,7 +120,11 @@ export function CampaignChat({
             <>
               {messages.map((msg) =>
                 msg.message_type === "booking_card" ? (
-                  <BookingCardMessage key={msg.id} metadata={msg.metadata} />
+                  <BookingCardMessage
+                    key={msg.id}
+                    metadata={msg.metadata}
+                    isInfluencer={user.id === influencerId}
+                  />
                 ) : msg.message_type === "system" ? (
                   <SystemMessage key={msg.id} content={msg.content} />
                 ) : (

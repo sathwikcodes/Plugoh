@@ -9,6 +9,7 @@ import {
   CampaignCardStack,
   CampaignCardTile,
 } from "@/components/campaign/campaign-card-stack";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 import type { EnrichedCampaign } from "./campaign-constants";
 
 interface CampaignsListProps {
@@ -28,9 +29,10 @@ function mapCardProps(
     status: campaign.status,
     package_type: campaign.package_type,
     price_offered: campaign.price_offered,
+    brand_display_amount: brandDisplayAmountFromCampaign(campaign),
     expires_at: campaign.expires_at,
     created_at: campaign.created_at,
-    influencerName: influencer?.display_name || "Creator",
+    influencerName: influencer?.display_name || "Influencer",
     influencerHandle: influencer?.ig_username || null,
     influencerAvatarUrl: influencer?.ig_profile_picture_url || null,
     influencerCategory: influencer?.category || null,
@@ -54,14 +56,14 @@ export function CampaignsList({
           </div>
           <p className="text-lg font-semibold text-white">No campaigns yet</p>
           <p className="mt-1.5 text-sm text-white/50">
-            Book a creator and your campaign activity will appear here.
+            Book an influencer and your campaign activity will appear here.
           </p>
           <Button
             asChild
             className="mt-6 h-11 rounded-full bg-white text-black hover:bg-white/90"
           >
             <Link href="/dashboard/business/discover">
-              Browse creators
+              Browse influencers
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

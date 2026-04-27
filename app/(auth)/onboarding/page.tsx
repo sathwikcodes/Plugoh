@@ -24,7 +24,7 @@ const ROLE_TABS = [
   {
     role: "business" as AppRole,
     label: "Brand",
-    description: "Find and collaborate with top creators for your brand",
+    description: "Find and collaborate with top influencers for your brand",
     videoUrl:
       "https://a0.muscache.com/videos/search-bar-icons/webm/house-selected.webm",
     initialRenderUrl:
@@ -462,7 +462,6 @@ function OnboardingInner() {
               </m.button>
             ))}
           </div>
-
         </m.div>
 
         <AnimatePresence>
@@ -502,10 +501,12 @@ function OnboardingInner() {
                     boxShadow: "0 2px 8px var(--auth-shadow)",
                   }}
                   onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)")
+                    (e.currentTarget.style.borderColor =
+                      "rgba(255,255,255,0.5)")
                   }
                   onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)")
+                    (e.currentTarget.style.borderColor =
+                      "rgba(255,255,255,0.18)")
                   }
                 />
               </div>
@@ -532,10 +533,12 @@ function OnboardingInner() {
                     boxShadow: "0 2px 8px var(--auth-shadow)",
                   }}
                   onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)")
+                    (e.currentTarget.style.borderColor =
+                      "rgba(255,255,255,0.5)")
                   }
                   onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)")
+                    (e.currentTarget.style.borderColor =
+                      "rgba(255,255,255,0.18)")
                   }
                 />
               </div>
@@ -571,10 +574,12 @@ function OnboardingInner() {
                         boxShadow: "0 2px 8px var(--auth-shadow)",
                       }}
                       onFocus={(e) =>
-                        (e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)")
+                        (e.currentTarget.style.borderColor =
+                          "rgba(255,255,255,0.5)")
                       }
                       onBlur={(e) =>
-                        (e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)")
+                        (e.currentTarget.style.borderColor =
+                          "rgba(255,255,255,0.18)")
                       }
                     />
                   </m.div>
@@ -645,13 +650,12 @@ function OnboardingInner() {
                           >
                             <button
                               type="button"
-                              disabled={
-                                !canConnectBusinessInstagram || loading
-                              }
+                              disabled={!canConnectBusinessInstagram || loading}
                               onClick={handleBusinessInstagramConnect}
                               className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                               style={{
-                                background: "linear-gradient(135deg, #FF8FB1 0%, #E8638C 100%)",
+                                background:
+                                  "linear-gradient(135deg, #FF8FB1 0%, #E8638C 100%)",
                                 color: "#fff",
                                 boxShadow: "0 4px 20px rgba(232,99,140,0.4)",
                               }}
@@ -659,7 +663,13 @@ function OnboardingInner() {
                               {loading ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                               ) : (
-                                <Image src="/instagram_3d.png" alt="Instagram" width={24} height={24} style={{ objectFit: "contain" }} />
+                                <Image
+                                  src="/instagram_3d.png"
+                                  alt="Instagram"
+                                  width={24}
+                                  height={24}
+                                  style={{ objectFit: "contain" }}
+                                />
                               )}
                               Connect with Instagram
                             </button>
@@ -714,7 +724,9 @@ function OnboardingInner() {
                               onChange={(e) => setBrandType(e.target.value)}
                               className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200 appearance-none cursor-pointer"
                               style={{
-                                color: brandType ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.4)",
+                                color: brandType
+                                  ? "rgba(255,255,255,0.9)"
+                                  : "rgba(255,255,255,0.4)",
                                 background: "rgba(255,255,255,0.1)",
                                 border: "1px solid rgba(255,255,255,0.18)",
                                 boxShadow: "0 2px 8px var(--auth-shadow)",
@@ -746,7 +758,8 @@ function OnboardingInner() {
                   style={
                     selectedRole === "influencer"
                       ? {
-                          background: "linear-gradient(135deg, #FF8FB1 0%, #E8638C 100%)",
+                          background:
+                            "linear-gradient(135deg, #FF8FB1 0%, #E8638C 100%)",
                           color: "#fff",
                           boxShadow: "0 4px 20px rgba(232,99,140,0.4)",
                         }
@@ -760,7 +773,13 @@ function OnboardingInner() {
                   {loading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : selectedRole === "influencer" ? (
-                    <Image src="/instagram_3d.png" alt="Instagram" width={24} height={24} style={{ objectFit: "contain" }} />
+                    <Image
+                      src="/instagram_3d.png"
+                      alt="Instagram"
+                      width={24}
+                      height={24}
+                      style={{ objectFit: "contain" }}
+                    />
                   ) : null}
                   {selectedRole === "influencer"
                     ? "Connect with Instagram"

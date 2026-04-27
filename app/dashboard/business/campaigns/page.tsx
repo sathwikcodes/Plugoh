@@ -8,10 +8,7 @@ import { useCampaigns } from "@/hooks/queries/use-campaigns";
 import { supabase } from "@/lib/supabase/client";
 import { trpcClient } from "@/lib/trpc/client";
 import type { Database } from "@/lib/supabase/types";
-import {
-  fadeUp,
-  stagger,
-} from "@/lib/animations";
+import { fadeUp, stagger } from "@/lib/animations";
 import {
   STATUS_FILTER_GROUPS,
   type EnrichedCampaign,
@@ -21,6 +18,7 @@ import {
 import { CampaignSortPanel } from "./_components/campaign-sort-panel";
 import { CampaignFilters } from "./_components/campaign-filters";
 import { CampaignsList } from "./_components/campaigns-list";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 import CampaignsLoading from "./loading";
 
 type InfluencerProfile =
@@ -140,7 +138,8 @@ export default function CampaignsPage() {
     const sorted = items.toSorted((a, b) => {
       if (sortMode === "highest_spend")
         return (
-          (b.campaign.price_offered ?? 0) - (a.campaign.price_offered ?? 0)
+          brandDisplayAmountFromCampaign(b.campaign) -
+          brandDisplayAmountFromCampaign(a.campaign)
         );
       if (sortMode === "recently_updated") {
         return (

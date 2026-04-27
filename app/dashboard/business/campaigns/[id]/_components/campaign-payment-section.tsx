@@ -96,7 +96,8 @@ export function CampaignPaymentSection({
           }
           toast({
             title: "Payment secured",
-            description: "Funds locked in escrow. Creator can now start work.",
+            description:
+              "Funds locked in escrow. Influencer can now start work.",
           });
           invalidate();
           setPayingEscrow(false);
@@ -124,7 +125,7 @@ export function CampaignPaymentSection({
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-yellow-300/80" />
           <div>
             <p className="text-sm font-semibold text-white">
-              Creator accepted — pay to start
+              Influencer accepted — pay to start
             </p>
             <p className="mt-0.5 text-[11px] text-white/55 sm:text-xs">
               Funds go into escrow. Released only when you approve the delivery.

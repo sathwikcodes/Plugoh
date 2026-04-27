@@ -51,7 +51,6 @@ export function CampaignBriefSection({ campaign }: CampaignBriefSectionProps) {
           </p>
         )}
       </div>
-
     </div>
   );
 }

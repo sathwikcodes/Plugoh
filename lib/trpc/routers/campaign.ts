@@ -79,7 +79,7 @@ function buildDeliveryEmailHtml({
                 <td style="padding:0 0 8px;text-align:right;color:#2d1f43;font-weight:600;">${packageType}</td>
               </tr>
               <tr>
-                <td style="padding:0 0 2px;opacity:0.8;">Creator earnings</td>
+                <td style="padding:0 0 2px;opacity:0.8;">Influencer earnings</td>
                 <td style="padding:0 0 2px;text-align:right;color:#2d1f43;font-weight:600;">₹${priceOffered}</td>
               </tr>
             </table>
@@ -967,7 +967,10 @@ export const campaignRouter = router({
 
       const eligible = ["delivery_submitted", "completed", "disputed"];
       if (!eligible.includes(campaign.status ?? "")) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No delivery available" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No delivery available",
+        });
       }
 
       const { data: delivery } = await db
@@ -979,7 +982,10 @@ export const campaignRouter = router({
         .maybeSingle();
 
       if (!delivery?.content_url) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Delivery not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Delivery not found",
+        });
       }
 
       const { data: signedData, error } = await db.storage

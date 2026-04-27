@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import { ArrowLeft, Loader2, Lock, X } from "lucide-react";
+import * as React from "react";
+import { ArrowLeft, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { type BookablePackage, type InfluencerProfile } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,17 @@ function BookingDrawerContent({
     onOpenChange,
   );
 
+  React.useEffect(() => {
+    if (!open || form.step !== 2) return;
+    if (typeof window === "undefined" || window.Razorpay) return;
+    const src = "https://checkout.razorpay.com/v1/checkout.js";
+    if (document.querySelector(`script[src="${src}"]`)) return;
+    const s = document.createElement("script");
+    s.src = src;
+    s.async = true;
+    document.head.appendChild(s);
+  }, [open, form.step]);
+
   return (
     <>
       <Drawer
@@ -62,18 +73,18 @@ function BookingDrawerContent({
         <DrawerContent className="ml-auto flex !h-[94dvh] !max-h-[94dvh] min-h-0 flex-col overflow-hidden rounded-t-[32px] border-t border-white/10 bg-[#141414] text-white shadow-[0_-24px_60px_rgba(0,0,0,0.55)] md:!h-dvh md:!max-h-dvh md:w-105 md:max-w-none md:rounded-none md:border-t-0 md:border-l md:border-white/10 md:shadow-[-28px_0_90px_rgba(0,0,0,0.5)]">
           <DrawerHeader className="shrink-0 border-b border-white/8 px-5 pb-4 pt-[calc(env(safe-area-inset-top)+0.875rem)] text-left md:px-6 md:pt-3.5">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-2">
+              <div className="flex min-w-0 items-center gap-2 md:gap-2.5">
                 {form.step === 2 ? (
                   <button
                     type="button"
                     onClick={() => form.setStep(1)}
                     disabled={form.isPaying}
-                    className="shrink-0 rounded-full p-1 text-white/60 transition hover:text-white"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white/60 transition hover:bg-white/6 hover:text-white"
                   >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-4 w-4 shrink-0" />
                   </button>
                 ) : null}
-                <DrawerTitle className="text-left text-xl font-semibold text-white">
+                <DrawerTitle className="text-left text-xl font-semibold leading-tight text-white">
                   {form.step === 1 ? "Book this influencer" : "Confirm & pay"}
                 </DrawerTitle>
               </div>
@@ -90,7 +101,7 @@ function BookingDrawerContent({
             </div>
             <DrawerDescription className="sr-only">
               {form.step === 1
-                ? `${creator.display_name || "Creator"} · no charge until they accept`
+                ? `${creator.display_name || "Influencer"} · no charge until they accept`
                 : "Review your booking details"}
             </DrawerDescription>
             <div className="mt-3 flex items-center gap-2">

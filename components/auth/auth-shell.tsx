@@ -10,7 +10,13 @@ import {
   GRADIENT_STYLE,
 } from "@/lib/animations";
 
-export function AuthShell({ children, hideLogo }: { children: ReactNode; hideLogo?: boolean }) {
+export function AuthShell({
+  children,
+  hideLogo,
+}: {
+  children: ReactNode;
+  hideLogo?: boolean;
+}) {
   return (
     <div className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-[#08060d] px-4 py-3 sm:px-6 sm:py-10">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">

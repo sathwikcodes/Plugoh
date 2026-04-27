@@ -137,7 +137,7 @@ export function BookingStepPackage({
       {!availablePackages.length ? (
         <div className="space-y-2 rounded-2xl border border-white/10 bg-white/3 p-4">
           <p className="text-sm font-medium text-white">
-            This creator has no bookable package pricing yet.
+            This influencer has no bookable package pricing yet.
           </p>
           <p className="text-sm text-white/60">
             Come back once their pricing is available.
@@ -164,7 +164,7 @@ export function BookingStepPackage({
                       "relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full transition-all duration-200 sm:h-[4.5rem] sm:w-[4.5rem]",
                       active
                         ? "ring-2 ring-primary ring-offset-2 ring-offset-[#141414]"
-                        : "opacity-50"
+                        : "opacity-50",
                     )}
                   >
                     <img
@@ -172,14 +172,14 @@ export function BookingStepPackage({
                       alt={item.label}
                       className={cn(
                         "h-[72%] w-[72%] object-contain transition-all duration-200",
-                        !active && "grayscale"
+                        !active && "grayscale",
                       )}
                     />
                   </div>
                   <span
                     className={cn(
                       "text-xs font-medium transition-colors duration-200 sm:text-sm",
-                      active ? "text-white" : "text-white/50"
+                      active ? "text-white" : "text-white/50",
                     )}
                   >
                     {item.label}
@@ -187,7 +187,7 @@ export function BookingStepPackage({
                   <span
                     className={cn(
                       "inline-flex items-center gap-1 text-xs font-semibold transition-colors duration-200 sm:text-sm",
-                      active ? "text-white" : "text-white/40"
+                      active ? "text-white" : "text-white/40",
                     )}
                   >
                     <Image

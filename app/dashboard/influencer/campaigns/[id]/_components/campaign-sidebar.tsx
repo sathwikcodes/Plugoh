@@ -22,7 +22,8 @@ interface CampaignSidebarProps {
 
 const OFFER_STATUSES = new Set(["pre_authorized", "requested", "pending"]);
 const MAX_BYTES = 50 * 1024 * 1024;
-const ACCEPT = "image/*,video/mp4,video/quicktime,video/webm,application/pdf,application/zip";
+const ACCEPT =
+  "image/*,video/mp4,video/quicktime,video/webm,application/pdf,application/zip";
 
 // ── Inline delivery form ──────────────────────────────────────────────────────
 
@@ -44,7 +45,9 @@ function DeliveryWidget({
   const [fileError, setFileError] = useState<string | null>(null);
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "error">("idle");
+  const [uploadState, setUploadState] = useState<
+    "idle" | "uploading" | "error"
+  >("idle");
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleCancel = () => {
@@ -75,7 +78,9 @@ function DeliveryWidget({
     setUploadState("uploading");
     setUploadError(null);
 
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const formData = new FormData();
     formData.append("file", file);
     formData.append("campaignId", campaign.id);
@@ -89,11 +94,14 @@ function DeliveryWidget({
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       setUploadState("error");
-      setUploadError((body as { error?: string }).error ?? "Upload failed. Please try again.");
+      setUploadError(
+        (body as { error?: string }).error ??
+          "Upload failed. Please try again.",
+      );
       return;
     }
 
-    const { storagePath } = await res.json() as { storagePath: string };
+    const { storagePath } = (await res.json()) as { storagePath: string };
     setUploadState("idle");
 
     await onSubmitDelivery({
@@ -121,7 +129,10 @@ function DeliveryWidget({
           onClick={() => setShowForm(true)}
         />
       ) : (
-        <form onSubmit={handleSubmit} className="w-full min-w-0 space-y-3.5 rounded-[18px] border border-white/[0.08] bg-[rgba(22,18,25,0.70)] p-3.5 backdrop-blur-sm overflow-hidden">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full min-w-0 space-y-3.5 rounded-[18px] border border-white/[0.08] bg-[rgba(22,18,25,0.70)] p-3.5 backdrop-blur-sm overflow-hidden"
+        >
           <div className="space-y-1.5">
             <Label className="text-xs font-medium text-white/70">
               Content file <span className="text-amber-400">*</span>
@@ -139,7 +150,9 @@ function DeliveryWidget({
               className="flex h-9 w-full items-center justify-center gap-2 rounded-full border border-dashed border-white/20 bg-white/5 text-sm text-white/60 transition-colors hover:border-white/40 hover:text-white/90"
             >
               <Upload className="h-3.5 w-3.5" />
-              <span className="truncate max-w-[140px]">{file ? file.name : "Choose file"}</span>
+              <span className="truncate max-w-[140px]">
+                {file ? file.name : "Choose file"}
+              </span>
             </button>
             {file ? (
               <p className="text-[10px] text-white/35">

@@ -100,7 +100,7 @@ export function HeroSection() {
           </m.div>
         </m.span>
 
-        {/* "CREATOR" — fluid, never overflows */}
+        {/* "INFLUENCER" — fluid, never overflows */}
         <m.span
           className="text-[#1d1c1c] relative z-10 m-0 p-0 font-[800]"
           style={{

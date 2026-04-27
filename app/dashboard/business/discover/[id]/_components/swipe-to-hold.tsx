@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { m, useMotionValue, useTransform, useAnimation, animate } from "framer-motion";
+import { m, useMotionValue, useTransform, animate } from "framer-motion";
 import { Lock, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -58,7 +58,7 @@ export function SwipeToHold({
       isDragging.current = true;
       startX.current = e.clientX - x.get();
     },
-    [disabled, isLoading, getMaxDrag, x]
+    [disabled, isLoading, getMaxDrag, x],
   );
 
   const handlePointerMove = React.useCallback(
@@ -66,10 +66,13 @@ export function SwipeToHold({
       if (!isDragging.current) return;
       e.preventDefault();
       e.stopPropagation();
-      const newX = Math.max(0, Math.min(e.clientX - startX.current, maxDragRef.current));
+      const newX = Math.max(
+        0,
+        Math.min(e.clientX - startX.current, maxDragRef.current),
+      );
       x.set(newX);
     },
-    [x]
+    [x],
   );
 
   const handlePointerUp = React.useCallback(
@@ -77,20 +80,24 @@ export function SwipeToHold({
       if (!isDragging.current) return;
       isDragging.current = false;
       e.stopPropagation();
+      const el = e.currentTarget;
+      if (el.hasPointerCapture(e.pointerId)) {
+        el.releasePointerCapture(e.pointerId);
+      }
 
       const threshold = maxDragRef.current * 0.8;
       if (x.get() >= threshold) {
+        onConfirm();
         animate(x, maxDragRef.current, {
           type: "spring",
           stiffness: 300,
           damping: 30,
-          onComplete: onConfirm,
         });
       } else {
         animate(x, 0, { type: "spring", stiffness: 400, damping: 40 });
       }
     },
-    [x, onConfirm]
+    [x, onConfirm],
   );
 
   return (
@@ -100,7 +107,7 @@ export function SwipeToHold({
       className={cn(
         "relative h-14 w-full overflow-hidden rounded-full bg-white/5 p-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] backdrop-blur-sm transition-opacity duration-200 touch-none select-none",
         (disabled || isLoading) && "pointer-events-none opacity-60",
-        className
+        className,
       )}
     >
       {/* Progress fill */}
@@ -110,22 +117,22 @@ export function SwipeToHold({
       />
 
       {/* Track label */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-11 sm:px-12">
         <m.div
           style={{ opacity: textOpacity }}
-          className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-white/40"
+          className="inline-flex max-w-full flex-nowrap items-center justify-center gap-2 text-sm font-semibold tracking-tight text-white/40"
         >
-          <span>Swipe to hold</span>
-          <div className="flex items-center">
+          <span className="shrink-0 leading-none">Swipe to hold</span>
+          <span className="inline-flex shrink-0 items-center gap-1 leading-none tabular-nums">
             <Image
               src="/coin.png"
               alt=""
               width={16}
               height={16}
-              className="mr-1 h-3.5 w-3.5 object-contain opacity-60"
+              className="h-3.5 w-3.5 shrink-0 object-contain opacity-60"
             />
             {amount.toLocaleString("en-IN")}
-          </div>
+          </span>
         </m.div>
       </div>
 

@@ -46,6 +46,73 @@ interface ProfileResult {
   price_per_story: number;
 }
 
+function roundToNearest500(n: number): number {
+  return Math.max(500, Math.round(n / 500) * 500);
+}
+
+function derivePricesFromFollowers(followerCount: number): {
+  price_per_reel: number;
+  price_per_post: number;
+  price_per_story: number;
+} {
+  const f = Math.max(0, followerCount);
+  const reel = roundToNearest500(Math.min(Math.max(f * 1.5, 500), 500_000));
+  const post = roundToNearest500(Math.min(reel * 0.85, 500_000));
+  const story = roundToNearest500(Math.min(reel * 0.4, 500_000));
+  return {
+    price_per_reel: reel,
+    price_per_post: post,
+    price_per_story: story,
+  };
+}
+
+export function fallbackInfluencerProfileFromIg(
+  input: ProfileInput,
+): ProfileResult {
+  const prices = derivePricesFromFollowers(input.followerCount);
+  return {
+    category: "Other",
+    city: null,
+    languages: ["English"],
+    bio:
+      typeof input.igBio === "string" && input.igBio.trim()
+        ? input.igBio.trim().slice(0, 800)
+        : "",
+    ...prices,
+  };
+}
+
+function extractJsonObject(raw: string): string | null {
+  let s = raw.trim();
+  s = s.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "");
+  const start = s.indexOf("{");
+  const end = s.lastIndexOf("}");
+  if (start === -1 || end <= start) return null;
+  return s.slice(start, end + 1);
+}
+
+function parseInrPrice(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const cleaned = value
+      .replace(/[₹,\s]/g, "")
+      .replace(/^INR/i, "")
+      .trim();
+    if (!cleaned) return null;
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function pickPrice(
+  parsed: Record<string, unknown>,
+  snake: string,
+  camel: string,
+): number | null {
+  return parseInrPrice(parsed[snake]) ?? parseInrPrice(parsed[camel]);
+}
+
 interface BusinessProfileInput {
   fullName: string | null;
   location: string | null;
@@ -67,9 +134,12 @@ interface BusinessProfileResult {
 
 export async function generateInfluencerProfile(
   input: ProfileInput,
-): Promise<ProfileResult | null> {
+): Promise<ProfileResult> {
+  const priceFallback = derivePricesFromFollowers(input.followerCount);
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey) {
+    return fallbackInfluencerProfileFromIg(input);
+  }
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -94,26 +164,32 @@ Account Type: ${input.accountType ?? "Unknown"}
 Recent post captions (sample):
 ${captionsSample || "No captions available"}
 
-Return a JSON object with:
+Return a JSON object with these exact snake_case keys:
 - category: one of [${VALID_CATEGORIES.join(", ")}]
-- city: infer from bio/captions if possible, else null
-- languages: array from [${VALID_LANGUAGES.join(", ")}] — detect from caption languages and bio
-- bio: a polished 1-2 sentence platform bio for this influencer
-- price_per_reel: estimated price in INR (based on roughly ₹1-2 per follower for reels, round to nearest 500)
-- price_per_post: estimated price in INR (slightly less than reels, round to nearest 500)
-- price_per_story: estimated price in INR (roughly 30-50% of reel price, round to nearest 500)
+- city: string or null (infer from bio/captions if possible)
+- languages: array of strings, each one of [${VALID_LANGUAGES.join(", ")}]
+- bio: string, polished 1-2 sentence platform bio
+- price_per_reel: number, estimated INR (roughly 1-2 rupees per follower for reels, round to nearest 500)
+- price_per_post: number, estimated INR (slightly less than price_per_reel, round to nearest 500)
+- price_per_story: number, estimated INR (about 30-50% of price_per_reel, round to nearest 500)
 
-Return ONLY valid JSON. No explanation, no markdown, no code fences.`;
+All three prices must be positive integers in INR. Use null for city only when unknown.
+
+Return ONLY valid JSON. No explanation, no markdown, no code fences, no text before or after the object.`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text().trim();
-    if (!text) return null;
+    if (!text) {
+      return fallbackInfluencerProfileFromIg(input);
+    }
 
-    // Strip markdown code fences if present
-    const jsonStr = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
+    const jsonStr = extractJsonObject(text);
+    if (!jsonStr) {
+      return fallbackInfluencerProfileFromIg(input);
+    }
+
     const parsed = JSON.parse(jsonStr) as Record<string, unknown>;
 
-    // Validate and constrain values
     const category = VALID_CATEGORIES.includes(
       parsed.category as (typeof VALID_CATEGORIES)[number],
     )
@@ -126,18 +202,31 @@ Return ONLY valid JSON. No explanation, no markdown, no code fences.`;
         )
       : ["English"];
 
+    const reelRaw =
+      pickPrice(parsed, "price_per_reel", "pricePerReel") ??
+      priceFallback.price_per_reel;
+    const postRaw =
+      pickPrice(parsed, "price_per_post", "pricePerPost") ??
+      priceFallback.price_per_post;
+    const storyRaw =
+      pickPrice(parsed, "price_per_story", "pricePerStory") ??
+      priceFallback.price_per_story;
+
     return {
       category,
       city: typeof parsed.city === "string" ? parsed.city : null,
-      languages,
-      bio: typeof parsed.bio === "string" ? parsed.bio : (input.igBio ?? ""),
-      price_per_reel: Math.max(500, Number(parsed.price_per_reel) || 500),
-      price_per_post: Math.max(500, Number(parsed.price_per_post) || 500),
-      price_per_story: Math.max(500, Number(parsed.price_per_story) || 500),
+      languages: languages.length ? languages : ["English"],
+      bio:
+        typeof parsed.bio === "string" && parsed.bio.trim()
+          ? parsed.bio.trim()
+          : (input.igBio?.trim() ?? ""),
+      price_per_reel: roundToNearest500(Math.max(500, reelRaw)),
+      price_per_post: roundToNearest500(Math.max(500, postRaw)),
+      price_per_story: roundToNearest500(Math.max(500, storyRaw)),
     };
   } catch (err) {
     console.error("AI profile generation failed (non-blocking):", err);
-    return null;
+    return fallbackInfluencerProfileFromIg(input);
   }
 }
 

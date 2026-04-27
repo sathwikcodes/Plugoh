@@ -103,7 +103,7 @@ export default function ProfileHeader({
 
             <div className="min-w-0 flex-1 pt-0.5">
               <h1 className="text-xl font-extrabold tracking-tight truncate">
-                {profile.display_name || fullName || "Creator"}
+                {profile.display_name || fullName || "Influencer"}
               </h1>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-sm text-muted-foreground">
                 {profile.instagram_handle && (

@@ -244,9 +244,13 @@ export function BookingPurposeTimingSelector({
                   ) : null}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white">{item.label}</p>
+                  <p className="text-sm font-semibold text-white">
+                    {item.label}
+                  </p>
                   {item.description ? (
-                    <p className="mt-0.5 text-xs text-white/55">{item.description}</p>
+                    <p className="mt-0.5 text-xs text-white/55">
+                      {item.description}
+                    </p>
                   ) : null}
                 </div>
                 {item.id === "asap" ? (

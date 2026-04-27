@@ -80,7 +80,7 @@ export function MediaShowcase({
           </p>
           <p className="mt-2 line-clamp-2 text-sm text-white/80">
             {hasMedia
-              ? activeMedia?.caption || "Creator content highlight."
+              ? activeMedia?.caption || "Influencer content highlight."
               : activeFallback?.caption}
           </p>
           <div className="mt-3 flex items-center gap-4 text-xs text-white/60">

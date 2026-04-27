@@ -79,7 +79,9 @@ export default function ProfileCard({
             {/* Name row with inline verified badge */}
             <div className="flex min-w-0 items-center gap-1.5">
               <h1 className="min-w-0 max-w-full truncate text-2xl font-bold tracking-tight text-white">
-                {profile.display_name || basicProfile?.full_name || "Creator"}
+                {profile.display_name ||
+                  basicProfile?.full_name ||
+                  "Influencer"}
               </h1>
               {hasPhone && (
                 <>

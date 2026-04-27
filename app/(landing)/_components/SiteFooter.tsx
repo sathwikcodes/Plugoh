@@ -39,7 +39,7 @@ export function SiteFooter() {
             <div
               className={`font-[800] text-[1.65rem] sm:text-3xl xl:text-[2.2rem] uppercase leading-[0.95]`}
             >
-              South India&apos;s creator marketplace
+              South India&apos;s influencer marketplace
             </div>
             <span
               className={styles.iconBadge}
@@ -122,7 +122,7 @@ export function SiteFooter() {
                   textTransform: "uppercase",
                 }}
               >
-                For Creators
+                For Influencers
               </span>
               <span
                 className={styles.iconBadge}

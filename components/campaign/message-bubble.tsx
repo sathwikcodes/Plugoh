@@ -19,6 +19,7 @@ import {
   BOOKING_TIMING_OPTIONS,
   type ContentStyle,
 } from "@/lib/booking";
+import { brandTotalFromInfluencerPrice } from "@/lib/brand-pricing";
 
 interface MessageBubbleProps {
   content: string | null;
@@ -231,6 +232,10 @@ export function BookingCardMessage({
   isMutating,
 }: BookingCardMessageProps) {
   const meta = (metadata || {}) as BookingCardMeta;
+  const budgetDisplay =
+    isInfluencer === true
+      ? (meta.price_offered ?? 0)
+      : brandTotalFromInfluencerPrice(meta.price_offered ?? 0);
   const pkg = getPackageIcon(meta.package_type);
   const status = statusConfig[campaignStatus || ""] || statusConfig.pending;
   const isPending = campaignStatus === "pending";
@@ -350,7 +355,7 @@ export function BookingCardMessage({
                   className="h-4 w-4 object-contain"
                 />
                 <span className="text-sm font-extrabold tabular-nums tracking-tight">
-                  ₹{(meta.price_offered ?? 0).toLocaleString("en-IN")}
+                  ₹{budgetDisplay.toLocaleString("en-IN")}
                 </span>
               </span>
             </div>
@@ -385,7 +390,7 @@ export function BookingCardMessage({
                     </>
                   ) : (
                     <span className="text-xs font-semibold text-muted-foreground">
-                      Creator-only
+                      Influencer-only
                     </span>
                   )}
                 </span>

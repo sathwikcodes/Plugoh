@@ -146,7 +146,7 @@ export function InfluencerProfileOverview({
         )
       : 0;
 
-  const displayName = ip.display_name || "Creator";
+  const displayName = ip.display_name || "Influencer";
   const handle = ip.ig_username ? `@${ip.ig_username}` : "";
 
   return (

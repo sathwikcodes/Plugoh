@@ -75,8 +75,8 @@ export function InstagramProfileCard({
   }, [media, profile.ig_followers_count]);
 
   const displayName =
-    profile.display_name?.trim() || profile.ig_username || "Creator";
-  const avatarInitials = initialsFromName(displayName || "Creator");
+    profile.display_name?.trim() || profile.ig_username || "Influencer";
+  const avatarInitials = initialsFromName(displayName || "Influencer");
   const website = igProfile.ig_website?.trim() || null;
   const accountType = igProfile.ig_account_type?.trim() || null;
   const previewMedia = media.slice(0, 9);

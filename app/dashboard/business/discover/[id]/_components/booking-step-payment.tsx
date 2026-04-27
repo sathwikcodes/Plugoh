@@ -18,41 +18,137 @@ interface ProcessBookingPaymentParams {
   timingMode: BookingTimingMode;
   dueDate: string;
   venueAddress: string;
-  onVerified: (campaignId: string) => void;
+  onVerified: (campaignId: string) => void | Promise<void>;
   onVerifyFailed: (error: string) => void;
   onDismiss: () => void;
+  onPrepareCheckout?: () => void;
+}
+
+const RAZORPAY_READY_TIMEOUT_MS = 8000;
+const CREATE_ORDER_TIMEOUT_MS = 15000;
+const VERIFY_PAYMENT_TIMEOUT_MS = 20000;
+
+async function waitForRazorpayReady(timeoutMs = RAZORPAY_READY_TIMEOUT_MS) {
+  if (typeof window !== "undefined" && window.Razorpay) {
+    return;
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const startedAt = Date.now();
+    const script = document.querySelector<HTMLScriptElement>(
+      'script[src="https://checkout.razorpay.com/v1/checkout.js"]',
+    );
+
+    const onReady = () => {
+      cleanup();
+      resolve();
+    };
+
+    const onError = () => {
+      cleanup();
+      reject(new Error("Unable to load Razorpay checkout"));
+    };
+
+    const tick = () => {
+      if (window.Razorpay) {
+        cleanup();
+        resolve();
+        return;
+      }
+
+      if (Date.now() - startedAt >= timeoutMs) {
+        cleanup();
+        reject(new Error("Razorpay checkout timed out while loading"));
+        return;
+      }
+
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    const cleanup = () => {
+      if (script) {
+        script.removeEventListener("load", onReady);
+        script.removeEventListener("error", onError);
+      }
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
+
+    let rafId: number | null = null;
+    if (script) {
+      script.addEventListener("load", onReady);
+      script.addEventListener("error", onError);
+    }
+    tick();
+  });
+}
+
+function waitTwoAnimationFrames() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve());
+    });
+  });
+}
+
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  timeoutMs: number,
+) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    window.clearTimeout(timeout);
+  }
 }
 
 export async function processBookingPayment(
   params: ProcessBookingPaymentParams,
 ) {
+  const startedAt = performance.now();
+  await waitForRazorpayReady();
+
   const {
     data: { session },
   } = await supabase.auth.getSession();
   if (!session?.access_token)
     throw new Error("Session expired — please sign in again");
 
-  const orderRes = await fetch("/api/payment/create-booking-order", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`,
+  const orderRes = await fetchWithTimeout(
+    "/api/payment/create-booking-order",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        price_offered: params.selectedPackageData.price,
+        influencer_profile_id: params.creator.id,
+      }),
     },
-    body: JSON.stringify({
-      price_offered: params.selectedPackageData.price,
-      influencer_profile_id: params.creator.id,
-    }),
-  });
+    CREATE_ORDER_TIMEOUT_MS,
+  );
   const orderData = await orderRes.json();
   if (!orderRes.ok)
     throw new Error(orderData.error ?? "Failed to create order");
+
+  params.onPrepareCheckout?.();
+  await waitTwoAnimationFrames();
 
   const rzp = new window.Razorpay({
     key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
     amount: orderData.amount,
     currency: orderData.currency,
     name: "Plugoh",
-    description: `${getPackageLabel(params.selectedPackageData.key)} · ${params.creator.display_name ?? "Creator"}`,
+    description: `${getPackageLabel(params.selectedPackageData.key)} · ${params.creator.display_name ?? "Influencer"}`,
     order_id: orderData.orderId,
     prefill: { email: params.contactEmail, contact: params.contactPhone },
     theme: { color: "#0f172a" },
@@ -65,37 +161,66 @@ export async function processBookingPayment(
       razorpay_order_id: string;
       razorpay_signature: string;
     }) => {
-      const verifyRes = await fetch("/api/payment/verify-booking-payment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_signature: response.razorpay_signature,
-          influencer_id: params.creator.user_id,
-          influencer_profile_id: params.creator.id,
-          package_type: params.selectedPackageData.key,
-          price_offered: params.selectedPackageData.price,
-          objective: params.objective,
-          timing_mode: params.timingMode,
-          due_date: params.dueDate || undefined,
-          event_name: params.venueAddress || undefined,
-          contact_email: params.contactEmail,
-          contact_phone: params.contactPhone,
-        }),
-      });
-      const verifyData = await verifyRes.json();
-      if (!verifyRes.ok) {
-        params.onVerifyFailed(verifyData.error);
-        return;
+      try {
+        const verifyRes = await fetchWithTimeout(
+          "/api/payment/verify-booking-payment",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              influencer_id: params.creator.user_id,
+              influencer_profile_id: params.creator.id,
+              package_type: params.selectedPackageData.key,
+              price_offered: params.selectedPackageData.price,
+              objective: params.objective,
+              timing_mode: params.timingMode,
+              due_date: params.dueDate || undefined,
+              event_name: params.venueAddress || undefined,
+              contact_email: params.contactEmail,
+              contact_phone: params.contactPhone,
+            }),
+          },
+          VERIFY_PAYMENT_TIMEOUT_MS,
+        );
+        const verifyData = await verifyRes.json();
+        if (!verifyRes.ok) {
+          params.onVerifyFailed(verifyData.error);
+          return;
+        }
+        const campaignId = verifyData.campaignId;
+        if (typeof campaignId !== "string" || !campaignId.trim()) {
+          params.onVerifyFailed("Missing campaign reference after payment.");
+          return;
+        }
+        await Promise.resolve(params.onVerified(campaignId));
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Payment verification failed";
+        params.onVerifyFailed(message);
       }
-      params.onVerified(verifyData.campaignId);
     },
     modal: { ondismiss: params.onDismiss },
   });
+  rzp.on("payment.failed", (event) => {
+    const errorDescription =
+      event?.error?.description || "Payment failed. Please try again.";
+    params.onVerifyFailed(errorDescription);
+    params.onDismiss();
+  });
+  if (process.env.NODE_ENV === "development") {
+    console.info(
+      "[booking-payment] checkout-open-ms",
+      Math.round(performance.now() - startedAt),
+    );
+  }
   rzp.open();
 }
 
@@ -109,7 +234,7 @@ const STEPS = [
   },
   {
     icon: Clock,
-    title: "Creator has 24 hours to accept or decline",
+    title: "Influencer has 24 hours to accept or decline",
     accent: "text-sky-300",
     ring: "border-sky-500/30 bg-sky-500/10",
     line: "bg-white/10",
@@ -144,18 +269,27 @@ export function BookingStepPayment() {
       {open ? (
         <div className="border-t border-white/8 px-4 pb-5 pt-4">
           <div className="space-y-0">
-            {STEPS.map(({ icon: Icon, title, accent, ring, line }, i) => (
-              <div key={title} className="relative flex gap-3.5 pb-5 last:pb-0">
-                {/* Connecting line to next step */}
+            {STEPS.map(({ icon: Icon, title, accent, ring, line }) => (
+              <div
+                key={title}
+                className="relative flex items-start gap-3 pb-5 last:pb-0"
+              >
                 {line ? (
-                  <div className={`absolute left-[13px] top-7 bottom-0 w-px ${line}`} />
+                  <div
+                    className={`absolute bottom-0 left-[13px] top-7 w-px ${line}`}
+                  />
                 ) : null}
-                {/* Icon */}
-                <div className={`relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border ${ring}`}>
-                  <Icon className={`h-3 w-3 ${accent}`} />
+                <div
+                  className={`relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border ${ring}`}
+                >
+                  <Icon
+                    className={`h-3 w-3 shrink-0 ${accent}`}
+                    strokeWidth={2.5}
+                  />
                 </div>
-                {/* Text — single line, no wrap issues */}
-                <p className="flex-1 pt-1 text-sm leading-snug text-white/65">{title}</p>
+                <p className="min-w-0 flex-1 pt-[3px] text-sm leading-snug text-white/65">
+                  {title}
+                </p>
               </div>
             ))}
           </div>

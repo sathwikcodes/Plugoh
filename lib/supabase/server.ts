@@ -1,4 +1,8 @@
-import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
+import {
+  createClient,
+  type SupabaseClient,
+  type User,
+} from "@supabase/supabase-js";
 import type { Database } from "./types";
 
 // Cache validated tokens within the same server process. Each entry lives for

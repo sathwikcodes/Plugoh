@@ -8,7 +8,17 @@ export { formatConversationTime } from "@/lib/format";
 
 function getStatusPillColor(status: string): PillPreset {
   if (["completed", "accepted"].includes(status)) return "emerald";
-  if (["disputed", "declined", "rejected", "expired", "cancelled", "refunded"].includes(status)) return "rose";
+  if (
+    [
+      "disputed",
+      "declined",
+      "rejected",
+      "expired",
+      "cancelled",
+      "refunded",
+    ].includes(status)
+  )
+    return "rose";
   if (["in_escrow", "delivery_submitted"].includes(status)) return "sky";
   return "gold";
 }

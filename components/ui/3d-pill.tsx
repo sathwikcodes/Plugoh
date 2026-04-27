@@ -3,7 +3,14 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export type PillPreset = "gold" | "emerald" | "amber" | "rose" | "sky" | "violet" | "slate";
+export type PillPreset =
+  | "gold"
+  | "emerald"
+  | "amber"
+  | "rose"
+  | "sky"
+  | "violet"
+  | "slate";
 
 export type PillCustomColor = {
   base: string;
@@ -14,7 +21,10 @@ export type PillCustomColor = {
   glow: string;
 };
 
-export type ThreeDPillProps = Omit<React.HTMLAttributes<HTMLSpanElement>, "color"> & {
+export type ThreeDPillProps = Omit<
+  React.HTMLAttributes<HTMLSpanElement>,
+  "color"
+> & {
   label: string;
   color?: PillPreset | PillCustomColor;
   icon?: React.ReactNode;
@@ -27,7 +37,9 @@ function isCustomColor(c: PillPreset | PillCustomColor): c is PillCustomColor {
 const ThreeDPill = React.forwardRef<HTMLSpanElement, ThreeDPillProps>(
   ({ label, color = "gold", icon, className, style, ...props }, ref) => {
     const presetClass =
-      !isCustomColor(color) && color !== "gold" ? `three-d-pill--${color}` : undefined;
+      !isCustomColor(color) && color !== "gold"
+        ? `three-d-pill--${color}`
+        : undefined;
 
     const customVars: React.CSSProperties = isCustomColor(color)
       ? ({

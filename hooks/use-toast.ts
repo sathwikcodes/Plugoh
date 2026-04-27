@@ -2,17 +2,38 @@
 
 import { toast as sonnerToast } from "sonner";
 
+type ToastVariant =
+  | "default"
+  | "destructive"
+  | "success"
+  | "error"
+  | "warning"
+  | "info";
+
 interface ToastOptions {
   title?: string;
   description?: string;
-  variant?: "default" | "destructive";
+  variant?: ToastVariant;
 }
 
 function toast({ title, description, variant }: ToastOptions) {
-  if (variant === "destructive") {
-    sonnerToast.error(title || "", { description });
-  } else {
-    sonnerToast.success(title || "", { description });
+  const message = title || "";
+
+  switch (variant) {
+    case "destructive":
+    case "error":
+      sonnerToast.error(message, { description });
+      break;
+    case "warning":
+      sonnerToast.warning(message, { description });
+      break;
+    case "info":
+      sonnerToast.info(message, { description });
+      break;
+    case "success":
+    case "default":
+    default:
+      sonnerToast.success(message, { description });
   }
 }
 

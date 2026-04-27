@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
       businessProfile?.business_name?.trim() ||
       businessProfile?.full_name?.trim() ||
       "A business owner";
-    const influencerName = influencerProfile?.full_name?.trim() || "Creator";
+    const influencerName = influencerProfile?.full_name?.trim() || "Influencer";
     const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
     const appUrlBase =
       process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||

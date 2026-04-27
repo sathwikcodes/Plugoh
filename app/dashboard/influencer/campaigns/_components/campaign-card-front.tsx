@@ -73,20 +73,20 @@ const STATUS_PILL_COLOR: Record<string, PillPreset> = {
 };
 
 const PAYMENT_PROGRESS: Record<string, { label: string; color: PillPreset }> = {
-  pre_authorized:    { label: "Awaiting",  color: "slate"   },
-  requested:         { label: "Awaiting",  color: "slate"   },
-  pending:           { label: "Awaiting",  color: "slate"   },
-  payment_pending:   { label: "Pay Now",   color: "amber"   },
-  in_escrow:         { label: "On Hold",   color: "amber"   },
-  accepted:          { label: "On Hold",   color: "amber"   },
-  delivery_submitted:{ label: "On Hold",   color: "amber"   },
-  completed:         { label: "Paid",      color: "emerald" },
-  disputed:          { label: "Disputed",  color: "rose"    },
-  declined:          { label: "Cancelled", color: "rose"    },
-  rejected:          { label: "Cancelled", color: "rose"    },
-  cancelled:         { label: "Cancelled", color: "rose"    },
-  expired:           { label: "Expired",   color: "rose"    },
-  refunded:          { label: "Refunded",  color: "rose"    },
+  pre_authorized: { label: "Awaiting", color: "slate" },
+  requested: { label: "Awaiting", color: "slate" },
+  pending: { label: "Awaiting", color: "slate" },
+  payment_pending: { label: "Pay Now", color: "amber" },
+  in_escrow: { label: "On Hold", color: "amber" },
+  accepted: { label: "On Hold", color: "amber" },
+  delivery_submitted: { label: "On Hold", color: "amber" },
+  completed: { label: "Paid", color: "emerald" },
+  disputed: { label: "Disputed", color: "rose" },
+  declined: { label: "Cancelled", color: "rose" },
+  rejected: { label: "Cancelled", color: "rose" },
+  cancelled: { label: "Cancelled", color: "rose" },
+  expired: { label: "Expired", color: "rose" },
+  refunded: { label: "Refunded", color: "rose" },
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -147,7 +147,9 @@ export function CampaignCardFront({
   const actionsDisabled = card.isAccepting || card.isDeclining;
   const hasTimer = isOffer && !!card.expires_at;
 
-  const pkgName = card.package_type ? formatPackage(card.package_type) : "content";
+  const pkgName = card.package_type
+    ? formatPackage(card.package_type)
+    : "content";
   let deliveryLabel = `Brand requests a ${pkgName} ASAP`;
 
   if (card.brief) {
@@ -190,7 +192,10 @@ export function CampaignCardFront({
        * CSS spec guarantees padding % is always relative to the element's
        * own width — not the parent's height — so this works in any layout ctx.
        */}
-      <div className="relative w-full flex-none" style={{ paddingBottom: hasTimer ? "44%" : "58%" }}>
+      <div
+        className="relative w-full flex-none"
+        style={{ paddingBottom: hasTimer ? "44%" : "58%" }}
+      >
         <div className="absolute inset-0 overflow-hidden">
           {card.brandAvatarUrl ? (
             <Image
@@ -229,7 +234,12 @@ export function CampaignCardFront({
             </div>
           )}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#080609] via-[#080609]/70 to-transparent" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 backdrop-blur-md" style={{ maskImage: "linear-gradient(to top, black 40%, transparent 100%)" }} />
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-14 backdrop-blur-md"
+            style={{
+              maskImage: "linear-gradient(to top, black 40%, transparent 100%)",
+            }}
+          />
         </div>
 
         <div className="absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
@@ -287,7 +297,7 @@ export function CampaignCardFront({
         </div>
 
         {/* Info tags — two pills splitting the full card width */}
-        {(card.businessType || card.location) ? (
+        {card.businessType || card.location ? (
           <div className="mt-2.5 flex gap-2 @[340px]:mt-3">
             {card.businessType ? (
               <ThreeDPill

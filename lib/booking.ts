@@ -128,7 +128,7 @@ export function getCreatorTier(followers: number | null): string {
 }
 
 export function getProfileInitials(name: string | null): string {
-  return (name?.trim() || "Creator")
+  return (name?.trim() || "Influencer")
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)

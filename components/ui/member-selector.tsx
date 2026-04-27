@@ -51,7 +51,7 @@ function Avatar({ member, isSelected, onClick }: AvatarProps) {
         className={cn(
           "relative w-12 h-12 rounded-full overflow-hidden transition-all duration-200",
           "group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
-          !isSelected && "opacity-50 hover:opacity-75"
+          !isSelected && "opacity-50 hover:opacity-75",
         )}
       >
         {member.avatar ? (
@@ -60,7 +60,7 @@ function Avatar({ member, isSelected, onClick }: AvatarProps) {
             alt={member.name}
             className={cn(
               "w-full h-full object-cover transition-all duration-200",
-              !isSelected && "grayscale"
+              !isSelected && "grayscale",
             )}
           />
         ) : (
@@ -69,7 +69,7 @@ function Avatar({ member, isSelected, onClick }: AvatarProps) {
               "w-full h-full flex items-center justify-center text-sm font-medium transition-colors duration-200",
               isSelected
                 ? "bg-primary/10 text-primary"
-                : "bg-muted text-muted-foreground"
+                : "bg-muted text-muted-foreground",
             )}
           >
             {getInitials(member.name)}
@@ -86,7 +86,10 @@ function Avatar({ member, isSelected, onClick }: AvatarProps) {
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
             className="absolute bottom-5 right-0 w-4 h-4 rounded-full bg-foreground dark:bg-white flex items-center justify-center shadow-sm"
           >
-            <Plus className="w-2.5 h-2.5 text-background dark:text-black" strokeWidth={2.5} />
+            <Plus
+              className="w-2.5 h-2.5 text-background dark:text-black"
+              strokeWidth={2.5}
+            />
           </m.div>
         )}
       </AnimatePresence>
@@ -95,7 +98,7 @@ function Avatar({ member, isSelected, onClick }: AvatarProps) {
         layoutId={`member-name-${member.id}`}
         className={cn(
           "text-xs font-medium truncate max-w-[60px] transition-colors duration-200",
-          isSelected ? "text-foreground" : "text-muted-foreground"
+          isSelected ? "text-foreground" : "text-muted-foreground",
         )}
       >
         {member.name.split(" ")[0]}
@@ -123,7 +126,7 @@ function AddButton({ onClick, isOpen }: AddButtonProps) {
           "group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
           isOpen
             ? "border-primary bg-primary/10"
-            : "border-muted-foreground/40 hover:border-muted-foreground/60 hover:bg-muted/50"
+            : "border-muted-foreground/40 hover:border-muted-foreground/60 hover:bg-muted/50",
         )}
       >
         <m.div
@@ -133,15 +136,17 @@ function AddButton({ onClick, isOpen }: AddButtonProps) {
           <Plus
             className={cn(
               "w-5 h-5 transition-colors duration-200",
-              isOpen ? "text-primary" : "text-muted-foreground"
+              isOpen ? "text-primary" : "text-muted-foreground",
             )}
           />
         </m.div>
       </div>
-      <span className={cn(
-        "text-xs font-medium transition-colors duration-200",
-        isOpen ? "text-primary" : "text-muted-foreground"
-      )}>
+      <span
+        className={cn(
+          "text-xs font-medium transition-colors duration-200",
+          isOpen ? "text-primary" : "text-muted-foreground",
+        )}
+      >
         Add
       </span>
     </m.button>
@@ -175,7 +180,7 @@ function Dropdown({
       .filter(
         (m) =>
           m.name.toLowerCase().includes(query) ||
-          m.email?.toLowerCase().includes(query)
+          m.email?.toLowerCase().includes(query),
       )
       .sort((a, b) => {
         const aSelected = selected.includes(a.id);
@@ -225,13 +230,13 @@ function Dropdown({
                   "w-full flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors",
                   isSelected
                     ? "bg-primary/5 hover:bg-primary/10"
-                    : "hover:bg-muted/50"
+                    : "hover:bg-muted/50",
                 )}
               >
                 <div
                   className={cn(
                     "w-9 h-9 rounded-full overflow-hidden flex-shrink-0 transition-all duration-200",
-                    !isSelected && "grayscale opacity-60"
+                    !isSelected && "grayscale opacity-60",
                   )}
                 >
                   {member.avatar ? (
@@ -246,7 +251,7 @@ function Dropdown({
                         "w-full h-full flex items-center justify-center text-xs font-medium",
                         isSelected
                           ? "bg-primary/10 text-primary"
-                          : "bg-muted text-muted-foreground"
+                          : "bg-muted text-muted-foreground",
                       )}
                     >
                       {getInitials(member.name)}
@@ -258,7 +263,7 @@ function Dropdown({
                   <div
                     className={cn(
                       "text-sm font-medium truncate transition-colors",
-                      isSelected ? "text-foreground" : "text-foreground/80"
+                      isSelected ? "text-foreground" : "text-foreground/80",
                     )}
                   >
                     {member.name}
@@ -275,16 +280,23 @@ function Dropdown({
                     "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200",
                     isSelected
                       ? "bg-primary"
-                      : "border-2 border-muted-foreground/30"
+                      : "border-2 border-muted-foreground/30",
                   )}
                 >
                   {isSelected && (
                     <m.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
                     >
-                      <Check className="w-3 h-3 text-primary-foreground" strokeWidth={3} />
+                      <Check
+                        className="w-3 h-3 text-primary-foreground"
+                        strokeWidth={3}
+                      />
                     </m.div>
                   )}
                 </div>
@@ -305,16 +317,8 @@ function Dropdown({
 
 const MemberSelector = React.forwardRef<HTMLDivElement, MemberSelectorProps>(
   (
-    {
-      members,
-      selected,
-      onChange,
-      max,
-      maxVisible = 5,
-      label,
-      className,
-    },
-    ref
+    { members, selected, onChange, max, maxVisible = 5, label, className },
+    ref,
   ) => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState("");
@@ -332,7 +336,8 @@ const MemberSelector = React.forwardRef<HTMLDivElement, MemberSelectorProps>(
       }
 
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     const sortedMembers = React.useMemo(() => {
@@ -365,10 +370,7 @@ const MemberSelector = React.forwardRef<HTMLDivElement, MemberSelectorProps>(
             {label}
           </div>
         )}
-        <div
-          ref={containerRef}
-          className="flex items-start gap-4 flex-wrap"
-        >
+        <div ref={containerRef} className="flex items-start gap-4 flex-wrap">
           <LayoutGroup>
             {visibleMembers.map((member) => (
               <Avatar
@@ -398,7 +400,7 @@ const MemberSelector = React.forwardRef<HTMLDivElement, MemberSelectorProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 MemberSelector.displayName = "MemberSelector";

@@ -1,8 +1,13 @@
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useMyProfile } from "@/hooks/queries/use-my-identity";
 import { useToast } from "@/hooks/use-toast";
-import { PLATFORM_FEE_RATE } from "@/lib/constants";
+import { useTRPC } from "@/lib/trpc/client";
+import {
+  brandTotalFromInfluencerPrice,
+  platformFeeFromInfluencerPrice,
+} from "@/lib/brand-pricing";
 import {
   BOOKING_OBJECTIVES,
   BOOKING_TIMING_OPTIONS,
@@ -34,6 +39,8 @@ export function useBookingForm(
   onOpenChange: (open: boolean) => void,
 ) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
   const { toast } = useToast();
   const { data: businessProfile } = useMyProfile();
   const availablePackages = useMemo(
@@ -73,10 +80,10 @@ export function useBookingForm(
   const requiresPhoneInput = !businessProfile?.phone?.trim();
   const canStartBooking = isProfileComplete && availablePackages.length > 0;
   const platformFee = selectedPackageData
-    ? Math.round(selectedPackageData.price * PLATFORM_FEE_RATE)
+    ? platformFeeFromInfluencerPrice(selectedPackageData.price)
     : 0;
   const totalIfAccepted = selectedPackageData
-    ? selectedPackageData.price + platformFee
+    ? brandTotalFromInfluencerPrice(selectedPackageData.price)
     : 0;
   const timingLabel =
     BOOKING_TIMING_OPTIONS.find((t) => t.value === timingMode)?.label ??
@@ -94,7 +101,7 @@ export function useBookingForm(
       toast({
         title: "Add your business address",
         description:
-          "We'll share it with the creator so they know where to visit. Update your profile to continue.",
+          "We'll share it with the influencer so they know where to visit. Update your profile to continue.",
         variant: "destructive",
       });
       return;
@@ -102,7 +109,7 @@ export function useBookingForm(
     if (timingMode === "choose_date" && !dueDate) {
       toast({
         title: "Choose a delivery date",
-        description: "Pick a deadline so the creator knows the timeline.",
+        description: "Pick a deadline so the influencer knows the timeline.",
         variant: "destructive",
       });
       return;
@@ -110,7 +117,7 @@ export function useBookingForm(
     if (!contactEmail) {
       toast({
         title: "Email required",
-        description: "Add a contact email so the creator can reach you.",
+        description: "Add a contact email so the influencer can reach you.",
         variant: "destructive",
       });
       return;
@@ -131,13 +138,39 @@ export function useBookingForm(
         timingMode,
         dueDate,
         venueAddress: effectiveVenueAddress,
-        onVerified: (campaignId) => {
+        onPrepareCheckout: () => onOpenChange(false),
+        onVerified: async (campaignId) => {
+          if (typeof campaignId !== "string" || !campaignId.trim()) {
+            toast({
+              title: "Booking incomplete",
+              description: "Missing campaign id from payment verification.",
+              variant: "destructive",
+            });
+            setIsPaying(false);
+            return;
+          }
+          try {
+            await queryClient.prefetchQuery(
+              trpc.campaign.getCampaign.queryOptions({
+                id: campaignId,
+                filterBusinessId: true,
+              }),
+            );
+          } catch {
+            // Detail route will refetch; avoid blocking redirect on prefetch failure.
+          }
+          await queryClient.invalidateQueries({
+            queryKey: trpc.campaign.getCampaigns.queryOptions({
+              role: "business",
+            }).queryKey,
+          });
           toast({
             title: "Booking sent!",
             description:
-              "The creator has 24 hours to accept. You'll only be charged if they do.",
+              "The influencer has 24 hours to accept. You'll only be charged if they do.",
           });
           onOpenChange(false);
+          setIsPaying(false);
           router.push(`/dashboard/business/campaigns/${campaignId}`);
         },
         onVerifyFailed: (error) => {

@@ -40,18 +40,20 @@ export function CTASection() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              AI-Powered Creator Matching
+              AI-Powered Influencer Matching
             </div>
 
             {/* Headline */}
             <h2 className="font-serif text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight text-foreground mb-6 sm:mb-8 leading-[1.05]">
               Your brand, <br />
-              <span className="text-foreground/80">amplified by creators.</span>
+              <span className="text-foreground/80">
+                amplified by influencers.
+              </span>
             </h2>
 
             {/* Description */}
             <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mb-8 sm:mb-12 leading-relaxed px-2">
-              Connect with the perfect creators for your brand. AI-powered
+              Connect with the perfect influencers for your brand. AI-powered
               matching that delivers authentic reach and real engagement.
             </p>
 

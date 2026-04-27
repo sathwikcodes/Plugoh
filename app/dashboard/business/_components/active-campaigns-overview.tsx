@@ -5,6 +5,7 @@ import { ChevronRight, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/lib/supabase/types";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 
 type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 
@@ -120,7 +121,10 @@ export function ActiveCampaignsOverview({
                       {campaign.package_type || "Campaign"}
                     </p>
                     <p className="text-base font-extrabold tracking-tight">
-                      ₹{(campaign.price_offered || 0).toLocaleString()}
+                      ₹
+                      {brandDisplayAmountFromCampaign(
+                        campaign,
+                      ).toLocaleString()}
                     </p>
                   </div>
 

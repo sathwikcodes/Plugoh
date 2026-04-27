@@ -17,6 +17,7 @@ import {
   useTopMedia,
 } from "@/hooks/queries/use-instagram-media";
 import { useIsProfileComplete } from "@/hooks/queries/use-my-identity";
+import { brandTotalFromInfluencerPrice } from "@/lib/brand-pricing";
 import { compactNumber } from "@/lib/format";
 import {
   getAvailablePackages,
@@ -73,6 +74,8 @@ export default function InfluencerProfileView() {
     profile?.follower_count ?? null,
   );
   const startsAtPrice = profile ? getStartsAtPrice(profile) : null;
+  const displayStartsAtPrice =
+    startsAtPrice != null ? brandTotalFromInfluencerPrice(startsAtPrice) : null;
   const showcaseItems = topMedia?.length
     ? topMedia.slice(0, 3)
     : portfolioMedia?.length
@@ -149,7 +152,7 @@ export default function InfluencerProfileView() {
             profile={profile}
             handle={handle}
             engagementRate={engagementRate}
-            startsAtPrice={startsAtPrice}
+            displayStartsAtPrice={displayStartsAtPrice}
             isProfileComplete={isProfileComplete}
             availablePackages={availablePackages}
             onBook={() => setBookingState(true)}
@@ -165,7 +168,7 @@ export default function InfluencerProfileView() {
                   <p className="text-sm text-slate-400">
                     {topMedia && topMedia.length > 0
                       ? "Their best-performing posts — see the real content."
-                      : "A preview of what this creator's content looks like."}
+                      : "A preview of what this influencer's content looks like."}
                   </p>
                 </div>
 

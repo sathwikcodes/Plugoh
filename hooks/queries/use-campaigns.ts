@@ -22,12 +22,15 @@ interface UseCampaignOptions {
   role?: "business" | "influencer";
 }
 
-export function useCampaign(id: string | undefined, opts: UseCampaignOptions = {}) {
+export function useCampaign(
+  id: string | undefined,
+  opts: UseCampaignOptions = {},
+) {
   const { userId, role = "business" } = opts;
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const filterBusinessId = !!userId;
+  const filterBusinessId = role === "business";
 
   const queryOptions = useMemo(
     () =>
@@ -39,22 +42,29 @@ export function useCampaign(id: string | undefined, opts: UseCampaignOptions = {
     [id, filterBusinessId],
   );
 
+  const enabled = role === "business" ? !!id && !!userId : !!id;
+
   return useQuery({
     ...queryOptions,
-    // If userId was provided, wait for it to be defined before firing (stable key, no double-fetch).
-    // If no userId provided (e.g. influencer page), fire as soon as id is available.
-    enabled: userId !== undefined ? !!id && !!userId : !!id,
+    enabled,
     staleTime: 30_000,
+    refetchOnMount: true,
     initialData: () => {
       if (!id) return undefined;
-      const list = queryClient.getQueryData<Campaign[]>(
-        trpc.campaign.getCampaigns.queryOptions({ role }).queryKey,
-      );
-      return list?.find((c) => c.id === id) ?? undefined;
+      const listKey = trpc.campaign.getCampaigns.queryOptions({
+        role,
+      }).queryKey;
+      const list = queryClient.getQueryData<Campaign[]>(listKey);
+      return list?.find((c) => c.id === id);
     },
-    initialDataUpdatedAt: () =>
-      queryClient.getQueryState(
-        trpc.campaign.getCampaigns.queryOptions({ role }).queryKey,
-      )?.dataUpdatedAt,
+    initialDataUpdatedAt: () => {
+      if (!id) return undefined;
+      const listKey = trpc.campaign.getCampaigns.queryOptions({
+        role,
+      }).queryKey;
+      const list = queryClient.getQueryData<Campaign[]>(listKey);
+      if (!list?.some((c) => c.id === id)) return undefined;
+      return queryClient.getQueryState(listKey)?.dataUpdatedAt;
+    },
   });
 }

@@ -213,7 +213,7 @@ export const TIERS = [
     barClass: "from-amber-400 to-amber-500",
   },
   {
-    name: "Creator",
+    name: "Influencer",
     threshold: 25000,
     next: 100000,
     emoji: "/star.png",
@@ -225,7 +225,7 @@ export const TIERS = [
     barClass: "from-amber-400 to-orange-400",
   },
   {
-    name: "Pro Creator",
+    name: "Pro Influencer",
     threshold: 100000,
     next: 500000,
     emoji: "/star.png",
@@ -237,7 +237,7 @@ export const TIERS = [
     barClass: "from-amber-500 to-orange-400",
   },
   {
-    name: "Elite Creator",
+    name: "Elite Influencer",
     threshold: 500000,
     next: 1500000,
     emoji: "/star.png",
@@ -249,7 +249,7 @@ export const TIERS = [
     barClass: "from-violet-500 to-purple-400",
   },
   {
-    name: "Top Creator",
+    name: "Top Influencer",
     threshold: 1500000,
     next: null,
     emoji: "/star.png",

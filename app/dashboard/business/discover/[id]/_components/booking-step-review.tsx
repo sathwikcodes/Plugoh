@@ -27,7 +27,9 @@ function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-4 py-2.5">
       <span className="text-xs text-white/35">{label}</span>
-      <span className="text-right text-xs font-medium text-white/80">{value}</span>
+      <span className="text-right text-xs font-medium text-white/80">
+        {value}
+      </span>
     </div>
   );
 }
@@ -62,14 +64,13 @@ export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
 
       {/* Main receipt card */}
       <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#161616] shadow-[0_20px_50px_rgba(0,0,0,0.7)]">
-
-        {/* Creator header */}
+        {/* Influencer header */}
         <div className="flex items-center gap-3.5 px-6 py-5">
           <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-1 ring-white/12">
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
-                alt={creator.display_name ?? "Creator"}
+                alt={creator.display_name ?? "Influencer"}
                 fill
                 className="object-cover"
                 unoptimized
@@ -82,11 +83,9 @@ export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-semibold text-white">
-              {creator.display_name ?? "Creator"}
+              {creator.display_name ?? "Influencer"}
             </p>
-            {handle ? (
-              <p className="text-xs text-white/35">@{handle}</p>
-            ) : null}
+            {handle ? <p className="text-xs text-white/35">@{handle}</p> : null}
           </div>
         </div>
 
@@ -94,7 +93,10 @@ export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
 
         {/* Booking rows */}
         <div className="divide-y divide-white/[0.06] px-6">
-          <Row label="Package" value={getPackageLabel(form.selectedPackageData.key)} />
+          <Row
+            label="Package"
+            value={getPackageLabel(form.selectedPackageData.key)}
+          />
           <Row label="Objective" value={form.objectiveLabel} />
           {shouldShowEventName(form.objective) && form.venueAddress ? (
             <Row label="Venue" value={form.venueAddress} />
@@ -109,21 +111,22 @@ export function BookingStepReview({ form, creator }: BookingStepReviewProps) {
 
         {/* Amount */}
         <div className="flex items-center justify-between gap-3 px-6 py-5">
-          <p className="text-sm text-white/45">Pre-authorised hold</p>
-          <div className="flex items-center gap-1.5">
+          <p className="shrink-0 text-sm leading-snug text-white/45">
+            Pre-authorised hold
+          </p>
+          <div className="flex min-w-0 items-center justify-end gap-1.5">
             <Image
               src="/coin.png"
               alt="Amount"
-              width={16}
-              height={16}
-              className="h-4 w-4 object-contain"
+              width={20}
+              height={20}
+              className="h-5 w-5 shrink-0 object-contain"
             />
-            <span className="text-2xl font-bold tabular-nums text-white">
+            <span className="text-2xl font-bold tabular-nums leading-none text-white">
               {form.totalIfAccepted.toLocaleString("en-IN")}
             </span>
           </div>
         </div>
-
       </div>
     </div>
   );

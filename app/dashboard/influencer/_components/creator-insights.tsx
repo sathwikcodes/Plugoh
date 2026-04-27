@@ -19,7 +19,7 @@ export function CreatorInsights({ insights }: CreatorInsightsProps) {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-sm font-semibold">Creator Insights</h2>
+      <h2 className="text-sm font-semibold">Influencer insights</h2>
       <div className="grid gap-3">
         {insights.map((insight, i) => (
           <div

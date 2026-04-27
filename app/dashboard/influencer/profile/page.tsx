@@ -90,7 +90,15 @@ function InfluencerProfilePageInner() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: user.id }),
     })
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(async (r) => {
+        const data = (await r.json().catch(() => ({}))) as {
+          ok?: boolean;
+          error?: string;
+        };
+        if (!r.ok || !data.ok) {
+          throw new Error(data.error ?? "request_failed");
+        }
+      })
       .then(() => {
         setAiStatus("done");
         sessionStorage.removeItem("plugoh_ai_pending");
@@ -102,7 +110,7 @@ function InfluencerProfilePageInner() {
         setAiStatus("failed");
         sessionStorage.removeItem("plugoh_ai_pending");
         toast.error(
-          "AI suggestions unavailable — you can fill in your details manually.",
+          "Could not save AI pricing to your profile — set your rates manually.",
         );
       });
   }, [

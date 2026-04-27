@@ -13,6 +13,7 @@ import {
   SystemMessage,
   BookingCardMessage,
 } from "@/components/campaign/message-bubble";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 import { MessageInput } from "@/components/campaign/message-input";
 import { ChatHeader } from "./chat-header";
 import {
@@ -237,6 +238,8 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
 
   if (!user) return null;
 
+  const brandDue = brandDisplayAmountFromCampaign(campaign);
+
   return (
     <div className="flex flex-col h-full">
       <ChatHeader
@@ -260,11 +263,11 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
             <CreditCard className="h-4 w-4 text-yellow-300 shrink-0" />
             <div className="min-w-0">
               <p className="text-sm font-semibold text-yellow-200">
-                Creator accepted — payment required
+                Influencer accepted — payment required
               </p>
               <p className="text-xs text-yellow-300/70">
-                {campaign.price_offered
-                  ? `₹${campaign.price_offered.toLocaleString("en-IN")} due to start the campaign`
+                {brandDue > 0
+                  ? `₹${brandDue.toLocaleString("en-IN")} due to start the campaign`
                   : "Complete payment to lock in the deal"}
               </p>
             </div>
@@ -340,7 +343,7 @@ export function ChatPanel({ conversation, onBack }: ChatPanelProps) {
           <div className="flex items-center gap-2.5 rounded-full border border-white/8 bg-white/3 px-4 py-2.5">
             <Lock className="h-4 w-4 shrink-0 text-white/30" />
             <p className="text-sm text-white/40">
-              Chat unlocks once the creator accepts this booking
+              Chat unlocks once the influencer accepts this booking
             </p>
           </div>
         </div>

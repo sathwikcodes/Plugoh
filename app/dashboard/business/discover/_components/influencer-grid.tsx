@@ -59,11 +59,11 @@ export function InfluencerGrid({
             </div>
             <div className="space-y-2">
               <p className="text-2xl font-semibold text-white">
-                No creators match this cut
+                No influencers match this cut
               </p>
               <p className="max-w-md text-sm leading-6 text-white/58">
                 Reset the filters, widen the price range, or try a broader niche
-                to bring more creators back into the shortlist.
+                to bring more influencers back into the shortlist.
               </p>
             </div>
             <Button

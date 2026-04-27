@@ -22,6 +22,7 @@ export interface CampaignCardData {
   status: string;
   package_type: string | null;
   price_offered: number | null;
+  brand_display_amount?: number | null;
   expires_at: string | null;
   created_at: string;
   influencerName: string;
@@ -146,7 +147,7 @@ export function CampaignCardFront({
         <div className="shrink-0 flex items-center justify-between gap-3 pt-4">
           <div className="min-w-0">
             <p className="text-[30px] font-bold leading-none tracking-[-0.05em] text-white">
-              {formatCurrency(card.price_offered)}
+              {formatCurrency(card.brand_display_amount ?? card.price_offered)}
               <span className="ml-2 text-[14px] font-medium tracking-[0.01em] text-white/55">
                 spent
               </span>

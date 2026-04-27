@@ -96,7 +96,7 @@ export function CampaignSortPanel({
                 onClick={() => setActiveTab(tab)}
                 className={cn(
                   "three-d-button--sm transition-all duration-300",
-                  activeTab !== tab && "three-d-button--neutral"
+                  activeTab !== tab && "three-d-button--neutral",
                 )}
               />
             ))}

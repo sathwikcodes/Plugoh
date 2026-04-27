@@ -23,10 +23,10 @@ const maxScale = 1;
 const minScale = 0.97;
 
 const title: Record<AwardBadgeType, string> = {
-  "golden-kitty": "Top Creator",
-  "product-of-the-day": "Elite Creator",
-  "product-of-the-month": "Pro Creator",
-  "product-of-the-week": "Creator",
+  "golden-kitty": "Top Influencer",
+  "product-of-the-day": "Elite Influencer",
+  "product-of-the-month": "Pro Influencer",
+  "product-of-the-week": "Influencer",
 };
 
 export const AwardBadge = ({ type, link }: AwardBadgeProps) => {

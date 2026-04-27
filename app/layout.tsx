@@ -34,12 +34,12 @@ export const metadata: Metadata = {
     "influencer marketing",
     "brand collaborations",
     "Instagram influencers",
-    "creator marketplace",
+    "influencer marketplace",
     "influencer platform India",
     "reels marketing",
   ],
   openGraph: {
-    title: "Plugoh – Connect Brands with Creators",
+    title: "Plugoh – Connect Brands with Influencers",
     description:
       "The fastest way for businesses to discover and book Instagram influencers for reels, posts, and stories in India.",
     url: "https://plugoh.com",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Plugoh – Connect Brands with Creators",
+    title: "Plugoh – Connect Brands with Influencers",
     description:
       "The fastest way for businesses to discover and book Instagram influencers for reels, posts, and stories in India.",
   },

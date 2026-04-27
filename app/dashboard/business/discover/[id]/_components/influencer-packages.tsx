@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { brandTotalFromInfluencerPrice } from "@/lib/brand-pricing";
 import type { BookablePackage } from "@/lib/booking";
 
 interface PackageItem {
@@ -49,7 +50,9 @@ export function InfluencerPackages({
                   height={20}
                   className="h-5 w-5 object-contain"
                 />
-                {item.price.toLocaleString("en-IN")}
+                {brandTotalFromInfluencerPrice(item.price).toLocaleString(
+                  "en-IN",
+                )}
               </span>
             </p>
             <p className="mt-1 text-xs text-slate-400">

@@ -30,7 +30,9 @@ export default function InfluencerCampaignDetail() {
   const params = useParams();
   const id = params?.id as string;
 
-  const { data: rawCampaign, isLoading } = useCampaign(id, { role: "influencer" });
+  const { data: rawCampaign, isLoading } = useCampaign(id, {
+    role: "influencer",
+  });
   const campaign = rawCampaign as Campaign | undefined;
   const {
     acceptCampaign,

@@ -6,6 +6,7 @@ import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { BarChart3 } from "lucide-react";
 import type { Database } from "@/lib/supabase/types";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 import { AnalyticsTopInfluencers } from "./analytics-top-influencers";
 
 const AnalyticsSpendChart = dynamic(
@@ -68,7 +69,8 @@ export default function AnalyticsTab({
       const d = new Date(c.created_at);
       const key = `${d.getFullYear()}-${d.getMonth()}`;
       const prev = spendMap.get(key);
-      if (prev !== undefined) spendMap.set(key, prev + (c.price_offered || 0));
+      if (prev !== undefined)
+        spendMap.set(key, prev + brandDisplayAmountFromCampaign(c));
     }
     return months.map((m) => ({
       name: m.label,
@@ -90,7 +92,7 @@ export default function AnalyticsTab({
           profileId: c.influencer_profile_id,
         };
       }
-      map[c.influencer_profile_id].total += c.price_offered || 0;
+      map[c.influencer_profile_id].total += brandDisplayAmountFromCampaign(c);
       map[c.influencer_profile_id].count++;
     }
     return Object.values(map)

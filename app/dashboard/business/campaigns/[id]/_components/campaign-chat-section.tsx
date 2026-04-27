@@ -1,6 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getInitials, formatCurrency, formatPackage, timeAgo } from "@/lib/format";
+import {
+  getInitials,
+  formatCurrency,
+  formatPackage,
+  timeAgo,
+} from "@/lib/format";
 import { INSTAGRAM_GRADIENT } from "@/lib/animations";
 import { ThreeDButton } from "@/components/ui/3d-button";
 import type { Campaign } from "./campaign-types";
@@ -30,13 +35,13 @@ export function CampaignChatSection({
 
   return (
     <div className="space-y-3">
-      {/* Creator card */}
+      {/* Influencer card */}
       <div className="rounded-2xl border border-white/[0.09] bg-[linear-gradient(160deg,rgba(22,18,25,0.90)_0%,rgba(30,24,41,0.85)_100%)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm">
         <div className="flex items-center gap-3">
           {influencerProfile?.ig_profile_picture_url ? (
             <Image
               src={influencerProfile.ig_profile_picture_url}
-              alt={influencerProfile.display_name || "Creator"}
+              alt={influencerProfile.display_name || "Influencer"}
               width={48}
               height={48}
               className="h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-white/10"
@@ -52,7 +57,7 @@ export function CampaignChatSection({
           )}
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-white">
-              {influencerProfile?.display_name || "Creator"}
+              {influencerProfile?.display_name || "Influencer"}
             </p>
             <p className="truncate text-xs text-white/45">
               {handle ? `@${handle}` : influencerProfile?.category || "—"}
@@ -63,11 +68,13 @@ export function CampaignChatSection({
           <div className="mt-3">
             <ThreeDButton
               asChild
-              label="View creator profile"
+              label="View influencer profile"
               hideIcon
               className="three-d-button--sm three-d-button--no-glow three-d-button--pink w-full"
             >
-              <Link href={`/dashboard/business/discover/${influencerProfile.id}`} />
+              <Link
+                href={`/dashboard/business/discover/${influencerProfile.id}`}
+              />
             </ThreeDButton>
           </div>
         )}
@@ -78,7 +85,9 @@ export function CampaignChatSection({
         <div className="space-y-2 text-[13px]">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-white/50">Money spent</span>
-            <span className="font-semibold text-white">{formatCurrency(totalCharged)}</span>
+            <span className="font-semibold text-white">
+              {formatCurrency(totalCharged)}
+            </span>
           </div>
         </div>
       </div>
@@ -88,7 +97,9 @@ export function CampaignChatSection({
         <div className="space-y-2 text-[13px]">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-white/50">Package</span>
-            <span className="text-white">{formatPackage(campaign.package_type)}</span>
+            <span className="text-white">
+              {formatPackage(campaign.package_type)}
+            </span>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-white/50">Booked</span>

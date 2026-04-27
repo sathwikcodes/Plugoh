@@ -67,6 +67,6 @@ export const SORT_OPTIONS: Array<{
   {
     value: "highest_spend",
     label: "Highest spend",
-    description: "Highest creator fee at the top",
+    description: "Highest influencer fee at the top",
   },
 ];

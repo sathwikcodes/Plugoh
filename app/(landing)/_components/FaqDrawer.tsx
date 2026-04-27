@@ -8,19 +8,19 @@ import styles from "../landing.module.css";
 const faqs = [
   {
     q: "How do I get started?",
-    a: "For brands: sign up, set up your brand profile with your niche and campaign budget. Then browse creators and send your first campaign offer.\n\nFor creators: sign up, complete your profile with your niche, portfolio, and rates. Brands will discover you and send you collaboration offers.",
+    a: "For brands: sign up, set up your brand profile with your niche and campaign budget. Then browse influencers and send your first campaign offer.\n\nFor influencers: sign up, complete your profile with your niche, portfolio, and rates. Brands will discover you and send you collaboration offers.",
   },
   {
-    q: "How does pricing work for creators?",
-    a: "Creators set their own rates when building their profile. You choose your price per post, story, reel, or campaign. Brands see your rates and decide if it fits their budget. You're always in control.",
+    q: "How does pricing work for influencers?",
+    a: "Influencers set their own rates when building their profile. You choose your price per post, story, reel, or campaign. Brands see your rates and decide if it fits their budget. You're always in control.",
   },
   {
-    q: "How do brands pay creators?",
-    a: "Payments are handled in-app through Plugoh. Once a creator delivers the content, the brand releases payment. Everything is tracked — no chasing invoices, no DM negotiations.",
+    q: "How do brands pay influencers?",
+    a: "Payments are handled in-app through Plugoh. Once an influencer delivers the content, the brand releases payment. Everything is tracked — no chasing invoices, no DM negotiations.",
   },
   {
     q: "Is Plugoh only for South India right now?",
-    a: "Yes, for now. We're starting with South India because that's where we're building the strongest creator community first. We'll expand once we've built something genuinely great here.",
+    a: "Yes, for now. We're starting with South India because that's where we're building the strongest influencer community first. We'll expand once we've built something genuinely great here.",
   },
   {
     q: "What types of collaborations are supported?",

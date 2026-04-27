@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/format";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 import FlipClock from "@/components/ui/flip-clock";
 import type { Campaign } from "./campaign-types";
 
@@ -36,13 +37,13 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
               <div>
                 <p className="text-sm font-semibold text-white">
                   {campaign.payment_method === "upi"
-                    ? "Payment held — waiting for creator"
-                    : "Card pre-authorized — waiting for creator"}
+                    ? "Payment held — waiting for influencer"
+                    : "Card pre-authorized — waiting for influencer"}
                 </p>
                 <p className="mt-0.5 text-[11px] text-white/55 sm:text-xs">
                   {campaign.payment_method === "upi"
                     ? "Full refund if they don't accept within the window."
-                    : "No charge yet. Only captured if the creator accepts."}
+                    : "No charge yet. Only captured if the influencer accepts."}
                 </p>
               </div>
             </div>
@@ -64,7 +65,8 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
               Campaign completed
             </p>
             <p className="text-xs text-white/50">
-              {formatCurrency(campaign.price_offered)} released
+              {formatCurrency(brandDisplayAmountFromCampaign(campaign))}{" "}
+              released
             </p>
           </div>
         </div>

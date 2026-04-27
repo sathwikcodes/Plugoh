@@ -114,8 +114,8 @@ export async function POST(request: NextRequest) {
       sender_id: campaign.business_id,
       message_type: "system",
       content: isCron
-        ? `Payment auto-released — ₹${(campaign.price_offered ?? 0).toLocaleString("en-IN")} is on its way to the creator.`
-        : `Content approved! ₹${(campaign.price_offered ?? 0).toLocaleString("en-IN")} is being released to the creator.`,
+        ? `Payment auto-released — ₹${(campaign.price_offered ?? 0).toLocaleString("en-IN")} is on its way to the influencer.`
+        : `Content approved! ₹${(campaign.price_offered ?? 0).toLocaleString("en-IN")} is being released to the influencer.`,
     }),
   ]);
 

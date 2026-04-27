@@ -2,14 +2,12 @@
 
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { brandTotalFromInfluencerPrice } from "@/lib/brand-pricing";
 import { compactNumber } from "@/lib/format";
 import { INSTAGRAM_GRADIENT } from "@/lib/animations";
 import type { Database } from "@/lib/supabase/types";
 import { ThreeDPill } from "@/components/ui/3d-pill";
-import {
-  VerificationBadge,
-  PriceButton,
-} from "./influencer-card-stats";
+import { VerificationBadge, PriceButton } from "./influencer-card-stats";
 
 export type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
@@ -35,15 +33,15 @@ export function getProfileInitials(name: string | null): string {
 }
 
 function getDisplayName(profile: InfluencerProfile) {
-  return profile.display_name?.trim() || "Creator";
+  return profile.display_name?.trim() || "Influencer";
 }
 
 function getShortBio(profile: InfluencerProfile) {
   if (profile.bio?.trim()) return profile.bio.trim();
   if (profile.category?.trim()) {
-    return `${profile.category.trim()} creator building polished brand stories.`;
+    return `${profile.category.trim()} influencer building polished brand stories.`;
   }
-  return "Creator crafting polished brand-friendly content with a sharp personal style.";
+  return "Influencer crafting polished brand-friendly content with a sharp personal style.";
 }
 
 function getFollowerLabel(profile: InfluencerProfile) {
@@ -53,7 +51,9 @@ function getFollowerLabel(profile: InfluencerProfile) {
 function getPriceLabel(profile: InfluencerProfile) {
   const startsAt = getStartsAtPrice(profile);
   if (!startsAt) return "On request";
-  return new Intl.NumberFormat("en-IN").format(startsAt);
+  return new Intl.NumberFormat("en-IN").format(
+    brandTotalFromInfluencerPrice(startsAt),
+  );
 }
 export function isProInfluencer(profile: InfluencerProfile) {
   return (
@@ -167,7 +167,9 @@ export function InfluencerCardInfoPanel({
             </>
           ) : null}
           {profile.category ? (
-            <span className="truncate text-[#f7a3c8]/90">{profile.category}</span>
+            <span className="truncate text-[#f7a3c8]/90">
+              {profile.category}
+            </span>
           ) : null}
         </div>
 

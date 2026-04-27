@@ -74,7 +74,9 @@ export function useInfluencerCampaignActions(
         const previous = queryClient.getQueryData<Campaign[]>(listKey);
         const current = previous?.find((c) => c.id === campaignId);
         const optimisticStatus =
-          current?.status === "pre_authorized" ? "in_escrow" : "payment_pending";
+          current?.status === "pre_authorized"
+            ? "in_escrow"
+            : "payment_pending";
         patchList(campaignId, { status: optimisticStatus });
         return { previous };
       },

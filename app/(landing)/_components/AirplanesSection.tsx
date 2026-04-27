@@ -143,7 +143,7 @@ export function AirplanesSection() {
                   flexShrink: 0,
                 }}
               />
-              <span>CREATORS.</span>
+              <span>INFLUENCERS.</span>
             </m.span>
 
             <m.span style={{ display: "block", opacity: op4, y: y4 }}>

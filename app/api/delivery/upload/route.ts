@@ -39,12 +39,22 @@ export async function POST(request: NextRequest) {
   const file = formData.get("file");
   const campaignId = formData.get("campaignId");
 
-  if (!(file instanceof File) || typeof campaignId !== "string" || !campaignId) {
-    return NextResponse.json({ error: "Missing file or campaignId" }, { status: 400 });
+  if (
+    !(file instanceof File) ||
+    typeof campaignId !== "string" ||
+    !campaignId
+  ) {
+    return NextResponse.json(
+      { error: "Missing file or campaignId" },
+      { status: 400 },
+    );
   }
 
   if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "File exceeds 50 MB limit" }, { status: 400 });
+    return NextResponse.json(
+      { error: "File exceeds 50 MB limit" },
+      { status: 400 },
+    );
   }
 
   if (!ALLOWED_TYPES.has(file.type)) {

@@ -12,19 +12,19 @@ type Tier = (typeof TIERS)[number];
 const TIER_BADGE_MAP: Record<string, { type: AwardBadgeType; place?: number }> =
   {
     "Rising Star": { type: "product-of-the-week", place: 3 },
-    Creator: { type: "product-of-the-week", place: 1 },
-    "Pro Creator": { type: "product-of-the-month", place: 2 },
-    "Elite Creator": { type: "product-of-the-day", place: 1 },
-    "Top Creator": { type: "golden-kitty" },
+    Influencer: { type: "product-of-the-week", place: 1 },
+    "Pro Influencer": { type: "product-of-the-month", place: 2 },
+    "Elite Influencer": { type: "product-of-the-day", place: 1 },
+    "Top Influencer": { type: "golden-kitty" },
   };
 
 // Maps tier name → its brand color hex for the shimmer gradient
 const TIER_SHIMMER_COLOR: Record<string, string> = {
   "Rising Star": "#e5b94a", // champagne gold
-  Creator: "#fbbf24", // amber-400
-  "Pro Creator": "#fb923c", // orange-400
-  "Elite Creator": "#a78bfa", // violet-400
-  "Top Creator": "#facc15", // yellow-400
+  Influencer: "#fbbf24", // amber-400
+  "Pro Influencer": "#fb923c", // orange-400
+  "Elite Influencer": "#a78bfa", // violet-400
+  "Top Influencer": "#facc15", // yellow-400
 };
 
 interface TierHeroCardProps {

@@ -24,6 +24,6 @@ export function getInfluencerDisplayName(
     profile?.display_name?.trim() ||
     profile?.instagram_handle?.trim() ||
     profile?.ig_username?.trim() ||
-    "Creator"
+    "Influencer"
   );
 }

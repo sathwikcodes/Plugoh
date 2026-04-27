@@ -381,13 +381,15 @@ function PricingSliderCard({
               onClick={handleCancel}
               disabled={isSaving}
               className="flex-1 !h-9 !w-auto !min-w-0 text-xs [&_.icon]:hidden"
-              style={{
-                "--button-gold": "#52525b",
-                "--button-gold-light": "#a1a1aa",
-                "--button-gold-dark": "#27272a",
-                "--button-ink": "#fff",
-                "--button-glow": "rgba(255,255,255,0.05)",
-              } as React.CSSProperties}
+              style={
+                {
+                  "--button-gold": "#52525b",
+                  "--button-gold-light": "#a1a1aa",
+                  "--button-gold-dark": "#27272a",
+                  "--button-ink": "#fff",
+                  "--button-glow": "rgba(255,255,255,0.05)",
+                } as React.CSSProperties
+              }
             />
             <ThreeDButton
               label={isSaving ? "Saving..." : "Save"}

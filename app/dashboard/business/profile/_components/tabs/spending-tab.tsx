@@ -7,6 +7,7 @@ import { stagger, fadeUp } from "@/lib/animations";
 import { Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { compactNumber } from "@/lib/format";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 import type { Database } from "@/lib/supabase/types";
 import { SpendingTransactionRow } from "./spending-transaction-row";
 
@@ -45,11 +46,11 @@ export default function SpendingTab({
       (c) => c.status === "pending" || c.status === "accepted",
     );
     const totalPaid = paidCampaigns.reduce(
-      (s, c) => s + (c.price_offered || 0),
+      (s, c) => s + brandDisplayAmountFromCampaign(c),
       0,
     );
     const totalPending = pendingCampaigns.reduce(
-      (s, c) => s + (c.price_offered || 0),
+      (s, c) => s + brandDisplayAmountFromCampaign(c),
       0,
     );
     const avgPerCampaign =

@@ -15,7 +15,8 @@ interface InfluencerHeroProps {
   profile: InfluencerProfile;
   handle: string;
   engagementRate: number;
-  startsAtPrice: number | null;
+  /** All-in amount the brand pays (influencer rate + platform fee). */
+  displayStartsAtPrice: number | null;
   isProfileComplete: boolean;
   availablePackages: Array<{
     key: BookablePackage;
@@ -29,7 +30,7 @@ export function InfluencerHero({
   profile,
   handle,
   engagementRate,
-  startsAtPrice,
+  displayStartsAtPrice,
   isProfileComplete,
   availablePackages,
   onBook,
@@ -42,7 +43,7 @@ export function InfluencerHero({
             <Avatar className="h-20 w-20 border border-slate-800/70 bg-slate-900/60">
               <AvatarImage
                 src={profile.ig_profile_picture_url ?? undefined}
-                alt={profile.display_name || "Creator"}
+                alt={profile.display_name || "Influencer"}
               />
               <AvatarFallback className="bg-slate-800 text-slate-200">
                 {getProfileInitials(profile.display_name)}
@@ -52,7 +53,7 @@ export function InfluencerHero({
             <div className="min-w-0 space-y-3">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-3xl font-semibold tracking-tight text-white">
-                  {profile.display_name || "Creator"}
+                  {profile.display_name || "Influencer"}
                 </h1>
                 <Image
                   src="/verified.png"
@@ -124,7 +125,7 @@ export function InfluencerHero({
                 Starts from
               </p>
               <p className="mt-3 text-3xl font-semibold text-white">
-                {startsAtPrice ? (
+                {displayStartsAtPrice ? (
                   <span className="inline-flex items-center gap-2">
                     <Image
                       src="/coin.png"
@@ -133,7 +134,7 @@ export function InfluencerHero({
                       height={24}
                       className="h-6 w-6 object-contain"
                     />
-                    {startsAtPrice.toLocaleString("en-IN")}
+                    {displayStartsAtPrice.toLocaleString("en-IN")}
                   </span>
                 ) : (
                   "—"
@@ -146,7 +147,11 @@ export function InfluencerHero({
               <div className="mt-4 grid gap-3.5">
                 {isProfileComplete ? (
                   <ThreeDButton
-                    label={availablePackages.length ? "Book now" : "Pricing unavailable"}
+                    label={
+                      availablePackages.length
+                        ? "Book now"
+                        : "Pricing unavailable"
+                    }
                     disabled={!availablePackages.length}
                     onClick={onBook}
                     hideIcon
@@ -155,7 +160,7 @@ export function InfluencerHero({
                 ) : (
                   <div className="space-y-3 rounded-2xl border border-amber-300/60 bg-amber-900/20 p-4 text-center">
                     <p className="text-sm font-medium text-amber-200">
-                      Complete your business profile to book this creator
+                      Complete your business profile to book this influencer
                     </p>
                     <ThreeDButton
                       asChild

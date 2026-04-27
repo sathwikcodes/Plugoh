@@ -10,6 +10,7 @@ import {
   getBusinessLocation,
   isBusinessProfileComplete,
 } from "@/lib/business-profile";
+import { brandDisplayAmountFromCampaign } from "@/lib/brand-pricing";
 import {
   ProfileStrengthCard,
   type StrengthItem,
@@ -62,7 +63,7 @@ export default function BusinessOverviewTab({
     const total = campaigns.length;
     const completed = campaigns.filter((c) => c.status === "completed");
     const totalSpent = completed.reduce(
-      (s, c) => s + (c.price_offered || 0),
+      (s, c) => s + brandDisplayAmountFromCampaign(c),
       0,
     );
     const accepted = campaigns.filter(

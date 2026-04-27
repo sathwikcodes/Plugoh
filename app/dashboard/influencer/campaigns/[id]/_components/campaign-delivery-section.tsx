@@ -10,7 +10,8 @@ import { supabase } from "@/lib/supabase/client";
 import type { Campaign } from "./campaign-types";
 
 const MAX_BYTES = 50 * 1024 * 1024;
-const ACCEPT = "image/*,video/mp4,video/quicktime,video/webm,application/pdf,application/zip";
+const ACCEPT =
+  "image/*,video/mp4,video/quicktime,video/webm,application/pdf,application/zip";
 
 interface CampaignDeliverySectionProps {
   campaign: Campaign;
@@ -32,7 +33,9 @@ export function CampaignDeliverySection({
   const [fileError, setFileError] = useState<string | null>(null);
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [showDeliveryForm, setShowDeliveryForm] = useState(false);
-  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "error">("idle");
+  const [uploadState, setUploadState] = useState<
+    "idle" | "uploading" | "error"
+  >("idle");
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleCancel = () => {
@@ -63,7 +66,9 @@ export function CampaignDeliverySection({
     setUploadState("uploading");
     setUploadError(null);
 
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const formData = new FormData();
     formData.append("file", file);
     formData.append("campaignId", campaign.id);
@@ -77,11 +82,14 @@ export function CampaignDeliverySection({
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       setUploadState("error");
-      setUploadError((body as { error?: string }).error ?? "Upload failed. Please try again.");
+      setUploadError(
+        (body as { error?: string }).error ??
+          "Upload failed. Please try again.",
+      );
       return;
     }
 
-    const { storagePath } = await res.json() as { storagePath: string };
+    const { storagePath } = (await res.json()) as { storagePath: string };
     setUploadState("idle");
 
     await onSubmitDelivery({
@@ -196,16 +204,18 @@ export function CampaignDeliverySection({
                   onClick={handleCancel}
                   disabled={isWorking}
                   className="flex-1 !h-9 !w-auto !min-w-0 text-xs [&_.icon]:hidden"
-                  style={{
-                    "--button-gold": "#e11d48",
-                    "--button-gold-light": "#fb7185",
-                    "--button-gold-dark": "#9f1239",
-                    "--button-mid": "#e11d48",
-                    "--button-ink": "#fff",
-                    "--button-glow": "rgba(251,113,133,0.38)",
-                    "--button-edge": "#9f1239",
-                    "--button-shadow-inner": "rgba(80,0,20,0.38)",
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      "--button-gold": "#e11d48",
+                      "--button-gold-light": "#fb7185",
+                      "--button-gold-dark": "#9f1239",
+                      "--button-mid": "#e11d48",
+                      "--button-ink": "#fff",
+                      "--button-glow": "rgba(251,113,133,0.38)",
+                      "--button-edge": "#9f1239",
+                      "--button-shadow-inner": "rgba(80,0,20,0.38)",
+                    } as React.CSSProperties
+                  }
                 />
                 <ThreeDButton
                   type="submit"
@@ -220,16 +230,18 @@ export function CampaignDeliverySection({
                   }
                   disabled={isWorking || !file}
                   className="flex-1 !h-9 !w-auto !min-w-0 text-xs [&_.icon]:hidden"
-                  style={{
-                    "--button-gold": "#34d399",
-                    "--button-gold-light": "#a7f3d0",
-                    "--button-gold-dark": "#065f46",
-                    "--button-mid": "#10b981",
-                    "--button-ink": "#022c22",
-                    "--button-glow": "rgba(52,211,153,0.38)",
-                    "--button-edge": "#065f46",
-                    "--button-shadow-inner": "rgba(0,60,30,0.35)",
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      "--button-gold": "#34d399",
+                      "--button-gold-light": "#a7f3d0",
+                      "--button-gold-dark": "#065f46",
+                      "--button-mid": "#10b981",
+                      "--button-ink": "#022c22",
+                      "--button-glow": "rgba(52,211,153,0.38)",
+                      "--button-edge": "#065f46",
+                      "--button-shadow-inner": "rgba(0,60,30,0.35)",
+                    } as React.CSSProperties
+                  }
                 />
               </div>
             </form>

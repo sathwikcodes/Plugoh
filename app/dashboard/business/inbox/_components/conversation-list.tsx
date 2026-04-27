@@ -69,8 +69,8 @@ export function ConversationList({
             </p>
             <p className="mt-1.5 max-w-60 text-xs leading-5 text-white/40">
               {searchQuery
-                ? "Try a different creator name or campaign title."
-                : "Your creator conversations will appear here once a campaign starts moving."}
+                ? "Try a different influencer name or campaign title."
+                : "Your influencer conversations will appear here once a campaign starts moving."}
             </p>
           </div>
         ) : (

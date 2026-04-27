@@ -46,7 +46,7 @@ export function StepProfile({ state, dispatch }: StepProfileProps) {
                 value: e.target.value,
               })
             }
-            placeholder="Your creator name"
+            placeholder="Your influencer name"
             className="h-11"
           />
         </div>
