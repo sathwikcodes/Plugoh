@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, CheckCircle, Loader2, Timer } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AlertTriangle, CheckCircle, Download, Loader2, Timer } from "lucide-react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,6 @@ export function CampaignDeliverySection({
     queryClient.invalidateQueries({
       queryKey: trpc.campaign.getCampaigns.queryKey(),
     });
-    // No-arg queryKey() is a TRPC prefix wildcard — matches every getCampaign({...}) query.
     queryClient.invalidateQueries({
       queryKey: trpc.campaign.getCampaign.queryKey(),
     });
@@ -79,6 +78,24 @@ export function CampaignDeliverySection({
     }),
   );
 
+  const downloadQuery = useQuery({
+    ...trpc.campaign.getDeliveryDownloadUrl.queryOptions({ campaignId: campaign.id }),
+    enabled: false,
+  });
+
+  const handleDownload = async () => {
+    const result = await downloadQuery.refetch();
+    if (result.data?.signedUrl) {
+      window.open(result.data.signedUrl, "_blank", "noopener");
+    } else if (result.error) {
+      toast({
+        title: "Download failed",
+        description: (result.error as { message?: string })?.message ?? "Could not generate download link.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (campaign.status !== "delivery_submitted") return null;
 
   const autoReleaseDays = campaign.delivery_submitted_at
@@ -95,7 +112,7 @@ export function CampaignDeliverySection({
               Content delivered — your move
             </p>
             <p className="mt-0.5 text-[11px] text-white/55 sm:text-xs">
-              Review the content, then approve to release payment.
+              Download and review the content, then approve to release payment.
             </p>
           </div>
         </div>
@@ -104,6 +121,22 @@ export function CampaignDeliverySection({
           {autoReleaseDays}d auto-release
         </div>
       </div>
+
+      {/* Download button — always visible when delivery_submitted */}
+      <Button
+        variant="outline"
+        onClick={handleDownload}
+        disabled={downloadQuery.isFetching}
+        className="h-10 w-full rounded-full border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 text-sm px-4"
+      >
+        {downloadQuery.isFetching ? (
+          <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <Download className="mr-1.5 h-3.5 w-3.5" />
+        )}
+        Download delivery
+      </Button>
+
       {!showDisputeForm ? (
         <div className="flex flex-col gap-2.5 sm:flex-row">
           <Button

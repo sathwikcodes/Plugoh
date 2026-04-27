@@ -157,7 +157,7 @@ export function useInfluencerCampaignActions(
       declineMutation.mutate({ campaignId }),
     submitDelivery: (input: {
       campaignId: string;
-      contentUrl: string;
+      storagePath: string;
       notes?: string;
     }) => deliveryMutation.mutateAsync(input),
     acceptingId: acceptMutation.variables?.campaignId ?? null,

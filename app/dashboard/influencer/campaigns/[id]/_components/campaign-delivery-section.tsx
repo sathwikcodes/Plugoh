@@ -1,19 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { ExternalLink, Loader2, Send } from "lucide-react";
+import { useRef, useState } from "react";
+import { Loader2, Send, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ThreeDButton } from "@/components/ui/3d-button";
+import { supabase } from "@/lib/supabase/client";
 import type { Campaign } from "./campaign-types";
+
+const MAX_BYTES = 50 * 1024 * 1024;
+const ACCEPT = "image/*,video/mp4,video/quicktime,video/webm,application/pdf,application/zip";
 
 interface CampaignDeliverySectionProps {
   campaign: Campaign;
   onSubmitDelivery: (input: {
     campaignId: string;
-    contentUrl: string;
+    storagePath: string;
     notes?: string;
   }) => Promise<unknown>;
   isSubmittingDelivery: boolean;
@@ -24,45 +27,86 @@ export function CampaignDeliverySection({
   onSubmitDelivery,
   isSubmittingDelivery,
 }: CampaignDeliverySectionProps) {
-  const [contentUrl, setContentUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [showDeliveryForm, setShowDeliveryForm] = useState(false);
+  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "error">("idle");
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleCancel = () => {
     setShowDeliveryForm(false);
-    setContentUrl("");
+    setFile(null);
+    setFileError(null);
     setDeliveryNotes("");
+    setUploadState("idle");
+    setUploadError(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const picked = e.target.files?.[0] ?? null;
+    setFileError(null);
+    if (!picked) return;
+    if (picked.size > MAX_BYTES) {
+      setFileError("File exceeds 50 MB limit.");
+      e.target.value = "";
+      return;
+    }
+    setFile(picked);
   };
 
   const handleSubmitDelivery = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contentUrl.trim()) return;
+    if (!file) return;
+
+    setUploadState("uploading");
+    setUploadError(null);
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("campaignId", campaign.id);
+
+    const res = await fetch("/api/delivery/upload", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${session?.access_token}` },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      setUploadState("error");
+      setUploadError((body as { error?: string }).error ?? "Upload failed. Please try again.");
+      return;
+    }
+
+    const { storagePath } = await res.json() as { storagePath: string };
+    setUploadState("idle");
+
     await onSubmitDelivery({
       campaignId: campaign.id,
-      contentUrl: contentUrl.trim(),
+      storagePath,
       notes: deliveryNotes.trim() || undefined,
     });
     handleCancel();
   };
 
-  if (!campaign.delivery_url && campaign.status !== "in_escrow") return null;
+  const isWorking = isSubmittingDelivery || uploadState === "uploading";
+
+  const eligibleStatuses = ["in_escrow", "delivery_submitted"];
+  if (!eligibleStatuses.includes(campaign.status ?? "")) return null;
 
   return (
     <div className="space-y-4">
-      {campaign.delivery_url ? (
+      {campaign.status === "delivery_submitted" ? (
         <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-4">
-          <p className="mb-2 text-[10px] uppercase tracking-[0.22em] text-white/35">
+          <p className="mb-1 text-[10px] uppercase tracking-[0.22em] text-white/35">
             Delivered content
           </p>
-          <a
-            href={campaign.delivery_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-emerald-400 transition-colors hover:text-emerald-400/80"
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-            View delivery
-          </a>
+          <p className="text-sm text-emerald-400">
+            Content submitted — awaiting brand review
+          </p>
         </div>
       ) : null}
 
@@ -72,16 +116,15 @@ export function CampaignDeliverySection({
             Submit delivery
           </p>
           <p className="mb-4 text-[12.5px] text-white/50 sm:text-[13px]">
-            Upload your content to Google Drive, Dropbox, or similar and share
-            the link here so the brand can review and release payment.
+            Upload your content directly — no external links needed. Max 50 MB.
           </p>
           {!showDeliveryForm ? (
             <Button
               className="h-10 rounded-full px-5 text-sm"
               onClick={() => setShowDeliveryForm(true)}
             >
-              <Send className="mr-2 h-3.5 w-3.5" />
-              Submit delivery
+              <Upload className="mr-2 h-3.5 w-3.5" />
+              Upload file
             </Button>
           ) : (
             <form
@@ -89,25 +132,34 @@ export function CampaignDeliverySection({
               className="space-y-4 rounded-[20px] border border-white/[0.08] bg-[rgba(22,18,25,0.70)] p-4 backdrop-blur-sm"
             >
               <div className="space-y-2">
-                <Label
-                  htmlFor="content-url"
-                  className="text-sm font-medium text-white"
-                >
-                  Content Drive URL <span className="text-amber-400">*</span>
+                <Label className="text-sm font-medium text-white">
+                  Content file <span className="text-amber-400">*</span>
                 </Label>
-                <div className="relative">
-                  <ExternalLink className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
-                  <Input
-                    id="content-url"
-                    type="url"
-                    value={contentUrl}
-                    onChange={(e) => setContentUrl(e.target.value)}
-                    placeholder="https://drive.google.com/file/..."
-                    className="h-10 rounded-full border-white/10 bg-white/5 pl-10 text-white"
-                    required
-                  />
-                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={ACCEPT}
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-full border border-dashed border-white/20 bg-white/5 text-sm text-white/60 transition-colors hover:border-white/40 hover:text-white/90"
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  {file ? file.name : "Choose file"}
+                </button>
+                {file ? (
+                  <p className="text-[11px] text-white/40">
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                ) : null}
+                {fileError ? (
+                  <p className="text-[11px] text-rose-400">{fileError}</p>
+                ) : null}
               </div>
+
               <div className="space-y-2">
                 <Label
                   htmlFor="delivery-notes"
@@ -124,13 +176,25 @@ export function CampaignDeliverySection({
                   className="resize-none border-white/10 bg-white/5 text-sm"
                 />
               </div>
+
+              {uploadState === "error" && uploadError ? (
+                <p className="text-[12px] text-rose-400">{uploadError}</p>
+              ) : null}
+
+              {uploadState === "uploading" ? (
+                <p className="flex items-center gap-2 text-[12px] text-white/50">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Uploading…
+                </p>
+              ) : null}
+
               <div className="flex gap-2">
                 <ThreeDButton
                   type="button"
                   label="Cancel"
                   hideIcon
                   onClick={handleCancel}
-                  disabled={isSubmittingDelivery}
+                  disabled={isWorking}
                   className="flex-1 !h-9 !w-auto !min-w-0 text-xs [&_.icon]:hidden"
                   style={{
                     "--button-gold": "#e11d48",
@@ -145,16 +209,16 @@ export function CampaignDeliverySection({
                 />
                 <ThreeDButton
                   type="submit"
-                  label={isSubmittingDelivery ? "Sending…" : "Submit"}
+                  label={isWorking ? "Sending…" : "Submit"}
                   hideIcon
                   customIcon={
-                    isSubmittingDelivery ? (
+                    isWorking ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     ) : (
                       <Send className="h-3.5 w-3.5" />
                     )
                   }
-                  disabled={isSubmittingDelivery || !contentUrl.trim()}
+                  disabled={isWorking || !file}
                   className="flex-1 !h-9 !w-auto !min-w-0 text-xs [&_.icon]:hidden"
                   style={{
                     "--button-gold": "#34d399",

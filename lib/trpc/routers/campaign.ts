@@ -27,7 +27,6 @@ function buildDeliveryEmailHtml({
   campaignTitle,
   packageType,
   priceOffered,
-  contentUrl,
   notes,
   reviewUrl,
 }: {
@@ -36,7 +35,6 @@ function buildDeliveryEmailHtml({
   campaignTitle: string;
   packageType: string;
   priceOffered: string;
-  contentUrl: string;
   notes?: string;
   reviewUrl: string;
 }) {
@@ -56,8 +54,8 @@ function buildDeliveryEmailHtml({
           </p>
 
           <div style="margin:0 0 18px;border:1px solid #c4e8c4;border-radius:14px;background:#f4fbf4;padding:14px;">
-            <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#4a9a4a;">Delivered content</p>
-            <a href="${contentUrl}" style="font-size:14px;color:#1a7a3a;word-break:break-all;text-decoration:underline;">${contentUrl}</a>
+            <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#4a9a4a;">Delivery ready</p>
+            <p style="margin:0;font-size:14px;color:#1a7a3a;">Log in to your Plugoh dashboard to view and download the delivery using the button below.</p>
           </div>
 
           ${
@@ -118,7 +116,6 @@ async function sendDeliveryNotificationEmail({
   db,
   campaign,
   influencerId,
-  contentUrl,
   notes,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,7 +123,6 @@ async function sendDeliveryNotificationEmail({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   campaign: any;
   influencerId: string;
-  contentUrl: string;
   notes?: string;
 }) {
   try {
@@ -196,7 +192,6 @@ async function sendDeliveryNotificationEmail({
           campaignTitle,
           packageType,
           priceOffered,
-          contentUrl,
           notes,
           reviewUrl,
         }),
@@ -679,7 +674,7 @@ export const campaignRouter = router({
     .input(
       z.object({
         campaignId: z.string(),
-        contentUrl: z.string().url("Must be a valid URL"),
+        storagePath: z.string().min(1, "Storage path is required"),
         notes: z.string().optional(),
       }),
     )
@@ -720,7 +715,7 @@ export const campaignRouter = router({
           db.from("deliveries").insert({
             campaign_id: input.campaignId,
             submitted_by: user.id,
-            content_url: input.contentUrl,
+            content_url: input.storagePath,
             notes: input.notes ?? null,
             submitted_at: now,
           }),
@@ -767,7 +762,6 @@ export const campaignRouter = router({
         db,
         campaign,
         influencerId: user.id,
-        contentUrl: input.contentUrl,
         notes: input.notes,
       });
 
@@ -954,6 +948,52 @@ export const campaignRouter = router({
       ]);
 
       return { success: true };
+    }),
+
+  getDeliveryDownloadUrl: protectedProcedure
+    .input(z.object({ campaignId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { db, user } = ctx;
+
+      const { data: campaign } = await db
+        .from("campaigns")
+        .select("business_id, status")
+        .eq("id", input.campaignId)
+        .maybeSingle();
+
+      if (!campaign || campaign.business_id !== user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+      }
+
+      const eligible = ["delivery_submitted", "completed", "disputed"];
+      if (!eligible.includes(campaign.status ?? "")) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No delivery available" });
+      }
+
+      const { data: delivery } = await db
+        .from("deliveries")
+        .select("content_url")
+        .eq("campaign_id", input.campaignId)
+        .order("submitted_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!delivery?.content_url) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Delivery not found" });
+      }
+
+      const { data: signedData, error } = await db.storage
+        .from("campaign-deliveries")
+        .createSignedUrl(delivery.content_url, 3600);
+
+      if (error || !signedData?.signedUrl) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Could not generate download link",
+        });
+      }
+
+      return { signedUrl: signedData.signedUrl, expiresInSeconds: 3600 };
     }),
 
   editCampaign: protectedProcedure

@@ -1,4 +1,3 @@
-import { ExternalLink } from "lucide-react";
 import type { Campaign } from "./campaign-types";
 
 interface BriefRow {
@@ -53,19 +52,6 @@ export function CampaignBriefSection({ campaign }: CampaignBriefSectionProps) {
         )}
       </div>
 
-      {campaign.delivery_url && (
-        <div className="rounded-2xl border border-[#3ecf8e]/20 bg-[#3ecf8e]/[0.06] px-5 py-4">
-          <a
-            href={campaign.delivery_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-[#3ecf8e] transition-colors hover:text-[#3ecf8e]/80"
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-            View delivered content
-          </a>
-        </div>
-      )}
     </div>
   );
 }
