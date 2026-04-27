@@ -188,11 +188,11 @@ export default function Login() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.35 }}
-            className="flex flex-col items-center gap-5 text-center sm:gap-7"
+            className="flex flex-col items-center gap-3 text-center sm:gap-5"
           >
             {/* Mail image */}
             <div
-              className="relative flex items-center justify-center rounded-2xl p-4 sm:p-5"
+              className="relative flex items-center justify-center rounded-2xl p-3 sm:p-4"
               style={{
                 background: "rgba(255,255,255,0.08)",
                 border: "1px solid rgba(255,255,255,0.12)",
@@ -205,7 +205,7 @@ export default function Login() {
                 alt="Mail"
                 width={56}
                 height={56}
-                className="h-12 w-12 sm:h-14 sm:w-14"
+                className="h-10 w-10 sm:h-12 sm:w-12"
                 style={{ objectFit: "contain" }}
               />
             </div>

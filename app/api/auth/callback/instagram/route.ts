@@ -119,6 +119,7 @@ export async function GET(request: NextRequest) {
             instagram_url: `https://www.instagram.com/${profile.username}`,
             access_token: accessToken,
             token_expires_at: tokenExpiresAt,
+            is_active: true,
           },
           { onConflict: "user_id" },
         );

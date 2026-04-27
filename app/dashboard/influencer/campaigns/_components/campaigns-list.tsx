@@ -81,17 +81,8 @@ export function CampaignsList({
           </div>
           <p className="text-lg font-semibold text-white">No campaigns yet</p>
           <p className="mt-1.5 text-sm text-white/50">
-            Brand offers will appear here once they book you.
+            Be patient our AI is working to get you deals.
           </p>
-          <Button
-            asChild
-            className="mt-6 h-11 rounded-full bg-primary text-primary-foreground hover:brightness-105"
-          >
-            <Link href="/dashboard/influencer/profile">
-              Complete profile
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
         </div>
       </m.div>
     );

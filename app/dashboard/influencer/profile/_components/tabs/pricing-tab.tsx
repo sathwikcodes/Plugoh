@@ -244,6 +244,7 @@ interface PricingSliderCardProps {
   step: number;
   isEditing: boolean;
   isSaving: boolean;
+  isSet: boolean;
   onEdit: () => void;
   onCancel: () => void;
   onSave: (price: number) => void;
@@ -262,6 +263,7 @@ function PricingSliderCard({
   step,
   isEditing,
   isSaving,
+  isSet,
   onEdit,
   onCancel,
   onSave,
@@ -316,9 +318,15 @@ function PricingSliderCard({
 
         {/* Price — direct display, no spring lag */}
         <div>
-          <p className="text-3xl font-extrabold tracking-tight tabular-nums">
-            ₹{displayPrice.toLocaleString("en-IN")}
-          </p>
+          {isEditing || isSet ? (
+            <p className="text-3xl font-extrabold tracking-tight tabular-nums">
+              ₹{displayPrice.toLocaleString("en-IN")}
+            </p>
+          ) : (
+            <p className="text-2xl font-bold tracking-tight text-muted-foreground/60">
+              Not set
+            </p>
+          )}
           <p className="text-xs text-muted-foreground mt-0.5">
             per {title.toLowerCase().replace("instagram ", "")}
           </p>
@@ -390,10 +398,10 @@ function PricingSliderCard({
           </div>
         ) : (
           <ThreeDButton
-            label="Edit Price"
+            label={isSet ? "Edit Price" : "Set Price"}
             onClick={handleEdit}
             hideIcon
-            className="w-full !h-9 !w-full !min-w-0 text-xs"
+            className="w-full !h-9 !min-w-0 text-xs"
           />
         )}
       </div>
@@ -467,6 +475,7 @@ function PricingCarousel({
             step={card.step}
             isEditing={editingCard === card.key}
             isSaving={savingCard === card.key}
+            isSet={profile[card.profileKey] !== null}
             onEdit={() => {
               setDrafts((prev) => ({ ...prev, [card.key]: currentPrice }));
               onEdit(card.key);
@@ -608,6 +617,7 @@ export default function PricingTab({
               step={card.step}
               isEditing={editingCard === card.key}
               isSaving={savingCard === card.key}
+              isSet={profile[card.profileKey] !== null}
               onEdit={() => setEditingCard(card.key)}
               onCancel={() => setEditingCard(null)}
               onSave={(price) => handleSavePrice(card.key, price)}

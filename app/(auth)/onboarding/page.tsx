@@ -425,7 +425,7 @@ function OnboardingInner() {
                     playsInline
                     autoPlay
                     className={cn(
-                      "absolute inset-0",
+                      "absolute inset-0 mix-blend-screen",
                       tabClicked ? "opacity-0" : "opacity-100",
                     )}
                   >
@@ -440,7 +440,7 @@ function OnboardingInner() {
                     playsInline
                     autoPlay
                     className={cn(
-                      "absolute inset-0",
+                      "absolute inset-0 mix-blend-screen",
                       tabClicked ? "opacity-100" : "opacity-0",
                     )}
                   >

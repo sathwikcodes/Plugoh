@@ -12,7 +12,7 @@ import {
 
 export function AuthShell({ children, hideLogo }: { children: ReactNode; hideLogo?: boolean }) {
   return (
-    <div className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-[#08060d] px-4 py-10 sm:px-6 sm:py-14">
+    <div className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-[#08060d] px-4 py-3 sm:px-6 sm:py-10">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <AnimatedGradientBackground
           gradientColors={GRADIENT_COLORS}
@@ -27,7 +27,7 @@ export function AuthShell({ children, hideLogo }: { children: ReactNode; hideLog
       <div className="relative z-10 flex w-full max-w-md flex-col items-center">
         {!hideLogo && (
           <m.div
-            className="mb-6 sm:mb-8"
+            className="mb-3 sm:mb-6"
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -37,7 +37,7 @@ export function AuthShell({ children, hideLogo }: { children: ReactNode; hideLog
               alt="Plugoh"
               height={120}
               width={380}
-              className="h-24 w-auto sm:h-32"
+              className="h-16 w-auto sm:h-24"
               style={{ objectFit: "contain" }}
               priority
             />
@@ -45,7 +45,7 @@ export function AuthShell({ children, hideLogo }: { children: ReactNode; hideLog
         )}
 
         <div
-          className="w-full rounded-2xl px-5 py-7 sm:rounded-3xl sm:px-8 sm:py-10"
+          className="w-full rounded-2xl px-4 py-4 sm:rounded-3xl sm:px-8 sm:py-8"
           style={{
             background: "rgba(255,255,255,0.04)",
             border: "1px solid rgba(255,255,255,0.08)",
