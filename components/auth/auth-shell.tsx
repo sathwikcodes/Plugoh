@@ -3,77 +3,56 @@
 import { type ReactNode } from "react";
 import Image from "next/image";
 import { m } from "framer-motion";
-import { useTheme } from "next-themes";
-import { useAuthTheme, type AuthTheme } from "./theme-context";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
-import { getGradientConfig } from "./auth-gradient-config";
-
-const taglines: Record<AuthTheme, string> = {
-  neutral: "Where creators meet brands",
-  influencer: "Grow your influence, land dream collabs",
-  brand: "Discover creators who move the needle",
-};
+import {
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+} from "@/lib/animations";
 
 export function AuthShell({ children }: { children: ReactNode }) {
-  const { theme } = useAuthTheme();
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-  const gradientConfig = getGradientConfig(theme, isDark);
-
   return (
-    <div
-      className="flex min-h-screen w-full"
-      style={{ background: "var(--auth-bg)" }}
-    >
-      {/* Left decorative panel — lg only */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center">
+    <div className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-[#08060d] px-4 py-10 sm:px-6 sm:py-14">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <AnimatedGradientBackground
-          key={`${theme}-${isDark}`}
-          Breathing
-          {...gradientConfig}
+          gradientColors={GRADIENT_COLORS}
+          gradientStops={GRADIENT_STOPS}
+          startingGap={125}
+          breathingRange={2.2}
+          animationSpeed={0.008}
+          containerStyle={GRADIENT_STYLE}
         />
-        <div className="relative z-10 text-center px-12">
-          <m.div
-            className="mb-3 flex justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 0.9, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <Image
-              src="/logo-gold.png"
-              alt="Plugoh"
-              height={56}
-              width={180}
-              style={{ objectFit: "contain" }}
-            />
-          </m.div>
-          <m.p
-            key={theme}
-            className="max-w-xs mx-auto text-lg"
-            style={{ color: "var(--auth-text-secondary)" }}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.4 }}
-          >
-            {taglines[theme]}
-          </m.p>
-        </div>
       </div>
 
-      {/* Right content panel */}
-      <div
-        className="flex w-full lg:w-1/2 items-center justify-center px-6 py-12 sm:px-8 lg:px-16 relative overflow-hidden"
-        style={{ background: "var(--auth-bg)" }}
-      >
-        <AnimatedGradientBackground
-          key={`right-${theme}-${isDark}`}
-          {...gradientConfig}
-          containerStyle={{ opacity: theme === "brand" ? 0.35 : 0.25 }}
-          startingGap={200}
-          topOffset={-30}
-        />
-        <div className="w-full max-w-md relative z-10">{children}</div>
+      <div className="relative z-10 flex w-full max-w-md flex-col items-center">
+        <m.div
+          className="mb-6 sm:mb-8"
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <Image
+            src="/logo-gold.png"
+            alt="Plugoh"
+            height={120}
+            width={380}
+            className="h-24 w-auto sm:h-32"
+            style={{ objectFit: "contain" }}
+            priority
+          />
+        </m.div>
+
+        <div
+          className="w-full rounded-2xl px-5 py-7 sm:rounded-3xl sm:px-8 sm:py-10"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            backdropFilter: "blur(24px)",
+            boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
