@@ -7,7 +7,7 @@ import { useMyProfile } from "@/hooks/queries/use-my-identity";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc/client";
 import { supabase } from "@/lib/supabase/client";
-import { Loader2, Instagram } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -23,7 +23,7 @@ type AppRole = Database["public"]["Enums"]["app_role"];
 const ROLE_TABS = [
   {
     role: "business" as AppRole,
-    label: "Brand Owner",
+    label: "Brand",
     description: "Find and collaborate with top creators for your brand",
     videoUrl:
       "https://a0.muscache.com/videos/search-bar-icons/webm/house-selected.webm",
@@ -342,40 +342,30 @@ function OnboardingInner() {
     !!place.trim();
 
   return (
-    <AuthShell>
+    <AuthShell hideLogo>
       <m.div
         variants={stagger}
         initial="hidden"
         animate="visible"
         className="space-y-8"
       >
-        <m.div variants={fadeUp} className="lg:hidden mb-2 text-center">
-          <Image
-            src="/logo-gold.png"
-            alt="Plugoh"
-            height={36}
-            width={130}
-            style={{ objectFit: "contain" }}
-          />
-        </m.div>
-
-        <m.div variants={fadeUp} className="space-y-2 text-center">
-          <h1
-            className="heading-premium text-3xl font-semibold tracking-tight"
-            style={{ color: "var(--auth-text)" }}
-          >
-            Welcome to Plugoh
-          </h1>
+        <m.div variants={fadeUp} className="text-center">
           <p
-            className="text-sm"
-            style={{ color: "var(--auth-text-secondary)" }}
+            className="text-lg font-semibold"
+            style={{ color: "rgba(255,255,255,0.92)" }}
           >
             Tell us who you are to get started.
           </p>
         </m.div>
 
         <m.div variants={fadeUp} className="space-y-4">
-          <div className="flex justify-center gap-6 sm:gap-10">
+          <div
+            className="flex justify-center rounded-2xl p-1"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.1)",
+            }}
+          >
             {ROLE_TABS.map((tab, index) => (
               <m.button
                 key={tab.role}
@@ -383,8 +373,16 @@ function OnboardingInner() {
                 whileTap="tapped"
                 whileHover="hovered"
                 onClick={() => handleRoleSelect(tab.role, index)}
-                className="relative flex items-center gap-2 cursor-pointer outline-none"
-                style={{ WebkitTapHighlightColor: "transparent" }}
+                className="relative flex items-center gap-2 cursor-pointer outline-none flex-1 justify-center transition-all duration-200"
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  background:
+                    selectedRole === tab.role
+                      ? "rgba(255,255,255,0.15)"
+                      : "transparent",
+                  borderRadius: "0.75rem",
+                  padding: "0.5rem 1rem",
+                }}
               >
                 <m.div
                   initial={{ scale: 0 }}
@@ -465,21 +463,6 @@ function OnboardingInner() {
             ))}
           </div>
 
-          <AnimatePresence mode="wait">
-            {selectedRole && (
-              <m.p
-                key={selectedRole}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="text-[13px] leading-relaxed text-center"
-                style={{ color: "var(--auth-text-secondary)" }}
-              >
-                {ROLE_TABS.find((t) => t.role === selectedRole)?.description}
-              </m.p>
-            )}
-          </AnimatePresence>
         </m.div>
 
         <AnimatePresence>
@@ -513,17 +496,16 @@ function OnboardingInner() {
                   required
                   className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
                   style={{
-                    color: "var(--auth-text)",
-                    background: "var(--auth-card)",
-                    border: "1px solid var(--auth-card-border)",
+                    color: "rgba(255,255,255,0.9)",
+                    background: "rgba(255,255,255,0.1)",
+                    border: "1px solid rgba(255,255,255,0.18)",
                     boxShadow: "0 2px 8px var(--auth-shadow)",
                   }}
                   onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "var(--auth-accent)")
+                    (e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)")
                   }
                   onBlur={(e) =>
-                    (e.currentTarget.style.borderColor =
-                      "var(--auth-card-border)")
+                    (e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)")
                   }
                 />
               </div>
@@ -544,17 +526,16 @@ function OnboardingInner() {
                   required
                   className="w-full h-14 px-4 rounded-2xl text-[15px] transition-all duration-200"
                   style={{
-                    color: "var(--auth-text)",
-                    background: "var(--auth-card)",
-                    border: "1px solid var(--auth-card-border)",
+                    color: "rgba(255,255,255,0.9)",
+                    background: "rgba(255,255,255,0.1)",
+                    border: "1px solid rgba(255,255,255,0.18)",
                     boxShadow: "0 2px 8px var(--auth-shadow)",
                   }}
                   onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "var(--auth-accent)")
+                    (e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)")
                   }
                   onBlur={(e) =>
-                    (e.currentTarget.style.borderColor =
-                      "var(--auth-card-border)")
+                    (e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)")
                   }
                 />
               </div>
@@ -584,18 +565,16 @@ function OnboardingInner() {
                       required
                       className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
                       style={{
-                        color: "var(--auth-text)",
-                        background: "var(--auth-card)",
-                        border: "1px solid var(--auth-card-border)",
+                        color: "rgba(255,255,255,0.9)",
+                        background: "rgba(255,255,255,0.1)",
+                        border: "1px solid rgba(255,255,255,0.18)",
                         boxShadow: "0 2px 8px var(--auth-shadow)",
                       }}
                       onFocus={(e) =>
-                        (e.currentTarget.style.borderColor =
-                          "var(--auth-accent)")
+                        (e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)")
                       }
                       onBlur={(e) =>
-                        (e.currentTarget.style.borderColor =
-                          "var(--auth-card-border)")
+                        (e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)")
                       }
                     />
                   </m.div>
@@ -613,8 +592,8 @@ function OnboardingInner() {
                   >
                     <div className="space-y-2">
                       <p
-                        className="text-xs font-medium uppercase tracking-wider"
-                        style={{ color: "var(--auth-text-tertiary)" }}
+                        className="text-sm font-medium"
+                        style={{ color: "rgba(255,255,255,0.85)" }}
                       >
                         Does your business have an Instagram account?
                       </p>
@@ -662,60 +641,28 @@ function OnboardingInner() {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="overflow-hidden rounded-2xl border p-4 space-y-3"
-                            style={{
-                              borderColor: "var(--auth-card-border)",
-                              background: "var(--auth-card)",
-                            }}
+                            className="overflow-hidden"
                           >
-                            <p
-                              className="text-sm leading-relaxed"
-                              style={{ color: "var(--auth-text-secondary)" }}
+                            <button
+                              type="button"
+                              disabled={
+                                !canConnectBusinessInstagram || loading
+                              }
+                              onClick={handleBusinessInstagramConnect}
+                              className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                              style={{
+                                background: "linear-gradient(135deg, #FF8FB1 0%, #E8638C 100%)",
+                                color: "#fff",
+                                boxShadow: "0 4px 20px rgba(232,99,140,0.4)",
+                              }}
                             >
-                              Connect your Instagram business account and we’ll
-                              auto-build your brand profile from your profile
-                              and media.
-                            </p>
-                            <div className="grid gap-3 sm:grid-cols-2">
-                              <button
-                                type="button"
-                                disabled={
-                                  !canConnectBusinessInstagram || loading
-                                }
-                                onClick={handleBusinessInstagramConnect}
-                                className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                style={{
-                                  background: "var(--auth-gradient)",
-                                  color: "var(--auth-accent-fg)",
-                                  boxShadow: "0 4px 20px var(--auth-glow)",
-                                }}
-                              >
-                                {loading ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Instagram className="h-5 w-5" />
-                                )}
-                                Connect with Instagram
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setManualBusinessFlow(true);
-                                  if (!brandLocation.trim()) {
-                                    setBrandLocation(place);
-                                  }
-                                }}
-                                className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
-                                style={{
-                                  background: "var(--auth-card)",
-                                  color: "var(--auth-text)",
-                                  border: "1px solid var(--auth-card-border)",
-                                  boxShadow: "0 2px 8px var(--auth-shadow)",
-                                }}
-                              >
-                                Skip for now
-                              </button>
-                            </div>
+                              {loading ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Image src="/instagram_3d.png" alt="Instagram" width={24} height={24} style={{ objectFit: "contain" }} />
+                              )}
+                              Connect with Instagram
+                            </button>
                           </m.div>
                         )}
                     </AnimatePresence>
@@ -745,9 +692,9 @@ function OnboardingInner() {
                               required={showManualBusinessFields}
                               className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
                               style={{
-                                color: "var(--auth-text)",
-                                background: "var(--auth-card)",
-                                border: "1px solid var(--auth-card-border)",
+                                color: "rgba(255,255,255,0.9)",
+                                background: "rgba(255,255,255,0.1)",
+                                border: "1px solid rgba(255,255,255,0.18)",
                                 boxShadow: "0 2px 8px var(--auth-shadow)",
                               }}
                             />
@@ -767,11 +714,9 @@ function OnboardingInner() {
                               onChange={(e) => setBrandType(e.target.value)}
                               className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200 appearance-none cursor-pointer"
                               style={{
-                                color: brandType
-                                  ? "var(--auth-text)"
-                                  : "var(--auth-text-tertiary)",
-                                background: "var(--auth-card)",
-                                border: "1px solid var(--auth-card-border)",
+                                color: brandType ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.4)",
+                                background: "rgba(255,255,255,0.1)",
+                                border: "1px solid rgba(255,255,255,0.18)",
                                 boxShadow: "0 2px 8px var(--auth-shadow)",
                               }}
                             >
@@ -782,29 +727,6 @@ function OnboardingInner() {
                                 </option>
                               ))}
                             </select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <label
-                              htmlFor="ob-brand-location"
-                              className="text-xs font-medium uppercase tracking-wider"
-                              style={{ color: "var(--auth-text-tertiary)" }}
-                            >
-                              Brand Location
-                            </label>
-                            <input
-                              id="ob-brand-location"
-                              placeholder="e.g. Hyderabad"
-                              value={brandLocation}
-                              onChange={(e) => setBrandLocation(e.target.value)}
-                              className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
-                              style={{
-                                color: "var(--auth-text)",
-                                background: "var(--auth-card)",
-                                border: "1px solid var(--auth-card-border)",
-                                boxShadow: "0 2px 8px var(--auth-shadow)",
-                              }}
-                            />
                           </div>
                         </m.div>
                       )}
@@ -821,16 +743,24 @@ function OnboardingInner() {
                     (selectedRole === "business" && !brandName.trim())
                   }
                   className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  style={{
-                    background: "var(--auth-gradient)",
-                    color: "var(--auth-accent-fg)",
-                    boxShadow: "0 4px 20px var(--auth-glow)",
-                  }}
+                  style={
+                    selectedRole === "influencer"
+                      ? {
+                          background: "linear-gradient(135deg, #FF8FB1 0%, #E8638C 100%)",
+                          color: "#fff",
+                          boxShadow: "0 4px 20px rgba(232,99,140,0.4)",
+                        }
+                      : {
+                          background: "var(--auth-gradient)",
+                          color: "var(--auth-accent-fg)",
+                          boxShadow: "0 4px 20px var(--auth-glow)",
+                        }
+                  }
                 >
                   {loading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : selectedRole === "influencer" ? (
-                    <Instagram className="h-5 w-5" />
+                    <Image src="/instagram_3d.png" alt="Instagram" width={24} height={24} style={{ objectFit: "contain" }} />
                   ) : null}
                   {selectedRole === "influencer"
                     ? "Connect with Instagram"
