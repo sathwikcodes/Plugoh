@@ -146,6 +146,7 @@ export function CampaignCardFront({
   const isOffer = OFFER_STATUSES.has(card.status);
   const actionsDisabled = card.isAccepting || card.isDeclining;
   const hasTimer = isOffer && !!card.expires_at;
+  const compactLayout = hasTimer;
 
   const pkgName = card.package_type
     ? formatPackage(card.package_type)
@@ -194,7 +195,7 @@ export function CampaignCardFront({
        */}
       <div
         className="relative w-full flex-none"
-        style={{ paddingBottom: hasTimer ? "44%" : "58%" }}
+        style={{ paddingBottom: hasTimer ? "38%" : "52%" }}
       >
         <div className="absolute inset-0 overflow-hidden">
           {card.brandAvatarUrl ? (
@@ -253,7 +254,7 @@ export function CampaignCardFront({
       </div>
 
       {/* ── Content section ────────────────────────────────────────────────── */}
-      <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080609] px-3 pb-3 pt-2.5 @[340px]:px-4 @[340px]:pb-4 @[340px]:pt-3">
+      <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080609] px-3 pb-4 pt-2.5 @[340px]:px-4 @[340px]:pb-5 @[340px]:pt-3">
         {/* Title — scales from 17px on tiny cards to 25px on wide cards */}
         <div className="hidden md:block">
           <h2
@@ -265,7 +266,7 @@ export function CampaignCardFront({
         </div>
 
         {/* Payout box — coin + price left, payment-progress pill right */}
-        <div className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-3 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3.5">
+        <div className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-2.5 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <Image
               src="/coin.png"
@@ -298,7 +299,12 @@ export function CampaignCardFront({
 
         {/* Info tags — two pills splitting the full card width */}
         {card.businessType || card.location ? (
-          <div className="mt-2.5 flex gap-2 @[340px]:mt-3">
+          <div
+            className={cn(
+              "mt-2.5 gap-2 @[340px]:mt-3",
+              compactLayout ? "hidden @[390px]:flex" : "flex",
+            )}
+          >
             {card.businessType ? (
               <ThreeDPill
                 label={card.businessType}
@@ -340,7 +346,12 @@ export function CampaignCardFront({
         ) : null}
 
         {/* Delivery / Package Pill */}
-        <div className="mt-2.5 flex @[340px]:mt-3">
+        <div
+          className={cn(
+            "flex @[340px]:mt-3",
+            compactLayout ? "mt-2" : "mt-2.5",
+          )}
+        >
           <ThreeDPill
             label={deliveryLabel}
             color="slate"
@@ -349,22 +360,36 @@ export function CampaignCardFront({
         </div>
 
         {/* Push action to bottom */}
-        <div className="flex-1" />
+        <div
+          className={cn(
+            "min-h-0 flex-1",
+            compactLayout ? "max-h-1 @[390px]:max-h-3" : "max-h-6",
+          )}
+        />
 
         {/* Offer expiry timer */}
         {hasTimer ? (
-          <div className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2.5 @[340px]:mt-3">
-            <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-white/40">
+          <div className="mt-2 rounded-2xl border border-amber-500/22 bg-amber-500/8 px-3 py-2 @[340px]:mt-2.5 @[340px]:py-2.5">
+            <p className="mb-1.5 text-center text-[10px] font-medium uppercase tracking-[0.1em] text-amber-300/55">
               Offer expires in
             </p>
-            <FlipClock expiresAt={card.expires_at} compact />
+            <FlipClock
+              className="justify-center"
+              expiresAt={card.expires_at}
+              compact
+            />
           </div>
         ) : null}
 
         {/* Action */}
-        <div className="mt-3">
+        <div className={cn(compactLayout ? "mt-2" : "mt-2.5 mb-1.5")}>
           {isOffer ? (
-            <div className="grid grid-cols-2 gap-2">
+            <div
+              className={cn(
+                "grid grid-cols-2",
+                compactLayout ? "gap-1.5" : "gap-2",
+              )}
+            >
               <ThreeDButton
                 label={card.isDeclining ? "…" : "Cancel"}
                 hideIcon

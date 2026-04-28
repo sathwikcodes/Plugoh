@@ -20,7 +20,7 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
           <ArrowLeft className="h-4 w-4" />
         </Link>
       </Button>
-      <h1 className="min-w-0 flex-1 text-[26px] font-semibold tracking-[-0.03em] text-white">
+      <h1 className="min-w-0 flex-1 truncate text-[22px] font-semibold tracking-[-0.03em] text-white sm:text-[26px]">
         {campaign.title || "Untitled Campaign"}
       </h1>
     </div>
