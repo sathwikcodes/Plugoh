@@ -8,7 +8,10 @@ import { fadeUp, stagger } from "@/lib/animations";
 import type { Database } from "@/lib/supabase/types";
 import { InfluencerCard } from "./influencer-card";
 import { InfluencerCardStack } from "./influencer-card-stack";
-import { InfluencerCardSkeleton } from "../loading";
+import {
+  InfluencerCardSkeleton,
+  MobileDiscoverStackSkeleton,
+} from "../loading";
 
 type InfluencerProfile =
   Database["public"]["Tables"]["influencer_profiles"]["Row"];
@@ -39,11 +42,9 @@ export function InfluencerGrid({
         <m.div
           key="mobile-skeleton"
           variants={fadeUp}
-          className="flex min-h-0 flex-1 md:hidden pb-25 items-center justify-center"
+          className="flex min-h-0 flex-1 md:hidden"
         >
-          <div className="w-full max-w-[min(85vw,21rem)]">
-            <InfluencerCardSkeleton />
-          </div>
+          <MobileDiscoverStackSkeleton />
         </m.div>
       </>
     );

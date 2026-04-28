@@ -51,8 +51,8 @@ export function InfluencerHero({
             </Avatar>
 
             <div className="min-w-0 space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-3xl font-semibold tracking-tight text-white">
+              <div className="flex min-w-0 items-center gap-2">
+                <h1 className="min-w-0 truncate text-2xl font-semibold tracking-tight text-white sm:text-3xl">
                   {profile.display_name || "Influencer"}
                 </h1>
                 <Image

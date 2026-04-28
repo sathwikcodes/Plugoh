@@ -1,6 +1,15 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Search, SlidersHorizontal } from "lucide-react";
+import { ShinyButton } from "@/components/ui/shiny-button";
+
+const VISIBLE_COUNT = 3;
+const OFFSET_Y = 16;
+const CARD_ASPECT_RATIO = 0.74;
 
 function CampaignCardSkeleton() {
   return (
@@ -35,6 +44,93 @@ function CampaignCardSkeleton() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function MobileCampaignStackSkeleton() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [cardViewport, setCardViewport] = useState({ width: 320, height: 432 });
+
+  useEffect(() => {
+    const node = stageRef.current;
+    if (!node) return;
+
+    const updateViewport = () => {
+      const { width: w, height: h } = node.getBoundingClientRect();
+      if (w <= 0 || h <= 0) return;
+      const peekOverhead = (VISIBLE_COUNT - 1) * OFFSET_Y;
+      let cardW = w;
+      let cardH = cardW / CARD_ASPECT_RATIO;
+      if (cardH + peekOverhead > h) {
+        cardH = h - peekOverhead;
+        cardW = cardH * CARD_ASPECT_RATIO;
+      }
+      setCardViewport({
+        width: Math.max(cardW, 0),
+        height: Math.max(cardH, 0),
+      });
+    };
+
+    updateViewport();
+    const ro = new ResizeObserver(updateViewport);
+    ro.observe(node);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div className="flex h-full w-full flex-col">
+      <div
+        ref={stageRef}
+        className="min-h-0 flex-1 w-full flex justify-center items-start"
+      >
+        <div
+          className="relative shrink-0"
+          style={{
+            width: cardViewport.width,
+            height: cardViewport.height + (VISIBLE_COUNT - 1) * OFFSET_Y,
+          }}
+        >
+          <div
+            className="absolute inset-x-0 top-0 overflow-hidden rounded-[34px] border border-white/10 bg-card"
+            style={{ height: cardViewport.height }}
+          >
+            <CampaignCardSkeleton />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex w-full shrink-0 items-center justify-center gap-3 pt-3 pb-1">
+        <ShinyButton
+          aria-disabled="true"
+          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+        >
+          <Image
+            src="/back.png"
+            alt="Previous"
+            width={22}
+            height={22}
+            className="h-5.5 w-5.5 shrink-0 object-contain opacity-80"
+          />
+        </ShinyButton>
+
+        <div className="min-w-19 flex items-center justify-center">
+          <Skeleton className="h-5 w-14 rounded bg-white/20" />
+        </div>
+
+        <ShinyButton
+          aria-disabled="true"
+          className="flex h-13 w-13 items-center justify-center rounded-[22px] border-white/14 bg-white/5 px-0 py-0 text-white/80 shadow-[0_14px_30px_rgba(0,0,0,0.24)]"
+        >
+          <Image
+            src="/next.png"
+            alt="Next"
+            width={22}
+            height={22}
+            className="h-5.5 w-5.5 shrink-0 object-contain opacity-80"
+          />
+        </ShinyButton>
       </div>
     </div>
   );
@@ -77,13 +173,7 @@ export default function CampaignsLoading() {
           </div>
 
           <div className="flex min-h-0 flex-1 md:hidden">
-            <div className="h-full w-full relative">
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-full h-full relative p-[10px]">
-                  <CampaignCardSkeleton />
-                </div>
-              </div>
-            </div>
+            <MobileCampaignStackSkeleton />
           </div>
 
           <div className="hidden md:grid min-h-0 flex-1 grid-cols-2 gap-5 overflow-y-auto overscroll-contain pr-1 xl:grid-cols-3">

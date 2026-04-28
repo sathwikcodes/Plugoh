@@ -171,6 +171,7 @@ function CampaignCardFront({
   const showTimer =
     ["pre_authorized", "requested", "pending"].includes(card.status) &&
     !!card.expires_at;
+  const compactLayout = showTimer;
   const detailHref = card.href ?? `/dashboard/business/campaigns/${card.id}`;
 
   const pkgName = card.package_type
@@ -282,7 +283,7 @@ function CampaignCardFront({
         </h2>
 
         {/* Payout box */}
-        <div className="mt-2.5 shrink-0 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-3 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3.5">
+        <div className="mt-2.5 shrink-0 flex items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-2.5 @[340px]:mt-3 @[340px]:px-4 @[340px]:py-3">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <Image
               src="/coin.png"
@@ -316,7 +317,12 @@ function CampaignCardFront({
 
         {/* Info pills — category + package type */}
         {card.influencerCategory || card.package_type ? (
-          <div className="mt-2.5 shrink-0 flex gap-2 @[340px]:mt-3">
+          <div
+            className={cn(
+              "mt-2.5 shrink-0 gap-2 @[340px]:mt-3",
+              compactLayout ? "hidden @[380px]:flex" : "flex",
+            )}
+          >
             {card.influencerCategory ? (
               <ThreeDPill
                 label={card.influencerCategory}
@@ -359,7 +365,7 @@ function CampaignCardFront({
 
         {/* Booking window timer (pending/requested only) */}
         {showTimer && (
-          <div className="mt-2.5 shrink-0 rounded-[14px] border border-amber-500/22 bg-amber-500/8 px-3 py-2.5 @[340px]:mt-3">
+          <div className="mt-2.5 shrink-0 rounded-[14px] border border-amber-500/22 bg-amber-500/8 px-3 py-2 @[340px]:mt-3 @[340px]:py-2.5">
             <p className="mb-1.5 text-center text-[9px] uppercase tracking-[0.22em] text-amber-300/55">
               Booking window closes
             </p>
@@ -368,10 +374,20 @@ function CampaignCardFront({
         )}
 
         {/* Push CTA to bottom — capped so dead space stays minimal */}
-        <div className="min-h-0 max-h-6 flex-1" />
+        <div
+          className={cn(
+            "min-h-0 flex-1",
+            compactLayout ? "max-h-2 @[380px]:max-h-4" : "max-h-6",
+          )}
+        />
 
         {/* Two-button CTA */}
-        <div className="mt-3 flex items-center gap-2">
+        <div
+          className={cn(
+            "flex items-center gap-2",
+            compactLayout ? "mt-2.5" : "mt-3",
+          )}
+        >
           {/* View — flex-1 wrapper so width:100% on the button resolves to remaining space */}
           <div className="min-w-0 flex-1">
             <ThreeDButton
