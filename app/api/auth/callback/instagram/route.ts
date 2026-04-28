@@ -6,6 +6,7 @@ import {
   fetchIGMedia,
   fetchMediaInsights,
 } from "@/lib/instagram/api";
+import { generateInfluencerProfile } from "@/lib/ai/generate-profile";
 import { createServiceClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
 
@@ -95,7 +96,9 @@ export async function GET(request: NextRequest) {
     if (role === "influencer") {
       const { data: existingProfile } = await db
         .from("influencer_profiles")
-        .select("bio,display_name")
+        .select(
+          "bio,display_name,price_per_reel,price_per_post,price_per_story,city,languages,category",
+        )
         .eq("user_id", userId)
         .maybeSingle();
       const { error: upsertError } = await db
@@ -165,6 +168,77 @@ export async function GET(request: NextRequest) {
     }
 
     await syncInstagramMedia(db, userId, accessToken, mediaItems);
+
+    if (role === "influencer") {
+      const { data: latestInfluencerProfile } = await db
+        .from("influencer_profiles")
+        .select(
+          "price_per_reel,price_per_post,price_per_story,city,languages,category,bio",
+        )
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      const hasMissingPrice =
+        latestInfluencerProfile?.price_per_reel == null ||
+        latestInfluencerProfile?.price_per_post == null ||
+        latestInfluencerProfile?.price_per_story == null;
+
+      if (hasMissingPrice) {
+        const aiResult = await generateInfluencerProfile({
+          name: profile.name || profile.username,
+          phone: null,
+          igBio: profile.biography ?? null,
+          igUsername: profile.username,
+          followerCount: profile.followers_count ?? 0,
+          accountType: null,
+          captions: mediaItems
+            .map((item) => item.caption)
+            .filter((caption): caption is string => !!caption),
+        });
+
+        const influencerPatch: Database["public"]["Tables"]["influencer_profiles"]["Update"] =
+          {
+            price_per_reel:
+              latestInfluencerProfile?.price_per_reel ??
+              aiResult.price_per_reel,
+            price_per_post:
+              latestInfluencerProfile?.price_per_post ??
+              aiResult.price_per_post,
+            price_per_story:
+              latestInfluencerProfile?.price_per_story ??
+              aiResult.price_per_story,
+          };
+
+        if (!latestInfluencerProfile?.category && aiResult.category) {
+          influencerPatch.category = aiResult.category;
+        }
+        if (!latestInfluencerProfile?.city && aiResult.city) {
+          influencerPatch.city = aiResult.city;
+        }
+        if (
+          (!latestInfluencerProfile?.languages ||
+            latestInfluencerProfile.languages.length === 0) &&
+          aiResult.languages.length
+        ) {
+          influencerPatch.languages = aiResult.languages;
+        }
+        if (!latestInfluencerProfile?.bio && aiResult.bio) {
+          influencerPatch.bio = aiResult.bio;
+        }
+
+        const { error: aiPatchError } = await db
+          .from("influencer_profiles")
+          .update(influencerPatch)
+          .eq("user_id", userId);
+
+        if (aiPatchError) {
+          console.error(
+            "Instagram callback AI pricing patch error:",
+            aiPatchError,
+          );
+        }
+      }
+    }
 
     const response = NextResponse.redirect(new URL(redirectPath, request.url));
     response.cookies.delete("ig_oauth_state");

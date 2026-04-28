@@ -403,7 +403,7 @@ function PricingSliderCard({
             label={isSet ? "Edit Price" : "Set Price"}
             onClick={handleEdit}
             hideIcon
-            className="w-full !h-9 !min-w-0 text-xs"
+            className="!w-full !h-9 !min-w-0 text-xs"
           />
         )}
       </div>

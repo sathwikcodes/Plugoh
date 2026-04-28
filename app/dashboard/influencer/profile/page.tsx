@@ -56,6 +56,13 @@ function InfluencerProfilePageInner() {
   useCampaigns(user?.id, "influencer");
 
   const loading = !authReady || profileLoading;
+  const hasMissingPrices =
+    !!ip &&
+    !!ip.ig_username &&
+    (ip.price_per_reel == null ||
+      ip.price_per_post == null ||
+      ip.price_per_story == null);
+  const shouldAutoGenerateProfile = isOnboarding || hasMissingPrices;
 
   // Flip aiStatus to "running" only after mount, when we know if we're onboarding.
   useEffect(() => {
@@ -82,7 +89,8 @@ function InfluencerProfilePageInner() {
 
   // Trigger AI profile generation once on onboarding land
   useEffect(() => {
-    if (!isOnboarding || !user?.id || aiTriggeredRef.current) return;
+    if (!shouldAutoGenerateProfile || !user?.id || aiTriggeredRef.current)
+      return;
     aiTriggeredRef.current = true;
 
     fetch("/api/ai/generate-profile", {
@@ -100,22 +108,25 @@ function InfluencerProfilePageInner() {
         }
       })
       .then(() => {
-        setAiStatus("done");
+        if (isOnboarding) setAiStatus("done");
         sessionStorage.removeItem("plugoh_ai_pending");
         queryClient.invalidateQueries({
           queryKey: trpc.profile.getMyInfluencerProfile.queryKey(),
         });
       })
       .catch(() => {
-        setAiStatus("failed");
+        if (isOnboarding) setAiStatus("failed");
         sessionStorage.removeItem("plugoh_ai_pending");
-        toast.error(
-          "Could not save AI pricing to your profile — set your rates manually.",
-        );
+        if (isOnboarding) {
+          toast.error(
+            "Could not save AI pricing to your profile — set your rates manually.",
+          );
+        }
       });
   }, [
     isOnboarding,
     queryClient,
+    shouldAutoGenerateProfile,
     trpc.profile.getMyInfluencerProfile,
     user?.id,
   ]);
