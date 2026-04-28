@@ -496,6 +496,22 @@ input.range-thumb::-moz-range-track {
   }
 }
 
+.auth-tab-video {
+  mix-blend-mode: screen;
+  -webkit-mix-blend-mode: screen;
+  object-fit: cover;
+  background: transparent !important;
+  filter: brightness(1.1) contrast(1.15);
+  isolation: isolate;
+}
+
+@media (max-width: 639px) {
+  .auth-tab-video {
+    mix-blend-mode: lighten;
+    filter: brightness(1.18) contrast(1.24);
+  }
+}
+
 .three-d-button {
   --button-gold: #e5b94a;
   --button-gold-light: #fff4a8;

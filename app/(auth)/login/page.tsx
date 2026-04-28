@@ -362,7 +362,7 @@ export default function Login() {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-5 sm:space-y-7"
           >
-            <m.div variants={fadeUp} className="space-y-1.5">
+            <m.div variants={fadeUp} className="space-y-1.5 text-center">
               <h1
                 className="heading-premium text-2xl font-semibold tracking-tight sm:text-3xl"
                 style={{ color: "rgba(255,255,255,0.95)" }}

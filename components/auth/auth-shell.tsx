@@ -18,7 +18,7 @@ export function AuthShell({
   hideLogo?: boolean;
 }) {
   return (
-    <div className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-[#08060d] px-4 py-3 sm:px-6 sm:py-10">
+    <div className="fixed inset-0 flex w-full flex-col items-center justify-center overflow-hidden bg-[#08060d] px-4 py-2 sm:px-6 sm:py-10">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <AnimatedGradientBackground
           gradientColors={GRADIENT_COLORS}
@@ -30,10 +30,10 @@ export function AuthShell({
         />
       </div>
 
-      <div className="relative z-10 flex w-full max-w-md flex-col items-center">
+      <div className="relative z-10 flex h-full w-full max-w-md flex-col items-center justify-center">
         {!hideLogo && (
           <m.div
-            className="mb-3 sm:mb-6"
+            className="mb-1.5 sm:mb-6"
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -43,7 +43,7 @@ export function AuthShell({
               alt="Plugoh"
               height={120}
               width={380}
-              className="h-16 w-auto sm:h-24"
+              className="h-[clamp(4.55rem,11.9vh,5.95rem)] w-auto sm:h-24"
               style={{ objectFit: "contain" }}
               priority
             />
@@ -51,7 +51,7 @@ export function AuthShell({
         )}
 
         <div
-          className="w-full rounded-2xl px-4 py-4 sm:rounded-3xl sm:px-8 sm:py-8"
+          className="w-full rounded-2xl px-4 py-3 sm:rounded-3xl sm:px-8 sm:py-8"
           style={{
             background: "rgba(255,255,255,0.04)",
             border: "1px solid rgba(255,255,255,0.08)",

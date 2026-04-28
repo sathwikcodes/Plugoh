@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useMyProfile } from "@/hooks/queries/use-my-identity";
@@ -13,8 +13,8 @@ import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { useAuthTheme } from "@/components/auth/theme-context";
-import { cn } from "@/lib/utils";
 import PhoneInput from "@/components/ui/phone-input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BUSINESS_TYPES } from "@/lib/constants";
 import type { Database } from "@/lib/supabase/types";
 
@@ -22,22 +22,16 @@ type AppRole = Database["public"]["Enums"]["app_role"];
 
 const ROLE_TABS = [
   {
-    role: "business" as AppRole,
-    label: "Brand",
-    description: "Find and collaborate with top influencers for your brand",
-    videoUrl:
-      "https://a0.muscache.com/videos/search-bar-icons/webm/house-selected.webm",
-    initialRenderUrl:
-      "https://a0.muscache.com/videos/search-bar-icons/webm/house-twirl-selected.webm",
-  },
-  {
     role: "influencer" as AppRole,
     label: "Influencer",
     description: "Showcase your content and land brand deals",
-    videoUrl:
-      "https://a0.muscache.com/videos/search-bar-icons/webm/consierge-selected.webm",
-    initialRenderUrl:
-      "https://a0.muscache.com/videos/search-bar-icons/webm/consierge-twirl.webm",
+    iconSrc: "/instagram_3d.png",
+  },
+  {
+    role: "business" as AppRole,
+    label: "Brand",
+    description: "Find and collaborate with top influencers for your brand",
+    iconSrc: "/megaphone.png",
   },
 ];
 
@@ -80,15 +74,19 @@ function OnboardingInner() {
     "yes" | "no" | null
   >(null);
   const [manualBusinessFlow, setManualBusinessFlow] = useState(false);
+  const [businessStep, setBusinessStep] = useState<"identity" | "details">(
+    "identity",
+  );
   const [loading, setLoading] = useState(false);
   const instagramRedirectInProgress = useRef(false);
-  const videoRefs = useRef<HTMLVideoElement[]>([]);
-  const [tabClicked, setTabClicked] = useState(false);
 
-  useEffect(() => {
-    videoRefs.current = videoRefs.current.slice(0, ROLE_TABS.length);
+  const handlePhoneChange = useCallback((nextPhone: string) => {
+    setPhone((prev) => (prev === nextPhone ? prev : nextPhone));
   }, []);
 
+  const handlePlaceChange = useCallback((nextPlace: string) => {
+    setPlace((prev) => (prev === nextPlace ? prev : nextPlace));
+  }, []);
   useEffect(() => {
     setTheme("influencer");
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -147,26 +145,16 @@ function OnboardingInner() {
     );
   }
 
-  const handleRoleSelect = (r: AppRole, index: number) => {
-    setTabClicked(true);
-    setSelectedRole(r);
-    setTheme(r === "influencer" ? "influencer" : "brand");
-    setBusinessInstagramChoice(null);
-    setManualBusinessFlow(false);
-
-    videoRefs.current.forEach((video) => {
-      if (video) {
-        video.pause();
-        video.currentTime = 0;
-      }
-    });
-
-    const videoElement = videoRefs.current[index];
-    if (videoElement) {
-      videoElement.currentTime = 0;
-      videoElement.play();
-    }
-  };
+  const handleRoleSelect = useCallback(
+    (r: AppRole) => {
+      setSelectedRole(r);
+      setTheme(r === "influencer" ? "influencer" : "brand");
+      setBusinessInstagramChoice(null);
+      setManualBusinessFlow(false);
+      setBusinessStep("identity");
+    },
+    [setTheme],
+  );
 
   const upsertCommonProfile = async () => {
     if (!user || !selectedRole) return null;
@@ -331,23 +319,27 @@ function OnboardingInner() {
     }
   };
 
+  const showBusinessIdentityStep =
+    selectedRole === "business" && businessStep === "identity";
   const showManualBusinessFields =
-    selectedRole === "business" &&
-    (businessInstagramChoice === "no" || manualBusinessFlow);
+    selectedRole === "business" && businessStep === "details";
+  const canMoveToBusinessDetails =
+    !!fullName.trim() && !!phone.trim() && !!place.trim();
   const canConnectBusinessInstagram =
     selectedRole === "business" &&
+    businessStep === "identity" &&
     businessInstagramChoice === "yes" &&
     !!fullName.trim() &&
     !!phone.trim() &&
     !!place.trim();
 
   return (
-    <AuthShell hideLogo>
+    <AuthShell>
       <m.div
         variants={stagger}
         initial="hidden"
         animate="visible"
-        className="space-y-8"
+        className="space-y-5 sm:space-y-8"
       >
         <m.div variants={fadeUp} className="text-center">
           <p
@@ -358,110 +350,46 @@ function OnboardingInner() {
           </p>
         </m.div>
 
-        <m.div variants={fadeUp} className="space-y-4">
-          <div
-            className="flex justify-center rounded-2xl p-1"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}
+        <m.div variants={fadeUp} className="space-y-3 sm:space-y-4">
+          <Tabs
+            value={selectedRole ?? ROLE_TABS[0].role}
+            onValueChange={(value) => handleRoleSelect(value as AppRole)}
+            className="w-full"
           >
-            {ROLE_TABS.map((tab, index) => (
-              <m.button
-                key={tab.role}
-                type="button"
-                whileTap="tapped"
-                whileHover="hovered"
-                onClick={() => handleRoleSelect(tab.role, index)}
-                className="relative flex items-center gap-2 cursor-pointer outline-none flex-1 justify-center transition-all duration-200"
-                style={{
-                  WebkitTapHighlightColor: "transparent",
-                  background:
-                    selectedRole === tab.role
-                      ? "rgba(255,255,255,0.15)"
-                      : "transparent",
-                  borderRadius: "0.75rem",
-                  padding: "0.5rem 1rem",
-                }}
-              >
-                <m.div
-                  initial={{ scale: 0 }}
-                  animate={{
-                    scale: 1,
-                    transition: {
-                      type: "spring",
-                      bounce: 0.2,
-                      damping: 7,
-                      duration: 0.4,
-                      delay: index * 0.1,
-                    },
-                  }}
-                  variants={{
-                    default: { scale: 1 },
-                    ...(selectedRole !== tab.role && {
-                      hovered: { scale: 1.1 },
-                    }),
-                    ...(selectedRole !== tab.role && {
-                      tapped: {
-                        scale: 0.8,
-                        transition: {
-                          type: "spring",
-                          bounce: 0.2,
-                          damping: 7,
-                          duration: 0.4,
-                        },
+            <TabsList className="grid h-auto w-full grid-cols-2 rounded-xl border border-white/8 bg-white/6 p-0.75">
+              {ROLE_TABS.map((tab, index) => (
+                <TabsTrigger
+                  key={tab.role}
+                  value={tab.role}
+                  className="group flex items-center justify-center gap-2 rounded-[0.65rem] border border-transparent px-3 py-1.5 text-sm text-white/60 hover:text-white/80 data-[state=active]:border-amber-400/35 data-[state=active]:bg-[linear-gradient(135deg,rgba(245,158,11,0.32)_0%,rgba(232,99,140,0.28)_100%)] data-[state=active]:text-white data-[state=active]:shadow-none"
+                >
+                  <m.div
+                    initial={{ scale: 0 }}
+                    animate={{
+                      scale: 1,
+                      transition: {
+                        type: "spring",
+                        bounce: 0.2,
+                        damping: 7,
+                        duration: 0.4,
+                        delay: index * 0.1,
                       },
-                    }),
-                  }}
-                  transition={{ type: "spring" }}
-                  className="relative size-12 sm:size-16"
-                >
-                  <video
-                    key={`initial-${tab.role}`}
-                    ref={(el) => {
-                      if (el) videoRefs.current[index] = el;
                     }}
-                    muted
-                    playsInline
-                    autoPlay
-                    className={cn(
-                      "absolute inset-0 mix-blend-screen",
-                      tabClicked ? "opacity-0" : "opacity-100",
-                    )}
+                    className="relative size-8 sm:size-10"
                   >
-                    <source src={tab.initialRenderUrl} type="video/webm" />
-                  </video>
-                  <video
-                    key={`clicked-${tab.role}`}
-                    ref={(el) => {
-                      if (el) videoRefs.current[index] = el;
-                    }}
-                    muted
-                    playsInline
-                    autoPlay
-                    className={cn(
-                      "absolute inset-0 mix-blend-screen",
-                      tabClicked ? "opacity-100" : "opacity-0",
-                    )}
-                  >
-                    <source src={tab.videoUrl} type="video/webm" />
-                  </video>
-                </m.div>
-                <span
-                  className="text-sm sm:text-base tracking-wide transition-all duration-200"
-                  style={{
-                    color:
-                      selectedRole === tab.role
-                        ? "var(--auth-text)"
-                        : "var(--auth-text-tertiary)",
-                    fontWeight: selectedRole === tab.role ? 500 : 400,
-                  }}
-                >
-                  {tab.label}
-                </span>
-              </m.button>
-            ))}
-          </div>
+                    <Image
+                      src={tab.iconSrc}
+                      alt={tab.label}
+                      fill
+                      className="object-contain p-0.5"
+                      sizes="40px"
+                    />
+                  </m.div>
+                  <span className="tracking-wide font-medium">{tab.label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </m.div>
 
         <AnimatePresence>
@@ -477,75 +405,79 @@ function OnboardingInner() {
                   ? handleInfluencerSubmit
                   : handleBusinessContinue
               }
-              className="space-y-4 overflow-hidden"
+              className="space-y-3 sm:space-y-4 overflow-hidden"
             >
-              <div className="space-y-2">
-                <label
-                  htmlFor="ob-name"
-                  className="text-xs font-medium uppercase tracking-wider"
-                  style={{ color: "var(--auth-text-tertiary)" }}
-                >
-                  Full Name
-                </label>
-                <input
-                  id="ob-name"
-                  placeholder="Your full name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                  className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
-                  style={{
-                    color: "rgba(255,255,255,0.9)",
-                    background: "rgba(255,255,255,0.1)",
-                    border: "1px solid rgba(255,255,255,0.18)",
-                    boxShadow: "0 2px 8px var(--auth-shadow)",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor =
-                      "rgba(255,255,255,0.5)")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor =
-                      "rgba(255,255,255,0.18)")
-                  }
-                />
-              </div>
+              {!(selectedRole === "business" && businessStep === "details") && (
+                <div className="space-y-2">
+                  <label
+                    htmlFor="ob-name"
+                    className="text-xs font-medium uppercase tracking-wider"
+                    style={{ color: "var(--auth-text-tertiary)" }}
+                  >
+                    Full Name
+                  </label>
+                  <input
+                    id="ob-name"
+                    placeholder="Your full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                    className="w-full h-12 sm:h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
+                    style={{
+                      color: "rgba(255,255,255,0.9)",
+                      background: "rgba(255,255,255,0.1)",
+                      border: "1px solid rgba(255,255,255,0.18)",
+                      boxShadow: "0 2px 8px var(--auth-shadow)",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor =
+                        "rgba(255,255,255,0.5)")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor =
+                        "rgba(255,255,255,0.18)")
+                    }
+                  />
+                </div>
+              )}
 
-              <div className="space-y-2">
-                <label
-                  htmlFor="ob-phone"
-                  className="text-xs font-medium uppercase tracking-wider"
-                  style={{ color: "var(--auth-text-tertiary)" }}
-                >
-                  Phone Number
-                </label>
-                <PhoneInput
-                  id="ob-phone"
-                  placeholder="98765 43210"
-                  value={phone}
-                  onChange={setPhone}
-                  required
-                  className="w-full h-14 px-4 rounded-2xl text-[15px] transition-all duration-200"
-                  style={{
-                    color: "rgba(255,255,255,0.9)",
-                    background: "rgba(255,255,255,0.1)",
-                    border: "1px solid rgba(255,255,255,0.18)",
-                    boxShadow: "0 2px 8px var(--auth-shadow)",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor =
-                      "rgba(255,255,255,0.5)")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor =
-                      "rgba(255,255,255,0.18)")
-                  }
-                />
-              </div>
+              {!(selectedRole === "business" && businessStep === "details") && (
+                <div className="space-y-2">
+                  <label
+                    htmlFor="ob-phone"
+                    className="text-xs font-medium uppercase tracking-wider"
+                    style={{ color: "var(--auth-text-tertiary)" }}
+                  >
+                    Phone Number
+                  </label>
+                  <PhoneInput
+                    id="ob-phone"
+                    placeholder="98765 43210"
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    required
+                    className="w-full h-12 sm:h-14 px-4 rounded-2xl text-[15px] transition-all duration-200"
+                    style={{
+                      color: "rgba(255,255,255,0.9)",
+                      background: "rgba(255,255,255,0.1)",
+                      border: "1px solid rgba(255,255,255,0.18)",
+                      boxShadow: "0 2px 8px var(--auth-shadow)",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor =
+                        "rgba(255,255,255,0.5)")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor =
+                        "rgba(255,255,255,0.18)")
+                    }
+                  />
+                </div>
+              )}
 
               <AnimatePresence>
                 {(selectedRole === "influencer" ||
-                  selectedRole === "business") && (
+                  showBusinessIdentityStep) && (
                   <m.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
@@ -564,9 +496,9 @@ function OnboardingInner() {
                       id="ob-place"
                       placeholder="e.g. Hyderabad"
                       value={place}
-                      onChange={(e) => setPlace(e.target.value)}
+                      onChange={(e) => handlePlaceChange(e.target.value)}
                       required
-                      className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
+                      className="w-full h-12 sm:h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
                       style={{
                         color: "rgba(255,255,255,0.9)",
                         background: "rgba(255,255,255,0.1)",
@@ -610,13 +542,28 @@ function OnboardingInner() {
                               key={choice}
                               type="button"
                               onClick={() => {
+                                if (
+                                  choice === "no" &&
+                                  !canMoveToBusinessDetails
+                                ) {
+                                  toast({
+                                    title: "Complete your basic details first",
+                                    description:
+                                      "Please enter full name, phone number, and city/place before continuing.",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
                                 setBusinessInstagramChoice(choice);
                                 setManualBusinessFlow(choice === "no");
                                 if (choice === "no" && !brandLocation.trim()) {
                                   setBrandLocation(place);
                                 }
+                                setBusinessStep(
+                                  choice === "no" ? "details" : "identity",
+                                );
                               }}
-                              className="h-14 rounded-2xl border text-[15px] font-medium transition-all duration-200"
+                              className="h-12 sm:h-14 rounded-2xl border text-[15px] font-medium transition-all duration-200"
                               style={{
                                 color: isActive
                                   ? "var(--auth-accent-fg)"
@@ -652,7 +599,7 @@ function OnboardingInner() {
                               type="button"
                               disabled={!canConnectBusinessInstagram || loading}
                               onClick={handleBusinessInstagramConnect}
-                              className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                              className="w-full h-12 sm:h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                               style={{
                                 background:
                                   "linear-gradient(135deg, #FF8FB1 0%, #E8638C 100%)",
@@ -684,7 +631,7 @@ function OnboardingInner() {
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
-                          className="space-y-4 overflow-hidden"
+                          className="space-y-3 sm:space-y-4 overflow-hidden"
                         >
                           <div className="space-y-2">
                             <label
@@ -700,7 +647,7 @@ function OnboardingInner() {
                               value={brandName}
                               onChange={(e) => setBrandName(e.target.value)}
                               required={showManualBusinessFields}
-                              className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
+                              className="w-full h-12 sm:h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200"
                               style={{
                                 color: "rgba(255,255,255,0.9)",
                                 background: "rgba(255,255,255,0.1)",
@@ -722,7 +669,7 @@ function OnboardingInner() {
                               id="ob-brand-type"
                               value={brandType}
                               onChange={(e) => setBrandType(e.target.value)}
-                              className="w-full h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200 appearance-none cursor-pointer"
+                              className="w-full h-12 sm:h-14 px-5 rounded-2xl text-[15px] outline-none transition-all duration-200 appearance-none cursor-pointer"
                               style={{
                                 color: brandType
                                   ? "rgba(255,255,255,0.9)"
@@ -748,43 +695,59 @@ function OnboardingInner() {
               </AnimatePresence>
 
               {(selectedRole === "influencer" || showManualBusinessFields) && (
-                <button
-                  type="submit"
-                  disabled={
-                    loading ||
-                    (selectedRole === "business" && !brandName.trim())
-                  }
-                  className="w-full h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  style={
-                    selectedRole === "influencer"
-                      ? {
-                          background:
-                            "linear-gradient(135deg, #FF8FB1 0%, #E8638C 100%)",
-                          color: "#fff",
-                          boxShadow: "0 4px 20px rgba(232,99,140,0.4)",
-                        }
-                      : {
-                          background: "var(--auth-gradient)",
-                          color: "var(--auth-accent-fg)",
-                          boxShadow: "0 4px 20px var(--auth-glow)",
-                        }
-                  }
-                >
-                  {loading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : selectedRole === "influencer" ? (
-                    <Image
-                      src="/instagram_3d.png"
-                      alt="Instagram"
-                      width={24}
-                      height={24}
-                      style={{ objectFit: "contain" }}
-                    />
-                  ) : null}
-                  {selectedRole === "influencer"
-                    ? "Connect with Instagram"
-                    : "Complete Brand Profile"}
-                </button>
+                <div className="space-y-3">
+                  <button
+                    type="submit"
+                    disabled={
+                      loading ||
+                      (selectedRole === "business" && !brandName.trim())
+                    }
+                    className="w-full h-12 sm:h-14 rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    style={
+                      selectedRole === "influencer"
+                        ? {
+                            background:
+                              "linear-gradient(135deg, #FF8FB1 0%, #E8638C 100%)",
+                            color: "#fff",
+                            boxShadow: "0 4px 20px rgba(232,99,140,0.4)",
+                          }
+                        : {
+                            background: "var(--auth-gradient)",
+                            color: "var(--auth-accent-fg)",
+                            boxShadow: "0 4px 20px var(--auth-glow)",
+                          }
+                    }
+                  >
+                    {loading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : selectedRole === "influencer" ? (
+                      <Image
+                        src="/instagram_3d.png"
+                        alt="Instagram"
+                        width={24}
+                        height={24}
+                        style={{ objectFit: "contain" }}
+                      />
+                    ) : null}
+                    {selectedRole === "influencer"
+                      ? "Connect with Instagram"
+                      : "Continue"}
+                  </button>
+                  {showManualBusinessFields && (
+                    <button
+                      type="button"
+                      onClick={() => setBusinessStep("identity")}
+                      className="w-full h-12 rounded-2xl text-[14px] font-medium transition-all duration-200 flex items-center justify-center"
+                      style={{
+                        color: "rgba(255,255,255,0.78)",
+                        background: "rgba(255,255,255,0.06)",
+                        border: "1px solid rgba(255,255,255,0.14)",
+                      }}
+                    >
+                      Back
+                    </button>
+                  )}
+                </div>
               )}
             </m.form>
           )}
