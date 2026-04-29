@@ -5,15 +5,6 @@ import { useRef } from "react";
 import styles from "../landing.module.css";
 import { Airplane } from "./Airplane";
 
-const CATEGORY_PILLS = [
-  "Food & Bev",
-  "Fashion",
-  "Tech",
-  "Beauty",
-  "Lifestyle",
-  "Gaming",
-];
-
 export function AirplanesSection() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -21,40 +12,33 @@ export function AirplanesSection() {
     offset: ["start end", "end start"],
   });
 
-  // Text reveals staggered line by line
-  const op1 = useTransform(scrollYProgress, [0.05, 0.15], [0, 1]);
-  const rawY1 = useTransform(scrollYProgress, [0.05, 0.15], [30, 0]);
+  const op1 = useTransform(scrollYProgress, [0.12, 0.22], [0, 1]);
+  const rawY1 = useTransform(scrollYProgress, [0.12, 0.22], [30, 0]);
   const y1 = useSpring(rawY1, { stiffness: 400, damping: 30 });
 
-  const op2 = useTransform(scrollYProgress, [0.13, 0.23], [0, 1]);
-  const rawY2 = useTransform(scrollYProgress, [0.13, 0.23], [30, 0]);
+  const op2 = useTransform(scrollYProgress, [0.2, 0.3], [0, 1]);
+  const rawY2 = useTransform(scrollYProgress, [0.2, 0.3], [30, 0]);
   const y2 = useSpring(rawY2, { stiffness: 400, damping: 30 });
 
-  const op4 = useTransform(scrollYProgress, [0.26, 0.36], [0, 1]);
-  const rawY4 = useTransform(scrollYProgress, [0.26, 0.36], [30, 0]);
+  const op4 = useTransform(scrollYProgress, [0.28, 0.38], [0, 1]);
+  const rawY4 = useTransform(scrollYProgress, [0.28, 0.38], [30, 0]);
   const y4 = useSpring(rawY4, { stiffness: 400, damping: 30 });
 
-  // Planes animate after text is done (0.36+)
-  // On mobile use smaller travel distances to keep planes visible in frame
-  const plane1X = useTransform(scrollYProgress, [0.36, 0.9], ["0vw", "110vw"]);
-  const plane1Y = useTransform(
-    scrollYProgress,
-    [0.36, 0.9],
-    ["20vh", "-110vh"],
-  );
-  const plane1Op = useTransform(scrollYProgress, [0.36, 0.4], [0, 1]);
+  const plane1X = useTransform(scrollYProgress, [0.4, 0.9], ["0vw", "110vw"]);
+  const plane1Y = useTransform(scrollYProgress, [0.4, 0.9], ["20vh", "-110vh"]);
+  const plane1Op = useTransform(scrollYProgress, [0.4, 0.44], [0, 1]);
 
   const plane2X = useTransform(
     scrollYProgress,
-    [0.42, 0.98],
+    [0.46, 0.98],
     ["0vw", "-110vw"],
   );
   const plane2Y = useTransform(
     scrollYProgress,
-    [0.42, 0.98],
+    [0.46, 0.98],
     ["20vh", "-110vh"],
   );
-  const plane2Op = useTransform(scrollYProgress, [0.36, 0.42], [0, 1]);
+  const plane2Op = useTransform(scrollYProgress, [0.4, 0.46], [0, 1]);
 
   return (
     <section
@@ -62,7 +46,7 @@ export function AirplanesSection() {
       className="relative"
       style={{ height: "300vh", width: "100%" }}
     >
-      <div className="sticky top-0 left-0 w-full h-[100vh] overflow-hidden flex flex-col items-center justify-center">
+      <div className="sticky top-0 left-0 w-full h-[100svh] min-h-[100dvh] overflow-hidden flex flex-col items-center justify-center">
         {/* Plane 1: Pink, left → top-right */}
         <m.div
           style={{
@@ -109,24 +93,44 @@ export function AirplanesSection() {
           </div>
         </m.div>
 
-        <div className="relative z-[2] flex flex-col items-center justify-center w-full px-4">
+        <div
+          className="relative z-[2] flex flex-col items-center justify-center w-full max-w-[100vw] box-border"
+          style={{
+            paddingLeft: "max(1.25rem, env(safe-area-inset-left))",
+            paddingRight: "max(1.25rem, env(safe-area-inset-right))",
+            paddingTop: "max(0.75rem, env(safe-area-inset-top))",
+            paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
+          }}
+        >
           <m.div
-            className={styles.eyebrow + " mb-6 sm:mb-8"}
+            className={styles.eyebrow + " mb-5 sm:mb-8 text-center"}
             style={{ opacity: op1, y: y1 }}
           >
             But what is it actually?
           </m.div>
 
-          <h2 className={styles.airplanesTitle} style={{ textAlign: "center" }}>
+          <h2
+            className={styles.airplanesTitle}
+            style={{
+              textAlign: "center",
+              width: "100%",
+              maxWidth: "min(22em, 100%)",
+              margin: 0,
+              fontSize: "clamp(1.5rem, 3.85vw + 0.65rem, 8.125rem)",
+              lineHeight: 0.88,
+            }}
+          >
             <m.span style={{ display: "block", opacity: op1, y: y1 }}>
               FOR BRANDS.
             </m.span>
 
             <m.span
               style={{
-                display: "inline-flex",
+                display: "flex",
+                flexWrap: "wrap",
                 alignItems: "center",
-                gap: "0.25em",
+                justifyContent: "center",
+                gap: "0.2em",
                 opacity: op2,
                 y: y2,
               }}
@@ -150,30 +154,6 @@ export function AirplanesSection() {
               ONE PLATFORM.
             </m.span>
           </h2>
-
-          {/* Category pills */}
-          <m.div
-            className="flex flex-wrap justify-center gap-2 mt-6 sm:mt-8 px-2"
-            style={{ opacity: op4, maxWidth: "min(600px, 90vw)" }}
-          >
-            {CATEGORY_PILLS.map((pill) => (
-              <span
-                key={pill}
-                style={{
-                  border: "1px solid #1d1c1c",
-                  borderRadius: 999,
-                  padding: "5px 14px",
-                  fontSize: "clamp(0.7rem, 1.5vw, 0.875rem)",
-                  fontWeight: 600,
-                  color: "#1d1c1c",
-                  background: "rgba(255,255,255,0.6)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {pill}
-              </span>
-            ))}
-          </m.div>
         </div>
       </div>
     </section>

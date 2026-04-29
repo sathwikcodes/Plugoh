@@ -10,32 +10,24 @@ export function SiteHeader() {
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
-      className="fixed left-0 right-0 top-0 z-[1000] flex items-center justify-center"
+      className="fixed left-0 right-0 top-0 z-[1000] flex items-center justify-center pt-[env(safe-area-inset-top,0px)]"
     >
       <div
-        className={styles.pill}
         style={{
-          marginTop: "clamp(1.4375rem, 1.458vw + 0.125rem, 1.875rem)",
-          padding: "2px 18px",
-          display: "inline-flex",
+          marginTop: "clamp(1.5rem, 1.5vw + 0.35rem, 2rem)",
+          display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "var(--surface)",
         }}
       >
         <Image
           src="/logo-gold.png"
           alt="Plugoh"
-          height={48}
-          width={114}
+          width={2048}
+          height={2048}
           quality={100}
           priority
-          style={{
-            width: "114px",
-            height: "48px",
-            objectFit: "cover",
-            objectPosition: "center",
-          }}
+          className={styles.headerLogoMark}
         />
       </div>
     </m.header>

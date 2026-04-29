@@ -32,7 +32,7 @@ export function BottomNav() {
             <div className="mx-auto flex max-w-[560px] justify-center px-3 pointer-events-none">
               <a
                 href="#about"
-                className={styles.pill}
+                className={`${styles.pill} pointer-events-auto`}
                 style={{
                   padding: "14px 18px 14px 16px",
                   display: "inline-flex",
@@ -40,6 +40,14 @@ export function BottomNav() {
                   gap: 14,
                   fontSize: "0.95rem",
                   whiteSpace: "nowrap",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("about")?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                  window.history.replaceState(null, "", "#about");
                 }}
               >
                 <span>Scroll and discover what this means.</span>

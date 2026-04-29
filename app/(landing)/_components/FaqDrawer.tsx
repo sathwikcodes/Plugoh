@@ -7,34 +7,48 @@ import styles from "../landing.module.css";
 
 const faqs = [
   {
-    q: "How do I get started?",
-    a: "For brands: sign up, set up your brand profile with your niche and campaign budget. Then browse influencers and send your first campaign offer.\n\nFor influencers: sign up, complete your profile with your niche, portfolio, and rates. Brands will discover you and send you collaboration offers.",
+    q: "Do I need a huge following to join as an influencer?",
+    a: "Not at all. Plugoh welcomes micro and mid-tier influencers. What matters is your engagement and niche — not just follower count. Brands on Plugoh are looking for genuine connections, not inflated numbers. If your audience trusts you, you belong here.",
   },
   {
-    q: "How does pricing work for influencers?",
-    a: "Influencers set their own rates when building their profile. You choose your price per post, story, reel, or campaign. Brands see your rates and decide if it fits their budget. You're always in control.",
+    q: "Is my money safe as a brand?",
+    a: "Yes. Plugoh holds your payment in a secure escrow — it doesn't reach the influencer until you approve their content. You stay in control throughout. If there's a dispute, our team steps in and resolves it fairly. No money moves without your say-so.",
   },
   {
-    q: "How do brands pay influencers?",
-    a: "Payments are handled in-app through Plugoh. Once an influencer delivers the content, the brand releases payment. Everything is tracked — no chasing invoices, no DM negotiations.",
+    q: "When do influencers actually get paid?",
+    a: "The moment the brand approves your content, payment is released instantly to your account. No waiting windows, no processing delays. You deliver, they approve, you get paid — that's it.",
   },
   {
-    q: "Is Plugoh only for South India right now?",
-    a: "Yes, for now. We're starting with South India because that's where we're building the strongest influencer community first. We'll expand once we've built something genuinely great here.",
+    q: "Where is my content stored after I upload it?",
+    a: "On Plugoh's own servers. Every piece of content you upload is stored permanently — accessible to you anytime, forever. You own your work. We just make sure it's never lost.",
   },
   {
-    q: "What types of collaborations are supported?",
-    a: "Instagram posts, reels, stories, and full campaigns with multiple deliverables. More content types coming soon.",
+    q: "Is Plugoh available outside South India?",
+    a: "Right now we're focused on South India — building the deepest, most active influencer community here first. Once we've built something genuinely great in this market, we'll expand. Stay tuned.",
+  },
+  {
+    q: "What types of brand collaborations can I book?",
+    a: "Instagram posts, reels, stories, and full campaigns with multiple deliverables — all tracked in one place. You set the terms, brands pay through the platform, and everything is documented. More content formats are coming soon.",
   },
 ];
 
-function FaqItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
-
+function FaqItem({
+  q,
+  a,
+  open,
+  onToggle,
+}: {
+  q: string;
+  a: string;
+  open: boolean;
+  onToggle: () => void;
+}) {
   return (
     <div style={{ borderBottom: "1.5px solid #1d1c1c" }}>
       <button
-        onClick={() => setOpen(!open)}
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
         style={{
           width: "100%",
           textAlign: "left",
@@ -119,6 +133,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export function FaqDrawer() {
   const [isOpen, setIsOpen] = useState(false);
+  const [openQ, setOpenQ] = useState<string | null>(null);
 
   useEffect(() => {
     const open = () => setIsOpen(true);
@@ -156,27 +171,20 @@ export function FaqDrawer() {
               background: "#fff",
             }}
           >
-            <div
-              className={styles.pill}
-              style={{
-                padding: "10px 24px",
-                fontWeight: 800,
-                fontSize: "clamp(1rem, 1.2vw + 0.4rem, 1.4rem)",
-                letterSpacing: "-0.03em",
-                lineHeight: 1,
-              }}
-            >
-              <Image
-                src="/logo-gold.png"
-                alt="Plugoh"
-                height={24}
-                width={100}
-                style={{ objectFit: "contain" }}
-              />
-            </div>
+            <Image
+              src="/logo-gold.png"
+              alt="Plugoh"
+              width={2048}
+              height={2048}
+              className={styles.headerLogoMark}
+            />
 
             <button
-              onClick={() => setIsOpen(false)}
+              type="button"
+              onClick={() => {
+                setIsOpen(false);
+                setOpenQ(null);
+              }}
               className={styles.pill}
               style={{
                 background: "#fff48d",
@@ -302,7 +310,15 @@ export function FaqDrawer() {
 
             <div>
               {faqs.map((item) => (
-                <FaqItem key={item.q} q={item.q} a={item.a} />
+                <FaqItem
+                  key={item.q}
+                  q={item.q}
+                  a={item.a}
+                  open={openQ === item.q}
+                  onToggle={() =>
+                    setOpenQ((prev) => (prev === item.q ? null : item.q))
+                  }
+                />
               ))}
             </div>
 

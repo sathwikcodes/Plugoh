@@ -26,9 +26,17 @@ const faqs = [
   },
 ];
 
-function FaqItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
-
+function FaqItem({
+  q,
+  a,
+  open,
+  onToggle,
+}: {
+  q: string;
+  a: string;
+  open: boolean;
+  onToggle: () => void;
+}) {
   return (
     <div
       style={{
@@ -37,7 +45,9 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       }}
     >
       <button
-        onClick={() => setOpen(!open)}
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
         style={{
           width: "100%",
           textAlign: "left",
@@ -96,6 +106,8 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 export default function FaqPage() {
+  const [openQ, setOpenQ] = useState<string | null>(null);
+
   return (
     <div
       style={{
@@ -157,7 +169,15 @@ export default function FaqPage() {
           }}
         >
           {faqs.map((item) => (
-            <FaqItem key={item.q} q={item.q} a={item.a} />
+            <FaqItem
+              key={item.q}
+              q={item.q}
+              a={item.a}
+              open={openQ === item.q}
+              onToggle={() =>
+                setOpenQ((prev) => (prev === item.q ? null : item.q))
+              }
+            />
           ))}
         </div>
 

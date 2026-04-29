@@ -61,76 +61,76 @@ export function HeroSection() {
 
       {/* Title */}
       <div
-        className={`absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 px-4 ${styles.floatY}`}
+        className={`absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none pl-[max(1.5rem,env(safe-area-inset-left))] pr-[max(1.5rem,env(safe-area-inset-right))] sm:px-8 md:px-12 lg:px-16 ${styles.floatY}`}
         style={{ animationDuration: "5s" }}
       >
-        {/* "the ultimate" */}
-        <m.span
-          className="text-[#1d1c1c] relative z-10 m-0 p-0 font-[800]"
-          style={{
-            fontFamily: "'GT Walsheim Wero', sans-serif",
-            fontSize: "clamp(2rem, 6vw, 5rem)",
-            lineHeight: "0.9",
-            letterSpacing: "-0.02em",
-            textTransform: "uppercase",
-            opacity: titleOpacity,
-            y: titleY,
-          }}
+        <m.div
+          className="relative flex w-full max-w-[72rem] flex-col items-center gap-1 [container-type:inline-size] sm:gap-0"
+          style={{ opacity: titleOpacity, y: titleY }}
         >
-          the ultimate
-          {/* Phase 1 badge */}
-          <m.div
-            className="absolute"
+          <div className="z-10 flex w-full justify-center">
+            <span
+              className="relative z-10 m-0 inline-block max-w-full p-0 text-center font-[800] text-[#1d1c1c]"
+              style={{
+                fontFamily: "'GT Walsheim Wero', sans-serif",
+                fontSize: "clamp(1.75rem, 5.5vw, 5rem)",
+                lineHeight: "0.95",
+                letterSpacing: "-0.02em",
+                textTransform: "uppercase",
+                paddingInline: "clamp(0px, 2vw, 0.25rem)",
+              }}
+            >
+              the ultimate
+              <m.div
+                className="pointer-events-auto absolute z-40 w-12 max-[480px]:w-[2.625rem] sm:w-20 md:w-28"
+                style={{
+                  left: "100%",
+                  top: "-0.12em",
+                  transform: "translate(-44%, -52%) rotate(20deg)",
+                  transformOrigin: "42% 48%",
+                }}
+              >
+                <div
+                  className={`${styles.slowSpin} transition-transform hover:scale-110`}
+                >
+                  <img
+                    src="/landing/images/sticker-phase-1-en.png"
+                    alt="Now in phase 1"
+                    style={{ width: "100%", height: "auto", display: "block" }}
+                  />
+                </div>
+              </m.div>
+            </span>
+          </div>
+
+          <span
+            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#1d1c1c] max-[480px]:tracking-[-0.025em] tracking-[-0.04em]"
             style={{
-              right: "2px",
-              top: "-50px",
-              zIndex: 20,
-              transform: "translateX(100%)",
+              fontFamily: "'GT Walsheim Wero', sans-serif",
+              fontSize:
+                "clamp(2.5rem, min(14vw, calc((100cqi - 3.5rem) / 8)), 10rem)",
+              lineHeight: "0.92",
+              textTransform: "uppercase",
+              paddingInline: "clamp(0px, 1.5vw, 0.125rem)",
             }}
           >
-            <div
-              className={`${styles.slowSpin} w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 transform transition-transform hover:scale-110`}
-            >
-              <img
-                src="/landing/images/sticker-phase-1-en.png"
-                alt="Now in phase 1"
-                style={{ width: "100%", height: "auto", display: "block" }}
-              />
-            </div>
-          </m.div>
-        </m.span>
+            INFLUENCER
+          </span>
 
-        {/* "INFLUENCER" — fluid, never overflows */}
-        <m.span
-          className="text-[#1d1c1c] relative z-10 m-0 p-0 font-[800]"
-          style={{
-            fontFamily: "'GT Walsheim Wero', sans-serif",
-            fontSize: "clamp(3.5rem, 16vw, 10rem)",
-            lineHeight: "0.9",
-            letterSpacing: "-0.04em",
-            textTransform: "uppercase",
-            opacity: titleOpacity,
-            y: titleY,
-          }}
-        >
-          INFLUENCER
-        </m.span>
-
-        {/* "marketplace" */}
-        <m.span
-          className="text-[#1d1c1c] relative z-10 m-0 p-0 font-[800]"
-          style={{
-            fontFamily: "'GT Walsheim Wero', sans-serif",
-            fontSize: "clamp(2rem, 6vw, 5rem)",
-            lineHeight: "0.9",
-            letterSpacing: "-0.02em",
-            textTransform: "uppercase",
-            opacity: titleOpacity,
-            y: titleY,
-          }}
-        >
-          marketplace
-        </m.span>
+          <span
+            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#1d1c1c]"
+            style={{
+              fontFamily: "'GT Walsheim Wero', sans-serif",
+              fontSize: "clamp(1.75rem, 5.5vw, 5rem)",
+              lineHeight: "0.95",
+              letterSpacing: "-0.02em",
+              textTransform: "uppercase",
+              paddingInline: "clamp(0px, 2vw, 0.25rem)",
+            }}
+          >
+            marketplace
+          </span>
+        </m.div>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import styles from "../landing.module.css";
 import { Reveal } from "./Reveal";
 
@@ -194,8 +195,9 @@ export function SiteFooter() {
         >
           {[
             {
-              href: "https://www.instagram.com/",
+              href: "https://www.instagram.com/weareplugoh/",
               label: "Instagram",
+              disabled: false,
               svg: (
                 <svg
                   width="20"
@@ -223,8 +225,8 @@ export function SiteFooter() {
               ),
             },
             {
-              href: "https://twitter.com/",
               label: "X",
+              disabled: true,
               svg: (
                 <svg
                   width="18"
@@ -241,8 +243,8 @@ export function SiteFooter() {
               ),
             },
             {
-              href: "https://www.linkedin.com/",
               label: "LinkedIn",
+              disabled: true,
               svg: (
                 <svg
                   width="18"
@@ -277,30 +279,52 @@ export function SiteFooter() {
                 </svg>
               ),
             },
-          ].map((s) => (
-            <a
-              key={s.label}
-              href={s.href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={s.label}
-              className={styles.iconBadge}
-              style={{
-                width: "52px",
-                height: "52px",
-                background: "#fff",
-                transition: "transform 0.2s",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "translateY(-4px)")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.transform = "translateY(0)")
-              }
-            >
-              {s.svg}
-            </a>
-          ))}
+          ].map((s) => {
+            const badgeStyle: CSSProperties = {
+              width: "52px",
+              height: "52px",
+              background: "#fff",
+              transition: "transform 0.2s",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              ...(s.disabled
+                ? { opacity: 0.38, pointerEvents: "none", cursor: "default" }
+                : {}),
+            };
+            if (s.disabled) {
+              return (
+                <span
+                  key={s.label}
+                  className={styles.iconBadge}
+                  style={badgeStyle}
+                  aria-disabled="true"
+                  aria-label={`${s.label} — unavailable`}
+                >
+                  {s.svg}
+                </span>
+              );
+            }
+            return (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                className={styles.iconBadge}
+                style={badgeStyle}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.transform = "translateY(-4px)")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.transform = "translateY(0)")
+                }
+              >
+                {s.svg}
+              </a>
+            );
+          })}
         </div>
       </div>
 

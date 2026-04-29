@@ -208,7 +208,7 @@ export function PuzzleSection() {
           >
             <span style={{ display: "block" }}>EVERY GREAT</span>
             <span style={{ display: "block" }}>COLLAB STARTS</span>
-            <span style={{ display: "block" }}>WITH A HANDSHAKE.</span>
+            <span style={{ display: "block" }}>WITH PLUGOH.</span>
           </Reveal>
         </div>
       </div>
