@@ -145,10 +145,10 @@ export function FaqDrawer() {
     <AnimatePresence>
       {isOpen && (
         <m.div
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 32, stiffness: 280, mass: 1 }}
+          initial={{ opacity: 0.96, y: "100%" }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0.96, y: "100%" }}
+          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
           style={{
             position: "fixed",
             inset: 0,
@@ -156,6 +156,7 @@ export function FaqDrawer() {
             background: "#fff",
             overflowY: "auto",
             overscrollBehavior: "contain",
+            willChange: "transform, opacity",
           }}
         >
           {/* Header row */}
