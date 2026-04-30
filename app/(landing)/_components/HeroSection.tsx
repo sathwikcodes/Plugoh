@@ -56,7 +56,7 @@ export function HeroSection() {
         >
           <div className="z-10 flex w-full justify-center">
             <span
-              className="relative z-10 m-0 inline-block max-w-full p-0 text-center font-[800] text-[#fff8e1]"
+              className="relative z-10 m-0 inline-block max-w-full p-0 text-center font-[800] text-[#f4f0f8]"
               style={{
                 fontFamily: "'GT Walsheim Wero', sans-serif",
                 fontSize: "clamp(1.75rem, 5.5vw, 5rem)",
@@ -90,7 +90,7 @@ export function HeroSection() {
           </div>
 
           <span
-            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#fff8e1] max-[480px]:tracking-[-0.025em] tracking-[-0.04em]"
+            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#f4f0f8] max-[480px]:tracking-[-0.025em] tracking-[-0.04em]"
             style={{
               fontFamily: "'GT Walsheim Wero', sans-serif",
               fontSize:
@@ -104,7 +104,7 @@ export function HeroSection() {
           </span>
 
           <span
-            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#fff8e1]"
+            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#f4f0f8]"
             style={{
               fontFamily: "'GT Walsheim Wero', sans-serif",
               fontSize: "clamp(1.75rem, 5.5vw, 5rem)",

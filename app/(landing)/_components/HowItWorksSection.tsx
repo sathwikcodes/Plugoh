@@ -33,7 +33,7 @@ const phases = [
     number: 1,
     title: "BUILD YOUR PROFILE & CONNECT INSTAGRAM",
     description:
-      "Sign up and link your Instagram in seconds. Brands set their campaign goals and budget. Influencers list their rates, niche, city, and portfolio. Your profile is your pitch — and it's live immediately.",
+      "Create your profile, connect Instagram, and make your rates, niche, city, and portfolio ready for brands to discover.",
     tintClass: styles.phaseCard01,
     visual: <GeneratedImageVisual src="/1.png" alt="" />,
     enterStart: 0.05,
@@ -46,7 +46,7 @@ const phases = [
     number: 2,
     title: "DISCOVER & MATCH INSTANTLY",
     description:
-      "Brands browse hundreds of South India's most engaged influencers — filtered by category, city, follower count, and engagement rate. Find your perfect match and send a campaign offer in seconds. No cold DMs, no middle man.",
+      "Brands filter creators by category, city, audience, and engagement, then send the right campaign offer in seconds.",
     tintClass: styles.phaseCard02,
     visual: <GeneratedImageVisual src="/2.png" alt="" />,
     enterStart: 0.3,
@@ -59,7 +59,7 @@ const phases = [
     number: 3,
     title: "CREATE, UPLOAD & DELIVER",
     description:
-      "Influencers create content and upload directly on Plugoh. Our in-house servers store your work permanently — every file accessible forever, owned by you. Brands track every deliverable in real time from their dashboard.",
+      "Creators upload deliverables directly on Plugoh while brands track every file, status, and approval in one place.",
     tintClass: styles.phaseCardOrange,
     visual: <GeneratedImageVisual src="/3.png" alt="" />,
     enterStart: 0.55,
@@ -72,7 +72,7 @@ const phases = [
     number: 4,
     title: "GET PAID INSTANTLY",
     description:
-      "Content approved? Payment releases to the influencer's account in seconds. No waiting weeks, no chasing invoices. Every rupee is tracked, every deal is protected — instant payouts, every time.",
+      "Once content is approved, payouts release fast with every deal, file, and rupee tracked end to end.",
     tintClass: styles.phaseCard01,
     visual: <GeneratedImageVisual src="/4.png" alt="" />,
     enterStart: 0.78,
@@ -121,7 +121,7 @@ export function HowItWorksSection() {
         <h2
           aria-label="How Plugoh works"
           className={cn(
-            "pointer-events-none font-extrabold uppercase text-[#fff8e1]",
+            "pointer-events-none font-extrabold uppercase text-[#f4f0f8]",
             "absolute left-0 right-0 z-[999] mx-auto flex max-w-none flex-row flex-nowrap",
             "items-center justify-center gap-0 whitespace-nowrap text-center leading-none",
             "text-[clamp(0.8125rem,3.15vw+0.48rem,1.0625rem)] tracking-[0.03em]",
@@ -153,7 +153,7 @@ export function HowItWorksSection() {
           <h2
             aria-label="How Plugoh works"
             className={cn(
-              "font-extrabold uppercase text-[#fff8e1]",
+              "font-extrabold uppercase text-[#f4f0f8]",
               "mx-0 max-w-[14ch] text-left leading-[0.88]",
               "whitespace-normal text-[clamp(2.25rem,3.3vw,3.95rem)] tracking-[-0.047em]",
             )}
@@ -255,7 +255,7 @@ function PhaseSlide({
 
         <div
           className={cn(
-            "relative w-full shrink-0 overflow-hidden rounded-[8px]",
+            "relative w-full shrink-0 overflow-hidden rounded-[18px]",
             "h-[min(32dvh,198px)]",
             "lg:aspect-[1.45/1] lg:h-auto lg:max-h-[240px] lg:min-h-0",
           )}
@@ -481,7 +481,7 @@ function ProfileVisual() {
 
 function GeneratedImageVisual({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-[8px]">
+    <div className="relative h-full w-full overflow-hidden rounded-[18px]">
       <Image
         src={src}
         alt={alt}
