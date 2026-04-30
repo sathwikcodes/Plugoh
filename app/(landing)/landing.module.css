@@ -50,7 +50,7 @@
   font-feature-settings: "ss06" on;
   font-style: normal;
   font-weight: 400;
-  background: var(--surface);
+  background: transparent;
   overflow-x: clip;
   width: 100%;
   min-height: 100vh;
@@ -77,10 +77,8 @@
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(121deg, #e5b94a -20.66%, #fff48d 65.83%);
-  background-size: 120% 120%;
-  background-position: 50% 50%;
-  animation: gradientPan 10s ease infinite;
+  background: #08060d;
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -262,14 +260,10 @@
   background: linear-gradient(135deg, #ffb176 0%, #ff6a6a 100%);
 }
 
-.phaseCard01 {
-  background: linear-gradient(135deg, #7effc5 0%, #4fe0a3 100%);
-}
-.phaseCard02 {
-  background: linear-gradient(135deg, #ff8dd3 0%, #d5a8ff 100%);
-}
+.phaseCard01,
+.phaseCard02,
 .phaseCardOrange {
-  background: linear-gradient(135deg, #ffc47a 0%, #ff7d6a 100%);
+  background: linear-gradient(145deg, #fff9e2 0%, #f3d991 52%, #e5b94a 100%);
 }
 
 .partnerTile {

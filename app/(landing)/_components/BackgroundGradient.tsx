@@ -1,33 +1,26 @@
 "use client";
 
-import { m, useScroll, useTransform, MotionValue } from "framer-motion";
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
+import {
+  GRADIENT_COLORS,
+  GRADIENT_STOPS,
+  GRADIENT_STYLE,
+} from "@/lib/animations";
 import styles from "../landing.module.css";
 
 export function BackgroundGradient() {
-  const { scrollYProgress } = useScroll();
-  const opacity = useTransform(
-    scrollYProgress,
-    [0.6, 0.8],
-    [1, 0],
-  ) as MotionValue<number>;
-  const yellow = useTransform(
-    scrollYProgress,
-    [0.6, 0.8],
-    [0, 1],
-  ) as MotionValue<number>;
-
   return (
-    <>
-      <m.div className={styles.bgGradient} style={{ opacity }} aria-hidden />
-      <m.div
-        className={styles.bgGradient}
-        style={{
-          opacity: yellow,
-          background: "linear-gradient(180deg, #ffe070 0%, #ffd94a 100%)",
-          animation: "none",
-        }}
-        aria-hidden
+    <div className={styles.bgGradient} aria-hidden>
+      <AnimatedGradientBackground
+        Breathing
+        gradientColors={GRADIENT_COLORS}
+        gradientStops={GRADIENT_STOPS}
+        startingGap={96}
+        breathingRange={2}
+        animationSpeed={0.008}
+        containerStyle={GRADIENT_STYLE}
+        gradientOrigin="50% 118%"
       />
-    </>
+    </div>
   );
 }

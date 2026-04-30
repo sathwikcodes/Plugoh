@@ -94,7 +94,7 @@ export function AirplanesSection() {
         </m.div>
 
         <div
-          className="relative z-[2] flex flex-col items-center justify-center w-full max-w-[100vw] box-border"
+          className="relative z-[2] flex flex-col items-center justify-center w-full max-w-[100vw] box-border text-[#fff8e1]"
           style={{
             paddingLeft: "max(1.25rem, env(safe-area-inset-left))",
             paddingRight: "max(1.25rem, env(safe-area-inset-right))",

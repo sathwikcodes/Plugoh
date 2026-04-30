@@ -11,6 +11,7 @@ interface AnimatedGradientBackgroundProps {
   containerStyle?: React.CSSProperties;
   containerClassName?: string;
   topOffset?: number;
+  gradientOrigin?: string;
 }
 
 const DEFAULT_COLORS = [
@@ -46,6 +47,7 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> =
       breathingRange = 5,
       containerStyle = DEFAULT_STYLE,
       topOffset = 0,
+      gradientOrigin = "50% 20%",
       containerClassName = "",
     }) => {
       if (gradientColors.length !== gradientStops.length) {
@@ -72,7 +74,7 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> =
             .map((stop, index) => `${gradientColors[index]} ${stop}%`)
             .join(", ");
 
-          const gradient = `radial-gradient(${width}% ${width + topOffset}% at 50% 20%, ${gradientStopsString})`;
+          const gradient = `radial-gradient(${width}% ${width + topOffset}% at ${gradientOrigin}, ${gradientStopsString})`;
 
           if (containerRef.current) {
             containerRef.current.style.background = gradient;
@@ -92,6 +94,7 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> =
         animationSpeed,
         breathingRange,
         topOffset,
+        gradientOrigin,
       ]);
 
       return (

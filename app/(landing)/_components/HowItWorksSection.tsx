@@ -1,6 +1,7 @@
 "use client";
 
 import { MotionValue, m, useScroll, useTransform } from "framer-motion";
+import Image from "next/image";
 import type { CSSProperties } from "react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -34,7 +35,7 @@ const phases = [
     description:
       "Sign up and link your Instagram in seconds. Brands set their campaign goals and budget. Influencers list their rates, niche, city, and portfolio. Your profile is your pitch — and it's live immediately.",
     tintClass: styles.phaseCard01,
-    visual: <ProfileVisual />,
+    visual: <GeneratedImageVisual src="/1.png" alt="" />,
     enterStart: 0.05,
     lockAt: 0.2,
     settleY: -135,
@@ -47,7 +48,7 @@ const phases = [
     description:
       "Brands browse hundreds of South India's most engaged influencers — filtered by category, city, follower count, and engagement rate. Find your perfect match and send a campaign offer in seconds. No cold DMs, no middle man.",
     tintClass: styles.phaseCard02,
-    visual: <DiscoverVisual />,
+    visual: <GeneratedImageVisual src="/2.png" alt="" />,
     enterStart: 0.3,
     lockAt: 0.45,
     settleY: -45,
@@ -60,7 +61,7 @@ const phases = [
     description:
       "Influencers create content and upload directly on Plugoh. Our in-house servers store your work permanently — every file accessible forever, owned by you. Brands track every deliverable in real time from their dashboard.",
     tintClass: styles.phaseCardOrange,
-    visual: <UploadVisual />,
+    visual: <GeneratedImageVisual src="/3.png" alt="" />,
     enterStart: 0.55,
     lockAt: 0.7,
     settleY: 45,
@@ -73,7 +74,7 @@ const phases = [
     description:
       "Content approved? Payment releases to the influencer's account in seconds. No waiting weeks, no chasing invoices. Every rupee is tracked, every deal is protected — instant payouts, every time.",
     tintClass: styles.phaseCard01,
-    visual: <PayoutVisual />,
+    visual: <GeneratedImageVisual src="/4.png" alt="" />,
     enterStart: 0.78,
     lockAt: 0.93,
     settleY: 135,
@@ -120,7 +121,7 @@ export function HowItWorksSection() {
         <h2
           aria-label="How Plugoh works"
           className={cn(
-            "pointer-events-none font-extrabold uppercase text-[#1d1c1c]",
+            "pointer-events-none font-extrabold uppercase text-[#fff8e1]",
             "absolute left-0 right-0 z-[999] mx-auto flex max-w-none flex-row flex-nowrap",
             "items-center justify-center gap-0 whitespace-nowrap text-center leading-none",
             "text-[clamp(0.8125rem,3.15vw+0.48rem,1.0625rem)] tracking-[0.03em]",
@@ -152,7 +153,7 @@ export function HowItWorksSection() {
           <h2
             aria-label="How Plugoh works"
             className={cn(
-              "font-extrabold uppercase text-[#1d1c1c]",
+              "font-extrabold uppercase text-[#fff8e1]",
               "mx-0 max-w-[14ch] text-left leading-[0.88]",
               "whitespace-normal text-[clamp(2.25rem,3.3vw,3.95rem)] tracking-[-0.047em]",
             )}
@@ -475,6 +476,21 @@ function ProfileVisual() {
       />
       <rect x="410" y="503" width="120" height="14" rx="6" fill="#1d1c1c" />
     </svg>
+  );
+}
+
+function GeneratedImageVisual({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="relative h-full w-full overflow-hidden rounded-[8px]">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 1024px) 100vw, 790px"
+        className="object-cover"
+        priority
+      />
+    </div>
   );
 }
 

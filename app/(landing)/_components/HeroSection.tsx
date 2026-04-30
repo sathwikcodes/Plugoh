@@ -4,7 +4,6 @@ import { m, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import styles from "../landing.module.css";
 import { Hands } from "./Hands";
-import { LinesAnimation } from "./LinesAnimation";
 
 export function HeroSection() {
   const ref = useRef<HTMLElement>(null);
@@ -24,19 +23,6 @@ export function HeroSection() {
       className="relative flex items-center justify-center overflow-hidden"
       style={{ height: "100svh" }}
     >
-      {/* Lines animation with radial mask */}
-      <div
-        className="absolute pointer-events-none z-0 h-[100vh] w-[100vw] top-1/2 left-1/2 flex justify-center items-center"
-        style={{
-          transform: "translate(-50%, -50%) scale(1.1)",
-          WebkitMaskImage:
-            "radial-gradient(circle, transparent 30%, black 45%)",
-          maskImage: "radial-gradient(circle, transparent 30%, black 45%)",
-        }}
-      >
-        <LinesAnimation />
-      </div>
-
       <BackgroundEffects />
 
       {/* Hands */}
@@ -70,7 +56,7 @@ export function HeroSection() {
         >
           <div className="z-10 flex w-full justify-center">
             <span
-              className="relative z-10 m-0 inline-block max-w-full p-0 text-center font-[800] text-[#1d1c1c]"
+              className="relative z-10 m-0 inline-block max-w-full p-0 text-center font-[800] text-[#fff8e1]"
               style={{
                 fontFamily: "'GT Walsheim Wero', sans-serif",
                 fontSize: "clamp(1.75rem, 5.5vw, 5rem)",
@@ -104,7 +90,7 @@ export function HeroSection() {
           </div>
 
           <span
-            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#1d1c1c] max-[480px]:tracking-[-0.025em] tracking-[-0.04em]"
+            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#fff8e1] max-[480px]:tracking-[-0.025em] tracking-[-0.04em]"
             style={{
               fontFamily: "'GT Walsheim Wero', sans-serif",
               fontSize:
@@ -118,7 +104,7 @@ export function HeroSection() {
           </span>
 
           <span
-            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#1d1c1c]"
+            className="relative z-10 m-0 w-full max-w-full p-0 text-center font-[800] text-[#fff8e1]"
             style={{
               fontFamily: "'GT Walsheim Wero', sans-serif",
               fontSize: "clamp(1.75rem, 5.5vw, 5rem)",
