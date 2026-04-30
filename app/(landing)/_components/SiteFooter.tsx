@@ -351,7 +351,20 @@ export function SiteFooter() {
         className="mt-15 text-center"
         style={{ fontSize: 14, color: "#1d1c1c" }}
       >
-        © 2026 Plugoh | All rights reserved.
+        © 2026 Plugoh | All rights reserved.{" "}
+        <a
+          href="/privacy"
+          style={{ color: "#1d1c1c", fontWeight: 700, textDecoration: "none" }}
+        >
+          Privacy Policy
+        </a>{" "}
+        |{" "}
+        <a
+          href="/terms"
+          style={{ color: "#1d1c1c", fontWeight: 700, textDecoration: "none" }}
+        >
+          Terms
+        </a>
       </div>
     </footer>
   );

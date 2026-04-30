@@ -16,6 +16,27 @@ export default function LandingPage() {
       <ScrollProgress />
       <SiteHeader />
       <HeroSection />
+      <section
+        aria-labelledby="plugoh-purpose"
+        className="relative z-10 px-5 py-10 text-center"
+        style={{ background: "#f4f0f8", color: "#1d1c1c" }}
+      >
+        <div className="mx-auto max-w-3xl">
+          <h1
+            id="plugoh-purpose"
+            className="text-3xl font-extrabold tracking-tight sm:text-5xl"
+          >
+            Plugoh helps brands discover and book Instagram influencers.
+          </h1>
+          <p className="mt-4 text-base leading-7 text-black/70 sm:text-lg">
+            Plugoh is an influencer marketplace for businesses and creators in
+            India. Brands use Plugoh to find creators, launch campaigns, manage
+            collaborations, and handle campaign payments. Influencers use Plugoh
+            to showcase their profiles, connect Instagram, receive campaign
+            opportunities, and track brand collaborations.
+          </p>
+        </div>
+      </section>
       <section id="about">
         <AirplanesSection />
       </section>
