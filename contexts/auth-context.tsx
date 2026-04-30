@@ -7,6 +7,7 @@ import {
   useState,
   useCallback,
   useMemo,
+  useRef,
   type ReactNode,
 } from "react";
 import type { User, Session } from "@supabase/supabase-js";
@@ -48,59 +49,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<AppRole | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [roleLoading, setRoleLoading] = useState(false);
+  const roleRequestId = useRef(0);
+  const currentUserId = useRef<string | null>(null);
+  const userId = user?.id ?? null;
 
   useEffect(() => {
     let mounted = true;
 
-    let roleRequestId = 0;
-
-    const applySession = async (nextSession: Session | null) => {
-      const requestId = ++roleRequestId;
-      if (!mounted) return;
-
-      setAuthReady(false);
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
-
-      if (!nextSession?.user) {
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!mounted) return;
+        const nextUser = data.session?.user ?? null;
+        currentUserId.current = nextUser?.id ?? null;
+        setSession(data.session);
+        setUser(nextUser);
+        setRoleLoading(!!nextUser);
+        setAuthReady(true);
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setSession(null);
+        setUser(null);
         setRole(null);
         setRoleLoading(false);
         setAuthReady(true);
-        return;
-      }
-
-      setRoleLoading(true);
-      try {
-        const r = await fetchRole(nextSession.user.id);
-        if (!mounted || requestId !== roleRequestId) return;
-        setRole(r);
-      } catch {
-        if (!mounted || requestId !== roleRequestId) return;
-        setRole(null);
-      } finally {
-        if (mounted && requestId === roleRequestId) {
-          setRoleLoading(false);
-          setAuthReady(true);
-        }
-      }
-    };
-
-    supabase.auth
-      .getSession()
-      .then(({ data }) => applySession(data.session))
-      .catch(() => applySession(null));
+      });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, s) => {
+    } = supabase.auth.onAuthStateChange((event, nextSession) => {
       if (!mounted) return;
-      // Token refreshes don't change identity — just sync session and bail.
-      if (event === "TOKEN_REFRESHED") {
-        setSession(s);
-        setUser(s?.user ?? null);
-        return;
+
+      const nextUser = nextSession?.user ?? null;
+      const nextUserId = nextUser?.id ?? null;
+      const userChanged = currentUserId.current !== nextUserId;
+      currentUserId.current = nextUserId;
+
+      setSession(nextSession);
+      setUser(nextUser);
+      setAuthReady(true);
+
+      if (event === "SIGNED_OUT" || !nextUser) {
+        setRole(null);
+        setRoleLoading(false);
+      } else if (userChanged) {
+        setRole(null);
+        setRoleLoading(true);
       }
-      await applySession(s);
     });
 
     return () => {
@@ -108,6 +104,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const requestId = ++roleRequestId.current;
+
+    if (!userId) {
+      setRole(null);
+      setRoleLoading(false);
+      return () => {
+        mounted = false;
+      };
+    }
+
+    const loadRole = async () => {
+      setRoleLoading(true);
+      try {
+        const r = await fetchRole(userId);
+        if (!mounted || requestId !== roleRequestId.current) return;
+        setRole(r);
+      } catch {
+        if (!mounted || requestId !== roleRequestId.current) return;
+        setRole(null);
+      } finally {
+        if (mounted && requestId === roleRequestId.current) {
+          setRoleLoading(false);
+        }
+      }
+    };
+
+    void loadRole();
+
+    return () => {
+      mounted = false;
+    };
+  }, [userId]);
 
   const signInWithOtp = useCallback(async (email: string) => {
     const { error: e } = await supabase.auth.signInWithOtp({ email });
