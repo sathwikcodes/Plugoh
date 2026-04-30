@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../init";
+import type { Database } from "@/lib/supabase/types";
 
 export const profileRouter = router({
   getMyProfile: protectedProcedure.query(async ({ ctx }) => {
@@ -172,7 +173,8 @@ export const profileRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { db, user } = ctx;
 
-      const updateData: Record<string, unknown> = {};
+      const updateData: Database["public"]["Tables"]["influencer_profiles"]["Update"] =
+        {};
       if (input.displayName !== undefined)
         updateData.display_name = input.displayName;
       if (input.bio !== undefined) updateData.bio = input.bio;

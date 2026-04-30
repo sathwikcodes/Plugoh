@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import {
   exchangeCodeForToken,
   exchangeForLongLivedToken,
@@ -85,12 +85,6 @@ export async function GET(request: NextRequest) {
     ).toISOString();
     const db = createServiceClient();
     const profile = await fetchIGProfile(igUserId, accessToken);
-    const mediaItems = await fetchIGMedia(igUserId, accessToken);
-    const avgLikes =
-      mediaItems.length > 0
-        ? mediaItems.reduce((sum, item) => sum + (item.like_count ?? 0), 0) /
-          mediaItems.length
-        : null;
     let redirectPath = "/dashboard/influencer/profile?source=onboarding";
 
     if (role === "influencer") {
@@ -114,7 +108,6 @@ export async function GET(request: NextRequest) {
             ig_biography: profile.biography,
             ig_profile_picture_url: profile.profile_picture_url,
             follower_count: profile.followers_count,
-            avg_likes_per_reel: avgLikes,
             bio: existingProfile?.bio?.trim()
               ? existingProfile.bio
               : (profile.biography ?? null),
@@ -167,78 +160,97 @@ export async function GET(request: NextRequest) {
       redirectPath = "/dashboard/business/profile?source=onboarding";
     }
 
-    await syncInstagramMedia(db, userId, accessToken, mediaItems);
+    after(async () => {
+      const backgroundDb = createServiceClient();
+      try {
+        const mediaItems = await fetchIGMedia(igUserId, accessToken);
+        await syncInstagramMedia(backgroundDb, userId, accessToken, mediaItems);
 
-    if (role === "influencer") {
-      const { data: latestInfluencerProfile } = await db
-        .from("influencer_profiles")
-        .select(
-          "price_per_reel,price_per_post,price_per_story,city,languages,category,bio",
-        )
-        .eq("user_id", userId)
-        .maybeSingle();
+        if (role !== "influencer") return;
 
-      const hasMissingPrice =
-        latestInfluencerProfile?.price_per_reel == null ||
-        latestInfluencerProfile?.price_per_post == null ||
-        latestInfluencerProfile?.price_per_story == null;
+        const avgLikes =
+          mediaItems.length > 0
+            ? mediaItems.reduce(
+                (sum, item) => sum + (item.like_count ?? 0),
+                0,
+              ) / mediaItems.length
+            : null;
 
-      if (hasMissingPrice) {
-        const aiResult = await generateInfluencerProfile({
-          name: profile.name || profile.username,
-          phone: null,
-          igBio: profile.biography ?? null,
-          igUsername: profile.username,
-          followerCount: profile.followers_count ?? 0,
-          accountType: null,
-          captions: mediaItems
-            .map((item) => item.caption)
-            .filter((caption): caption is string => !!caption),
-        });
+        const { data: latestInfluencerProfile } = await backgroundDb
+          .from("influencer_profiles")
+          .select(
+            "price_per_reel,price_per_post,price_per_story,city,languages,category,bio",
+          )
+          .eq("user_id", userId)
+          .maybeSingle();
+
+        const hasMissingPrice =
+          latestInfluencerProfile?.price_per_reel == null ||
+          latestInfluencerProfile?.price_per_post == null ||
+          latestInfluencerProfile?.price_per_story == null;
 
         const influencerPatch: Database["public"]["Tables"]["influencer_profiles"]["Update"] =
           {
-            price_per_reel:
-              latestInfluencerProfile?.price_per_reel ??
-              aiResult.price_per_reel,
-            price_per_post:
-              latestInfluencerProfile?.price_per_post ??
-              aiResult.price_per_post,
-            price_per_story:
-              latestInfluencerProfile?.price_per_story ??
-              aiResult.price_per_story,
+            avg_likes_per_reel: avgLikes,
           };
 
-        if (!latestInfluencerProfile?.category && aiResult.category) {
-          influencerPatch.category = aiResult.category;
-        }
-        if (!latestInfluencerProfile?.city && aiResult.city) {
-          influencerPatch.city = aiResult.city;
-        }
-        if (
-          (!latestInfluencerProfile?.languages ||
-            latestInfluencerProfile.languages.length === 0) &&
-          aiResult.languages.length
-        ) {
-          influencerPatch.languages = aiResult.languages;
-        }
-        if (!latestInfluencerProfile?.bio && aiResult.bio) {
-          influencerPatch.bio = aiResult.bio;
+        if (hasMissingPrice) {
+          const aiResult = await generateInfluencerProfile({
+            name: profile.name || profile.username,
+            phone: null,
+            igBio: profile.biography ?? null,
+            igUsername: profile.username,
+            followerCount: profile.followers_count ?? 0,
+            accountType: null,
+            captions: mediaItems
+              .map((item) => item.caption)
+              .filter((caption): caption is string => !!caption),
+          });
+
+          influencerPatch.price_per_reel =
+            latestInfluencerProfile?.price_per_reel ?? aiResult.price_per_reel;
+          influencerPatch.price_per_post =
+            latestInfluencerProfile?.price_per_post ?? aiResult.price_per_post;
+          influencerPatch.price_per_story =
+            latestInfluencerProfile?.price_per_story ??
+            aiResult.price_per_story;
+
+          if (!latestInfluencerProfile?.category && aiResult.category) {
+            influencerPatch.category = aiResult.category;
+          }
+          if (!latestInfluencerProfile?.city && aiResult.city) {
+            influencerPatch.city = aiResult.city;
+          }
+          if (
+            (!latestInfluencerProfile?.languages ||
+              latestInfluencerProfile.languages.length === 0) &&
+            aiResult.languages.length
+          ) {
+            influencerPatch.languages = aiResult.languages;
+          }
+          if (!latestInfluencerProfile?.bio && aiResult.bio) {
+            influencerPatch.bio = aiResult.bio;
+          }
         }
 
-        const { error: aiPatchError } = await db
+        const { error: patchError } = await backgroundDb
           .from("influencer_profiles")
           .update(influencerPatch)
           .eq("user_id", userId);
 
-        if (aiPatchError) {
+        if (patchError) {
           console.error(
-            "Instagram callback AI pricing patch error:",
-            aiPatchError,
+            "Instagram callback background patch error:",
+            patchError,
           );
         }
+      } catch (backgroundError) {
+        console.error(
+          "Instagram callback background sync error:",
+          backgroundError,
+        );
       }
-    }
+    });
 
     const response = NextResponse.redirect(new URL(redirectPath, request.url));
     response.cookies.delete("ig_oauth_state");

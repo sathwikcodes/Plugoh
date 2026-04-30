@@ -3,22 +3,26 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { PageLoadingSpinner } from "@/components/ui/loading-spinner";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, authReady, needsOnboarding } = useAuth();
+  const { user, authReady, roleLoading, needsOnboarding } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const checkingAuth = !authReady || roleLoading;
 
   useEffect(() => {
-    if (!authReady) return;
+    if (checkingAuth) return;
     if (!user) {
       router.replace("/login");
     } else if (needsOnboarding && pathname !== "/onboarding") {
       router.replace("/onboarding");
     }
-  }, [authReady, user, needsOnboarding, pathname, router]);
+  }, [checkingAuth, user, needsOnboarding, pathname, router]);
 
-  if (authReady && (!user || needsOnboarding)) return null;
+  if (checkingAuth || !user || needsOnboarding) {
+    return <PageLoadingSpinner />;
+  }
 
   return <>{children}</>;
 }

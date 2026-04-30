@@ -27,6 +27,7 @@ import {
 import { NotificationDrawer } from "@/components/shared/notification-drawer";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useTheme } from "next-themes";
+import { getDashboardPath } from "@/lib/auth-routing";
 
 export function Navbar() {
   const { user, role, signOut } = useAuth();
@@ -36,8 +37,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
-  const dashboardPath =
-    role === "influencer" ? "/dashboard/influencer" : "/dashboard/business";
+  const dashboardPath = role ? getDashboardPath(role) : "/dashboard/business";
   const initials = profile?.full_name
     ? profile.full_name
         .split(" ")

@@ -20,6 +20,7 @@ interface AuthContextType {
   session: Session | null;
   role: AppRole | null;
   authReady: boolean;
+  roleLoading: boolean;
   /** @deprecated use `authReady` instead */
   loading: boolean;
   needsOnboarding: boolean;
@@ -31,26 +32,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const SESSION_TIMEOUT_MS = 3000;
-
 async function fetchRole(userId: string): Promise<AppRole | null> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
     .maybeSingle();
+  if (error) throw error;
   return (data?.role as AppRole | undefined) ?? null;
-}
-
-function withTimeout<T>(
-  promise: Promise<T>,
-  ms: number,
-  fallback: T,
-): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
-  ]);
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -58,50 +47,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [roleLoading, setRoleLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
-    let initialized = false;
 
-    (async () => {
-      const result = await withTimeout(
-        supabase.auth.getSession(),
-        SESSION_TIMEOUT_MS,
-        { data: { session: null }, error: null } as Awaited<
-          ReturnType<typeof supabase.auth.getSession>
-        >,
-      );
+    let roleRequestId = 0;
+
+    const applySession = async (nextSession: Session | null) => {
+      const requestId = ++roleRequestId;
       if (!mounted) return;
-      const s = result.data.session;
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        const r = await fetchRole(s.user.id);
-        if (!mounted) return;
-        setRole(r);
+
+      setAuthReady(false);
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (!nextSession?.user) {
+        setRole(null);
+        setRoleLoading(false);
+        setAuthReady(true);
+        return;
       }
-      initialized = true;
-      if (mounted) setAuthReady(true);
-    })();
+
+      setRoleLoading(true);
+      try {
+        const r = await fetchRole(nextSession.user.id);
+        if (!mounted || requestId !== roleRequestId) return;
+        setRole(r);
+      } catch {
+        if (!mounted || requestId !== roleRequestId) return;
+        setRole(null);
+      } finally {
+        if (mounted && requestId === roleRequestId) {
+          setRoleLoading(false);
+          setAuthReady(true);
+        }
+      }
+    };
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => applySession(data.session))
+      .catch(() => applySession(null));
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, s) => {
-      if (!mounted || !initialized) return;
+      if (!mounted) return;
       // Token refreshes don't change identity — just sync session and bail.
       if (event === "TOKEN_REFRESHED") {
         setSession(s);
+        setUser(s?.user ?? null);
         return;
       }
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        const r = await fetchRole(s.user.id);
-        if (!mounted) return;
-        setRole(r);
-      } else {
-        setRole(null);
-      }
+      await applySession(s);
     });
 
     return () => {
@@ -129,15 +128,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setSession(null);
     setRole(null);
+    setRoleLoading(false);
+    setAuthReady(true);
   }, []);
 
   const refreshRole = useCallback(async () => {
     if (!user) return;
-    const r = await fetchRole(user.id);
-    setRole(r);
+    setRoleLoading(true);
+    try {
+      const r = await fetchRole(user.id);
+      setRole(r);
+    } finally {
+      setRoleLoading(false);
+    }
   }, [user]);
 
-  const needsOnboarding = authReady && !!user && role === null;
+  const needsOnboarding = authReady && !roleLoading && !!user && role === null;
 
   const value = useMemo(
     () => ({
@@ -145,7 +151,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       role,
       authReady,
-      loading: !authReady,
+      roleLoading,
+      loading: !authReady || roleLoading,
       needsOnboarding,
       signInWithOtp,
       verifyOtp,
@@ -157,6 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       role,
       authReady,
+      roleLoading,
       needsOnboarding,
       signInWithOtp,
       verifyOtp,

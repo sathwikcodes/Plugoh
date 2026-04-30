@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
+import { getDashboardPath } from "@/lib/auth-routing";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { m, AnimatePresence } from "framer-motion";
@@ -48,9 +49,7 @@ export default function Login() {
     if (!authLoading && user && needsOnboarding) {
       router.replace("/onboarding");
     } else if (!authLoading && user && role) {
-      router.replace(
-        role === "influencer" ? "/dashboard/influencer" : "/dashboard/business",
-      );
+      router.replace(getDashboardPath(role));
     }
   }, [authLoading, user, role, needsOnboarding, router]);
 
@@ -169,7 +168,9 @@ export default function Login() {
         provider: "google",
         options: {
           redirectTo:
-            typeof window !== "undefined" ? window.location.origin : "",
+            typeof window !== "undefined"
+              ? `${window.location.origin}/auth/callback?next=/post-auth`
+              : "",
         },
       });
       if (error) {

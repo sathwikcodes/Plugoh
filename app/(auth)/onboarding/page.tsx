@@ -7,6 +7,7 @@ import { useMyProfile } from "@/hooks/queries/use-my-identity";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc/client";
 import { supabase } from "@/lib/supabase/client";
+import { getDashboardPath } from "@/lib/auth-routing";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { m, AnimatePresence } from "framer-motion";
@@ -50,11 +51,10 @@ const stagger = {
 };
 
 function OnboardingInner() {
-  const { user, role, authReady, refreshRole } = useAuth();
+  const { user, role, loading: authLoading, refreshRole } = useAuth();
   const { data: profile } = useMyProfile();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const authLoading = !authReady;
   const { toast } = useToast();
   const router = useRouter();
   const { setTheme } = useAuthTheme();
@@ -115,9 +115,7 @@ function OnboardingInner() {
     if (!authLoading && !user) {
       router.replace("/login");
     } else if (!authLoading && role) {
-      router.replace(
-        role === "influencer" ? "/dashboard/influencer" : "/dashboard/business",
-      );
+      router.replace(getDashboardPath(role));
     }
   }, [authLoading, user, role, router]);
 
@@ -137,14 +135,6 @@ function OnboardingInner() {
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (authLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
   const handleRoleSelect = useCallback(
     (r: AppRole) => {
       setSelectedRole(r);
@@ -155,6 +145,14 @@ function OnboardingInner() {
     },
     [setTheme],
   );
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   const upsertCommonProfile = async () => {
     if (!user || !selectedRole) return null;

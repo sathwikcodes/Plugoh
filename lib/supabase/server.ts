@@ -1,8 +1,10 @@
 import {
-  createClient,
+  createClient as createSupabaseClient,
   type SupabaseClient,
   type User,
 } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import type { Database } from "./types";
 
 // Cache validated tokens within the same server process. Each entry lives for
@@ -23,7 +25,7 @@ export async function authenticateUser(token: string) {
     }
   }
 
-  const client = createClient<Database>(
+  const client = createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false, autoRefreshToken: false } },
@@ -43,9 +45,32 @@ export async function authenticateUser(token: string) {
  * privileged database operations (bypasses RLS).
  */
 export function createServiceClient(): SupabaseClient<Database> {
-  return createClient<Database>(
+  return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false, autoRefreshToken: false } },
+  );
+}
+
+export async function createClient(): Promise<SupabaseClient<Database>> {
+  const cookieStore = await cookies();
+
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
+          } catch {}
+        },
+      },
+    },
   );
 }
