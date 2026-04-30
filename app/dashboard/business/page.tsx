@@ -80,8 +80,8 @@ export default function BusinessDashboard() {
               />
               . We&rsquo;re building this thoughtfully, with a lot more to come,
               and your feedback helps shape what we create next. If you have a
-              suggestion, improvement, or issue to share, we&rsquo;d truly value
-              hearing from you through the anonymous form below.
+              suggestion, improvement, or issue to share, please email us at
+              hello@plugoh.com.
             </p>
           </m.div>
 
