@@ -57,7 +57,7 @@ export default async function DemoPage({
           </p>
         ) : (
           <div className="flex w-full flex-col gap-3">
-            <form action="/demo/login" method="post">
+            <form action="/api/demo/login" method="post">
               <input type="hidden" name="role" value="business" />
               <button
                 type="submit"
@@ -66,7 +66,7 @@ export default async function DemoPage({
                 Demo as brand
               </button>
             </form>
-            <form action="/demo/login" method="post">
+            <form action="/api/demo/login" method="post">
               <input type="hidden" name="role" value="influencer" />
               <button
                 type="submit"
