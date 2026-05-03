@@ -10,7 +10,7 @@ export function demoLoginErrorRedirect(request: NextRequest, message: string) {
   const url = request.nextUrl.clone();
   url.pathname = "/demo";
   url.searchParams.set("error", message);
-  return NextResponse.redirect(url);
+  return NextResponse.redirect(url, 303);
 }
 
 export async function runDemoLoginPost(request: NextRequest) {
@@ -49,7 +49,7 @@ export async function runDemoLoginPost(request: NextRequest) {
   dashboardUrl.pathname = getDashboardPath(role);
   dashboardUrl.search = "";
 
-  const response = NextResponse.redirect(dashboardUrl);
+  const response = NextResponse.redirect(dashboardUrl, 303);
 
   const supabase = createServerClient<Database>(
     supabaseUrl.trim(),
