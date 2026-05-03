@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase/client";
@@ -492,6 +493,22 @@ export default function Login() {
                 )}
                 Sign in with Google
               </button>
+            </m.div>
+
+            <m.div variants={fadeUp}>
+              <Link
+                href="/demo"
+                className="flex h-12 w-full items-center justify-center rounded-2xl text-[15px] font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98] sm:h-14"
+                style={{
+                  color: "var(--auth-accent-fg)",
+                  background:
+                    "linear-gradient(135deg, rgba(212,175,55,0.22) 0%, rgba(245,158,11,0.18) 100%)",
+                  border: "1px solid rgba(251,191,36,0.35)",
+                  boxShadow: "0 2px 16px rgba(245,158,11,0.12)",
+                }}
+              >
+                Demo
+              </Link>
             </m.div>
 
             <m.p

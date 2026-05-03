@@ -13,6 +13,8 @@ const PROFILE_ICON = "/color.png";
 
 const WALLET_ICON = "/premium.png";
 
+const STUDIO_ICON = "/star.png";
+
 const MESSAGE_ICON = "/inbox.png";
 const INFLUENCER_DOCK_APPS = [
   { id: "home", name: "Home", icon: HOME_ICON, href: "/dashboard/influencer" },
@@ -33,6 +35,12 @@ const INFLUENCER_DOCK_APPS = [
     name: "Earnings",
     icon: WALLET_ICON,
     href: "/dashboard/influencer/earnings",
+  },
+  {
+    id: "studio",
+    name: "AI Creator Studio",
+    icon: STUDIO_ICON,
+    href: "/dashboard/influencer/creator-studio",
   },
   {
     id: "profile",

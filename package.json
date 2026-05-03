@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "style:format": "prettier --write ."
+    "style:format": "prettier --write .",
+    "demo:create-users": "node scripts/create-yc-demo-auth-users.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

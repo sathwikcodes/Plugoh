@@ -30,6 +30,8 @@ Next.js App Router · Supabase (auth + PostgreSQL) · React Query · React Hook 
 Login → `app_role` check → `/onboarding` (new users) → `app/dashboard/{role}/`
 `ProtectedRoute` guards all dashboard routes. `app/dashboard/layout.tsx` includes Navbar.
 
+`/demo` — optional sandbox login (`POST /demo/login`) when `NEXT_PUBLIC_DEMO_ENABLED=true`; emails/password via `DEMO_*` env. Create Auth users first: `npm run demo:create-users`, then seed: `supabase/seed_yc_demo.sql`.
+
 ## Data
 
 Tables: `profiles`, `user_roles`, `campaigns`. Dark mode forced globally via `ThemeProvider`.
