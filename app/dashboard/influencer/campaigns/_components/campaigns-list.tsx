@@ -130,15 +130,18 @@ export function CampaignsList({
       </m.div>
       <m.div
         variants={fadeUp}
-        className="hidden min-h-0 flex-1 grid-cols-2 gap-5 overflow-y-auto overscroll-contain pr-1 md:grid xl:grid-cols-3"
+        className="hidden min-h-0 flex-1 flex-col overflow-hidden md:flex"
       >
-        {displayItems.map((item) => (
-          <CampaignCardTile
-            key={item.campaign.id}
-            card={mapCardProps(item, actions)}
-            className="aspect-[0.74]"
-          />
-        ))}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
+          <div className="grid auto-rows-auto grid-cols-2 gap-5 md:items-start xl:grid-cols-3">
+            {displayItems.map((item) => (
+              <CampaignCardTile
+                key={item.campaign.id}
+                card={mapCardProps(item, actions)}
+              />
+            ))}
+          </div>
+        </div>
       </m.div>
     </>
   );

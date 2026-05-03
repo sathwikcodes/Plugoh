@@ -153,14 +153,14 @@ export default function CampaignsPage() {
     <>
       <div className="relative h-dvh overflow-hidden" style={mobileStyle}>
         <div
-          className="relative z-10 container h-full py-4 md:flex md:h-full md:flex-col md:py-6"
+          className="relative z-10 container h-full min-h-0 py-4 md:flex md:h-full md:min-h-0 md:flex-col md:py-6"
           style={mobileInset}
         >
           <m.div
             variants={stagger}
             initial="hidden"
             animate="visible"
-            className="flex h-full flex-col gap-4 md:gap-5"
+            className="flex h-full min-h-0 flex-col gap-4 md:gap-5"
           >
             <m.div
               variants={fadeUp}
