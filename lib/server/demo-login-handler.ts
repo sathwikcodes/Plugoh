@@ -1,10 +1,9 @@
 import "server-only";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
 import { getDashboardPath, type AppRole } from "@/lib/auth-routing";
 import { getDemoLoginSecrets } from "@/lib/server/demo-login-env";
-import type { Database } from "@/lib/supabase/types";
+import { signInWithPasswordAndRedirect } from "@/lib/server/supabase-password-login";
 
 export function demoLoginErrorRedirect(request: NextRequest, message: string) {
   const url = request.nextUrl.clone();
@@ -36,48 +35,26 @@ export async function runDemoLoginPost(request: NextRequest) {
     );
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
-  if (!supabaseUrl?.trim() || !anonKey?.trim()) {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
+    !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY?.trim()
+  ) {
     return demoLoginErrorRedirect(
       request,
       "Supabase URL or anon key is missing.",
     );
   }
 
-  const dashboardUrl = request.nextUrl.clone();
-  dashboardUrl.pathname = getDashboardPath(role);
-  dashboardUrl.search = "";
-
-  const response = NextResponse.redirect(dashboardUrl, 303);
-
-  const supabase = createServerClient<Database>(
-    supabaseUrl.trim(),
-    anonKey.trim(),
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
-          });
-        },
-      },
-    },
-  );
-
-  await supabase.auth.signOut();
-
-  const { error } = await supabase.auth.signInWithPassword({
+  const result = await signInWithPasswordAndRedirect(
+    request,
     email,
     password,
-  });
+    getDashboardPath(role),
+  );
 
-  if (error) {
-    return demoLoginErrorRedirect(request, error.message);
+  if (!result.ok) {
+    return demoLoginErrorRedirect(request, result.message);
   }
 
-  return response;
+  return result.response;
 }

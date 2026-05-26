@@ -3,7 +3,8 @@
 ## Commands
 
 ```bash
-npm run dev          # localhost:3000
+npm run dev          # http://localhost:3000
+npm run dev:https    # https://localhost:3000 (self-signed cert)
 npm run build        # production
 npm run lint
 npm run style:format
@@ -31,6 +32,10 @@ Login → `app_role` check → `/onboarding` (new users) → `app/dashboard/{rol
 `ProtectedRoute` guards all dashboard routes. `app/dashboard/layout.tsx` includes Navbar.
 
 `/demo` — optional sandbox login (`POST /api/demo/login`) when `NEXT_PUBLIC_DEMO_ENABLED=true`; emails/password via `DEMO_*` env. Create Auth users first: `npm run demo:create-users`, then seed: `supabase/seed_yc_demo.sql`.
+
+`/review` — Meta App Review login (`POST /api/review/login`) when `NEXT_PUBLIC_META_REVIEW_ENABLED=true`; redirects to `/onboarding` (not dashboard). `META_REVIEW_EMAIL` + `META_REVIEW_PASSWORD`. Reviewer has no pre-seeded role/IG — same onboarding + Instagram connect as new creators. Setup: `npm run meta:create-reviewer`, `supabase/seed_meta_reviewer.sql`, `npm run meta:clear-instagram` before OAuth screencast. Does not change `/demo`. Submission copy: `docs/META_APP_REVIEW.md`.
+
+Meta OAuth redirect: `https://plugoh.com/api/auth/callback/instagram` (requires `NEXT_PUBLIC_APP_URL=https://plugoh.com` in production).
 
 ## Data
 

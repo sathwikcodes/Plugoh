@@ -4,6 +4,7 @@ import { m } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/animations";
 import { Instagram, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ConnectInstagramButton } from "@/components/instagram/connect-instagram-button";
 import type { Database } from "@/lib/supabase/types";
 
 type InfluencerProfile =
@@ -118,6 +119,7 @@ export default function InstagramTab({ profile }: InstagramTabProps) {
                 <p className="text-xs text-muted-foreground/60 mt-0.5">
                   Connect Instagram to unlock your profile
                 </p>
+                <ConnectInstagramButton role="influencer" />
               </div>
             </div>
           )}

@@ -4,11 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:https": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "style:format": "prettier --write .",
-    "demo:create-users": "node scripts/create-yc-demo-auth-users.mjs"
+    "demo:create-users": "node scripts/create-yc-demo-auth-users.mjs",
+    "meta:create-reviewer": "node scripts/create-meta-reviewer-auth-user.mjs",
+    "meta:clear-instagram": "node scripts/clear-meta-reviewer-instagram.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

@@ -51,7 +51,13 @@ const stagger = {
 };
 
 function OnboardingInner() {
-  const { user, role, loading: authLoading, refreshRole } = useAuth();
+  const {
+    user,
+    role,
+    authReady,
+    loading: authLoading,
+    refreshRole,
+  } = useAuth();
   const { data: profile } = useMyProfile();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -112,12 +118,13 @@ function OnboardingInner() {
 
   useEffect(() => {
     if (instagramRedirectInProgress.current) return;
-    if (!authLoading && !user) {
+    if (!authReady) return;
+    if (!user) {
       router.replace("/login");
-    } else if (!authLoading && role) {
+    } else if (role) {
       router.replace(getDashboardPath(role));
     }
-  }, [authLoading, user, role, router]);
+  }, [authReady, user, role, router]);
 
   useEffect(() => {
     const err = searchParams.get("error");
