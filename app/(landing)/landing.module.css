@@ -404,20 +404,55 @@
   }
 }
 
+.puzzleScrollTrack {
+  height: 350vh;
+}
+
+@media (min-width: 1024px) {
+  .puzzleScrollTrack {
+    height: 520vh;
+  }
+}
+
+.fistBumpStage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 30;
+  width: max(100vw, 140vh);
+  aspect-ratio: 2483 / 900;
+  transform: translate3d(-50%, -50%, 0);
+  pointer-events: none;
+  contain: layout style;
+  isolation: isolate;
+}
+
+@media (min-width: 1024px) {
+  .fistBumpStage {
+    width: auto;
+    height: min(58vh, 820px);
+    max-width: min(100vw, 2483px);
+  }
+}
+
 .fistBumpLottie {
   width: 100%;
   height: 100%;
   transform: translateZ(0);
-  filter: drop-shadow(0 2px 0 rgba(45, 20, 55, 0.22))
-    drop-shadow(0 14px 28px rgba(35, 12, 50, 0.18))
-    drop-shadow(0 6px 14px rgba(90, 45, 0, 0.28))
-    drop-shadow(0 20px 40px rgba(55, 30, 0, 0.2))
-    drop-shadow(0 3px 8px rgba(0, 0, 0, 0.12));
+  filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.2))
+    drop-shadow(0 14px 28px rgba(55, 32, 0, 0.22));
 }
 
-@media (hover: none) and (pointer: coarse) {
-  .fistBumpLottie {
-    filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.2))
-      drop-shadow(0 14px 28px rgba(55, 32, 0, 0.22));
-  }
+.fistBurstOverlay {
+  position: absolute;
+  left: 50%;
+  top: 43%;
+  z-index: 40;
+  width: min(110vw, 1700px);
+  height: min(110vh, 1700px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 90ms linear;
+  will-change: opacity;
 }

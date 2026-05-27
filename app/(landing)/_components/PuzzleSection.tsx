@@ -1,32 +1,204 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import styles from "../landing.module.css";
 import { Reveal } from "./Reveal";
 import { FistBump } from "./FistBump";
 import { LinesAnimation } from "./LinesAnimation";
-import { useScroll, useMotionValueEvent } from "framer-motion";
+import { useScroll } from "framer-motion";
 
 const TOTAL_FRAMES = 401;
 const IMPACT_TRIGGER_FRAME = 133;
 const IMPACT_TRIGGER_WINDOW = 3;
-const IMPACT_CENTER_Y = "43%";
 const BURST_DURATION_MS = 4500;
+
+function frameFromProgress(progress: number) {
+  return Math.max(0, Math.min(TOTAL_FRAMES - 1, progress * (TOTAL_FRAMES - 1)));
+}
+
+function usePrefersDesktopCanvas() {
+  const [useCanvas, setUseCanvas] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(min-width: 1024px) and (pointer: fine)").matches,
+  );
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px) and (pointer: fine)");
+    const sync = () => setUseCanvas(mq.matches);
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  return useCanvas;
+}
+
+const ImpactBurst = memo(function ImpactBurst({
+  burstKey,
+  linesLottieRef,
+}: {
+  burstKey: number;
+  linesLottieRef: RefObject<any>;
+}) {
+  return (
+    <>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          WebkitMaskImage:
+            "radial-gradient(circle, transparent 30%, black 45%)",
+          maskImage: "radial-gradient(circle, transparent 30%, black 45%)",
+        }}
+      >
+        <LinesAnimation
+          lottieRef={linesLottieRef}
+          autoplay={false}
+          loop={false}
+        />
+      </div>
+
+      <svg
+        key={`impact-sparkles-${burstKey}`}
+        width="100%"
+        height="100%"
+        viewBox="0 0 1000 1000"
+        style={{
+          position: "absolute",
+          inset: 0,
+          animation: `impactSparklesOnce ${BURST_DURATION_MS}ms ease-out forwards`,
+        }}
+      >
+        <g
+          style={{
+            transformOrigin: "500px 500px",
+            animation: `sparkleSpinOnce ${BURST_DURATION_MS}ms linear forwards`,
+          }}
+        >
+          <path
+            fill="#ffffff"
+            d="M 500 452 C 500 485 503 497 536 500 C 503 503 500 515 500 548 C 497 515 485 503 452 500 C 485 497 497 485 500 452 Z"
+          />
+        </g>
+
+        <g
+          style={{
+            transformOrigin: "690px 360px",
+            animation: `sparkleSpinOnce ${BURST_DURATION_MS}ms linear forwards`,
+          }}
+        >
+          <path
+            fill="#ffffff"
+            d="M 690 332 C 690 354 692 362 714 364 C 692 366 690 374 690 396 C 688 374 680 366 658 364 C 680 362 688 354 690 332 Z"
+          />
+        </g>
+
+        <g
+          style={{
+            transformOrigin: "340px 620px",
+            animation: `sparkleSpinOnce ${BURST_DURATION_MS}ms linear forwards`,
+          }}
+        >
+          <path
+            fill="#ffffff"
+            d="M 340 596 C 340 614 342 620 360 622 C 342 624 340 630 340 648 C 338 630 332 624 314 622 C 332 620 338 614 340 596 Z"
+          />
+        </g>
+      </svg>
+    </>
+  );
+});
 
 export function PuzzleSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const lottieRef = useRef<any>(null);
   const linesLottieRef = useRef<any>(null);
+  const burstOverlayRef = useRef<HTMLDivElement>(null);
   const lastFrameRef = useRef(0);
   const inImpactRef = useRef(false);
   const burstTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [showBurst, setShowBurst] = useState(false);
+  const displayedFrameRef = useRef(-1);
   const [burstKey, setBurstKey] = useState(0);
+  const [fistReady, setFistReady] = useState(false);
+  const useCanvas = usePrefersDesktopCanvas();
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
+
+  const seekFist = useCallback(
+    (progress: number) => {
+      const anim = lottieRef.current;
+      if (!anim) return;
+
+      const frame = frameFromProgress(progress);
+
+      if (useCanvas) {
+        if (Math.abs(frame - displayedFrameRef.current) > 0.02) {
+          anim.goToAndStop(frame, true);
+          displayedFrameRef.current = frame;
+        }
+      } else {
+        const rounded = Math.round(frame);
+        if (rounded !== displayedFrameRef.current) {
+          anim.goToAndStop(rounded, true);
+          displayedFrameRef.current = rounded;
+        }
+      }
+
+      const rounded = Math.round(frame);
+      const inImpact =
+        Math.abs(rounded - IMPACT_TRIGGER_FRAME) <= IMPACT_TRIGGER_WINDOW;
+      const enteredImpact = inImpact && !inImpactRef.current;
+      const jumpedForwardIntoImpact =
+        lastFrameRef.current < IMPACT_TRIGGER_FRAME - IMPACT_TRIGGER_WINDOW &&
+        rounded > IMPACT_TRIGGER_FRAME + IMPACT_TRIGGER_WINDOW;
+
+      if (enteredImpact || jumpedForwardIntoImpact) {
+        setBurstKey((k) => k + 1);
+        if (burstOverlayRef.current) {
+          burstOverlayRef.current.style.opacity = "1";
+        }
+
+        const linesAnim = linesLottieRef.current;
+        if (linesAnim?.goToAndPlay) {
+          linesAnim.setLoop?.(true);
+          linesAnim.goToAndPlay(61, true);
+        }
+
+        if (burstTimerRef.current) clearTimeout(burstTimerRef.current);
+        burstTimerRef.current = setTimeout(() => {
+          if (burstOverlayRef.current) {
+            burstOverlayRef.current.style.opacity = "0";
+          }
+          const lines = linesLottieRef.current;
+          if (lines?.goToAndStop) {
+            lines.setLoop?.(false);
+            lines.goToAndStop(0, true);
+          }
+        }, BURST_DURATION_MS);
+      }
+
+      inImpactRef.current = inImpact;
+      lastFrameRef.current = rounded;
+    },
+    [useCanvas],
+  );
+
+  const handleFistLoaded = useCallback(() => {
+    setFistReady(true);
+    displayedFrameRef.current = -1;
+    seekFist(scrollYProgress.get());
+  }, [scrollYProgress, seekFist]);
 
   useEffect(() => {
     return () => {
@@ -34,49 +206,37 @@ export function PuzzleSection() {
     };
   }, []);
 
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (!lottieRef.current) return;
-    const frame = Math.max(
-      0,
-      Math.min(TOTAL_FRAMES - 1, latest * (TOTAL_FRAMES - 1)),
-    );
-    lottieRef.current.goToAndStop(Math.round(frame), true);
+  useEffect(() => {
+    if (!fistReady) return;
 
-    const rounded = Math.round(frame);
-    const inImpact =
-      Math.abs(rounded - IMPACT_TRIGGER_FRAME) <= IMPACT_TRIGGER_WINDOW;
-    const enteredImpact = inImpact && !inImpactRef.current;
-    const jumpedForwardIntoImpact =
-      lastFrameRef.current < IMPACT_TRIGGER_FRAME - IMPACT_TRIGGER_WINDOW &&
-      rounded > IMPACT_TRIGGER_FRAME + IMPACT_TRIGGER_WINDOW;
+    let rafId = 0;
+    let scheduled = false;
 
-    if (enteredImpact || jumpedForwardIntoImpact) {
-      setBurstKey((k) => k + 1);
-      setShowBurst(true);
+    const flush = () => {
+      scheduled = false;
+      seekFist(scrollYProgress.get());
+    };
 
-      // lines.json has visible strokes mainly around frame ~61..112 (of 150),
-      // so we seek there on impact to avoid delayed first visibility.
-      if (linesLottieRef.current?.goToAndPlay) {
-        linesLottieRef.current.goToAndPlay(61, true);
-      }
+    const schedule = () => {
+      if (scheduled) return;
+      scheduled = true;
+      rafId = requestAnimationFrame(flush);
+    };
 
-      if (burstTimerRef.current) clearTimeout(burstTimerRef.current);
-      burstTimerRef.current = setTimeout(
-        () => setShowBurst(false),
-        BURST_DURATION_MS,
-      );
-    }
+    const unsubscribe = scrollYProgress.on("change", schedule);
+    schedule();
 
-    inImpactRef.current = inImpact;
-    lastFrameRef.current = rounded;
-  });
+    return () => {
+      unsubscribe();
+      cancelAnimationFrame(rafId);
+    };
+  }, [fistReady, scrollYProgress, seekFist]);
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full"
+      className={`relative w-full ${styles.puzzleScrollTrack}`}
       style={{
-        height: "350vh",
         background: "linear-gradient(180deg, #ffe87a 0%, #ffd84a 100%)",
       }}
     >
@@ -84,103 +244,19 @@ export function PuzzleSection() {
         className="sticky top-0 w-full flex flex-col items-center justify-center overflow-hidden"
         style={{ height: "100vh" }}
       >
-        {/* Fist bump — full width, vertically centered */}
-        <div
-          className="pointer-events-none"
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 30,
-            // On mobile the 2483/900 ratio would be too short in height.
-            // Use 100vw width always; height is naturally derived from ratio.
-            // But we want it to cover more on mobile so we scale it up.
-            width: "max(100vw, 140vh)",
-            aspectRatio: "2483/900",
-          }}
-        >
-          <FistBump lottieRef={lottieRef} />
+        <div className={styles.fistBumpStage}>
+          <FistBump
+            lottieRef={lottieRef}
+            onLoaded={handleFistLoaded}
+            useCanvas={useCanvas}
+          />
 
           <div
-            className="pointer-events-none"
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: IMPACT_CENTER_Y,
-              width: "min(110vw, 1700px)",
-              height: "min(110vh, 1700px)",
-              transform: "translate(-50%, -50%)",
-              zIndex: 40,
-              opacity: showBurst ? 1 : 0,
-              transition: "opacity 90ms linear",
-            }}
+            ref={burstOverlayRef}
+            className={styles.fistBurstOverlay}
             aria-hidden
           >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                WebkitMaskImage:
-                  "radial-gradient(circle, transparent 30%, black 45%)",
-                maskImage:
-                  "radial-gradient(circle, transparent 30%, black 45%)",
-              }}
-            >
-              <LinesAnimation
-                lottieRef={linesLottieRef}
-                autoplay={true}
-                loop={true}
-              />
-            </div>
-
-            <svg
-              key={`impact-sparkles-${burstKey}`}
-              width="100%"
-              height="100%"
-              viewBox="0 0 1000 1000"
-              style={{
-                position: "absolute",
-                inset: 0,
-                animation: `impactSparklesOnce ${BURST_DURATION_MS}ms ease-out forwards`,
-              }}
-            >
-              <g
-                style={{
-                  transformOrigin: "500px 500px",
-                  animation: `sparkleSpinOnce ${BURST_DURATION_MS}ms linear forwards`,
-                }}
-              >
-                <path
-                  fill="#ffffff"
-                  d="M 500 452 C 500 485 503 497 536 500 C 503 503 500 515 500 548 C 497 515 485 503 452 500 C 485 497 497 485 500 452 Z"
-                />
-              </g>
-
-              <g
-                style={{
-                  transformOrigin: "690px 360px",
-                  animation: `sparkleSpinOnce ${BURST_DURATION_MS}ms linear forwards`,
-                }}
-              >
-                <path
-                  fill="#ffffff"
-                  d="M 690 332 C 690 354 692 362 714 364 C 692 366 690 374 690 396 C 688 374 680 366 658 364 C 680 362 688 354 690 332 Z"
-                />
-              </g>
-
-              <g
-                style={{
-                  transformOrigin: "340px 620px",
-                  animation: `sparkleSpinOnce ${BURST_DURATION_MS}ms linear forwards`,
-                }}
-              >
-                <path
-                  fill="#ffffff"
-                  d="M 340 596 C 340 614 342 620 360 622 C 342 624 340 630 340 648 C 338 630 332 624 314 622 C 332 620 338 614 340 596 Z"
-                />
-              </g>
-            </svg>
+            <ImpactBurst burstKey={burstKey} linesLottieRef={linesLottieRef} />
           </div>
         </div>
 
@@ -199,7 +275,6 @@ export function PuzzleSection() {
           }
         `}</style>
 
-        {/* Title — sits above the fists */}
         <div className="relative z-[5] flex flex-col items-center w-full px-4">
           <Reveal
             as="h2"

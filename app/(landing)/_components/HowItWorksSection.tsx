@@ -102,7 +102,7 @@ export function HowItWorksSection() {
       <div
         className={cn(
           "relative sticky top-0 flex h-[100svh] min-h-[100dvh] w-full flex-col",
-          "max-lg:overflow-x-clip max-lg:overflow-y-visible lg:overflow-hidden",
+          "max-lg:overflow-x-clip max-lg:overflow-y-visible lg:overflow-visible",
           "gap-2 pt-[calc(var(--hw-header-clearance))]",
           "lg:grid lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)] lg:items-center lg:gap-[clamp(20px,4vw,72px)] lg:pt-[clamp(16px,4vw,40px)]",
         )}
@@ -166,6 +166,7 @@ export function HowItWorksSection() {
           className={cn(
             "relative z-[10] w-full min-h-0 flex-1",
             "lg:z-auto lg:h-[min(86vh,820px)] lg:min-h-[560px] lg:flex-none",
+            "lg:pl-[clamp(28px,2.5vw,36px)]",
           )}
         >
           {phases.map((phase, index) => (
@@ -209,6 +210,7 @@ function PhaseSlide({
 
   return (
     <m.article
+      className="relative"
       style={{
         x,
         y,
@@ -228,31 +230,34 @@ function PhaseSlide({
     >
       <div
         className={cn(
+          styles.iconBadge,
+          "absolute z-[3]",
+          "left-3 top-3",
+          "lg:left-[clamp(-30px,-2.4vw,-36px)] lg:top-[clamp(16px,2.2vw,30px)]",
+        )}
+        style={{
+          width: "clamp(40px, 3.2vw, 60px)",
+          height: "clamp(40px, 3.2vw, 60px)",
+          fontSize: "clamp(0.9375rem, 1.2vw, 1.25rem)",
+          fontWeight: 800,
+        }}
+      >
+        {phase.number}
+      </div>
+
+      <div
+        className={cn(
           styles.surfaceCard,
           phase.tintClass,
-          "relative grid min-h-0 w-full grid-cols-1 grid-rows-[auto_minmax(0,1fr)] overflow-hidden",
+          "relative grid min-h-0 w-full grid-cols-1 grid-rows-[auto_minmax(0,1fr)]",
+          "max-lg:overflow-hidden lg:overflow-visible",
           "h-[min(500px,62dvh)] lg:h-[620px]",
         )}
         style={{
-          gap: "clamp(12px, 2vw, 28px)",
+          gap: "clamp(12px, 2.4vw, 28px)",
           padding: "clamp(14px, 2.4vw, 40px)",
         }}
       >
-        <div
-          className={cn(
-            styles.iconBadge,
-            "absolute left-3 top-3 z-[2] lg:left-[clamp(-22px,-2vw,-30px)] lg:top-[clamp(16px,2.2vw,30px)]",
-          )}
-          style={{
-            width: "clamp(40px, 3.2vw, 60px)",
-            height: "clamp(40px, 3.2vw, 60px)",
-            fontSize: "clamp(0.9375rem, 1.2vw, 1.25rem)",
-            fontWeight: 800,
-          }}
-        >
-          {phase.number}
-        </div>
-
         <div
           className={cn(
             "relative w-full shrink-0 overflow-hidden rounded-[18px]",
